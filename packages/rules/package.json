@@ -1,0 +1,18 @@
+{
+  "name": "@preflight/rules",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {},
+  "scripts": {
+    "test": "vitest run",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "eslint": "9.39.5",
+    "typescript": "5.9.2",
+    "vitest": "3.2.4"
+  }
+}

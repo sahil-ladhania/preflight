@@ -1,12 +1,31 @@
 {
   "name": "preflight-backend",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "dependencies": {
+    "@open-gitagent/gitagent": "2.2.0",
+    "@preflight/rules": "*",
+    "@preflight/schemas": "*",
+    "@prisma/client": "6.19.0",
+    "cors": "2.8.6",
+    "dotenv": "17.4.2",
+    "express": "5.2.1",
+    "zod": "3.24.4"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@types/express": "5.0.3",
+    "@types/node": "22.15.3",
+    "eslint": "9.39.5",
+    "prisma": "6.19.0",
+    "tsx": "4.23.12",
+    "typescript": "5.9.2"
+  }
 }

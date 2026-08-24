@@ -1,0 +1,21 @@
+{
+  "name": "@preflight/schemas",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint .",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "zod": "3.24.4"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "eslint": "9.39.5",
+    "typescript": "5.9.2",
+    "vitest": "3.2.4"
+  }
+}

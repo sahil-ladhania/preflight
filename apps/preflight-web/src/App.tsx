@@ -1,11 +1,3 @@
-import './App.css'
-
-function App() {
-  return (
-    <>
-      Hello World
-    </>
-  )
+export default function App(): null {
+  return null;
 }
-
-export default App
