@@ -1,0 +1,169 @@
+/**
+ * BriefArrayFields — channels, performance figures, claims controls.
+ * Why: extracted from BriefForm to stay under file size limit.
+ */
+
+import type { ReactElement } from "react";
+
+import type { Channel } from "@preflight/schemas";
+
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { CHANNEL_OPTIONS } from "@/features/campaign/lib";
+import { cn } from "@/lib/utils";
+
+export function ChannelsField({
+  channels,
+  proposed,
+  onChange,
+}: {
+  channels: Channel[];
+  proposed: boolean;
+  onChange: (channels: Channel[]) => void;
+}): ReactElement {
+  const toggle = (channel: Channel): void => {
+    const next = channels.includes(channel)
+      ? channels.filter((item) => item !== channel)
+      : [...channels, channel];
+    onChange(next);
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-caption text-fg-muted">Channels</p>
+      <div
+        className={cn(
+          "flex flex-col gap-2 rounded-md border border-border px-4 py-3",
+          proposed && "border-dashed",
+        )}
+      >
+        {CHANNEL_OPTIONS.map((channel) => (
+          <label
+            key={channel}
+            className="flex cursor-pointer items-center gap-2 text-body text-fg"
+          >
+            <Checkbox
+              checked={channels.includes(channel)}
+              onCheckedChange={() => toggle(channel)}
+            />
+            {channel}
+          </label>
+        ))}
+      </div>
+      {proposed ? (
+        <p className="text-caption text-fg-muted">Proposed by extract</p>
+      ) : null}
+    </div>
+  );
+}
+
+export function PerformanceFiguresField({
+  figures,
+  proposed,
+  onChange,
+}: {
+  figures: Array<{ value: string; period: string }>;
+  proposed: boolean;
+  onChange: (figures: Array<{ value: string; period: string }>) => void;
+}): ReactElement {
+  const updateRow = (
+    index: number,
+    key: "value" | "period",
+    value: string,
+  ): void => {
+    const next = figures.map((row, rowIndex) =>
+      rowIndex === index ? { ...row, [key]: value } : row,
+    );
+    onChange(next);
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-caption text-fg-muted">Performance figures</p>
+      <div
+        className={cn(
+          "flex flex-col gap-2 rounded-md border border-border p-3",
+          proposed && "border-dashed",
+        )}
+      >
+        {figures.map((row, index) => (
+          <div key={index} className="grid grid-cols-2 gap-2">
+            <Input
+              value={row.value}
+              placeholder="Value"
+              onChange={(event) => updateRow(index, "value", event.target.value)}
+              className="h-auto px-4 py-3 text-body-airy"
+            />
+            <Input
+              value={row.period}
+              placeholder="Period"
+              onChange={(event) => updateRow(index, "period", event.target.value)}
+              className="h-auto px-4 py-3 text-body-airy"
+            />
+          </div>
+        ))}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => onChange([...figures, { value: "", period: "" }])}
+        >
+          Add figure
+        </Button>
+      </div>
+      {proposed ? (
+        <p className="text-caption text-fg-muted">Proposed by extract</p>
+      ) : null}
+    </div>
+  );
+}
+
+export function ClaimsField({
+  claims,
+  proposed,
+  onChange,
+}: {
+  claims: string[];
+  proposed: boolean;
+  onChange: (claims: string[]) => void;
+}): ReactElement {
+  const updateClaim = (index: number, value: string): void => {
+    const next = claims.map((claim, claimIndex) =>
+      claimIndex === index ? value : claim,
+    );
+    onChange(next);
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-caption text-fg-muted">Claims</p>
+      <div
+        className={cn(
+          "flex flex-col gap-2 rounded-md border border-border p-3",
+          proposed && "border-dashed",
+        )}
+      >
+        {claims.map((claim, index) => (
+          <Input
+            key={index}
+            value={claim}
+            onChange={(event) => updateClaim(index, event.target.value)}
+            className="h-auto px-4 py-3 text-body-airy"
+          />
+        ))}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => onChange([...claims, ""])}
+        >
+          Add claim
+        </Button>
+      </div>
+      {proposed ? (
+        <p className="text-caption text-fg-muted">Proposed by extract</p>
+      ) : null}
+    </div>
+  );
+}
