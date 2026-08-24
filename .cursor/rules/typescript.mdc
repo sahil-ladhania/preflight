@@ -1,0 +1,71 @@
+---
+description: Naming, types, async, comments, patterns, dead code
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# TypeScript
+
+## Naming
+
+- Components: `PascalCase.tsx`. Hooks: `useX.ts`. Other files: `kebab-case.ts`.
+- Backend: `*.route.ts`, `*.controller.ts`, `*.service.ts`, `*.types.ts`.
+- Types: PascalCase. Values: camelCase. String unions, not `enum`.
+- Packages: `@preflight/rules`, `@preflight/schemas`. Apps: `preflight-web`, `preflight-backend`.
+- Agents: `explainer` | `extractor` | `generator` | `judge` — never "intake."
+- Do not invent rule ids unless the task is adding a rule.
+
+## Exports
+
+- Named exports everywhere.
+- Default export only for a page component or Express `Router`. Never both for the same symbol.
+- One `src/index.ts` public API per package. No barrels re-exporting another package.
+
+## Types
+
+- Ban `any`, `@ts-ignore`, `@ts-expect-error`, `as T` to silence, `!` except after narrow.
+- Exported functions: explicit return type. Locals: infer.
+- Zod only in `@preflight/schemas` and `apps/preflight-backend/src/config/env.ts`.
+- Validate HTTP body/query, agent JSON, Prisma `Json` writes. DTOs via `z.infer` — no parallel interface.
+- `packages/rules`: types only, no Zod at runtime.
+
+## Patterns
+
+**Banned names:** factory, abstract class, DI container, strategy hierarchy, event bus / `EventEmitter` for product flow, `*Manager`, `*ServiceLocator`, repository wrapping Prisma, `Result`/`Either`, class component, generic `Base*`.
+
+**Banned:** `class` except `extends Error`.
+
+**Allowed without comment:** Prisma singleton (`src/lib/prisma.ts`), `env` (`src/config/env.ts`), GitAgent client (`src/lib/gitagent.ts`), Express `Router`, `*.service.ts` function modules, React function components.
+
+Other banned pattern: `// pattern: <name> — <why>` above it. One line or don't write it.
+
+## Async
+
+- `async`/`await` only. No `.then(`. No `.catch(` as control flow.
+- Judge fan-out: `Promise.allSettled`. `rejected` → that finding `unavailable` with operation + `ruleId` + `assetId`. Do not wrap whole fan-out in one try.
+- Other I/O `await` (Prisma, `query()`, HTTP, fetch): `try/catch` in that function.
+- `catch` names operation + identifying input. Wrap `{ cause }` or map to `ApiResponse` / `unavailable`.
+- Illegal: bare rethrow, `console.log(e)`, empty catch, nested catch that only rethrows.
+
+## Comments
+
+2-line header before imports:
+
+```ts
+/**
+ * foldStatus — derive asset status from findings.
+ * Why: status is not a column (04-data-model.md).
+ */
+```
+
+Inline: why only. Illegal: restating code, commented-out code, `TODO`, author/date.
+
+## Simplicity
+
+- Obvious 8 lines over 1-line decode. One nested ternary max.
+- No generic helper for one call site.
+- Readable top-to-bottom in one pass — rename or extract if not.
+
+## Dead code
+
+- No commented-out blocks. No `eslint-disable`. No unused export in the same change.

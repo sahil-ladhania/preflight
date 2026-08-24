@@ -1,0 +1,53 @@
+---
+description: Scope, dependencies, locked surface, session discipline
+alwaysApply: true
+---
+
+# Core
+
+## Hierarchy
+
+1. `documentation/01`–`09` wins over everything here.
+2. These rules win over taste, future-proofing, and generic Cursor user rules (pnpm, `apps/web`, `packages/utils`, `packages/types`, 150-line components).
+
+If a rule blocks the ask: stop, name rule + block, wait. Do not silently break or drop the task.
+
+## Scope
+
+- Build only what this turn asks. No extra endpoints, tables, screens, agents, config layers, abstractions.
+- No drive-by edits to files the ask did not name.
+- Do not edit `documentation/` unless asked to change a lock.
+
+## Dependencies
+
+- Do not install a package unless this turn's user message named it.
+- If one seems required: stop, name it, say what it replaces, wait.
+- Stack is locked in `documentation/01-problem.md`.
+- `packages/rules` runtime `dependencies` stays `{}`.
+
+## Locked surface
+
+- No endpoint, column, status, or agent except `documentation/02`–`05` and `09`.
+- Exception: `POST /findings/:id/retry` (09 vs 02 gap).
+- Never persist `status`. Never copy human verdicts on regenerate.
+- No `EventSource`, websocket, SSE.
+
+## Package freeze
+
+- Do not create `packages/ui`, `packages/utils`, `packages/types`, `packages/agents`.
+- shadcn only under `apps/preflight-web/src/components/ui`.
+- Cut leftover `packages/ui` when touched; do not extend it.
+
+## Session
+
+- Do not re-derive stack, tokens, fold order, freeze/snapshots, agent boundaries — read the numbered doc.
+- Do not change locked signatures (`runDeterministic`, `foldStatus`, `ApiResponse`, hash helpers) to please a caller.
+- Do not revisit earlier files to clean unless this ask names them.
+- Later numbered doc wins when two docs disagree.
+
+## Uncertainty
+
+- Doc decides → don't ask.
+- Ask one question with two options when the next edit would add a package, table, column, endpoint, agent, status, colour, or behaviour not in `documentation/`.
+- Don't ask about local names, extracting at 210 lines, or TypeScript mechanics.
+- Stop building past the question — no "assuming X."

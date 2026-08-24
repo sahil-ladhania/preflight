@@ -1,0 +1,39 @@
+---
+description: Zod DTOs, foldStatus, ApiResponse — no rules import
+globs: "packages/schemas/**"
+alwaysApply: false
+---
+
+# @preflight/schemas
+
+## Imports
+
+- `zod` + own files only.
+- Never: `@preflight/rules`, `apps/*`.
+
+Why: web imports schemas. If schemas pulls rules, client bundles matchers.
+
+## Owns
+
+- Wire DTOs (campaign, brief, asset, finding, rule catalog, waive/decide, rerun strip).
+- `foldStatus(findings) → Status` — five-state order is contract (04-data-model.md).
+- `ApiResponse<T>`.
+- Rulebook write DTOs for judgement rules only.
+
+## Does not own
+
+- Matchers, predicates, agent prompts, `runDeterministic`.
+
+## Types
+
+- One resource per file. `fold-status.ts` and `api-response.ts` separate.
+- DTOs via `z.infer` — no parallel interface for the same shape.
+
+## Tests (mandatory when touched)
+
+- `foldStatus`: five-state fold order tests.
+- No DTO snapshot tests unless the task is snapshots.
+
+## Signature (do not change)
+
+`foldStatus(findings): Status` — order in 04 is the contract.

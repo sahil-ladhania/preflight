@@ -1,0 +1,41 @@
+---
+description: File size limits and DRY extraction targets
+alwaysApply: true
+---
+
+# Size and DRY
+
+## File size (`wc -l`)
+
+- ≤200: OK.
+- 201–250: `// size: <one-line reason>` under the file header.
+- 251–300: same; reason must say why extract is worse.
+- 301+: illegal. Extract before adding lines.
+- Extract before crossing the limit, not in a follow-up.
+
+### Exceptions
+
+- Matcher + adversarial tests in the same file (Phase 2): up to 300. Do not split tests to another folder.
+- Assets detail orchestrator: up to 250 **after** region siblings are extracted. Never one-file the whole screen.
+
+## Extract targets
+
+**`apps/preflight-web`:** `src/features/<screen>/` — `PascalCase.tsx`, `useX.ts`, `lib.ts`. shadcn in `src/components/ui`. No repo-wide `utils/`.
+
+**`apps/preflight-backend`:** `src/features/<resource>/` — `*.route.ts`, `*.controller.ts`, `*.service.ts` (functions). I/O in `src/lib/`. Env in `src/config/env.ts`. Agents in `agents/`.
+
+**`packages/rules`:** one matcher per file in `src/matchers/`; runner, hashes, predicates, catalog, spec interpreter each own file; helpers in `src/lib/`; `*.test.ts` next to source; golden in `golden/`.
+
+**`packages/schemas`:** one resource per file; `fold-status.ts` and `api-response.ts` separate.
+
+Do not extract a one-call-site 20-line helper "for structure."
+
+## DRY
+
+- Same inputs + same output + must change together → extract on second use.
+- Similar by coincidence → leave.
+- Do not extract for a caller that does not exist. No `packages/utils` or catch-all `shared/`.
+
+**Same meaning:** id truncated to 8 on list and detail → `shortId`.
+**Coincidence:** compile predicate loop vs live-catalog merge → leave.
+**Coincidence:** det matcher offsets vs judgement `indexOf` → leave.

@@ -1,0 +1,38 @@
+---
+description: Frontend imports, tokens, UI verification
+globs: "apps/preflight-web/**"
+alwaysApply: false
+---
+
+# Web
+
+## Imports
+
+- May import: `@preflight/schemas`, self.
+- Never import: `@preflight/rules`, backend code, Prisma, GitAgent.
+- Cross-package: `@preflight/*` names, never `../../packages/...`.
+- Catalog via `GET /rules` only — never run matchers client-side.
+
+## API
+
+- Parse every response with `ApiResponse` schema from `@preflight/schemas`. No second envelope type in the app.
+- Fetch logic in hooks (`useX.ts`), not in components.
+
+## Structure
+
+- Feature folders: `src/features/<screen>/` — component, hook, types co-located.
+- Components: UI only. Logic in hooks.
+- shadcn in `src/components/ui` only.
+
+## Tokens (`documentation/08-design-system.md`)
+
+- Hex only in CSS variables / Tailwind theme map. Components use token classes.
+- No new `.css` files beyond `index.css` theme setup. No `style={{}}`.
+- No density React context. Light mode only.
+- Status chips, spans, ledger: semantic colours from 08 — not Primer blue, not chromatic brand on problems.
+
+## Done
+
+- `check-types` passes.
+- Exercise the changed flow in the browser before claiming done — not a screenshot alone.
+- Check shared state across routes that read the same data.

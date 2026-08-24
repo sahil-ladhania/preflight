@@ -1,0 +1,44 @@
+---
+description: Express routes, envelope, Prisma, GitAgent boundaries
+globs: "apps/preflight-backend/**"
+alwaysApply: false
+---
+
+# Backend
+
+## Imports
+
+- May import: `@preflight/rules`, `@preflight/schemas`, Prisma, GitAgent, self.
+- Never import: `preflight-web`, `@preflight/rules` from `agents/*`.
+- Cross-package: `@preflight/*` names, never `../../packages/...`.
+
+## Envelope
+
+Every HTTP response: `ApiResponse<T>` from `@preflight/schemas`.
+
+- Success: `{ success: true, data }`. `data` never `null` — use `[]` or `{}`.
+- Error: `{ success: false, error: string }`.
+- Never HTTP 200 with `success: false`.
+
+Routes return DTOs from services; services throw typed errors; routes map to status + envelope.
+
+## Structure
+
+- Routes call controllers/services only — no Prisma in routes.
+- All DB in `*.service.ts`. One Prisma client in `src/lib/prisma.ts`.
+- Env via `import { env } from '@/config/env'` — never `process.env` elsewhere.
+- `foldStatus` on every read — never write status to DB.
+
+## LLM (GitAgent)
+
+- One `query()` shot → Zod parse → fail closed. No JSON-repair retry.
+- Empty tool list. No memory / RL / git-write.
+- Models never emit compile `ruleIds` or trusted offsets. Server interpolates snapshot wording into prompts.
+- Parse fail: no asset row (generate/extract) or finding `unavailable` (judge).
+- Fan-out: one call per judgement rule; `Promise.allSettled`.
+
+## Done
+
+- `check-types` passes on touched packages.
+- If rules/schemas changed: Vitest passes there.
+- Brief adapter (Zod → `StructuredBrief`) has a test when touched.
