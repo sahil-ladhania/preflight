@@ -93,6 +93,14 @@ export function toHashableRules(entries: LiveCatalogEntry[]): HashableRule[] {
   });
 }
 
+function formatApplicabilitySummary(spec: PredicateSpec): string {
+  if (spec.op === "in") {
+    return `${spec.field} in ${spec.value.join(", ")}`;
+  }
+
+  return `${spec.field} equals ${spec.value}`;
+}
+
 export function toRuleCatalogRow(entry: LiveCatalogEntry): RuleCatalogRowDTO {
   if (entry.kind === "deterministic") {
     return {
@@ -110,7 +118,9 @@ export function toRuleCatalogRow(entry: LiveCatalogEntry): RuleCatalogRowDTO {
     kind: "judgement",
     wording: entry.wording,
     predicateSpec: entry.predicateSpec ?? null,
-    applicabilitySummary: null,
+    applicabilitySummary: entry.predicateSpec
+      ? formatApplicabilitySummary(entry.predicateSpec)
+      : null,
     editable: true,
   };
 }

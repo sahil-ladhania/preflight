@@ -7,6 +7,7 @@ import express, { type Express } from "express";
 
 import assetsRouter from "./features/assets/assets.route.js";
 import findingsRouter from "./features/findings/findings.route.js";
+import rulesRouter from "./features/rules/rules.route.js";
 import { errorHandler } from "./middleware/error.js";
 
 export function createApp(): Express {
@@ -20,6 +21,7 @@ export function createApp(): Express {
 
   app.use("/api/assets", assetsRouter);
   app.use("/api/findings", findingsRouter);
+  app.use("/api/rules", rulesRouter);
 
   app.use(errorHandler);
 
