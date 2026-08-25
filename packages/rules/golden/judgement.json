@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "snippet": "Invest with confidence. Our fund has delivered strong growth with guaranteed returns for investors.",
+    "ruleId": "SEBI-06",
+    "expected": "fail",
+    "why": "seed asset A — implies guaranteed returns"
+  },
+  {
+    "snippet": "Bluepeak Flexi Cap is the only fund you will ever need for market-beating results.",
+    "ruleId": "BRAND-03",
+    "expected": "fail",
+    "why": "seed asset G — overstates differentiation"
+  },
+  {
+    "snippet": "Bluepeak Flexi Cap Fund offers diversified flexi cap exposure across market caps.",
+    "ruleId": "SEBI-06",
+    "expected": "pass",
+    "why": "seed asset E — no guaranteed-return implication"
+  }
+]

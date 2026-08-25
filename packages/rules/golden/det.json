@@ -1,1 +1,182 @@
-[]
+[
+  {
+    "snippet": "Grow wealth today. Mutual fund investments are subject to market risks. Apply now.",
+    "ruleId": "SEBI-01",
+    "expected": "pass",
+    "why": "required disclaimer phrase present in copy"
+  },
+  {
+    "snippet": "MUTUAL   FUND  investments are subject to market risks.",
+    "ruleId": "SEBI-01",
+    "expected": "pass",
+    "why": "disclaimer tolerates extra whitespace and mixed case"
+  },
+  {
+    "snippet": "Grow your wealth with Bluepeak Flexi Cap. No disclaimer included in this short update.",
+    "ruleId": "SEBI-01",
+    "expected": "fail",
+    "why": "seed asset C — disclaimer absent"
+  },
+  {
+    "snippet": "Mutual funds are subject to market risk.",
+    "ruleId": "SEBI-01",
+    "expected": "fail",
+    "why": "near-miss reworded disclaimer"
+  },
+  {
+    "snippet": "Investments in mutual funds may involve market risk. Read offer documents.",
+    "ruleId": "SEBI-01",
+    "expected": "fail",
+    "why": "disclaimer present but reworded — not the locked phrase"
+  },
+  {
+    "snippet": "Bluepeak Flexi Cap Fund offers diversified exposure. Mutual fund investments are subject to market risks.",
+    "ruleId": "SEBI-01",
+    "expected": "pass",
+    "why": "disclaimer after body still satisfies SEBI-01"
+  },
+  {
+    "snippet": "Bluepeak Flexi Cap Fund offers diversified flexi cap exposure across market caps.",
+    "ruleId": "SEBI-02",
+    "expected": "pass",
+    "why": "seed asset E — scheme name on first mention"
+  },
+  {
+    "snippet": "Grow your wealth with Bluepeak Flexi Cap.",
+    "ruleId": "SEBI-02",
+    "expected": "pass",
+    "why": "scheme name appears before generic fund reference"
+  },
+  {
+    "snippet": "Bluepeak Flexi\nCap Fund continues to attract investors.",
+    "ruleId": "SEBI-02",
+    "expected": "pass",
+    "why": "scheme name split across line break"
+  },
+  {
+    "snippet": "Our fund offers market-beating results for every investor.",
+    "ruleId": "SEBI-02",
+    "expected": "fail",
+    "why": "first mention is generic with no scheme name"
+  },
+  {
+    "snippet": "Invest in flexi cap strategies through our diversified portfolio.",
+    "ruleId": "SEBI-02",
+    "expected": "fail",
+    "why": "category language only — no registered scheme name on first mention"
+  },
+  {
+    "snippet": "Bluepeak Flexi Cap Fund offers diversified flexi cap exposure across market caps.",
+    "ruleId": "SEBI-03",
+    "expected": "pass",
+    "why": "no percentage or CAGR claim in copy"
+  },
+  {
+    "snippet": "Past performance of 18.4% over 3 years shown for illustration.",
+    "ruleId": "SEBI-03",
+    "expected": "pass",
+    "why": "percentage cites named period in same window"
+  },
+  {
+    "snippet": "Delivered 18.4% returns with strong momentum.",
+    "ruleId": "SEBI-03",
+    "expected": "fail",
+    "why": "percentage without named period"
+  },
+  {
+    "snippet": "3-year CAGR. Returns reached 18.2% in the latest period.",
+    "ruleId": "SEBI-03",
+    "expected": "pass",
+    "why": "CAGR label in previous sentence covers later percentage"
+  },
+  {
+    "snippet": "Returns reached 18.2% with strong inflows.",
+    "ruleId": "SEBI-03",
+    "expected": "fail",
+    "why": "percentage with no period label anywhere"
+  },
+  {
+    "snippet": "The fund posted CAGR of 18.2% over five years.",
+    "ruleId": "SEBI-03",
+    "expected": "pass",
+    "why": "CAGR claim includes explicit year count"
+  },
+  {
+    "snippet": "Bluepeak Flexi Cap Fund offers diversified flexi cap exposure.",
+    "ruleId": "SEBI-04",
+    "expected": "pass",
+    "why": "no banned promotional phrases"
+  },
+  {
+    "snippet": "The only fund you need for market-beating results.",
+    "ruleId": "SEBI-04",
+    "expected": "fail",
+    "why": "hyphenated banned phrase market-beating"
+  },
+  {
+    "snippet": "Invest in our risk free opportunity today.",
+    "ruleId": "SEBI-04",
+    "expected": "fail",
+    "why": "banned phrase with spaces instead of hyphen"
+  },
+  {
+    "snippet": "Critics say we are \"risk free\" but compliance disagrees.",
+    "ruleId": "SEBI-04",
+    "expected": "fail",
+    "why": "banned phrase inside quoted objection"
+  },
+  {
+    "snippet": "This is a risk\u2013free way to grow wealth.",
+    "ruleId": "SEBI-04",
+    "expected": "fail",
+    "why": "banned phrase with en-dash variant"
+  },
+  {
+    "snippet": "Choose the best fund in the category today.",
+    "ruleId": "SEBI-04",
+    "expected": "fail",
+    "why": "best fund banned phrase"
+  },
+  {
+    "snippet": "Assured returns await every new investor.",
+    "ruleId": "SEBI-04",
+    "expected": "fail",
+    "why": "assured returns banned phrase"
+  },
+  {
+    "snippet": "Bluepeak Flexi Cap Fund offers diversified flexi cap exposure.",
+    "ruleId": "SEBI-05",
+    "expected": "pass",
+    "why": "no performance figure requiring substantiation"
+  },
+  {
+    "snippet": "Past performance of 18.4% over 3 years shown for illustration.",
+    "ruleId": "SEBI-05",
+    "expected": "fail",
+    "why": "seed asset D — past performance without substantiation markers"
+  },
+  {
+    "snippet": "Past performance of 18.4% over 3 years is not indicative of future results.",
+    "ruleId": "SEBI-05",
+    "expected": "pass",
+    "why": "substantiation marker not indicative present"
+  },
+  {
+    "snippet": "Returns reached 18.4% last quarter with strong inflows.",
+    "ruleId": "SEBI-05",
+    "expected": "fail",
+    "why": "bare percentage without substantiation"
+  },
+  {
+    "snippet": "Past performance of 12% verified by audited statements.",
+    "ruleId": "SEBI-05",
+    "expected": "pass",
+    "why": "substantiation via verified and audited markers"
+  },
+  {
+    "snippet": "Mutual fund investments are subject to market risks. Read all scheme related documents carefully.",
+    "ruleId": "SEBI-05",
+    "expected": "pass",
+    "why": "seed asset E disclaimer — scheme related documents marker without performance claim"
+  }
+]
