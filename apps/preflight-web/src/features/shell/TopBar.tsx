@@ -6,8 +6,8 @@
 import type { ReactElement } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 
-import { CAMPAIGN_ID } from "@/fixtures/campaign";
-
+import { useCampaignNavTarget } from "@/features/shell/useCampaignNavTarget";
+import type { CampaignNavLinkProps } from "@/features/shell/types";
 import { cn } from "@/lib/utils";
 
 function LogoMark(): ReactElement {
@@ -34,9 +34,35 @@ function navLinkClass(isActive: boolean): string {
   );
 }
 
+function CampaignNavLink({
+  campaignHref,
+  disabled,
+  isActive,
+}: CampaignNavLinkProps): ReactElement {
+  const className = navLinkClass(isActive);
+
+  if (campaignHref === null || disabled) {
+    return (
+      <span
+        className={cn(className, "cursor-not-allowed opacity-50")}
+        aria-disabled="true"
+      >
+        Campaign
+      </span>
+    );
+  }
+
+  return (
+    <Link to={campaignHref} className={className}>
+      Campaign
+    </Link>
+  );
+}
+
 export function TopBar(): ReactElement {
   const location = useLocation();
   const campaignActive = location.pathname.startsWith("/campaign/");
+  const { campaignHref, disabled } = useCampaignNavTarget();
 
   return (
     <header className="flex h-12 shrink-0 items-center justify-between border-b border-border bg-canvas-subtle px-4">
@@ -56,9 +82,11 @@ export function TopBar(): ReactElement {
         >
           Assets
         </NavLink>
-        <Link to={`/campaign/${CAMPAIGN_ID}`} className={navLinkClass(campaignActive)}>
-          Campaign
-        </Link>
+        <CampaignNavLink
+          campaignHref={campaignHref}
+          disabled={disabled}
+          isActive={campaignActive}
+        />
         <NavLink
           to="/rulebook"
           end

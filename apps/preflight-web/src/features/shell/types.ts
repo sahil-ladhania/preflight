@@ -15,3 +15,14 @@ export interface ToastItem {
 export interface ToastContextValue {
   enqueue: (message: string) => void;
 }
+
+export interface CampaignNavTarget {
+  campaignHref: string | null;
+  disabled: boolean;
+}
+
+export interface CampaignNavLinkProps {
+  campaignHref: string | null;
+  disabled: boolean;
+  isActive: boolean;
+}
