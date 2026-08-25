@@ -1,15 +1,107 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+/**
+ * Prisma schema — six models from 04-data-model.md.
+ * Why: Campaign, ConstraintSet, ConstraintSnapshot, JudgementRule, Asset, Finding.
+ */
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Campaign {
+  id                      String   @id @default(uuid())
+  freeText                String   @default("")
+  structuredBrief         Json?
+  currentConstraintSetId  String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  currentConstraintSet ConstraintSet?  @relation("CampaignCurrentSet", fields: [currentConstraintSetId], references: [id], onDelete: Restrict)
+  constraintSets       ConstraintSet[] @relation("CampaignConstraintSets")
+  assets               Asset[]
+
+  @@index([updatedAt])
+}
+
+model ConstraintSet {
+  id           String   @id @default(uuid())
+  campaignId   String
+  rulesetHash  String
+  createdAt    DateTime @default(now())
+
+  campaign             Campaign             @relation("CampaignConstraintSets", fields: [campaignId], references: [id], onDelete: Restrict)
+  snapshots            ConstraintSnapshot[]
+  assets               Asset[]
+  currentForCampaigns  Campaign[]           @relation("CampaignCurrentSet")
+}
+
+model ConstraintSnapshot {
+  constraintSetId      String
+  ruleId               String
+  kind                 String
+  wording              String
+  predicateFingerprint String
+  matcherFingerprint   String?
+
+  constraintSet ConstraintSet @relation(fields: [constraintSetId], references: [id], onDelete: Cascade)
+
+  @@id([constraintSetId, ruleId])
+}
+
+model JudgementRule {
+  id            String   @id @default(uuid())
+  wording       String
+  predicateSpec Json
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Asset {
+  id                 String   @id @default(uuid())
+  campaignId         String
+  channel            String
+  constraintSetId    String
+  headline           String
+  body               String
+  disclaimer         String
+  cta                String
+  canonicalText      String
+  fieldOffsets       Json
+  runHash            String
+  rulesetHash        String
+  generatedAt        DateTime @default(now())
+  regeneratedFromId  String?
+  generationIndex    Int
+
+  campaign        Campaign      @relation(fields: [campaignId], references: [id], onDelete: Restrict)
+  constraintSet   ConstraintSet @relation(fields: [constraintSetId], references: [id], onDelete: Restrict)
+  regeneratedFrom Asset?        @relation("AssetLineage", fields: [regeneratedFromId], references: [id], onDelete: Restrict)
+  regenerations   Asset[]       @relation("AssetLineage")
+  findings        Finding[]
+
+  @@index([generatedAt])
+}
+
+model Finding {
+  id                String    @id @default(uuid())
+  assetId           String
+  ruleId            String
+  kind              String
+  evaluationStatus  String
+  machineVerdict    String?
+  machineReason     String?
+  spans             Json
+  machineAt         DateTime?
+  humanVerdict      String?
+  humanReason       String?
+  humanActor        String?
+  humanAt           DateTime?
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([assetId, ruleId])
 }
