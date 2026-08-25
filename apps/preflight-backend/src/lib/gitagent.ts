@@ -8,7 +8,10 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { env } from "../config/env.js";
-import { buildSkillPromptSuffix } from "./agent-skills.js";
+import {
+  buildSkillPromptSuffix,
+  loadSkillBodiesForSuffix,
+} from "./agent-skills.js";
 import { getAgentToolPolicy } from "./agent-tool-policy.js";
 import { createReadTool } from "./agent-tools.js";
 import {
@@ -25,6 +28,7 @@ export interface RunAgentResult {
 
 export interface RunAgentOptions {
   timeoutMs?: number;
+  skillNames?: string[];
 }
 
 const DEFAULT_TIMEOUT_MS = 60_000;
@@ -84,6 +88,17 @@ async function collectAssistantContent(
   };
 }
 
+async function resolveSkillSuffix(
+  agentDir: string,
+  skillNames: string[] | undefined,
+): Promise<string> {
+  if (skillNames !== undefined) {
+    return loadSkillBodiesForSuffix(agentDir, skillNames, { binding: true });
+  }
+
+  return buildSkillPromptSuffix(agentDir);
+}
+
 function resolveTools(
   agentDir: string,
   allowReadTool: boolean,
@@ -105,7 +120,7 @@ export async function runAgent(
   const runtime = await readAgentRuntimeConfig(agentDir);
   const policy = getAgentToolPolicy(name);
   const skillSuffix = policy.allowReadTool
-    ? await buildSkillPromptSuffix(agentDir)
+    ? await resolveSkillSuffix(agentDir, options.skillNames)
     : "";
   const basePrompt = await buildAgentSystemPrompt(agentDir);
   const systemPrompt =

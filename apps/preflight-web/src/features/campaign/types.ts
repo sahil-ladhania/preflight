@@ -45,6 +45,7 @@ export interface CampaignProps {
   s2Dimmed?: boolean;
   s3Dimmed?: boolean;
   briefDirty?: boolean;
+  briefSaved?: boolean;
   activeStep?: CampaignStepId;
   initialCompileResult?: CompileResponseDTO | null;
   zeroRulesCompile?: boolean;
@@ -77,6 +78,11 @@ export interface BriefFormProps {
   onFieldEdit: (field: BriefField) => void;
   onExtract: () => void;
   onSave: () => void;
+}
+
+export interface BriefPhaseProps extends BriefFormProps {
+  briefSaved: boolean;
+  briefDirty: boolean;
 }
 
 export interface ConstraintCardsProps {

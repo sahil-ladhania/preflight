@@ -16,6 +16,7 @@ import {
   type RegenRevisionInput,
 } from "../../../agents/generator.prompt.js";
 import { InternalError } from "../../lib/http-error.js";
+import { resolveGeneratorSkillNames } from "../../lib/agent-skills.js";
 import { loadBrandKit } from "../../lib/brand-kit.js";
 
 function stripJsonFence(content: string): string {
@@ -49,7 +50,9 @@ export async function callGenerator(
       revisionContext: input.revisionContext,
     });
     const { runAgent } = await import("../../lib/gitagent.js");
-    const { content } = await runAgent("generator", prompt);
+    const { content } = await runAgent("generator", prompt, {
+      skillNames: resolveGeneratorSkillNames(input.channel),
+    });
     const parsed: unknown = JSON.parse(stripJsonFence(content));
     return GeneratorOutputSchema.parse(parsed);
   } catch {

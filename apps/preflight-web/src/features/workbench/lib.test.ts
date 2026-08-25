@@ -1,6 +1,6 @@
 /**
- * lib.test — workbench handoff gating on complete brief.
- * Why: CTA must not appear until Save-ready brief exists.
+ * lib.test — workbench handoff gating and extract helpers.
+ * Why: CTA when handoff suggested or campaign intent; extract seeds from explainer.
  */
 
 import { describe, expect, it } from "vitest";
@@ -8,8 +8,10 @@ import { describe, expect, it } from "vitest";
 import type { StructuredBriefInput } from "@preflight/schemas";
 
 import {
+  buildHandoffFreeText,
   handoffBriefFromMessages,
   handoffEnabled,
+  seedProposalFromExplainer,
 } from "@/features/workbench/lib";
 import type { WorkbenchMessage } from "@/features/workbench/types";
 
@@ -37,22 +39,29 @@ function assistantMessage(
 }
 
 describe("handoffEnabled", () => {
-  it("is false with only a user turn", () => {
+  it("is true when a user turn has campaign intent", () => {
     const messages: WorkbenchMessage[] = [
-      { id: "user-1", role: "user", text: "Campaign for Bluepeak" },
+      { id: "user-1", role: "user", text: "Bluepeak campaign for LinkedIn" },
+    ];
+    expect(handoffEnabled(messages)).toBe(true);
+  });
+
+  it("is false for pure rule questions without campaign intent", () => {
+    const messages: WorkbenchMessage[] = [
+      { id: "user-1", role: "user", text: "What is det vs judgement?" },
     ];
     expect(handoffEnabled(messages)).toBe(false);
   });
 
-  it("is false when handoff is suggested without a brief", () => {
+  it("is true when handoff is suggested without a brief", () => {
     const messages: WorkbenchMessage[] = [
       { id: "user-1", role: "user", text: "Campaign for Bluepeak" },
       assistantMessage({ suggestedAction: "handoff_campaign" }),
     ];
-    expect(handoffEnabled(messages)).toBe(false);
+    expect(handoffEnabled(messages)).toBe(true);
   });
 
-  it("is true when the latest assistant turn has a complete brief", () => {
+  it("still reads explainer brief when present on handoff turn", () => {
     const messages: WorkbenchMessage[] = [
       { id: "user-1", role: "user", text: "Campaign for Bluepeak" },
       assistantMessage({
@@ -63,14 +72,30 @@ describe("handoffEnabled", () => {
     expect(handoffEnabled(messages)).toBe(true);
     expect(handoffBriefFromMessages(messages)).toEqual(completeBrief);
   });
+});
 
-  it("is false when the latest assistant brief is incomplete", () => {
+describe("buildHandoffFreeText", () => {
+  it("joins user turns with blank lines", () => {
     const messages: WorkbenchMessage[] = [
-      assistantMessage({
-        suggestedAction: "handoff_campaign",
-        brief: { ...completeBrief, market: "" },
-      }),
+      { id: "user-1", role: "user", text: "First turn" },
+      assistantMessage({ text: "Reply" }),
+      { id: "user-2", role: "user", text: "Second turn" },
     ];
-    expect(handoffEnabled(messages)).toBe(false);
+    expect(buildHandoffFreeText(messages)).toBe("First turn\n\nSecond turn");
+  });
+});
+
+describe("seedProposalFromExplainer", () => {
+  it("prefers extract keys over explainer brief", () => {
+    const extracted = { objective: "From extract", market: "India" };
+    const merged = seedProposalFromExplainer(extracted, completeBrief);
+    expect(merged.objective).toBe("From extract");
+    expect(merged.schemeName).toBe(completeBrief.schemeName);
+    expect(merged.market).toBe("India");
+  });
+
+  it("returns extract only when explainer brief is absent", () => {
+    const extracted = { objective: "From extract" };
+    expect(seedProposalFromExplainer(extracted, null)).toEqual(extracted);
   });
 });

@@ -9,7 +9,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import type { StructuredBriefInput } from "@preflight/schemas";
 
 export interface CampaignHandoffPayload {
-  proposal: StructuredBriefInput;
+  proposal: Partial<StructuredBriefInput>;
+  freeText?: string;
 }
 
 type LocationState = {

@@ -25,13 +25,24 @@ export interface GeneratorPromptInput {
   revisionContext?: RegenRevisionInput;
 }
 
-const CHANNEL_TONE: Record<Channel, string> = {
-  email: "Professional, informative email — no hype or urgency tricks.",
-  linkedin: "Professional LinkedIn tone — credible, not salesy.",
-  display: "Short display copy — clear headline, restrained claims.",
-  whatsapp: "Short, formal WhatsApp message — plain language.",
-  landing: "Landing page copy — informative hero, compliant subtext.",
-};
+const BINDING_SKILLS_INSTRUCTION =
+  "Your system prompt includes brand-voice, sebi-copy-constraints, and the active channel skill. Treat them as binding layout and voice rules. The read tool may refresh skill text; do not skip them.";
+
+function buildChannelConstraintsSection(
+  channel: Channel,
+  brandKit: BrandKitDTO,
+): string[] {
+  const hint = brandKit.channelHints[channel];
+  if (!hint) {
+    throw new Error(`Missing channel hint for ${channel}.`);
+  }
+
+  return [
+    "Channel constraints (hard caps — must not exceed):",
+    `- maxHeadlineChars: ${hint.maxHeadlineChars}`,
+    `- layoutNotes: ${hint.layoutNotes}`,
+  ];
+}
 
 function buildRevisionSection(revision: RegenRevisionInput): string[] {
   const failureLines =
@@ -61,14 +72,14 @@ export function buildGeneratorPrompt(input: GeneratorPromptInput): string {
   const sections = [
     `Write marketing copy for channel: ${input.channel}`,
     "",
-    `Channel tone: ${CHANNEL_TONE[input.channel]}`,
+    ...buildChannelConstraintsSection(input.channel, input.brandKit),
     "",
     "Brand kit (client visual + verbal lock):",
     JSON.stringify(input.brandKit, null, 2),
     "",
     `Required disclaimer (use verbatim in disclaimer field): ${input.brandKit.requiredDisclaimer}`,
     "",
-    "Load the matching channel skill via read tool when helpful (channel-email, channel-linkedin, channel-display, or channel-shortform).",
+    BINDING_SKILLS_INSTRUCTION,
     "",
     "Structured brief:",
     JSON.stringify(input.brief, null, 2),

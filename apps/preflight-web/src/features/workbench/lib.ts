@@ -6,17 +6,54 @@
 import type { StructuredBriefInput, WorkbenchChatHistoryItem } from "@preflight/schemas";
 import type { RuleCatalogRowDTO } from "@preflight/schemas";
 
-import { briefIsValid } from "@/features/campaign/lib";
 import type { WorkbenchMessage } from "@/features/workbench/types";
 
 export const WORKBENCH_INVITATION =
-  "Ask about rules, compliance, or what Preflight checks before you generate.";
+  "Describe the campaign you want to build — or ask about a rule.";
 
 export const WORKBENCH_PROMPT_CHIPS = [
+  "LinkedIn and email for Bluepeak Flexi Cap, professional tone.",
+  "HNI launch brief: Flexi Cap, India, highlight flexibility.",
   "What does Preflight check before generate?",
-  "When is a performance claim allowed?",
-  "How do judgement rules differ from det?",
 ] as const;
+
+const CAMPAIGN_INTENT_KEYWORDS = [
+  "campaign",
+  "brief",
+  "linkedin",
+  "email",
+  "whatsapp",
+  "landing",
+  "display",
+  "audience",
+  "scheme",
+  "fund",
+  "bluepeak",
+  "generate copy",
+] as const;
+
+export function hasCampaignIntent(messages: WorkbenchMessage[]): boolean {
+  return messages.some((message) => {
+    if (message.role !== "user") {
+      return false;
+    }
+    const lower = message.text.toLowerCase();
+    return CAMPAIGN_INTENT_KEYWORDS.some((keyword) => lower.includes(keyword));
+  });
+}
+
+export function lastAssistantSuggestsHandoff(
+  messages: WorkbenchMessage[],
+): boolean {
+  const lastAssistant = [...messages]
+    .reverse()
+    .find((message) => message.role === "assistant");
+  return (
+    lastAssistant !== undefined &&
+    lastAssistant.role === "assistant" &&
+    lastAssistant.suggestedAction === "handoff_campaign"
+  );
+}
 
 export function nextMessageId(): string {
   return crypto.randomUUID();
@@ -50,7 +87,7 @@ export function toChatHistory(
 
 export function handoffBriefFromMessages(
   messages: WorkbenchMessage[],
-): StructuredBriefInput | null {
+): Partial<StructuredBriefInput> | null {
   const lastAssistant = [...messages]
     .reverse()
     .find((message) => message.role === "assistant");
@@ -70,8 +107,42 @@ export function handoffSuggested(messages: WorkbenchMessage[]): boolean {
 }
 
 export function handoffEnabled(messages: WorkbenchMessage[]): boolean {
-  const brief = handoffBriefFromMessages(messages);
-  return brief !== null && briefIsValid(brief);
+  return (
+    lastAssistantSuggestsHandoff(messages) || hasCampaignIntent(messages)
+  );
+}
+
+export function buildHandoffFreeText(messages: WorkbenchMessage[]): string {
+  return messages
+    .filter((message): message is Extract<WorkbenchMessage, { role: "user" }> =>
+      message.role === "user",
+    )
+    .map((message) => message.text.trim())
+    .filter((text) => text.length > 0)
+    .join("\n\n");
+}
+
+export function seedProposalFromExplainer(
+  extracted: Partial<StructuredBriefInput>,
+  explainerBrief: Partial<StructuredBriefInput> | null,
+): Partial<StructuredBriefInput> {
+  if (explainerBrief === null) {
+    return extracted;
+  }
+
+  const merged: Partial<StructuredBriefInput> = { ...explainerBrief, ...extracted };
+
+  if (extracted.channels === undefined) {
+    merged.channels = explainerBrief.channels;
+  }
+  if (extracted.performanceFigures === undefined) {
+    merged.performanceFigures = explainerBrief.performanceFigures;
+  }
+  if (extracted.claims === undefined) {
+    merged.claims = explainerBrief.claims;
+  }
+
+  return merged;
 }
 
 export function rulesForIds(

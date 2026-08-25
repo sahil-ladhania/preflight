@@ -84,6 +84,8 @@ export function AssetDetailRoute(): ReactElement {
       <ComplianceDeskModal
         open={complianceDeskOpen}
         clientName={asset.brandKit.clientName}
+        status={asset.status}
+        exceptions={asset.exceptions}
         onClose={closeComplianceDesk}
         onConfirm={confirmComplianceDesk}
       />

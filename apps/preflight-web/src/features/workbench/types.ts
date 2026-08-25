@@ -17,7 +17,7 @@ export type WorkbenchMessage =
       text: string;
       ruleIds: string[];
       suggestedAction?: ExplainerSuggestedAction;
-      brief?: StructuredBriefInput;
+      brief?: Partial<StructuredBriefInput>;
       reveal?: boolean;
     }
   | { id: string; role: "error"; text: string };

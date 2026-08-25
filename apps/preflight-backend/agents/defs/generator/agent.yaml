@@ -5,7 +5,7 @@ description: Write channel marketing copy under frozen compliance rules and bran
 model:
   preferred: openai:gpt-4o-mini
 
-tools: []
+tools: [read] # sandboxed: skills/, SOUL.md, RULES.md — injected by gateway, not builtin fs
 
 skills:
   - brand-voice
@@ -14,6 +14,7 @@ skills:
   - channel-display
   - channel-shortform
   - sebi-copy-constraints
+  - channel-tiktok
 
 runtime:
   max_turns: 3

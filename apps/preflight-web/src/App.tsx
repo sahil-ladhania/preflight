@@ -23,7 +23,7 @@ import {
   RERUN_STRIP_ENGINE_MISMATCH,
 } from "@/fixtures/assets-detail";
 import { ASSET_A } from "@/fixtures/assets-detail/a";
-import { CampaignRoute } from "@/features/campaign/Campaign";
+import { CampaignRoute } from "@/features/campaign/CampaignRoute";
 import {
   CampaignErrorDemo,
   CampaignHandoffDemo,

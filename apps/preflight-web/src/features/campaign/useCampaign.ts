@@ -42,6 +42,7 @@ export function useCampaign(campaignId: string | undefined): {
   s2Dimmed: boolean;
   s3Dimmed: boolean;
   briefDirty: boolean;
+  briefSaved: boolean;
   activeStep: CampaignStepId;
   setFreeText: (value: string) => void;
   setBrief: (brief: StructuredBriefInput) => void;
@@ -83,12 +84,15 @@ export function useCampaign(campaignId: string | undefined): {
     }
 
     handoffAppliedRef.current = true;
+    if (pendingHandoff.freeText !== undefined) {
+      load.setFreeText(pendingHandoff.freeText);
+    }
     load.setBrief((current) =>
       mergeExtractProposal(current, pendingHandoff.proposal),
     );
     setProposedFieldKeys(proposedKeysFromPartial(pendingHandoff.proposal));
     clearHandoff();
-  }, [load.view, pendingHandoff, load.setBrief, clearHandoff]);
+  }, [load.view, pendingHandoff, load.setBrief, load.setFreeText, clearHandoff]);
 
   const gate = useMemo(
     () =>
@@ -166,6 +170,7 @@ export function useCampaign(campaignId: string | undefined): {
     s2Dimmed: gate.s2Dimmed,
     s3Dimmed: gate.s3Dimmed,
     briefDirty: gate.briefDirty,
+    briefSaved: load.briefSaved,
     activeStep: activeCampaignStep({
       briefSaved: load.briefSaved,
       compileDone: load.compileResult !== null,

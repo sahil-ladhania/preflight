@@ -5,22 +5,19 @@
 // size: controlled + fixture modes share one tree; fixture hook extracted
 
 import type { ReactElement } from "react";
-import { useParams } from "react-router-dom";
 
-import { BriefForm } from "@/features/campaign/BriefForm";
+import { BriefPhase } from "@/features/campaign/BriefPhase";
 import { CampaignPageShell } from "@/features/campaign/CampaignPageShell";
 import { CampaignStep } from "@/features/campaign/CampaignStep";
 import { activeCampaignStep } from "@/features/campaign/CampaignStepRail";
 import {
   CampaignErrorState,
   CampaignLoadingState,
-  CampaignNotFoundState,
 } from "@/features/campaign/CampaignStates";
 import { ConstraintCards } from "@/features/campaign/ConstraintCards";
 import { GenerateBlock } from "@/features/campaign/GenerateBlock";
 import { briefFromCampaign, campaignGateState } from "@/features/campaign/lib";
 import type { CampaignProps } from "@/features/campaign/types";
-import { useCampaign } from "@/features/campaign/useCampaign";
 import { useCampaignFixture } from "@/features/campaign/useCampaignFixture";
 
 export function Campaign({
@@ -44,6 +41,7 @@ export function Campaign({
   s2Dimmed: s2DimmedProp,
   s3Dimmed: s3DimmedProp,
   briefDirty: briefDirtyProp,
+  briefSaved: briefSavedProp,
   activeStep: activeStepProp,
   initialCompileResult = null,
   zeroRulesCompile = false,
@@ -127,6 +125,9 @@ export function Campaign({
   const briefDirty = controlled
     ? (briefDirtyProp ?? false)
     : fixtureGate.briefDirty;
+  const briefSaved = controlled
+    ? (briefSavedProp ?? false)
+    : fixture.briefSaved;
   const activeStep =
     activeStepProp ??
     activeCampaignStep({
@@ -175,8 +176,8 @@ export function Campaign({
       {(viewStep) => {
         if (viewStep === "campaign-brief") {
           return (
-            <CampaignStep subtitle="Paste your brief as free text, use Extract to fill the form, then review and save.">
-              <BriefForm
+            <CampaignStep subtitle="Review and save your brief.">
+              <BriefPhase
                 freeText={freeText}
                 brief={brief}
                 proposedFieldKeys={proposedFieldKeys}
@@ -184,6 +185,8 @@ export function Campaign({
                 saveDisabledCaption={saveDisabledCaption}
                 saveInFlight={saveInFlight}
                 extractInFlight={extractInFlight}
+                briefSaved={briefSaved}
+                briefDirty={briefDirty}
                 onFreeTextChange={onFreeTextChange ?? fixture.setFreeText}
                 onBriefChange={onBriefChange ?? fixture.setBrief}
                 onFieldEdit={onFieldEdit ?? fixture.handleFieldEdit}
@@ -226,73 +229,5 @@ export function Campaign({
         );
       }}
     </CampaignPageShell>
-  );
-}
-
-export function CampaignRoute(): ReactElement {
-  const { campaignId } = useParams<{ campaignId: string }>();
-  const hook = useCampaign(campaignId);
-
-  if (hook.notFound) {
-    return <CampaignNotFoundState />;
-  }
-
-  if (hook.view !== "loaded" || hook.campaign === null) {
-    return (
-      <Campaign
-        campaign={{
-          id: campaignId ?? "",
-          freeText: "",
-          structuredBrief: null,
-          currentConstraintSetId: null,
-          updatedAt: new Date(0).toISOString(),
-          lastCompile: null,
-        }}
-        view={hook.view}
-        showLoadingSpinner={hook.showLoadingSpinner}
-        onRetry={hook.retryLoad}
-      />
-    );
-  }
-
-  return (
-    <Campaign
-      campaign={hook.campaign}
-      view={hook.view}
-      freeText={hook.freeText}
-      brief={hook.brief}
-      proposedFieldKeys={hook.proposedFieldKeys}
-      compileResult={hook.compileResult}
-      emptySetAcknowledged={hook.emptySetAcknowledged}
-      extractInFlight={hook.extractInFlight}
-      saveInFlight={hook.saveInFlight}
-      compileInFlight={hook.compileInFlight}
-      generateInFlight={hook.generateInFlight}
-      saveDisabled={hook.saveDisabled}
-      saveDisabledCaption={hook.saveDisabledCaption}
-      generateDisabled={hook.generateDisabled}
-      generateCaption={hook.generateCaption}
-      staleBanner={hook.staleBanner}
-      s2Dimmed={hook.s2Dimmed}
-      s3Dimmed={hook.s3Dimmed}
-      briefDirty={hook.briefDirty}
-      activeStep={hook.activeStep}
-      onFreeTextChange={hook.setFreeText}
-      onBriefChange={hook.setBrief}
-      onFieldEdit={hook.onFieldEdit}
-      onEmptySetAckChange={hook.onEmptySetAckChange}
-      onExtract={() => {
-        void hook.extract();
-      }}
-      onSave={() => {
-        void hook.save();
-      }}
-      onCompile={() => {
-        void hook.compile();
-      }}
-      onGenerate={() => {
-        void hook.generate();
-      }}
-    />
   );
 }

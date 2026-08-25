@@ -32,7 +32,7 @@ Routes return DTOs from services; services throw typed errors; routes map to sta
 ## LLM (GitAgent)
 
 - One `query()` shot → Zod parse → fail closed. No JSON-repair retry.
-- Empty tool list. No memory / RL / git-write.
+- Judge: empty tool list, `maxTurns: 1`. Explainer / extractor / generator: sandboxed `read` only (doc 19 §7.4). No memory / RL / git-write.
 - Models never emit compile `ruleIds` or trusted offsets. Server interpolates snapshot wording into prompts.
 - Parse fail: no asset row (generate/extract) or finding `unavailable` (judge).
 - Fan-out: one call per judgement rule; `Promise.allSettled`.

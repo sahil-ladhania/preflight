@@ -14,13 +14,12 @@ import { getRulesService } from "@/features/rulebook/rulebook.service";
 import { resolveWorkbenchCampaignHandoff } from "@/features/shell/campaign-nav.service";
 import { useToastContext } from "@/features/shell/ToastHost";
 import {
-  handoffBriefFromMessages,
   handoffEnabled,
   nextMessageId,
   replaceMessageById,
   toChatHistory,
 } from "@/features/workbench/lib";
-import { resolveCampaignForHandoff } from "@/features/workbench/handoff.service";
+import { runWorkbenchExtractHandoff } from "@/features/workbench/handoff.service";
 import { sendWorkbenchChatService } from "@/features/workbench/workbench.service";
 import type { WorkbenchMessage } from "@/features/workbench/types";
 import { ApiClientError } from "@/lib/api";
@@ -182,8 +181,7 @@ export function useWorkbench(): {
   }, [navigate, toastApiError]);
 
   const startCampaignFromConversation = useCallback(async (): Promise<void> => {
-    const proposal = handoffBriefFromMessages(messages);
-    if (handoffInFlight || proposal === null || !handoffEnabled(messages)) {
+    if (handoffInFlight || !handoffEnabled(messages)) {
       return;
     }
 
@@ -191,11 +189,13 @@ export function useWorkbench(): {
     setHandoffInFlight(true);
 
     try {
-      const campaignId = await resolveCampaignForHandoff(controller.signal);
+      const { campaignId, freeText, proposal } =
+        await runWorkbenchExtractHandoff(messages, controller.signal);
       void navigate(`/campaign/${campaignId}`, {
         state: {
           handoff: {
             proposal,
+            freeText,
           },
         },
       });

@@ -8,7 +8,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { AssetDetailDTO, RerunStripDTO } from "@preflight/schemas";
 
 import { getAssetDetailService } from "@/features/assets/assets.service";
-import { scrollFindingTarget } from "@/features/assets/lib";
+import {
+  formatComplianceDeskHandoffToast,
+  scrollFindingTarget,
+} from "@/features/assets/lib";
 import { buildCopySegments } from "@/features/assets/span-highlight";
 import type {
   AssetDetailFixture,
@@ -193,9 +196,10 @@ export function useAssetDetail(id: string | undefined): {
   }, []);
 
   const confirmComplianceDesk = useCallback((): void => {
-    enqueue("Handoff recorded — compliance desk is outside Preflight.");
+    const clientName = assetDto?.brandKit.clientName ?? "Compliance desk";
+    enqueue(formatComplianceDeskHandoffToast(clientName));
     setComplianceDeskOpen(false);
-  }, [enqueue]);
+  }, [assetDto?.brandKit.clientName, enqueue]);
 
   return {
     asset,

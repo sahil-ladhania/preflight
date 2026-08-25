@@ -2,8 +2,23 @@
  * agent-skills — parse yaml skill list and load SKILL.md bodies.
  * Why: doc 19 §7 fallback suffix when model skips read tool.
  */
+import type { Channel } from "@preflight/schemas";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+
+const GENERATOR_BASE_SKILLS = ["brand-voice", "sebi-copy-constraints"] as const;
+
+const GENERATOR_CHANNEL_SKILL: Record<Channel, string> = {
+  email: "channel-email",
+  linkedin: "channel-linkedin",
+  display: "channel-display",
+  whatsapp: "channel-shortform",
+  landing: "channel-shortform",
+};
+
+export function resolveGeneratorSkillNames(channel: Channel): string[] {
+  return [...GENERATOR_BASE_SKILLS, GENERATOR_CHANNEL_SKILL[channel]];
+}
 
 function parseYamlSkillNames(manifestRaw: string): string[] {
   const lines = manifestRaw.split("\n");
@@ -36,17 +51,23 @@ export async function readAgentSkillNames(agentDir: string): Promise<string[]> {
   return parseYamlSkillNames(manifestRaw);
 }
 
+export interface LoadSkillSuffixOptions {
+  binding?: boolean;
+}
+
 export async function loadSkillBodiesForSuffix(
   agentDir: string,
   skillNames: string[],
+  options: LoadSkillSuffixOptions = {},
 ): Promise<string> {
   if (skillNames.length === 0) {
     return "";
   }
 
-  const sections: string[] = [
-    "## Available skills (also loadable via read tool)",
-  ];
+  const header = options.binding
+    ? "## Binding skills for this call"
+    : "## Available skills (also loadable via read tool)";
+  const sections: string[] = [header];
 
   for (const name of skillNames) {
     const skillPath = join(agentDir, "skills", name, "SKILL.md");

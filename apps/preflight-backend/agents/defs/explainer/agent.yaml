@@ -5,7 +5,7 @@ description: Homepage agent — discuss campaigns and rules; hand off to Campaig
 model:
   preferred: openai:gpt-4o-mini
 
-tools: []
+tools: [read] # sandboxed: skills/, SOUL.md, RULES.md — injected by gateway, not builtin fs
 
 skills:
   - homepage-journeys

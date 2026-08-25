@@ -28,6 +28,9 @@ export function DisplayPreview({
       style={styles.frame}
     >
       <div className="px-4 py-3">
+        <p className="mb-1 text-caption" style={{ color: brandKit.colors.secondary }}>
+          {brandKit.clientName}
+        </p>
         <h3 className="text-base font-bold leading-tight" style={styles.heading}>
           {displayHeadline}
         </h3>

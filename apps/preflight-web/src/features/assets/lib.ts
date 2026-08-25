@@ -6,6 +6,7 @@
 import type {
   AssetStatus,
   Channel,
+  ExceptionItemDTO,
   FindingDTO,
   HumanVerdict,
 } from "@preflight/schemas";
@@ -71,6 +72,30 @@ export function acceptDisabledCaption(
 
 export function acceptIsEnabled(status: AssetStatus): boolean {
   return status === "clear" || status === "cleared_with_exception";
+}
+
+export function complianceDeskName(clientName: string): string {
+  return `${clientName} Compliance`;
+}
+
+export function buildComplianceDeskExceptionsLine(
+  status: AssetStatus,
+  exceptions: ExceptionItemDTO[],
+): string | null {
+  if (status !== "cleared_with_exception" || exceptions.length === 0) {
+    return null;
+  }
+
+  if (exceptions.length === 1) {
+    const ruleId = exceptions[0]?.ruleId ?? "unknown";
+    return `This asset ships with 1 waived exception (${ruleId}). Exceptions remain visible on this page.`;
+  }
+
+  return `This asset ships with ${exceptions.length} waived exceptions. Exceptions remain visible on this page.`;
+}
+
+export function formatComplianceDeskHandoffToast(clientName: string): string {
+  return `Handed off to ${complianceDeskName(clientName)} — publishing is outside Preflight.`;
 }
 
 export function countPending(findings: FindingDTO[]): number {
