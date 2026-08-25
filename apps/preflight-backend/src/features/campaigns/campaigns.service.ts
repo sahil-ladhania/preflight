@@ -13,9 +13,10 @@ import { NotFoundError } from "../../lib/http-error.js";
 import { prisma } from "../../lib/prisma.js";
 import { toIso } from "../findings/finding-dto.js";
 import { compileCampaign, loadLastCompile } from "./compile.service.js";
+import { extractBrief } from "./extract.service.js";
 import { generateAssets } from "./generate.service.js";
 
-export { compileCampaign, generateAssets };
+export { compileCampaign, extractBrief, generateAssets };
 
 async function mapCampaignToDTO(
   campaign: NonNullable<Awaited<ReturnType<typeof prisma.campaign.findUnique>>>,

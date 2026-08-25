@@ -1,0 +1,11 @@
+name: preflight-generator
+version: "1.0.0"
+description: Write channel marketing copy under frozen compliance rules.
+
+model:
+  preferred: openai:gpt-4o-mini
+
+tools: []
+
+runtime:
+  max_turns: 1

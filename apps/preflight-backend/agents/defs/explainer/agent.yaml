@@ -1,0 +1,11 @@
+name: preflight-explainer
+version: "1.0.0"
+description: Explain compliance rules read-only for the workbench.
+
+model:
+  preferred: openai:gpt-4o-mini
+
+tools: []
+
+runtime:
+  max_turns: 1

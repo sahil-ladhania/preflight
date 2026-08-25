@@ -8,6 +8,7 @@ import { ZodError } from "zod";
 import {
   CompileRequestSchema,
   CreateCampaignRequestSchema,
+  ExtractRequestSchema,
   GenerateRequestSchema,
   PutBriefRequestSchema,
 } from "@preflight/schemas";
@@ -15,6 +16,7 @@ import {
 import {
   compileCampaign,
   createCampaign,
+  extractBrief,
   generateAssets,
   getCampaignById,
   getLatestCampaign,
@@ -105,6 +107,20 @@ export async function compileCampaignHandler(
   try {
     CompileRequestSchema.parse(req.body ?? {});
     const data = await compileCampaign(req.params.id);
+    res.status(200).json({ success: true, data });
+  } catch (err: unknown) {
+    handleError(err, res, next);
+  }
+}
+
+export async function extractBriefHandler(
+  req: Request<{ id: string }>,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const body = ExtractRequestSchema.parse(req.body);
+    const data = await extractBrief(req.params.id, body.freeText);
     res.status(200).json({ success: true, data });
   } catch (err: unknown) {
     handleError(err, res, next);

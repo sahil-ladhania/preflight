@@ -7,6 +7,7 @@ import { Router } from "express";
 import {
   compileCampaignHandler,
   createCampaignHandler,
+  extractBriefHandler,
   generateAssetsHandler,
   getCampaignByIdHandler,
   getLatestCampaignHandler,
@@ -19,6 +20,7 @@ campaignsRouter.post("/", createCampaignHandler);
 campaignsRouter.get("/latest", getLatestCampaignHandler);
 campaignsRouter.get("/:id", getCampaignByIdHandler);
 campaignsRouter.put("/:id/brief", updateBriefHandler);
+campaignsRouter.post("/:id/extract", extractBriefHandler);
 campaignsRouter.post("/:id/compile", compileCampaignHandler);
 campaignsRouter.post("/:id/generate", generateAssetsHandler);
 

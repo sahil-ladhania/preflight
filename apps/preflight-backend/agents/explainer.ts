@@ -1,4 +1,5 @@
 /**
- * explainer — GitAgent def for explainer.
- * Why: Workbench Q&A registration.
+ * explainer — GitAgent registration for explainer.
+ * Why: agent name const for runAgent gateway.
  */
+export const AGENT_NAME = "explainer" as const;

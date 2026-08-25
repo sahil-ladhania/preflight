@@ -1,6 +1,6 @@
 /**
  * generate.service — generate birth path.
- * Why: stub generator → canonicalText → runDeterministic → asset txn → fan-out judge.
+ * Why: live generator → canonicalText → runDeterministic → asset txn → fan-out judge.
  */
 // size: orchestration + txn + per-channel prep; canonical builder extracted
 import { randomUUID } from "node:crypto";
@@ -11,41 +11,37 @@ import {
   hashRun,
   runDeterministic,
   type DetRunRule,
-  type StructuredBrief,
 } from "@preflight/rules";
 import {
-  GeneratorOutputSchema,
   StructuredBriefSchema,
   type Channel,
   type GenerateResponseDTO,
-  type GeneratorOutput,
 } from "@preflight/schemas";
 
 import { fanOutJudgement } from "../findings/judge.service.js";
 import { getPackageMatch } from "../../lib/catalog.js";
 import { InternalError, NotFoundError, ValidationError } from "../../lib/http-error.js";
 import { prisma } from "../../lib/prisma.js";
-import { toStructuredBrief } from "./brief-adapter.js";
 import { buildCanonicalText } from "./generate-canonical.js";
+import { callGenerator } from "./generate-agent.js";
 
 interface PreparedChannel {
   channel: Channel;
-  output: GeneratorOutput;
+  output: Awaited<ReturnType<typeof callGenerator>>;
   canonicalText: string;
   fieldOffsets: ReturnType<typeof buildCanonicalText>["fieldOffsets"];
   runHash: string;
   detFindings: ReturnType<typeof runDeterministic>["findings"];
 }
 
-function stubGeneratorOutput(brief: StructuredBrief, channel: Channel): GeneratorOutput {
-  const primaryClaim = brief.claims[0] ?? "strong outcomes";
-
-  return {
-    headline: `${brief.schemeName} — ${channel} outreach`,
-    body: `${brief.objective} Discover ${brief.schemeName} with ${primaryClaim}.`,
-    disclaimer: "Mutual fund investments are subject to market risks.",
-    cta: "Invest today",
-  };
+function snapshotRules(
+  snapshots: Array<{ ruleId: string; kind: string; wording: string }>,
+): Array<{ ruleId: string; kind: "deterministic" | "judgement"; wording: string }> {
+  return snapshots.map((snapshot) => ({
+    ruleId: snapshot.ruleId,
+    kind: snapshot.kind as "deterministic" | "judgement",
+    wording: snapshot.wording,
+  }));
 }
 
 function bindDetRunRules(
@@ -107,7 +103,6 @@ export async function generateAssets(
   }
 
   const structuredBrief = StructuredBriefSchema.parse(campaign.structuredBrief);
-  const brief = toStructuredBrief(structuredBrief);
 
   const constraintSet = await prisma.constraintSet.findUnique({
     where: { id: campaign.currentConstraintSetId },
@@ -142,13 +137,14 @@ export async function generateAssets(
     generationIndex = parent.generationIndex + 1;
     regenFromId = parent.id;
   } else {
-    channels = [...brief.channels];
+    channels = [...structuredBrief.channels];
   }
 
+  const ruleWordings = snapshotRules(snapshots);
   const prepared: PreparedChannel[] = [];
 
   for (const channel of channels) {
-    const output = GeneratorOutputSchema.parse(stubGeneratorOutput(brief, channel));
+    const output = await callGenerator(channel, structuredBrief, ruleWordings);
     const { canonicalText, fieldOffsets } = buildCanonicalText(output);
     const { findings } = runDeterministicSafe(canonicalText, detRules);
     const matcherOutputs = findings.map((finding) => ({

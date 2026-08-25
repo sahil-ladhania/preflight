@@ -1,0 +1,11 @@
+name: preflight-extractor
+version: "1.0.0"
+description: Parse free-text brief into structured campaign fields.
+
+model:
+  preferred: openai:gpt-4o-mini
+
+tools: []
+
+runtime:
+  max_turns: 1

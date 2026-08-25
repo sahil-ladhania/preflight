@@ -9,6 +9,7 @@ import assetsRouter from "./features/assets/assets.route.js";
 import campaignsRouter from "./features/campaigns/campaigns.route.js";
 import findingsRouter from "./features/findings/findings.route.js";
 import rulesRouter from "./features/rules/rules.route.js";
+import workbenchRouter from "./features/workbench/workbench.route.js";
 import { errorHandler } from "./middleware/error.js";
 
 export function createApp(): Express {
@@ -24,6 +25,7 @@ export function createApp(): Express {
   app.use("/api/campaigns", campaignsRouter);
   app.use("/api/findings", findingsRouter);
   app.use("/api/rules", rulesRouter);
+  app.use("/api/workbench", workbenchRouter);
 
   app.use(errorHandler);
 
