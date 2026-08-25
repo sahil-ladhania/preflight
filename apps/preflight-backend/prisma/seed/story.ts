@@ -1,5 +1,5 @@
 /**
- * story — campaign, compile freeze, assets A–H, findings.
+ * story — campaign, compile freeze, assets A–G, findings.
  * Why: Phase 3 walkthrough orchestrator (14-backend-design.md Area 7).
  */
 import type { PrismaClient } from "@prisma/client";
@@ -14,9 +14,7 @@ import { ASSET_E_DEF, buildFindingsE } from "./story-e.js";
 import { ASSET_F_DEF, buildFindingsF, createStoryHelpers } from "./story-f.js";
 import { ASSET_G_DEF, buildFindingsG, buildSnapshots, computeRunHash } from "./story-g.js";
 import {
-  ASSET_H_DEF,
   buildCanonicalText,
-  buildFindingsH,
   findingId,
   type AssetSeedDef,
   type FindingSeed,
@@ -36,7 +34,6 @@ export const ASSET_IDS = {
   E: ASSET_E_DEF.id,
   F: ASSET_F_DEF.id,
   G: ASSET_G_DEF.id,
-  H: ASSET_H_DEF.id,
 } as const;
 
 export const W_FROZEN_SEBI_05 = FROZEN_WORDING["SEBI-05"];
@@ -76,7 +73,6 @@ const STORY_ASSETS: StoryAssetModule[] = [
   { def: ASSET_E_DEF, buildFindings: buildFindingsE },
   { def: ASSET_F_DEF, buildFindings: buildFindingsF },
   { def: ASSET_G_DEF, buildFindings: buildFindingsG },
-  { def: ASSET_H_DEF, buildFindings: buildFindingsH },
 ];
 
 export async function seedStory(prisma: PrismaClient): Promise<void> {

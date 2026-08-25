@@ -142,21 +142,6 @@ export function createStoryHelpers(): StoryHelpers {
         humanAt: null,
       };
     },
-    pendingShell(ruleId) {
-      return {
-        ruleId,
-        kind: "judgement",
-        evaluationStatus: "pending",
-        machineVerdict: null,
-        machineReason: null,
-        spans: [],
-        machineAt: null,
-        humanVerdict: null,
-        humanReason: null,
-        humanActor: null,
-        humanAt: null,
-      };
-    },
   };
 }
 

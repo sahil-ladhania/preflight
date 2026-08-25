@@ -83,7 +83,7 @@ cd ../..
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173). Vite proxies `/api` to the backend. `GET /health` on the backend is the liveness check.
+Open [http://localhost:5173](http://localhost:5173). Vite proxies `/api` to the backend. `GET /api/health` on the backend is the liveness check.
 
 ## Repo map
 
