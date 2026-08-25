@@ -13,6 +13,7 @@ import { ASSET_D_DEF, buildFindingsD } from "./story-d.js";
 import { ASSET_E_DEF, buildFindingsE } from "./story-e.js";
 import { ASSET_F_DEF, buildFindingsF, createStoryHelpers } from "./story-f.js";
 import { ASSET_G_DEF, buildFindingsG, buildSnapshots } from "./story-g.js";
+import { kitFingerprint } from "../../src/lib/brand-kit.js";
 import { computeRunHash } from "./story-findings.js";
 import {
   buildCanonicalText,
@@ -81,6 +82,7 @@ export async function seedStory(prisma: PrismaClient): Promise<void> {
   const rulesetHash = hashRuleset(snapshots);
   const helpers = createStoryHelpers();
   const compileAt = new Date("2026-03-14T08:00:00.000Z");
+  const seedKitFingerprint = kitFingerprint();
 
   await prisma.campaign.create({
     data: {
@@ -139,6 +141,7 @@ export async function seedStory(prisma: PrismaClient): Promise<void> {
         fieldOffsets,
         runHash,
         rulesetHash,
+        kitFingerprint: seedKitFingerprint,
         generatedAt: new Date(module.def.generatedAt),
         regeneratedFromId: module.def.regeneratedFromId,
         generationIndex: module.def.generationIndex,

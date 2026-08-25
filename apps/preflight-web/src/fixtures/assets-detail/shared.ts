@@ -3,13 +3,77 @@
  * Why: stable ids and hashes across A–H detail fixtures.
  */
 
-import type { FieldOffsets, FindingDTO } from "@preflight/schemas";
+import type { BrandKitDTO, FieldOffsets, FindingDTO } from "@preflight/schemas";
 
 export const CAMPAIGN_ID = "22222222-2222-4222-8222-222222222222";
 export const CONSTRAINT_SET_ID = "33333333-3333-4333-8333-333333333333";
 export const RUN_HASH = "a".repeat(64);
 export const RULESET_HASH = "b".repeat(64);
+export const KIT_FINGERPRINT =
+  "ee486f142f8f420347a9e9f4aff59bfbadae6960bad38495cf7133877740f306";
 export const DEMO_OPERATOR = "Demo Operator";
+
+export const BLUEPEAK_BRAND_KIT: BrandKitDTO = {
+  kitId: "bluepeak-v1",
+  clientName: "Bluepeak Asset Management",
+  voice: {
+    tone: "Professional, credible, no hype",
+    do: [
+      "Use scheme name and category accurately",
+      "Substantiate performance claims with period labels",
+      "Keep copy informative and restrained",
+    ],
+    dont: [
+      "Guarantee returns or promise fixed outcomes",
+      "Use superlatives like only, best, or guaranteed",
+      "Create urgency or fear-based pressure",
+    ],
+  },
+  forbiddenClaims: [
+    "guaranteed returns",
+    "fixed returns",
+    "risk-free",
+    "assured profit",
+  ],
+  requiredDisclaimer:
+    "Mutual fund investments are subject to market risks. Read all scheme related documents carefully.",
+  typography: {
+    headingRole: "Georgia, 'Times New Roman', serif",
+    bodyRole: "system-ui, -apple-system, sans-serif",
+  },
+  colors: {
+    primary: "#1a4d8f",
+    secondary: "#2d6cb5",
+    background: "#f4f7fb",
+  },
+  channelHints: {
+    email: {
+      maxHeadlineChars: 80,
+      layoutNotes: "Newsletter block: headline, body, disclaimer footer, CTA button",
+    },
+    linkedin: {
+      maxHeadlineChars: 120,
+      layoutNotes: "Card: headline hook, body paragraph, disclaimer line, CTA link",
+    },
+    display: {
+      maxHeadlineChars: 60,
+      layoutNotes: "Banner: short headline, one-line body, disclaimer strip, CTA",
+    },
+    whatsapp: {
+      maxHeadlineChars: 40,
+      layoutNotes: "Short broadcast: headline, brief body, disclaimer, CTA",
+    },
+    landing: {
+      maxHeadlineChars: 70,
+      layoutNotes: "Hero: headline, subtext body, disclaimer below fold, CTA",
+    },
+  },
+};
+
+export const ASSET_KIT_FIELDS = {
+  kitFingerprint: KIT_FINGERPRINT,
+  brandKit: BLUEPEAK_BRAND_KIT,
+} as const;
 
 export const FIELD_OFFSETS: FieldOffsets = {
   headline: { start: 0, end: 48 },

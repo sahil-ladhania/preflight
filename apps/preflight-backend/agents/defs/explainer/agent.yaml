@@ -1,11 +1,15 @@
 name: preflight-explainer
 version: "1.0.0"
-description: Explain compliance rules read-only for the workbench.
+description: Homepage agent — discuss campaigns and rules; hand off to Campaign.
 
 model:
   preferred: openai:gpt-4o-mini
 
 tools: []
 
+skills:
+  - homepage-journeys
+  - rule-explain
+
 runtime:
-  max_turns: 1
+  max_turns: 3

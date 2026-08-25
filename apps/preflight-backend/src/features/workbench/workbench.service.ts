@@ -4,6 +4,7 @@
  */
 import {
   ExplainerOutputSchema,
+  type WorkbenchChatHistoryItem,
   type WorkbenchChatResponse,
 } from "@preflight/schemas";
 
@@ -26,7 +27,10 @@ function parseExplainerOutput(content: string): WorkbenchChatResponse {
   }
 }
 
-export async function chat(message: string): Promise<WorkbenchChatResponse> {
+export async function chat(
+  message: string,
+  history?: WorkbenchChatHistoryItem[],
+): Promise<WorkbenchChatResponse> {
   const catalog = await getLiveCatalog();
   const catalogLines = catalog.map((entry) => ({
     ruleId: entry.ruleId,
@@ -35,7 +39,7 @@ export async function chat(message: string): Promise<WorkbenchChatResponse> {
   }));
 
   try {
-    const prompt = buildExplainerPrompt({ message, catalogLines });
+    const prompt = buildExplainerPrompt({ message, history, catalogLines });
     const { runAgent } = await import("../../lib/gitagent.js");
     const { content } = await runAgent("explainer", prompt);
     return parseExplainerOutput(content);

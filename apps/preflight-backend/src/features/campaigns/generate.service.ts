@@ -15,6 +15,7 @@ import {
 } from "@preflight/schemas";
 
 import { fanOutJudgement } from "../findings/judge.service.js";
+import { kitFingerprint } from "../../lib/brand-kit.js";
 import { getPackageMatch } from "../../lib/catalog.js";
 import { InternalError, NotFoundError, ValidationError } from "../../lib/http-error.js";
 import { prisma } from "../../lib/prisma.js";
@@ -123,6 +124,7 @@ export async function generateAssets(
 
   const ruleWordings = snapshotRules(snapshots);
   const rulesetHash = constraintSet.rulesetHash;
+  const assetKitFingerprint = kitFingerprint();
 
   const prepared = await Promise.all(
     channels.map((channel) =>
@@ -161,6 +163,7 @@ export async function generateAssets(
           fieldOffsets: row.fieldOffsets,
           runHash: row.runHash,
           rulesetHash: constraintSet.rulesetHash,
+          kitFingerprint: assetKitFingerprint,
           regeneratedFromId: regenFromId,
           generationIndex,
           findings: {

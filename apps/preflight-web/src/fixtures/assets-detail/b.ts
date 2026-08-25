@@ -13,6 +13,7 @@ import {
   FROZEN_WORDING,
   RUN_HASH,
   RULESET_HASH,
+  ASSET_KIT_FIELDS,
   findingId,
   passFinding,
 } from "./shared";
@@ -32,6 +33,7 @@ export const ASSET_B: AssetDetailFixture = {
   fieldOffsets: FIELD_OFFSETS,
   runHash: RUN_HASH,
   rulesetHash: RULESET_HASH,
+  ...ASSET_KIT_FIELDS,
   generatedAt: "2026-03-15T12:30:00.000Z",
   regeneratedFromId: ASSET_ID_A,
   generationIndex: 2,

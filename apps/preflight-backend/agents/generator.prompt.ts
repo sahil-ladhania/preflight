@@ -2,7 +2,7 @@
  * generator.prompt — per-call generator prompt builder.
  * Why: brief + frozen snapshot wordings + det hints + optional regen revision.
  */
-import type { Channel, RuleKind, StructuredBriefInput } from "@preflight/schemas";
+import type { BrandKitDTO, Channel, RuleKind, StructuredBriefInput } from "@preflight/schemas";
 
 export interface RegenFailureInput {
   ruleId: string;
@@ -19,6 +19,7 @@ export interface RegenRevisionInput {
 export interface GeneratorPromptInput {
   channel: Channel;
   brief: StructuredBriefInput;
+  brandKit: BrandKitDTO;
   rules: Array<{ ruleId: string; kind: RuleKind; wording: string }>;
   detHintLines: string[];
   revisionContext?: RegenRevisionInput;
@@ -62,6 +63,13 @@ export function buildGeneratorPrompt(input: GeneratorPromptInput): string {
     "",
     `Channel tone: ${CHANNEL_TONE[input.channel]}`,
     "",
+    "Brand kit (client visual + verbal lock):",
+    JSON.stringify(input.brandKit, null, 2),
+    "",
+    `Required disclaimer (use verbatim in disclaimer field): ${input.brandKit.requiredDisclaimer}`,
+    "",
+    "Load the matching channel skill via read tool when helpful (channel-email, channel-linkedin, channel-display, or channel-shortform).",
+    "",
     "Structured brief:",
     JSON.stringify(input.brief, null, 2),
     "",
@@ -83,7 +91,7 @@ export function buildGeneratorPrompt(input: GeneratorPromptInput): string {
 
   sections.push(
     "",
-    "Output JSON only: headline, body, disclaimer, cta. Keep performance claims and substantiation in body; disclaimer holds the standard risk phrase.",
+    "Output JSON only: headline, body, disclaimer, cta. Disclaimer must include the required disclaimer verbatim unless a frozen rule requires additional text.",
   );
 
   return sections.join("\n");

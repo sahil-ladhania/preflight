@@ -16,6 +16,7 @@ import {
   type RegenRevisionInput,
 } from "../../../agents/generator.prompt.js";
 import { InternalError } from "../../lib/http-error.js";
+import { loadBrandKit } from "../../lib/brand-kit.js";
 
 function stripJsonFence(content: string): string {
   const trimmed = content.trim();
@@ -42,6 +43,7 @@ export async function callGenerator(
     const prompt = buildGeneratorPrompt({
       channel: input.channel,
       brief: input.brief,
+      brandKit: loadBrandKit(),
       rules: input.rules,
       detHintLines,
       revisionContext: input.revisionContext,

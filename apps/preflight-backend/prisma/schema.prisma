@@ -73,6 +73,7 @@ model Asset {
   fieldOffsets       Json
   runHash            String
   rulesetHash        String
+  kitFingerprint     String
   generatedAt        DateTime @default(now())
   regeneratedFromId  String?
   generationIndex    Int

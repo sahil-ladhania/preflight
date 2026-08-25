@@ -1,0 +1,55 @@
+{
+  "kitId": "bluepeak-v1",
+  "clientName": "Bluepeak Asset Management",
+  "voice": {
+    "tone": "Professional, credible, no hype",
+    "do": [
+      "Use scheme name and category accurately",
+      "Substantiate performance claims with period labels",
+      "Keep copy informative and restrained"
+    ],
+    "dont": [
+      "Guarantee returns or promise fixed outcomes",
+      "Use superlatives like only, best, or guaranteed",
+      "Create urgency or fear-based pressure"
+    ]
+  },
+  "forbiddenClaims": [
+    "guaranteed returns",
+    "fixed returns",
+    "risk-free",
+    "assured profit"
+  ],
+  "requiredDisclaimer": "Mutual fund investments are subject to market risks. Read all scheme related documents carefully.",
+  "typography": {
+    "headingRole": "Georgia, 'Times New Roman', serif",
+    "bodyRole": "system-ui, -apple-system, sans-serif"
+  },
+  "colors": {
+    "primary": "#1a4d8f",
+    "secondary": "#2d6cb5",
+    "background": "#f4f7fb"
+  },
+  "channelHints": {
+    "email": {
+      "maxHeadlineChars": 80,
+      "layoutNotes": "Newsletter block: headline, body, disclaimer footer, CTA button"
+    },
+    "linkedin": {
+      "maxHeadlineChars": 120,
+      "layoutNotes": "Card: headline hook, body paragraph, disclaimer line, CTA link"
+    },
+    "display": {
+      "maxHeadlineChars": 60,
+      "layoutNotes": "Banner: short headline, one-line body, disclaimer strip, CTA"
+    },
+    "whatsapp": {
+      "maxHeadlineChars": 40,
+      "layoutNotes": "Short broadcast: headline, brief body, disclaimer, CTA"
+    },
+    "landing": {
+      "maxHeadlineChars": 70,
+      "layoutNotes": "Hero: headline, subtext body, disclaimer below fold, CTA"
+    }
+  }
+}

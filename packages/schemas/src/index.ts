@@ -44,6 +44,21 @@ export {
 } from "./primitives.js"
 export type { Hash, IsoDateTime, Span, PerformanceFigure, PredicateSpec } from "./primitives.js"
 
+export {
+  BrandKitDTOSchema,
+  BrandKitVoiceSchema,
+  BrandKitTypographySchema,
+  BrandKitColorsSchema,
+  BrandKitChannelHintSchema,
+} from "./brand-kit.js"
+export type {
+  BrandKitDTO,
+  BrandKitVoice,
+  BrandKitTypography,
+  BrandKitColors,
+  BrandKitChannelHint,
+} from "./brand-kit.js"
+
 export { StructuredBriefSchema, PutBriefRequestSchema } from "./brief.js"
 export type { StructuredBriefInput, PutBriefRequest } from "./brief.js"
 
@@ -142,11 +157,16 @@ export type { GeneratorOutput } from "./generator-output.js"
 export { JudgeOutputSchema } from "./judge-output.js"
 export type { JudgeOutput } from "./judge-output.js"
 
-export { ExplainerOutputSchema } from "./explainer-output.js"
-export type { ExplainerOutput } from "./explainer-output.js"
+export { ExplainerOutputSchema, ExplainerSuggestedActionSchema } from "./explainer-output.js"
+export type { ExplainerOutput, ExplainerSuggestedAction } from "./explainer-output.js"
 
 export {
   WorkbenchChatRequestSchema,
   WorkbenchChatResponseSchema,
+  WorkbenchChatHistoryItemSchema,
 } from "./workbench.js"
-export type { WorkbenchChatRequest, WorkbenchChatResponse } from "./workbench.js"
+export type {
+  WorkbenchChatRequest,
+  WorkbenchChatResponse,
+  WorkbenchChatHistoryItem,
+} from "./workbench.js"

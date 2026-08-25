@@ -25,6 +25,7 @@ import {
   toIso,
 } from "../findings/finding-dto.js";
 import { NotFoundError } from "../../lib/http-error.js";
+import { resolveBrandKit } from "../../lib/brand-kit.js";
 import { prisma } from "../../lib/prisma.js";
 
 function parseFieldOffsets(value: unknown): FieldOffsets {
@@ -180,9 +181,11 @@ export async function getAssetDetail(id: string): Promise<AssetDetailDTO> {
     fieldOffsets: parseFieldOffsets(asset.fieldOffsets),
     runHash: asset.runHash,
     rulesetHash: asset.rulesetHash,
+    kitFingerprint: asset.kitFingerprint,
     generatedAt: asset.generatedAt.toISOString(),
     regeneratedFromId: asset.regeneratedFromId,
     generationIndex: asset.generationIndex,
+    brandKit: resolveBrandKit(asset.kitFingerprint),
     status,
     findings,
     exceptions,

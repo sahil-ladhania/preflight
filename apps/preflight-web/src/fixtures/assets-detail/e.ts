@@ -12,6 +12,7 @@ import {
   FIELD_OFFSETS,
   RUN_HASH,
   RULESET_HASH,
+  ASSET_KIT_FIELDS,
   passFinding,
 } from "./shared";
 
@@ -29,6 +30,7 @@ export const ASSET_E: AssetDetailFixture = {
   fieldOffsets: FIELD_OFFSETS,
   runHash: RUN_HASH,
   rulesetHash: RULESET_HASH,
+  ...ASSET_KIT_FIELDS,
   generatedAt: "2026-03-14T10:00:00.000Z",
   regeneratedFromId: null,
   generationIndex: 1,

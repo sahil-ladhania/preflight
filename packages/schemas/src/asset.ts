@@ -6,6 +6,7 @@
 import { z } from "zod"
 import { AssetStatusSchema, ChannelSchema } from "./enums.js"
 import { HashSchema, IsoDateTimeSchema } from "./primitives.js"
+import { BrandKitDTOSchema } from "./brand-kit.js"
 import { FindingDTOSchema } from "./finding.js"
 
 export const FieldOffsetRangeSchema = z
@@ -37,6 +38,7 @@ export const AssetDTOSchema = z.object({
   fieldOffsets: FieldOffsetsSchema,
   runHash: HashSchema,
   rulesetHash: HashSchema,
+  kitFingerprint: HashSchema,
   generatedAt: IsoDateTimeSchema,
   regeneratedFromId: z.string().min(1).nullable(),
   generationIndex: z.number().int().min(1),
@@ -84,5 +86,6 @@ export const AssetDetailDTOSchema = AssetDTOSchema.extend({
   findings: z.array(FindingDTOSchema),
   exceptions: z.array(ExceptionItemDTOSchema),
   lineage: LineageDTOSchema.nullable(),
+  brandKit: BrandKitDTOSchema,
 })
 export type AssetDetailDTO = z.infer<typeof AssetDetailDTOSchema>

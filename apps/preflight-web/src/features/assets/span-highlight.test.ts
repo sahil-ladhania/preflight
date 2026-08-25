@@ -11,6 +11,7 @@ import {
   SpanHighlightError,
   buildCopySegments,
 } from "@/features/assets/span-highlight";
+import { ASSET_KIT_FIELDS } from "@/fixtures/assets-detail/shared";
 
 const HASH = "a".repeat(64);
 
@@ -76,6 +77,7 @@ function baseAsset(overrides: Partial<AssetDetailDTO>): AssetDetailDTO {
     ),
     runHash: HASH,
     rulesetHash: HASH,
+    ...ASSET_KIT_FIELDS,
     generatedAt: "2026-03-15T11:00:00.000Z",
     regeneratedFromId: null,
     generationIndex: 1,
