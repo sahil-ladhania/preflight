@@ -120,7 +120,6 @@ Two sessions ran the locked spec through Lyzr’s planning and architecture tool
 Honest cuts and ops edges — cheaper to name than patch at submission time.
 
 - **No auth, no rate limiting.** One operator constant; localhost demo only. Anyone who can reach the API can trigger LLM spend.
-- **Seeded ledgers are highlight reels.** Seed assets illustrate fold states with a subset of findings; live generate writes the full freeze pin.
 - **In-process judge fan-out.** Killing the server mid-run leaves rows `pending` with no recovery job.
 - **Findings record verdicts, not model version.** No model id or prompt hash on rows — demo scope.
 - **Agent token usage is not persisted.** The `AiCall` table was cut per `04-data-model.md`; usage is available post-hoc from the gateway only.

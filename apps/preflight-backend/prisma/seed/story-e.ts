@@ -1,6 +1,7 @@
 /**
  * story-e — seed asset E (all pass, clear).
  */
+import { buildFullFindings, type JudgementStory } from "./story-findings.js";
 import type { AssetSeedDef, FindingSeed, StoryHelpers } from "./story-h.js";
 
 export const ASSET_E_DEF: AssetSeedDef = {
@@ -19,12 +20,15 @@ export const ASSET_E_DEF: AssetSeedDef = {
   generationIndex: 1,
 };
 
-export function buildFindingsE(_canonicalText: string, h: StoryHelpers): FindingSeed[] {
-  return [
-    h.detPass("SEBI-01", ASSET_E_DEF.generatedAt),
-    h.detPass("SEBI-02", ASSET_E_DEF.generatedAt),
-    h.detPass("SEBI-03", ASSET_E_DEF.generatedAt),
-    h.jdgPass("SEBI-06", ASSET_E_DEF.generatedAt),
-    h.jdgPass("BRAND-03", ASSET_E_DEF.generatedAt),
-  ];
+const JDG_STORY: JudgementStory = {
+  "SEBI-06": { kind: "pass" },
+  "BRAND-02": { kind: "pass" },
+  "BRAND-03": { kind: "pass" },
+};
+
+export function buildFindingsE(
+  canonicalText: string,
+  h: StoryHelpers,
+): FindingSeed[] {
+  return buildFullFindings(ASSET_E_DEF, canonicalText, h, JDG_STORY);
 }

@@ -12,7 +12,8 @@ import { ASSET_C_DEF, buildFindingsC } from "./story-c.js";
 import { ASSET_D_DEF, buildFindingsD } from "./story-d.js";
 import { ASSET_E_DEF, buildFindingsE } from "./story-e.js";
 import { ASSET_F_DEF, buildFindingsF, createStoryHelpers } from "./story-f.js";
-import { ASSET_G_DEF, buildFindingsG, buildSnapshots, computeRunHash } from "./story-g.js";
+import { ASSET_G_DEF, buildFindingsG, buildSnapshots } from "./story-g.js";
+import { computeRunHash } from "./story-findings.js";
 import {
   buildCanonicalText,
   findingId,

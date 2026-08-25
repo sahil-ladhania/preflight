@@ -1,6 +1,7 @@
 /**
  * story-c — seed asset C (blocked, SEBI-01 fail).
  */
+import { buildFullFindings, type JudgementStory } from "./story-findings.js";
 import type { AssetSeedDef, FindingSeed, StoryHelpers } from "./story-h.js";
 
 export const ASSET_C_DEF: AssetSeedDef = {
@@ -18,17 +19,15 @@ export const ASSET_C_DEF: AssetSeedDef = {
   generationIndex: 1,
 };
 
+const JDG_STORY: JudgementStory = {
+  "SEBI-06": { kind: "pass" },
+  "BRAND-02": { kind: "pass" },
+  "BRAND-03": { kind: "pass" },
+};
+
 export function buildFindingsC(
   canonicalText: string,
   h: StoryHelpers,
 ): FindingSeed[] {
-  return [
-    h.detFail(
-      "SEBI-01",
-      "Standard risk disclaimer absent.",
-      canonicalText,
-      "2026-03-13T09:05:00.000Z",
-    ),
-    h.detPass("SEBI-02", ASSET_C_DEF.generatedAt),
-  ];
+  return buildFullFindings(ASSET_C_DEF, canonicalText, h, JDG_STORY);
 }

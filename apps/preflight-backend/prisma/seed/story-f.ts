@@ -3,6 +3,7 @@
  */
 import { DETERMINISTIC_CATALOG } from "@preflight/rules";
 
+import { buildFullFindings, type JudgementStory } from "./story-findings.js";
 import type { FindingSeed, StoryHelpers } from "./story-h.js";
 
 const DEMO_OPERATOR = process.env.DEMO_OPERATOR_NAME ?? "Demo Operator";
@@ -160,14 +161,20 @@ export const ASSET_F_DEF = {
   generationIndex: 1,
 } as const;
 
-export function buildFindingsF(_canonicalText: string, h: StoryHelpers): FindingSeed[] {
-  return [
-    h.detPass("SEBI-01", ASSET_F_DEF.generatedAt),
-    h.detPass("SEBI-02", ASSET_F_DEF.generatedAt),
-    h.jdgUnavailable(
-      "SEBI-06",
+const JDG_STORY: JudgementStory = {
+  "SEBI-06": {
+    kind: "unavailable",
+    reason:
       "Evaluation unavailable — span not found in asset. Deterministic results unaffected.",
-      "2026-03-14T14:05:00.000Z",
-    ),
-  ];
+    machineAt: "2026-03-14T14:05:00.000Z",
+  },
+  "BRAND-02": { kind: "pass" },
+  "BRAND-03": { kind: "pass" },
+};
+
+export function buildFindingsF(
+  canonicalText: string,
+  h: StoryHelpers,
+): FindingSeed[] {
+  return buildFullFindings(ASSET_F_DEF, canonicalText, h, JDG_STORY);
 }

@@ -1,6 +1,7 @@
 /**
  * story-b — seed asset B (regenerated from A, open SEBI-06).
  */
+import { buildFullFindings, type JudgementStory } from "./story-findings.js";
 import type { AssetSeedDef, FindingSeed, StoryHelpers } from "./story-h.js";
 
 export const ASSET_B_DEF: AssetSeedDef = {
@@ -10,7 +11,8 @@ export const ASSET_B_DEF: AssetSeedDef = {
   copy: {
     headline: "Bluepeak Flexi Cap — LinkedIn post (regenerated)",
     body: "Strong track record with guaranteed returns continues to attract investors to Bluepeak Flexi Cap.",
-    disclaimer: "Read all scheme related documents carefully.",
+    disclaimer:
+      "Mutual Fund investments are subject to market risks, read all scheme related documents carefully.",
     cta: "Learn more",
   },
   generatedAt: "2026-03-15T12:30:00.000Z",
@@ -18,19 +20,20 @@ export const ASSET_B_DEF: AssetSeedDef = {
   generationIndex: 2,
 };
 
+const JDG_STORY: JudgementStory = {
+  "SEBI-06": {
+    kind: "open",
+    reason: "Regenerated copy still implies guaranteed returns.",
+    spanText: "guaranteed returns",
+    machineAt: "2026-03-15T12:35:00.000Z",
+  },
+  "BRAND-02": { kind: "pass" },
+  "BRAND-03": { kind: "pass" },
+};
+
 export function buildFindingsB(
   canonicalText: string,
   h: StoryHelpers,
 ): FindingSeed[] {
-  return [
-    h.detPass("SEBI-01", ASSET_B_DEF.generatedAt),
-    h.detPass("SEBI-02", ASSET_B_DEF.generatedAt),
-    h.jdgFailOpen(
-      "SEBI-06",
-      "Regenerated copy still implies guaranteed returns.",
-      "guaranteed returns",
-      canonicalText,
-      "2026-03-15T12:35:00.000Z",
-    ),
-  ];
+  return buildFullFindings(ASSET_B_DEF, canonicalText, h, JDG_STORY);
 }

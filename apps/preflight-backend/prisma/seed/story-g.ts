@@ -7,14 +7,12 @@ import {
   DETERMINISTIC_CATALOG,
   DETERMINISTIC_MATCHER_FINGERPRINTS,
   DETERMINISTIC_PREDICATE_FINGERPRINTS,
-  hashRun,
-  runDeterministic,
-  type DetRunRule,
   type HashableRule,
   type PredicateSpec,
 } from "@preflight/rules";
 
 import { FROZEN_WORDING } from "./judgement-rules.js";
+import { buildFullFindings, type JudgementStory } from "./story-findings.js";
 import type { AssetSeedDef, FindingSeed, StoryHelpers } from "./story-h.js";
 
 const JUDGEMENT_SPECS: Record<string, PredicateSpec> = {
@@ -66,39 +64,13 @@ export function buildSnapshots(freezeRuleIds: readonly string[]): HashableRule[]
   });
 }
 
-function detRunRules(): DetRunRule[] {
-  return DETERMINISTIC_CATALOG.map((rule) => ({
-    id: rule.id,
-    kind: "deterministic" as const,
-    wording: rule.wording,
-    predicateFingerprint: DETERMINISTIC_PREDICATE_FINGERPRINTS[rule.id] ?? "",
-    matcherFingerprint: DETERMINISTIC_MATCHER_FINGERPRINTS[rule.id] ?? "",
-    match: rule.match,
-  }));
-}
-
-export function computeRunHash(canonicalText: string, rulesetHash: string): string {
-  const { findings } = runDeterministic({
-    canonicalText,
-    rules: detRunRules(),
-  });
-
-  const matcherOutputs = findings.map((finding) => ({
-    ruleId: finding.ruleId,
-    machineVerdict: finding.machineVerdict,
-    spans: finding.spans,
-  }));
-
-  return hashRun({ canonicalText, rulesetHash, matcherOutputs });
-}
-
 export const ASSET_G_DEF: AssetSeedDef = {
   letter: "g",
   id: "11111111-1111-4111-8111-111111111107",
   channel: "whatsapp",
   copy: {
     headline: "Bluepeak Flexi Cap — WhatsApp broadcast",
-    body: "Bluepeak Flexi Cap is the only fund you will ever need for market-beating results.",
+    body: "Bluepeak Flexi Cap is the only fund you will ever need for disciplined long-term results.",
     disclaimer: "Mutual fund investments are subject to market risks.",
     cta: "Open account",
   },
@@ -107,19 +79,20 @@ export const ASSET_G_DEF: AssetSeedDef = {
   generationIndex: 1,
 };
 
+const JDG_STORY: JudgementStory = {
+  "SEBI-06": { kind: "pass" },
+  "BRAND-02": { kind: "pass" },
+  "BRAND-03": {
+    kind: "open",
+    reason: "Copy overstates fund differentiation.",
+    spanText: "only fund you will ever need",
+    machineAt: "2026-03-14T16:05:00.000Z",
+  },
+};
+
 export function buildFindingsG(
   canonicalText: string,
   h: StoryHelpers,
 ): FindingSeed[] {
-  return [
-    h.detPass("SEBI-01", ASSET_G_DEF.generatedAt),
-    h.detPass("SEBI-02", ASSET_G_DEF.generatedAt),
-    h.jdgFailOpen(
-      "BRAND-03",
-      "Copy overstates fund differentiation.",
-      "only fund you will ever need",
-      canonicalText,
-      "2026-03-14T16:05:00.000Z",
-    ),
-  ];
+  return buildFullFindings(ASSET_G_DEF, canonicalText, h, JDG_STORY);
 }

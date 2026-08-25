@@ -1,6 +1,7 @@
 /**
  * story-a — seed asset A (needs_regen, SEBI-06 confirmed).
  */
+import { buildFullFindings, type JudgementStory } from "./story-findings.js";
 import type { AssetSeedDef, FindingSeed, StoryHelpers } from "./story-h.js";
 
 export const ASSET_A_DEF: AssetSeedDef = {
@@ -18,21 +19,22 @@ export const ASSET_A_DEF: AssetSeedDef = {
   generationIndex: 1,
 };
 
+const JDG_STORY: JudgementStory = {
+  "SEBI-06": {
+    kind: "confirmed",
+    reason: "Copy implies guaranteed returns.",
+    spanText: "guaranteed returns",
+    machineAt: "2026-03-15T11:05:00.000Z",
+    humanReason: "Confirmed misleading performance claim.",
+    humanAt: "2026-03-15T11:10:00.000Z",
+  },
+  "BRAND-02": { kind: "pass" },
+  "BRAND-03": { kind: "pass" },
+};
+
 export function buildFindingsA(
   canonicalText: string,
   h: StoryHelpers,
 ): FindingSeed[] {
-  return [
-    h.detPass("SEBI-01", ASSET_A_DEF.generatedAt),
-    h.detPass("SEBI-02", ASSET_A_DEF.generatedAt),
-    h.jdgFailConfirmed(
-      "SEBI-06",
-      "Copy implies guaranteed returns.",
-      "guaranteed returns",
-      canonicalText,
-      "2026-03-15T11:05:00.000Z",
-      "Confirmed misleading performance claim.",
-      "2026-03-15T11:10:00.000Z",
-    ),
-  ];
+  return buildFullFindings(ASSET_A_DEF, canonicalText, h, JDG_STORY);
 }

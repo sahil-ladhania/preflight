@@ -1,6 +1,7 @@
 /**
  * story-d — seed asset D (cleared_with_exception, SEBI-05 waived).
  */
+import { buildFullFindings, type JudgementStory } from "./story-findings.js";
 import type { AssetSeedDef, FindingSeed, StoryHelpers } from "./story-h.js";
 
 export const ASSET_D_DEF: AssetSeedDef = {
@@ -18,21 +19,21 @@ export const ASSET_D_DEF: AssetSeedDef = {
   generationIndex: 1,
 };
 
+const JDG_STORY: JudgementStory = {
+  "SEBI-06": { kind: "pass" },
+  "BRAND-02": { kind: "pass" },
+  "BRAND-03": { kind: "pass" },
+};
+
+const DET_WAIVE = {
+  ruleId: "SEBI-05",
+  humanReason: "Approved exception for internal demo static.",
+  humanAt: "2026-03-13T15:20:00.000Z",
+};
+
 export function buildFindingsD(
   canonicalText: string,
   h: StoryHelpers,
 ): FindingSeed[] {
-  return [
-    h.detPass("SEBI-01", ASSET_D_DEF.generatedAt),
-    h.detPass("SEBI-02", ASSET_D_DEF.generatedAt),
-    h.detFailWaived(
-      "SEBI-05",
-      "Performance figure lacks required substantiation.",
-      canonicalText,
-      "2026-03-13T15:05:00.000Z",
-      "Approved exception for internal demo static.",
-      "2026-03-13T15:20:00.000Z",
-    ),
-    h.jdgPass("SEBI-06", ASSET_D_DEF.generatedAt),
-  ];
+  return buildFullFindings(ASSET_D_DEF, canonicalText, h, JDG_STORY, DET_WAIVE);
 }
