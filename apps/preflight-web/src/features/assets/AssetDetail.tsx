@@ -100,7 +100,7 @@ export function AssetDetail({
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] flex-col bg-background">
+    <div className="flex min-h-[calc(100vh-3rem)] flex-col bg-canvas-subtle">
       {asset.lineage !== null ? (
         <LineageBanner lineage={asset.lineage} />
       ) : null}

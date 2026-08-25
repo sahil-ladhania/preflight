@@ -7,6 +7,7 @@ import type { MouseEvent, ReactElement } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { formatGeneratedAt, shortId } from "@/features/assets/lib";
+import { PendingRing } from "@/features/assets/PendingRing";
 import { StatusChip } from "@/features/assets/StatusChip";
 import type { AssetListRowProps } from "@/features/assets/types";
 import { cn } from "@/lib/utils";
@@ -72,14 +73,12 @@ export function AssetListRow({ asset }: AssetListRowProps): ReactElement {
         }
       }}
       className={cn(
-        "grid cursor-pointer grid-cols-[120px_minmax(0,1fr)_minmax(0,1fr)_168px_96px] items-center gap-4",
+        "grid cursor-pointer grid-cols-[132px_minmax(0,1fr)_minmax(0,1fr)_168px_96px] items-center gap-4",
         "border-b border-border bg-canvas px-4 py-2 hover:bg-canvas-subtle",
       )}
     >
-      <div className="flex items-center gap-2">
-        {asset.pendingCount > 0 ? (
-          <span className="pending-ring" aria-hidden />
-        ) : null}
+      <div className="flex min-w-[132px] items-center gap-2">
+        <PendingRing active={asset.pendingCount > 0} />
         <StatusChip status={asset.status} />
       </div>
       <span className="truncate text-body text-fg">{asset.headline}</span>

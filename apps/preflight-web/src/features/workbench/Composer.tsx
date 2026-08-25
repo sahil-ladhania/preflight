@@ -1,6 +1,6 @@
 /**
  * Composer — R3 textarea and Send control.
- * Why: Enter sends; Shift+Enter newline.
+ * Why: Enter sends; Shift+Enter newline; sticky footer row.
  */
 
 import type { KeyboardEvent, ReactElement } from "react";
@@ -16,6 +16,7 @@ export function Composer({
   sendInFlight,
   onChange,
   onSend,
+  onGoToCampaign,
 }: ComposerProps): ReactElement {
   const canSend = value.trim().length > 0 && !sendInFlight && !disabled;
 
@@ -35,9 +36,22 @@ export function Composer({
         disabled={disabled || sendInFlight}
         onChange={(event) => onChange(event.target.value)}
         onKeyDown={handleKeyDown}
+        placeholder="Ask about rules, constraints, or compliance…"
         className="min-h-20 max-h-40 text-body-airy"
       />
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between gap-2">
+        {onGoToCampaign !== undefined ? (
+          <Button
+            type="button"
+            variant="outline"
+            className="h-8 rounded-md px-4"
+            onClick={onGoToCampaign}
+          >
+            Go to Campaign
+          </Button>
+        ) : (
+          <span />
+        )}
         <Button
           type="button"
           className="h-8 rounded-md px-4"

@@ -11,6 +11,14 @@ import { SearchFallback } from "@/features/workbench/SearchFallback";
 import type { ThreadProps, WorkbenchMessage } from "@/features/workbench/types";
 import { WORKBENCH_EMPTY_PROMPT } from "@/fixtures/workbench";
 
+function EmptyPrompt(): ReactElement {
+  return (
+    <CommentSheet label="Preflight">
+      <p className="text-body-airy text-fg-muted">{WORKBENCH_EMPTY_PROMPT}</p>
+    </CommentSheet>
+  );
+}
+
 function MessageBlock({
   message,
   rules,
@@ -69,11 +77,9 @@ export function Thread({
   }, [messages.length]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
+    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pb-4">
       {messages.length === 0 ? (
-        <p className="py-8 text-center text-caption text-fg-muted">
-          {WORKBENCH_EMPTY_PROMPT}
-        </p>
+        <EmptyPrompt />
       ) : (
         messages.map((message) => (
           <MessageBlock

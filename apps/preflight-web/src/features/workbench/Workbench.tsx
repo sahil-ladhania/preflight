@@ -6,7 +6,6 @@
 import { useEffect, useState, type ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Button } from "@/components/ui/button";
 import { Composer } from "@/features/workbench/Composer";
 import { nextMessageId } from "@/features/workbench/lib";
 import { Thread } from "@/features/workbench/Thread";
@@ -82,30 +81,30 @@ export function Workbench({
   };
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-[720px] flex-col gap-4 bg-canvas-subtle px-8 py-6">
-      <h1 className="text-title text-fg">Workbench</h1>
-      <Thread
-        messages={messages}
-        rules={rules}
-        showSearchFallback={showSearchFallback}
-        searchQuery={searchQuery}
-        onSearchQueryChange={setSearchQuery}
-        onGoToCampaign={handleGoToCampaign}
-      />
-      <Composer
-        value={composerText}
-        disabled={prefetchFailed}
-        sendInFlight={sendInFlight}
-        onChange={setComposerText}
-        onSend={handleSend}
-      />
-      <Button
-        type="button"
-        className="h-8 w-fit rounded-md px-4"
-        onClick={handleGoToCampaign}
-      >
-        Go to Campaign
-      </Button>
+    <div className="flex h-[calc(100vh-3rem)] flex-col bg-canvas-subtle">
+      <div className="mx-auto flex min-h-0 w-full max-w-[720px] flex-1 flex-col px-8 pt-6">
+        <h1 className="mb-4 shrink-0 text-title text-fg">Workbench</h1>
+        <Thread
+          messages={messages}
+          rules={rules}
+          showSearchFallback={showSearchFallback}
+          searchQuery={searchQuery}
+          onSearchQueryChange={setSearchQuery}
+          onGoToCampaign={handleGoToCampaign}
+        />
+      </div>
+      <div className="shrink-0 border-t border-border bg-canvas">
+        <div className="mx-auto w-full max-w-[720px] px-8 py-4">
+          <Composer
+            value={composerText}
+            disabled={prefetchFailed}
+            sendInFlight={sendInFlight}
+            onChange={setComposerText}
+            onSend={handleSend}
+            onGoToCampaign={handleGoToCampaign}
+          />
+        </div>
+      </div>
     </div>
   );
 }

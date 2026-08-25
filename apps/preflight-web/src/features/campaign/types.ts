@@ -23,6 +23,8 @@ export interface CampaignStepProps {
   title: string;
   subtitle?: string;
   dimmed?: boolean;
+  collapsed?: boolean;
+  sectionId: string;
   children: ReactNode;
 }
 

@@ -39,7 +39,7 @@ export function TopBar(): ReactElement {
   const campaignActive = location.pathname.startsWith("/campaign/");
 
   return (
-    <header className="flex h-12 shrink-0 items-center border-b border-border bg-canvas-subtle px-4">
+    <header className="flex h-12 shrink-0 items-center justify-between border-b border-border bg-canvas-subtle px-4">
       <Link
         to="/assets"
         className="flex items-center gap-2 no-underline"
@@ -48,7 +48,7 @@ export function TopBar(): ReactElement {
         <LogoMark />
         <span className="text-ui font-semibold text-fg">Preflight</span>
       </Link>
-      <nav className="ml-2 flex items-center gap-4">
+      <nav className="flex items-center gap-8">
         <NavLink
           to="/assets"
           end={false}

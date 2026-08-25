@@ -51,7 +51,7 @@ export function StatusChip({ status }: StatusChipProps): ReactElement {
   return (
     <span
       className={cn(
-        "inline-flex h-5 items-center gap-1 rounded-full px-2 text-chip",
+        "inline-flex h-5 items-center gap-1 rounded-full border border-solid px-2 text-chip",
         config.className,
       )}
     >

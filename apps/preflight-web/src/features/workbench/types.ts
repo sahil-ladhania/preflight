@@ -52,4 +52,5 @@ export interface ComposerProps {
   sendInFlight: boolean;
   onChange: (value: string) => void;
   onSend: () => void;
+  onGoToCampaign?: () => void;
 }

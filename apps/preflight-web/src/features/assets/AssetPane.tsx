@@ -122,41 +122,43 @@ export function AssetPane({
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto rounded-md border border-border bg-canvas">
-      <div className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-2">
-        <StatusChip status={asset.status} />
-        {asset.generationIndex > 1 ? (
-          <span className="text-mono text-caption text-fg-muted">
-            v{asset.generationIndex}
+      <div className="border-b border-border px-4 py-2">
+        <div className="flex flex-wrap items-center gap-3">
+          <StatusChip status={asset.status} />
+          {asset.generationIndex > 1 ? (
+            <span className="text-mono text-caption text-fg-muted">
+              v{asset.generationIndex}
+            </span>
+          ) : null}
+          <span className="text-caption text-fg-muted">
+            {formatGeneratedAt(asset.generatedAt)}
           </span>
-        ) : null}
-        <span className="text-caption text-fg-muted">
-          {formatGeneratedAt(asset.generatedAt)}
-        </span>
-        <span className="text-hash text-fg-muted">{shortId(asset.id)}</span>
-        <div className="ml-auto flex items-center gap-2">
-          {acceptEnabled ? (
-            <Button type="button" className="h-8 rounded-md px-4" onClick={onAccept}>
+          <span className="text-hash text-fg-muted">{shortId(asset.id)}</span>
+          <div className="ml-auto flex items-center gap-2">
+            <Button
+              type="button"
+              variant={acceptEnabled ? "default" : "outline"}
+              className="h-8 rounded-md px-4"
+              disabled={!acceptEnabled}
+              onClick={acceptEnabled ? onAccept : undefined}
+            >
               Accept
             </Button>
-          ) : (
-            <div className="flex flex-col items-end gap-1">
-              <Button type="button" variant="outline" className="h-8 rounded-md px-4" disabled>
-                Accept
-              </Button>
-              {disabledCaption !== null ? (
-                <span className="text-caption text-fg-muted">{disabledCaption}</span>
-              ) : null}
-            </div>
-          )}
-          <Button
-            type="button"
-            variant="outline"
-            className="h-8 rounded-md px-4"
-            onClick={handleRegenerate}
-          >
-            Regenerate
-          </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-8 rounded-md px-4"
+              onClick={handleRegenerate}
+            >
+              Regenerate
+            </Button>
+          </div>
         </div>
+        {!acceptEnabled && disabledCaption !== null ? (
+          <p className="mt-1 text-right text-caption text-fg-muted">
+            {disabledCaption}
+          </p>
+        ) : null}
       </div>
       {renderCopy(asset.copySegments.headline, "Headline", "text-title text-fg")}
       {renderCopy(asset.copySegments.body, "Body", "text-body text-fg")}

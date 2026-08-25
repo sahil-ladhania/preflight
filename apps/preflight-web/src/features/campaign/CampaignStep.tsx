@@ -12,12 +12,15 @@ export function CampaignStep({
   title,
   subtitle,
   dimmed = false,
+  collapsed = false,
+  sectionId,
   children,
 }: CampaignStepProps): ReactElement {
   return (
     <section
+      id={sectionId}
       className={cn(
-        "flex flex-col gap-6",
+        "flex scroll-mt-12 flex-col gap-4",
         dimmed && "pointer-events-none opacity-40",
       )}
     >
@@ -27,7 +30,7 @@ export function CampaignStep({
           <p className="text-caption text-fg-muted">{subtitle}</p>
         ) : null}
       </div>
-      {children}
+      {!collapsed ? children : null}
     </section>
   );
 }

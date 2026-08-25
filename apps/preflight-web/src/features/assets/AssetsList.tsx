@@ -16,7 +16,7 @@ function ListHeaderRow(): ReactElement {
   return (
     <div
       className={cn(
-        "sticky top-0 grid grid-cols-[120px_minmax(0,1fr)_minmax(0,1fr)_168px_96px] items-center gap-4",
+        "sticky top-0 grid grid-cols-[132px_minmax(0,1fr)_minmax(0,1fr)_168px_96px] items-center gap-4",
         "border-b border-border bg-canvas-subtle px-4 py-2",
       )}
     >
@@ -110,12 +110,14 @@ export function AssetsList({
   }
 
   return (
-    <div className="bg-canvas">
+    <div className="bg-canvas-subtle">
       <PageHeader />
-      <ListHeaderRow />
-      {assets.map((asset) => (
-        <AssetListRow key={asset.id} asset={asset} />
-      ))}
+      <div className="bg-canvas">
+        <ListHeaderRow />
+        {assets.map((asset) => (
+          <AssetListRow key={asset.id} asset={asset} />
+        ))}
+      </div>
     </div>
   );
 }

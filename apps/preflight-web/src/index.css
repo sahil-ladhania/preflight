@@ -166,36 +166,42 @@
     color: var(--chip-blocked-ink);
     background-color: var(--chip-blocked-fill);
     border: 1px solid var(--chip-blocked-border);
+    border-style: solid;
   }
 
   .chip-needs-human {
     color: var(--chip-needs-human-ink);
     background-color: var(--chip-needs-human-fill);
     border: 1px solid var(--chip-needs-human-border);
+    border-style: solid;
   }
 
   .chip-needs-regen {
     color: var(--chip-needs-regen-ink);
     background-color: var(--chip-needs-regen-fill);
     border: 1px solid var(--chip-needs-regen-border);
+    border-style: solid;
   }
 
   .chip-exception {
     color: var(--chip-exception-ink);
     background-color: var(--chip-exception-fill);
     border: 1px solid var(--chip-exception-border);
+    border-style: solid;
   }
 
   .chip-clear {
     color: var(--chip-clear-ink);
     background-color: var(--chip-clear-fill);
     border: 1px solid var(--chip-clear-border);
+    border-style: solid;
   }
 
   .chip-waived {
     color: var(--done);
     background-color: var(--done-fill);
     border: 1px solid var(--done);
+    border-style: solid;
   }
 
   .pending-ring {
@@ -205,6 +211,11 @@
     border-radius: 9999px;
     border: 1px solid var(--fg-muted);
     animation: spin-pending 1s linear infinite;
+  }
+
+  .pending-ring-slot {
+    visibility: hidden;
+    animation: none;
   }
 
   .human-confirmed {

@@ -47,17 +47,29 @@ export function ReasonModal({
     return <></>;
   }
 
+  const placeholder =
+    mode === "override"
+      ? "Why are you overriding the machine verdict?"
+      : "Why is this rule being waived?";
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <Textarea
-          value={reason}
-          onChange={(event) => setReason(event.target.value)}
-          className="min-h-24"
-        />
+        <div className="flex flex-col gap-2">
+          <label htmlFor="reason" className="text-caption text-fg-muted">
+            Reason (required)
+          </label>
+          <Textarea
+            id="reason"
+            value={reason}
+            placeholder={placeholder}
+            onChange={(event) => setReason(event.target.value)}
+            className="min-h-24 text-body-airy"
+          />
+        </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel

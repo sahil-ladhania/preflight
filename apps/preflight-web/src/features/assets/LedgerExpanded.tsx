@@ -73,7 +73,7 @@ function ActionRow({ finding, onConfirm, onOverride, onWaive, onRetry }: LedgerE
   }
   if (finding.machineVerdict === "fail" && finding.kind === "deterministic") {
     return (
-      <Button type="button" variant="outline" size="sm" onClick={onWaive}>
+      <Button type="button" variant="outline" size="sm" className="w-fit" onClick={onWaive}>
         Waive
       </Button>
     );

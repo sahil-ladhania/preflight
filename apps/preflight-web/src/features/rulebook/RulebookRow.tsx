@@ -9,6 +9,10 @@ import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { appliesLabel } from "@/features/rulebook/lib";
 import type { RulebookRowProps } from "@/features/rulebook/types";
+import { cn } from "@/lib/utils";
+
+const GRID =
+  "grid grid-cols-[180px_56px_minmax(0,1fr)_200px_72px] items-center gap-4";
 
 function KindBadge({
   kind,
@@ -28,18 +32,29 @@ export function RulebookRow({
   onDelete,
 }: RulebookRowProps): ReactElement {
   return (
-    <div className="grid grid-cols-[140px_56px_minmax(0,1fr)_160px_100px] items-center gap-4 border-b border-border bg-canvas px-4 py-2">
-      <span className="truncate text-mono text-fg-muted">{rule.ruleId}</span>
+    <div
+      className={cn(
+        GRID,
+        "border-b border-border bg-canvas px-4 py-2 hover:bg-canvas-subtle",
+      )}
+    >
+      <span className="truncate text-mono text-fg-muted" title={rule.ruleId}>
+        {rule.ruleId}
+      </span>
       <KindBadge kind={rule.kind} />
-      <span className="truncate text-body text-fg">{rule.wording}</span>
-      <span className="truncate text-caption text-fg-muted">
+      <span className="truncate text-body text-fg" title={rule.wording}>
+        {rule.wording}
+      </span>
+      <span className="truncate text-caption text-fg-muted" title={appliesLabel(rule)}>
         {appliesLabel(rule)}
       </span>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-end gap-1">
         {rule.kind === "deterministic" ? (
-          <span className="flex items-center gap-1 text-caption text-fg-muted">
-            <Lock className="size-3 shrink-0" aria-hidden />
-            Defined in code
+          <span
+            className="inline-flex items-center text-fg-muted"
+            title="Defined in code"
+          >
+            <Lock className="size-3.5 shrink-0" aria-label="Defined in code" />
           </span>
         ) : (
           <>
@@ -57,7 +72,7 @@ export function RulebookRow({
               className="h-7 rounded-md px-2 text-ui"
               onClick={() => onDelete(rule.ruleId)}
             >
-              Delete
+              Del
             </Button>
           </>
         )}

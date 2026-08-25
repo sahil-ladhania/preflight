@@ -10,6 +10,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { BriefForm } from "@/features/campaign/BriefForm";
 import { CampaignStep } from "@/features/campaign/CampaignStep";
+import {
+  activeCampaignStep,
+  CampaignStepNav,
+} from "@/features/campaign/CampaignStepNav";
 import { ConstraintCards } from "@/features/campaign/ConstraintCards";
 import { GenerateBlock } from "@/features/campaign/GenerateBlock";
 import {
@@ -117,6 +121,10 @@ export function Campaign({
     generateInFlight,
   });
   const generateDisabled = generateCaption !== null;
+  const activeStep = activeCampaignStep({
+    briefSaved,
+    compileDone: compileResult !== null,
+  });
 
   const handleExtract = (): void => {
     setExtractInFlight(true);
@@ -166,9 +174,14 @@ export function Campaign({
   };
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-[720px] flex-col gap-6 px-8 py-6">
+    <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-[720px] flex-col gap-4 bg-canvas-subtle px-8 py-6">
       <h1 className="text-title text-fg">Campaign</h1>
-      <CampaignStep title="Brief" subtitle="Step 1 — paste and structure the brief.">
+      <CampaignStepNav activeStep={activeStep} />
+      <CampaignStep
+        title="Brief"
+        subtitle="Step 1 — paste and structure the brief."
+        sectionId="campaign-brief"
+      >
         <BriefForm
           freeText={freeText}
           brief={brief}
@@ -187,6 +200,8 @@ export function Campaign({
         title="Constraint set"
         subtitle="Step 2 — compile predicates against the saved brief."
         dimmed={s2Dimmed}
+        collapsed={s2Dimmed}
+        sectionId="campaign-constraints"
       >
         <ConstraintCards
           compileResult={compileResult}
@@ -202,15 +217,19 @@ export function Campaign({
         title="Generate"
         subtitle="Step 3 — freeze and create assets."
         dimmed={s3Dimmed}
+        collapsed={s3Dimmed}
+        sectionId="campaign-generate"
       >
-        <GenerateBlock
-          compileResult={compileResult}
-          dimmed={s3Dimmed}
-          disabled={generateDisabled}
-          disabledCaption={generateCaption}
-          generateInFlight={generateInFlight}
-          onGenerate={handleGenerate}
-        />
+        <div className="sticky bottom-0 -mx-8 border-t border-border bg-canvas px-8 py-4">
+          <GenerateBlock
+            compileResult={compileResult}
+            dimmed={s3Dimmed}
+            disabled={generateDisabled}
+            disabledCaption={generateCaption}
+            generateInFlight={generateInFlight}
+            onGenerate={handleGenerate}
+          />
+        </div>
       </CampaignStep>
     </div>
   );

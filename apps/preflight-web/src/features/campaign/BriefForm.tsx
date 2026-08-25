@@ -3,8 +3,8 @@
  * Why: proposed-field dashed borders from extract.
  */
 
-import type { ReactElement } from "react";
-import { Loader2 } from "lucide-react";
+import { useState, type ReactElement } from "react";
+import { ChevronDown, Loader2 } from "lucide-react";
 
 import type { BriefField } from "@preflight/schemas";
 
@@ -67,13 +67,14 @@ export function BriefForm({
   onExtract,
   onSave,
 }: BriefFormProps): ReactElement {
+  const [advancedOpen, setAdvancedOpen] = useState<boolean>(false);
   const patchScalar = (key: BriefField, value: string): void => {
     onFieldEdit(key);
     onBriefChange({ ...brief, [key]: value });
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-4">
           <p className="text-caption text-fg-muted">Free-text brief</p>
@@ -97,7 +98,7 @@ export function BriefForm({
           className="min-h-[120px] px-4 py-3 text-body-airy"
         />
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         {BRIEF_SCALAR_FIELDS.map(({ key, label }) => (
           <ScalarField
             key={key}
@@ -116,22 +117,41 @@ export function BriefForm({
             onBriefChange({ ...brief, channels });
           }}
         />
-        <PerformanceFiguresField
-          figures={brief.performanceFigures}
-          proposed={proposedFieldKeys.has("performanceFigures")}
-          onChange={(figures) => {
-            onFieldEdit("performanceFigures");
-            onBriefChange({ ...brief, performanceFigures: figures });
-          }}
-        />
-        <ClaimsField
-          claims={brief.claims}
-          proposed={proposedFieldKeys.has("claims")}
-          onChange={(claims) => {
-            onFieldEdit("claims");
-            onBriefChange({ ...brief, claims });
-          }}
-        />
+        <button
+          type="button"
+          className="flex w-fit items-center gap-1 text-ui text-fg-muted hover:text-fg"
+          aria-expanded={advancedOpen}
+          onClick={() => setAdvancedOpen((open) => !open)}
+        >
+          <ChevronDown
+            className={cn(
+              "size-4 transition-transform",
+              advancedOpen && "rotate-180",
+            )}
+            aria-hidden
+          />
+          Advanced
+        </button>
+        {advancedOpen ? (
+          <div className="flex flex-col gap-3">
+            <PerformanceFiguresField
+              figures={brief.performanceFigures}
+              proposed={proposedFieldKeys.has("performanceFigures")}
+              onChange={(figures) => {
+                onFieldEdit("performanceFigures");
+                onBriefChange({ ...brief, performanceFigures: figures });
+              }}
+            />
+            <ClaimsField
+              claims={brief.claims}
+              proposed={proposedFieldKeys.has("claims")}
+              onChange={(claims) => {
+                onFieldEdit("claims");
+                onBriefChange({ ...brief, claims });
+              }}
+            />
+          </div>
+        ) : null}
       </div>
       <Button
         type="button"

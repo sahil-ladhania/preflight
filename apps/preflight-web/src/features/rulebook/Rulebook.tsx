@@ -159,7 +159,7 @@ export function Rulebook({
   };
 
   return (
-    <div className="bg-canvas">
+    <div className="bg-canvas-subtle">
       <RulebookPageHeader onAdd={handleAdd} postSaveCaption={postSaveCaption} />
       <RulebookTable
         rules={rules}
