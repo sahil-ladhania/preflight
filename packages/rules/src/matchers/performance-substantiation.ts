@@ -8,7 +8,7 @@ import type { MatcherResult } from "../span.js";
 
 export const PERFORMANCE_SUBSTANTIATION_MATCHER_VERSION = "sebi-05-v1";
 
-const SUBSTANTIATION_MARKERS = [
+export const SUBSTANTIATION_MARKERS = [
   "substantiat",
   "not indicative",
   "not a guarantee",

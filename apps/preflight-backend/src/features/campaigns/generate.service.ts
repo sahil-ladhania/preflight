@@ -2,16 +2,12 @@
  * generate.service — generate birth path.
  * Why: live generator → canonicalText → runDeterministic → asset txn → fan-out judge.
  */
-// size: orchestration + txn + per-channel prep; canonical builder extracted
+// size: orchestration + txn; prepare/revision/disclaimer extracted
 import { randomUUID } from "node:crypto";
 
 import type { Prisma } from "@prisma/client";
 
-import {
-  hashRun,
-  runDeterministic,
-  type DetRunRule,
-} from "@preflight/rules";
+import { type DetRunRule } from "@preflight/rules";
 import {
   StructuredBriefSchema,
   type Channel,
@@ -22,17 +18,9 @@ import { fanOutJudgement } from "../findings/judge.service.js";
 import { getPackageMatch } from "../../lib/catalog.js";
 import { InternalError, NotFoundError, ValidationError } from "../../lib/http-error.js";
 import { prisma } from "../../lib/prisma.js";
-import { buildCanonicalText } from "./generate-canonical.js";
-import { callGenerator } from "./generate-agent.js";
-
-interface PreparedChannel {
-  channel: Channel;
-  output: Awaited<ReturnType<typeof callGenerator>>;
-  canonicalText: string;
-  fieldOffsets: ReturnType<typeof buildCanonicalText>["fieldOffsets"];
-  runHash: string;
-  detFindings: ReturnType<typeof runDeterministic>["findings"];
-}
+import { prepareChannelForGenerate } from "./generate-prepare.js";
+import { loadRegenRevisionContext } from "./generate-revision.js";
+import type { RegenRevisionInput } from "../../../agents/generator.prompt.js";
 
 function snapshotRules(
   snapshots: Array<{ ruleId: string; kind: string; wording: string }>,
@@ -73,17 +61,6 @@ function bindDetRunRules(
     });
 }
 
-function runDeterministicSafe(
-  canonicalText: string,
-  rules: DetRunRule[],
-): ReturnType<typeof runDeterministic> {
-  try {
-    return runDeterministic({ canonicalText, rules });
-  } catch {
-    throw new InternalError("Deterministic engine error.");
-  }
-}
-
 export async function generateAssets(
   campaignId: string,
   regeneratedFromId?: string,
@@ -117,10 +94,13 @@ export async function generateAssets(
   });
   const detRules = bindDetRunRules(snapshots);
   const judgementSnapshots = snapshots.filter((snapshot) => snapshot.kind === "judgement");
+  const pinnedDetRuleIds = detRules.map((rule) => rule.id);
+  const sebi01Pinned = pinnedDetRuleIds.includes("SEBI-01");
 
   let channels: Channel[];
   let generationIndex = 1;
   let regenFromId: string | null = null;
+  let revisionContext: RegenRevisionInput | undefined;
 
   if (regeneratedFromId) {
     const parent = await prisma.asset.findUnique({ where: { id: regeneratedFromId } });
@@ -136,40 +116,28 @@ export async function generateAssets(
     channels = [parent.channel as Channel];
     generationIndex = parent.generationIndex + 1;
     regenFromId = parent.id;
+    revisionContext = (await loadRegenRevisionContext(regeneratedFromId)) ?? undefined;
   } else {
     channels = [...structuredBrief.channels];
   }
 
   const ruleWordings = snapshotRules(snapshots);
-
   const rulesetHash = constraintSet.rulesetHash;
 
-  async function prepareChannel(channel: Channel): Promise<PreparedChannel> {
-    const output = await callGenerator(channel, structuredBrief, ruleWordings);
-    const { canonicalText, fieldOffsets } = buildCanonicalText(output);
-    const { findings } = runDeterministicSafe(canonicalText, detRules);
-    const matcherOutputs = findings.map((finding) => ({
-      ruleId: finding.ruleId,
-      machineVerdict: finding.machineVerdict,
-      spans: finding.spans,
-    }));
-    const runHash = hashRun({
-      canonicalText,
-      rulesetHash,
-      matcherOutputs,
-    });
-
-    return {
-      channel,
-      output,
-      canonicalText,
-      fieldOffsets,
-      runHash,
-      detFindings: findings,
-    };
-  }
-
-  const prepared = await Promise.all(channels.map(prepareChannel));
+  const prepared = await Promise.all(
+    channels.map((channel) =>
+      prepareChannelForGenerate({
+        channel,
+        structuredBrief,
+        ruleWordings,
+        pinnedDetRuleIds,
+        detRules,
+        rulesetHash,
+        sebi01Pinned,
+        revisionContext,
+      }),
+    ),
+  );
 
   const now = new Date();
   const assetIds: string[] = [];

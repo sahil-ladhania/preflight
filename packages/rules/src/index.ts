@@ -51,3 +51,10 @@ export {
   appliesSebi04,
   appliesSebi05,
 } from "./predicates.js";
+
+export {
+  buildGeneratorHintLines,
+  type GeneratorHintBrief,
+} from "./lib/generator-hints.js";
+
+export { REQUIRED_DISCLAIMER_PHRASE } from "./matchers/disclaimer.js";

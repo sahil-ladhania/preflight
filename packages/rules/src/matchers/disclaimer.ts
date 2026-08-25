@@ -8,11 +8,12 @@ import type { MatcherResult } from "../span.js";
 
 export const DISCLAIMER_MATCHER_VERSION = "sebi-01-v1";
 
-const REQUIRED_PHRASE = "mutual fund investments are subject to market risks";
+export const REQUIRED_DISCLAIMER_PHRASE =
+  "mutual fund investments are subject to market risks";
 
 export function matchDisclaimer(canonicalText: string): MatcherResult {
   const normalized = collapseForScan(canonicalText);
-  const pass = normalized.includes(REQUIRED_PHRASE);
+  const pass = normalized.includes(REQUIRED_DISCLAIMER_PHRASE);
 
   if (pass) {
     return {

@@ -2,6 +2,7 @@
  * generate-agent — live generator agent call + parse.
  * Why: keep generate.service orchestration under size limit.
  */
+import { buildGeneratorHintLines } from "@preflight/rules";
 import {
   GeneratorOutputSchema,
   type Channel,
@@ -10,7 +11,10 @@ import {
   type StructuredBriefInput,
 } from "@preflight/schemas";
 
-import { buildGeneratorPrompt } from "../../../agents/generator.prompt.js";
+import {
+  buildGeneratorPrompt,
+  type RegenRevisionInput,
+} from "../../../agents/generator.prompt.js";
 import { InternalError } from "../../lib/http-error.js";
 
 function stripJsonFence(content: string): string {
@@ -19,13 +23,29 @@ function stripJsonFence(content: string): string {
   return match?.[1]?.trim() ?? trimmed;
 }
 
+export interface CallGeneratorInput {
+  channel: Channel;
+  brief: StructuredBriefInput;
+  rules: Array<{ ruleId: string; kind: RuleKind; wording: string }>;
+  pinnedDetRuleIds: string[];
+  revisionContext?: RegenRevisionInput;
+}
+
 export async function callGenerator(
-  channel: Channel,
-  brief: StructuredBriefInput,
-  rules: Array<{ ruleId: string; kind: RuleKind; wording: string }>,
+  input: CallGeneratorInput,
 ): Promise<GeneratorOutput> {
   try {
-    const prompt = buildGeneratorPrompt({ channel, brief, rules });
+    const detHintLines = buildGeneratorHintLines(input.pinnedDetRuleIds, {
+      schemeName: input.brief.schemeName,
+      performanceFigures: input.brief.performanceFigures,
+    });
+    const prompt = buildGeneratorPrompt({
+      channel: input.channel,
+      brief: input.brief,
+      rules: input.rules,
+      detHintLines,
+      revisionContext: input.revisionContext,
+    });
     const { runAgent } = await import("../../lib/gitagent.js");
     const { content } = await runAgent("generator", prompt);
     const parsed: unknown = JSON.parse(stripJsonFence(content));

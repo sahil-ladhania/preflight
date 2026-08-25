@@ -8,7 +8,7 @@ import type { MatcherResult } from "../span.js";
 
 export const BANNED_PHRASE_MATCHER_VERSION = "sebi-04-v1";
 
-const BANNED_PHRASES = [
+export const BANNED_PHRASES = [
   "risk free",
   "risk-free",
   "assured returns",
