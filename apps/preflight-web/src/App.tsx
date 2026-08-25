@@ -35,7 +35,7 @@ import {
   RulebookLoadingDemo,
   RulebookStates,
 } from "@/design-proof/RulebookStates";
-import { Rulebook } from "@/features/rulebook/Rulebook";
+import { RulebookRoute } from "@/features/rulebook/Rulebook";
 import { RULES_CATALOG } from "@/fixtures/rules-catalog";
 import {
   WorkbenchErrorFallbackDemo,
@@ -71,7 +71,7 @@ export default function App(): ReactElement {
             <Route path="assets" element={<AssetsListRoute />} />
             <Route path="assets/:id" element={<AssetDetailRoute />} />
             <Route path="campaign/:campaignId" element={<CampaignRoute />} />
-            <Route path="rulebook" element={<Rulebook rules={RULES_CATALOG} />} />
+            <Route path="rulebook" element={<RulebookRoute />} />
             <Route path="workbench" element={<Workbench rules={RULES_CATALOG} />} />
             <Route path="design-proof" element={<DesignProof />} />
             <Route path="design-proof/assets-list" element={<AssetsListStates />} />

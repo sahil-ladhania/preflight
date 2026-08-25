@@ -3,10 +3,18 @@
  * Why: catalog sort, applicability labels, form parsing.
  */
 
-import type { PredicateSpec, RuleCatalogRowDTO } from "@preflight/schemas";
+import type {
+  CreateJudgementRuleRequest,
+  PredicateSpec,
+  RuleCatalogRowDTO,
+  UpdateJudgementRuleRequest,
+} from "@preflight/schemas";
 import type { BriefField } from "@preflight/schemas";
 
 import type { JudgementFormState } from "@/features/rulebook/types";
+
+export const POST_SAVE_CAPTION =
+  "Live catalog updated. Existing assets keep their frozen snapshots — recompile on Campaign or re-run on Assets to compare.";
 
 export const PREDICATE_FIELD_OPTIONS: BriefField[] = [
   "objective",
@@ -28,6 +36,25 @@ export const BRIEF_FIELD_LABELS: Record<BriefField, string> = {
   performanceFigures: "Performance figures",
   claims: "Claims",
 };
+
+export function createRequestFromForm(
+  form: JudgementFormState,
+): CreateJudgementRuleRequest | null {
+  const predicateSpec = parsePredicateSpec(form);
+  if (predicateSpec === null) {
+    return null;
+  }
+  return {
+    wording: form.wording.trim(),
+    predicateSpec,
+  };
+}
+
+export function updateRequestFromForm(
+  form: JudgementFormState,
+): UpdateJudgementRuleRequest | null {
+  return createRequestFromForm(form);
+}
 
 export function sortCatalogRules(
   rules: RuleCatalogRowDTO[],

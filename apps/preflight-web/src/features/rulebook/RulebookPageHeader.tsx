@@ -6,7 +6,7 @@
 import type { ReactElement } from "react";
 
 import { Button } from "@/components/ui/button";
-import { POST_SAVE_CAPTION } from "@/fixtures/rules-catalog";
+import { POST_SAVE_CAPTION } from "@/features/rulebook/lib";
 import type { RulebookPageHeaderProps } from "@/features/rulebook/types";
 
 export function RulebookPageHeader({

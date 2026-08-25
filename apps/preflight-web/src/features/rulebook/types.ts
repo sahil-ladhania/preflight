@@ -18,9 +18,30 @@ export interface JudgementFormState {
   valueText: string;
 }
 
+export interface RulebookLoadingStateProps {
+  showSpinner: boolean;
+}
+
 export interface RulebookProps {
   rules: RuleCatalogRowDTO[];
   view?: RulebookView;
+  showLoadingSpinner?: boolean;
+  sheetMode?: SheetMode;
+  editingRuleId?: string | null;
+  form?: JudgementFormState;
+  deleteRuleId?: string | null;
+  postSaveCaption?: boolean;
+  saveInFlight?: boolean;
+  onAdd?: () => void;
+  onEdit?: (ruleId: string) => void;
+  onDeleteRequest?: (ruleId: string) => void;
+  onFormChange?: (form: JudgementFormState) => void;
+  onSave?: () => Promise<void>;
+  onCancel?: () => void;
+  onDeleteFromSheet?: () => void;
+  onCloseDelete?: () => void;
+  onConfirmDelete?: () => Promise<void>;
+  onRetry?: () => void;
 }
 
 export interface RulebookTableProps {

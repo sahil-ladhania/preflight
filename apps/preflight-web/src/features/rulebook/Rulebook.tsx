@@ -1,29 +1,27 @@
 /**
  * Rulebook — Screen 4 merged table orchestrator.
- * Why: sheet and delete modal state co-located here.
+ * Why: sheet and delete modal wired from useRulebook in RulebookRoute.
  */
 
-import { useState, type ReactElement } from "react";
+import type { ReactElement } from "react";
 
 import { Button } from "@/components/ui/button";
 import { DeleteRuleModal } from "@/features/rulebook/DeleteRuleModal";
 import { JudgementSheet } from "@/features/rulebook/JudgementSheet";
-import {
-  emptyJudgementForm,
-  formFromRule,
-  rowFromForm,
-  sortCatalogRules,
-} from "@/features/rulebook/lib";
+import { emptyJudgementForm } from "@/features/rulebook/lib";
 import { RulebookPageHeader } from "@/features/rulebook/RulebookPageHeader";
 import { RulebookTable } from "@/features/rulebook/RulebookTable";
 import type {
-  JudgementFormState,
+  RulebookLoadingStateProps,
   RulebookProps,
-  SheetMode,
 } from "@/features/rulebook/types";
-import type { RuleCatalogRowDTO } from "@preflight/schemas";
+import { useRulebook } from "@/features/rulebook/useRulebook";
 
-function LoadingState(): ReactElement {
+function LoadingState({ showSpinner }: RulebookLoadingStateProps): ReactElement {
+  if (!showSpinner) {
+    return <div className="min-h-[calc(100vh-3rem)] bg-canvas-subtle" />;
+  }
+
   return (
     <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center">
       <div
@@ -34,9 +32,9 @@ function LoadingState(): ReactElement {
   );
 }
 
-function ErrorState(): ReactElement {
+function ErrorState({ onRetry }: { onRetry?: () => void }): ReactElement {
   const handleRetry = (): void => {
-    // Will re-GET /rules.
+    onRetry?.();
   };
 
   return (
@@ -50,25 +48,32 @@ function ErrorState(): ReactElement {
 }
 
 export function Rulebook({
-  rules: initialRules,
+  rules,
   view = "loaded",
+  showLoadingSpinner = true,
+  sheetMode = "closed",
+  editingRuleId = null,
+  form,
+  deleteRuleId = null,
+  postSaveCaption = false,
+  saveInFlight = false,
+  onAdd,
+  onEdit,
+  onDeleteRequest,
+  onFormChange,
+  onSave,
+  onCancel,
+  onDeleteFromSheet,
+  onCloseDelete,
+  onConfirmDelete,
+  onRetry,
 }: RulebookProps): ReactElement {
-  const [rules, setRules] = useState<RuleCatalogRowDTO[]>(() =>
-    sortCatalogRules(initialRules),
-  );
-  const [sheetMode, setSheetMode] = useState<SheetMode>("closed");
-  const [editingRuleId, setEditingRuleId] = useState<string | null>(null);
-  const [form, setForm] = useState<JudgementFormState>(emptyJudgementForm);
-  const [deleteRuleId, setDeleteRuleId] = useState<string | null>(null);
-  const [postSaveCaption, setPostSaveCaption] = useState<boolean>(false);
-  const [saveInFlight, setSaveInFlight] = useState<boolean>(false);
-
   if (view === "loading") {
-    return <LoadingState />;
+    return <LoadingState showSpinner={showLoadingSpinner} />;
   }
 
   if (view === "error") {
-    return <ErrorState />;
+    return <ErrorState onRetry={onRetry} />;
   }
 
   const editingRule =
@@ -76,111 +81,92 @@ export function Rulebook({
       ? null
       : (rules.find((rule) => rule.ruleId === editingRuleId) ?? null);
 
-  const closeSheet = (): void => {
-    setSheetMode("closed");
-    setEditingRuleId(null);
-    setForm(emptyJudgementForm());
-  };
-
-  const handleAdd = (): void => {
-    setSheetMode("add");
-    setEditingRuleId(null);
-    setForm(emptyJudgementForm());
-  };
-
-  const handleEdit = (ruleId: string): void => {
-    const rule = rules.find((item) => item.ruleId === ruleId);
-    if (rule === undefined || rule.kind !== "judgement") {
-      return;
+  const handleSave = (): void => {
+    if (onSave !== undefined) {
+      void onSave();
     }
-    setSheetMode("edit");
-    setEditingRuleId(ruleId);
-    setForm(formFromRule(rule));
-  };
-
-  const handleDeleteRequest = (ruleId: string): void => {
-    setDeleteRuleId(ruleId);
-  };
-
-  const handleDeleteFromSheet = (): void => {
-    if (editingRuleId !== null) {
-      setDeleteRuleId(editingRuleId);
-    }
-  };
-
-  const removeRule = (ruleId: string): void => {
-    setRules((current) =>
-      sortCatalogRules(current.filter((rule) => rule.ruleId !== ruleId)),
-    );
-    setPostSaveCaption(true);
-    closeSheet();
-    setDeleteRuleId(null);
   };
 
   const handleConfirmDelete = (): void => {
-    if (deleteRuleId === null) {
-      return;
+    if (onConfirmDelete !== undefined) {
+      void onConfirmDelete();
     }
-    // Will DELETE /rules/:id.
-    removeRule(deleteRuleId);
-  };
-
-  const handleSave = (): void => {
-    setSaveInFlight(true);
-    if (sheetMode === "add") {
-      const ruleId = crypto.randomUUID();
-      const row = rowFromForm(ruleId, form);
-      if (row === null) {
-        setSaveInFlight(false);
-        return;
-      }
-      // Will POST /rules.
-      setRules((current) => sortCatalogRules([...current, row]));
-      setPostSaveCaption(true);
-      closeSheet();
-    } else if (sheetMode === "edit" && editingRuleId !== null) {
-      const row = rowFromForm(editingRuleId, form);
-      if (row === null) {
-        setSaveInFlight(false);
-        return;
-      }
-      // Will PATCH /rules/:id.
-      setRules((current) =>
-        sortCatalogRules(
-          current.map((rule) =>
-            rule.ruleId === editingRuleId ? row : rule,
-          ),
-        ),
-      );
-      setPostSaveCaption(true);
-      closeSheet();
-    }
-    setSaveInFlight(false);
   };
 
   return (
     <div className="bg-canvas-subtle">
-      <RulebookPageHeader onAdd={handleAdd} postSaveCaption={postSaveCaption} />
+      <RulebookPageHeader
+        onAdd={() => {
+          onAdd?.();
+        }}
+        postSaveCaption={postSaveCaption}
+      />
       <RulebookTable
         rules={rules}
-        onEdit={handleEdit}
-        onDelete={handleDeleteRequest}
+        onEdit={(ruleId) => {
+          onEdit?.(ruleId);
+        }}
+        onDelete={(ruleId) => {
+          onDeleteRequest?.(ruleId);
+        }}
       />
       <JudgementSheet
         mode={sheetMode}
         rule={editingRule}
-        form={form}
+        form={form ?? emptyJudgementForm()}
         saveInFlight={saveInFlight}
-        onFormChange={setForm}
+        onFormChange={(nextForm) => {
+          onFormChange?.(nextForm);
+        }}
         onSave={handleSave}
-        onCancel={closeSheet}
-        onDelete={handleDeleteFromSheet}
+        onCancel={() => {
+          onCancel?.();
+        }}
+        onDelete={() => {
+          onDeleteFromSheet?.();
+        }}
       />
       <DeleteRuleModal
         ruleId={deleteRuleId}
-        onClose={() => setDeleteRuleId(null)}
+        onClose={() => {
+          onCloseDelete?.();
+        }}
         onConfirm={handleConfirmDelete}
       />
     </div>
+  );
+}
+
+export function RulebookRoute(): ReactElement {
+  const hook = useRulebook();
+
+  const handleDeleteFromSheet = (): void => {
+    if (hook.editingRuleId !== null) {
+      hook.onDeleteRequest(hook.editingRuleId);
+    }
+  };
+
+  return (
+    <Rulebook
+      rules={hook.rules}
+      view={hook.view}
+      showLoadingSpinner={hook.showLoadingSpinner}
+      sheetMode={hook.sheetMode}
+      editingRuleId={hook.editingRuleId}
+      form={hook.form}
+      deleteRuleId={hook.deleteRuleId}
+      postSaveCaption={hook.postSaveCaption}
+      saveInFlight={hook.saveInFlight}
+      onAdd={hook.onAdd}
+      onEdit={hook.onEdit}
+      onDeleteRequest={hook.onDeleteRequest}
+      onFormChange={hook.onFormChange}
+      onSave={hook.onSave}
+      onCancel={hook.onCancel}
+      onDeleteFromSheet={handleDeleteFromSheet}
+      onCloseDelete={hook.onCloseDelete}
+      onConfirmDelete={hook.onConfirmDelete}
+      onRetry={hook.retryLoad}
+    />
   );
 }
