@@ -4,13 +4,16 @@
  */
 
 import type { ReactElement } from "react";
-import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
-import { CAMPAIGN_ID_FRESH } from "@/fixtures/campaign";
 import { AssetListRow } from "@/features/assets/AssetListRow";
 import type { AssetsListProps } from "@/features/assets/types";
+import { useAssetsList } from "@/features/assets/useAssetsList";
 import { cn } from "@/lib/utils";
+
+interface HeaderActionsProps {
+  onNewCampaign?: () => void;
+}
 
 function ListHeaderRow(): ReactElement {
   return (
@@ -29,12 +32,9 @@ function ListHeaderRow(): ReactElement {
   );
 }
 
-function NewCampaignButton(): ReactElement {
-  const navigate = useNavigate();
-
+function NewCampaignButton({ onNewCampaign }: HeaderActionsProps): ReactElement {
   const handleClick = (): void => {
-    // Will POST /campaigns and navigate to /campaign/:id.
-    void navigate(`/campaign/${CAMPAIGN_ID_FRESH}`);
+    onNewCampaign?.();
   };
 
   return (
@@ -44,25 +44,39 @@ function NewCampaignButton(): ReactElement {
   );
 }
 
-function PageHeader(): ReactElement {
+function PageHeader({ onNewCampaign }: HeaderActionsProps): ReactElement {
   return (
     <div className="flex items-center justify-between border-b border-border bg-canvas px-4 py-3">
       <h1 className="text-title text-fg">Assets</h1>
-      <NewCampaignButton />
+      <NewCampaignButton onNewCampaign={onNewCampaign} />
     </div>
   );
 }
 
-function EmptyState(): ReactElement {
+function EmptyState({ onNewCampaign }: HeaderActionsProps): ReactElement {
   return (
     <div className="flex flex-col items-center gap-4 py-16">
       <p className="text-caption text-fg-muted">No assets yet</p>
-      <NewCampaignButton />
+      <NewCampaignButton onNewCampaign={onNewCampaign} />
     </div>
   );
 }
 
-function LoadingState(): ReactElement {
+function LoadingState({
+  showSpinner,
+  onNewCampaign,
+}: {
+  showSpinner: boolean;
+  onNewCampaign?: () => void;
+}): ReactElement {
+  if (!showSpinner) {
+    return (
+      <div className="bg-canvas">
+        <PageHeader onNewCampaign={onNewCampaign} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center">
       <div
@@ -73,9 +87,9 @@ function LoadingState(): ReactElement {
   );
 }
 
-function ErrorState(): ReactElement {
+function ErrorState({ onRetry }: { onRetry?: () => void }): ReactElement {
   const handleRetry = (): void => {
-    // Will re-GET /assets.
+    onRetry?.();
   };
 
   return (
@@ -91,27 +105,35 @@ function ErrorState(): ReactElement {
 export function AssetsList({
   assets,
   view = "loaded",
+  onRetry,
+  onNewCampaign,
+  showLoadingSpinner = true,
 }: AssetsListProps): ReactElement {
   if (view === "loading") {
-    return <LoadingState />;
+    return (
+      <LoadingState
+        showSpinner={showLoadingSpinner}
+        onNewCampaign={onNewCampaign}
+      />
+    );
   }
 
   if (view === "error") {
-    return <ErrorState />;
+    return <ErrorState onRetry={onRetry} />;
   }
 
   if (assets.length === 0) {
     return (
       <div className="bg-canvas">
-        <PageHeader />
-        <EmptyState />
+        <PageHeader onNewCampaign={onNewCampaign} />
+        <EmptyState onNewCampaign={onNewCampaign} />
       </div>
     );
   }
 
   return (
     <div className="bg-canvas-subtle">
-      <PageHeader />
+      <PageHeader onNewCampaign={onNewCampaign} />
       <div className="bg-canvas">
         <ListHeaderRow />
         {assets.map((asset) => (
@@ -119,5 +141,22 @@ export function AssetsList({
         ))}
       </div>
     </div>
+  );
+}
+
+export function AssetsListRoute(): ReactElement {
+  const { assets, view, showLoadingSpinner, retry, createCampaignAndGo } =
+    useAssetsList();
+
+  return (
+    <AssetsList
+      assets={assets}
+      view={view}
+      onRetry={retry}
+      onNewCampaign={() => {
+        void createCampaignAndGo();
+      }}
+      showLoadingSpinner={showLoadingSpinner}
+    />
   );
 }

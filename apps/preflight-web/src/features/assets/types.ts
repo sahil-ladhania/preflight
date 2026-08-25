@@ -36,6 +36,9 @@ export type AssetDetailFixture = AssetDetailDTO & {
 export interface AssetsListProps {
   assets: AssetListItemDTO[];
   view?: AssetsListView;
+  onRetry?: () => void;
+  onNewCampaign?: () => void;
+  showLoadingSpinner?: boolean;
 }
 
 export interface AssetListRowProps {
@@ -49,7 +52,21 @@ export interface StatusChipProps {
 export interface AssetDetailProps {
   asset: AssetDetailFixture;
   view?: AssetDetailView;
-  initialRerunStrip?: RerunStripDTO | null;
+  rerunStrip?: RerunStripDTO | null;
+  showLoadingSpinner?: boolean;
+  openFindingId?: string | null;
+  reasonModal?: ReasonModalState;
+  onSpanClick?: (findingId: string) => void;
+  onConfirm?: (findingId: string) => void;
+  onOverride?: (findingId: string) => void;
+  onWaive?: (findingId: string) => void;
+  onRetry?: (findingId: string) => void;
+  onRerun?: () => void;
+  onRegenerate?: () => void;
+  onAccept?: () => void;
+  onCloseReasonModal?: () => void;
+  onSubmitReason?: (reason: string) => void;
+  onRetryLoad?: () => void;
 }
 
 export interface LineageBannerProps {

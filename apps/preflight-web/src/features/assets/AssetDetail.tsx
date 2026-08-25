@@ -2,6 +2,7 @@
  * AssetDetail — Screen 1 orchestrator.
  * Why: region siblings extracted; orchestrator stays ≤250 lines.
  */
+// size: optional wired handlers for design-proof plus AssetDetailRoute shell.
 
 import { useState, type ReactElement } from "react";
 import { useParams } from "react-router-dom";
@@ -13,18 +14,20 @@ import { LedgerPane } from "@/features/assets/LedgerPane";
 import { LineageBanner } from "@/features/assets/LineageBanner";
 import { ReasonModal } from "@/features/assets/ReasonModal";
 import { RerunStrip } from "@/features/assets/RerunStrip";
-import type {
-  AssetDetailProps,
-  ReasonModalState,
-} from "@/features/assets/types";
+import type { AssetDetailProps, ReasonModalState } from "@/features/assets/types";
+import { useAssetDetail } from "@/features/assets/useAssetDetail";
 import { useToastContext } from "@/features/shell/ToastHost";
-import {
-  ASSETS_DETAIL,
-  RERUN_STRIPS,
-} from "@/fixtures/assets-detail";
-import type { RerunStripDTO } from "@preflight/schemas";
+import { RERUN_STRIPS } from "@/fixtures/assets-detail";
 
-function LoadingState(): ReactElement {
+function LoadingState({
+  showSpinner,
+}: {
+  showSpinner: boolean;
+}): ReactElement {
+  if (!showSpinner) {
+    return <div className="min-h-[calc(100vh-3rem)] bg-canvas-subtle" />;
+  }
+
   return (
     <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center">
       <div
@@ -35,9 +38,9 @@ function LoadingState(): ReactElement {
   );
 }
 
-function ErrorState(): ReactElement {
+function ErrorState({ onRetry }: { onRetry?: () => void }): ReactElement {
   const handleRetry = (): void => {
-    // Will re-GET /assets/:id.
+    onRetry?.();
   };
 
   return (
@@ -61,41 +64,81 @@ function NotFoundState(): ReactElement {
 export function AssetDetail({
   asset,
   view = "loaded",
-  initialRerunStrip = null,
+  rerunStrip: rerunStripProp = null,
+  showLoadingSpinner = true,
+  openFindingId: openFindingIdProp,
+  reasonModal: reasonModalProp,
+  onSpanClick,
+  onConfirm,
+  onOverride,
+  onWaive,
+  onRetry,
+  onRerun,
+  onRegenerate,
+  onAccept,
+  onCloseReasonModal,
+  onSubmitReason,
+  onRetryLoad,
 }: AssetDetailProps): ReactElement {
   const { enqueue } = useToastContext();
-  const [openFindingId, setOpenFindingId] = useState<string | null>(null);
-  const [reasonModal, setReasonModal] = useState<ReasonModalState>({
+  const [localOpenFindingId, setLocalOpenFindingId] = useState<string | null>(
+    null,
+  );
+  const [localReasonModal, setLocalReasonModal] = useState<ReasonModalState>({
     mode: "closed",
     findingId: null,
   });
-  const [rerunStrip, setRerunStrip] = useState<RerunStripDTO | null>(
-    initialRerunStrip,
-  );
+  const [localRerunStrip, setLocalRerunStrip] = useState(rerunStripProp);
+
+  const openFindingId = openFindingIdProp ?? localOpenFindingId;
+  const reasonModal = reasonModalProp ?? localReasonModal;
+  const rerunStrip = onRerun !== undefined ? rerunStripProp : localRerunStrip;
+
+  const selectFinding = (findingId: string): void => {
+    if (onSpanClick !== undefined) {
+      onSpanClick(findingId);
+      return;
+    }
+    setLocalOpenFindingId(findingId);
+  };
 
   if (view === "loading") {
-    return <LoadingState />;
+    return <LoadingState showSpinner={showLoadingSpinner} />;
   }
 
   if (view === "error") {
-    return <ErrorState />;
+    return <ErrorState onRetry={onRetryLoad} />;
   }
 
   const handleAccept = (): void => {
-    // Will ship — demo has no publishing endpoint.
+    if (onAccept !== undefined) {
+      onAccept();
+      return;
+    }
     enqueue("Would ship — demo has no publishing.");
   };
 
   const handleRerun = (): void => {
-    const strip = RERUN_STRIPS[asset.id] ?? null;
-    setRerunStrip(strip);
+    if (onRerun !== undefined) {
+      onRerun();
+      return;
+    }
+    setLocalRerunStrip(RERUN_STRIPS[asset.id] ?? null);
   };
 
   const closeModal = (): void => {
-    setReasonModal({ mode: "closed", findingId: null });
+    if (onCloseReasonModal !== undefined) {
+      onCloseReasonModal();
+      return;
+    }
+    setLocalReasonModal({ mode: "closed", findingId: null });
   };
 
-  const submitModal = (): void => {
+  const submitModal = (reason: string): void => {
+    if (onSubmitReason !== undefined) {
+      void onSubmitReason(reason);
+      return;
+    }
     closeModal();
   };
 
@@ -112,24 +155,44 @@ export function AssetDetail({
           <AssetPane
             asset={asset}
             openFindingId={openFindingId}
-            onSpanClick={setOpenFindingId}
+            onSpanClick={selectFinding}
             onAccept={handleAccept}
-            onRegenerate={() => {}}
+            onRegenerate={() => {
+              if (onRegenerate !== undefined) {
+                void onRegenerate();
+              }
+            }}
           />
         </div>
         <div className="min-h-0 w-[42%] shrink-0 p-2 pl-0">
           <LedgerPane
             findings={asset.findings}
             openFindingId={openFindingId}
-            onRowClick={setOpenFindingId}
-            onConfirm={() => {}}
-            onOverride={(findingId) =>
-              setReasonModal({ mode: "override", findingId })
-            }
-            onWaive={(findingId) =>
-              setReasonModal({ mode: "waive", findingId })
-            }
-            onRetry={() => {}}
+            onRowClick={selectFinding}
+            onConfirm={(findingId) => {
+              if (onConfirm !== undefined) {
+                void onConfirm(findingId);
+              }
+            }}
+            onOverride={(findingId) => {
+              if (onOverride !== undefined) {
+                onOverride(findingId);
+                return;
+              }
+              setLocalReasonModal({ mode: "override", findingId });
+            }}
+            onWaive={(findingId) => {
+              if (onWaive !== undefined) {
+                onWaive(findingId);
+                return;
+              }
+              setLocalReasonModal({ mode: "waive", findingId });
+            }}
+            onRetry={(findingId) => {
+              if (onRetry !== undefined) {
+                void onRetry(findingId);
+              }
+            }}
           />
         </div>
       </div>
@@ -145,12 +208,61 @@ export function AssetDetail({
 
 export function AssetDetailRoute(): ReactElement {
   const { id } = useParams<{ id: string }>();
-  if (id === undefined) {
+  const {
+    asset,
+    view,
+    notFound,
+    showLoadingSpinner,
+    rerunStrip,
+    openFindingId,
+    setOpenFindingId,
+    reasonModal,
+    openOverride,
+    openWaive,
+    closeReasonModal,
+    submitReason,
+    confirmFinding,
+    retryFinding,
+    rerun,
+    regenerate,
+    accept,
+    retryLoad,
+  } = useAssetDetail(id);
+
+  if (notFound) {
     return <NotFoundState />;
   }
-  const asset = ASSETS_DETAIL[id];
-  if (asset === undefined) {
-    return <NotFoundState />;
+
+  if (view === "loading") {
+    return <LoadingState showSpinner={showLoadingSpinner} />;
   }
-  return <AssetDetail asset={asset} />;
+
+  if (view === "error" || asset === null) {
+    return <ErrorState onRetry={retryLoad} />;
+  }
+
+  return (
+    <AssetDetail
+      asset={asset}
+      view="loaded"
+      rerunStrip={rerunStrip}
+      openFindingId={openFindingId}
+      reasonModal={reasonModal}
+      onSpanClick={(findingId) => {
+        setOpenFindingId(findingId);
+      }}
+      onConfirm={confirmFinding}
+      onOverride={openOverride}
+      onWaive={openWaive}
+      onRetry={retryFinding}
+      onRerun={() => {
+        void rerun();
+      }}
+      onRegenerate={regenerate}
+      onAccept={accept}
+      onCloseReasonModal={closeReasonModal}
+      onSubmitReason={submitReason}
+      onRetryLoad={retryLoad}
+    />
+  );
 }

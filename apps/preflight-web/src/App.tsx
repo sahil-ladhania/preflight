@@ -18,12 +18,11 @@ import { DesignProof } from "@/design-proof/DesignProof";
 import { AssetDetailStates } from "@/design-proof/AssetDetailStates";
 import { AssetsListStates } from "@/design-proof/AssetsListStates";
 import { AssetDetail, AssetDetailRoute } from "@/features/assets/AssetDetail";
-import { AssetsList } from "@/features/assets/AssetsList";
+import { AssetsList, AssetsListRoute } from "@/features/assets/AssetsList";
 import {
   RERUN_STRIP_ENGINE_MISMATCH,
 } from "@/fixtures/assets-detail";
 import { ASSET_A } from "@/fixtures/assets-detail/a";
-import { ASSETS_LIST_FIXTURE } from "@/fixtures/assets-list";
 import { CampaignRoute } from "@/features/campaign/Campaign";
 import {
   CampaignErrorDemo,
@@ -69,7 +68,7 @@ export default function App(): ReactElement {
         <Routes>
           <Route element={<ShellFrame />}>
             <Route index element={<Navigate to="/assets" replace />} />
-            <Route path="assets" element={<AssetsList assets={ASSETS_LIST_FIXTURE} />} />
+            <Route path="assets" element={<AssetsListRoute />} />
             <Route path="assets/:id" element={<AssetDetailRoute />} />
             <Route path="campaign/:campaignId" element={<CampaignRoute />} />
             <Route path="rulebook" element={<Rulebook rules={RULES_CATALOG} />} />
@@ -106,7 +105,7 @@ export default function App(): ReactElement {
               element={
                 <AssetDetail
                   asset={ASSET_A}
-                  initialRerunStrip={RERUN_STRIP_ENGINE_MISMATCH}
+                  rerunStrip={RERUN_STRIP_ENGINE_MISMATCH}
                 />
               }
             />
