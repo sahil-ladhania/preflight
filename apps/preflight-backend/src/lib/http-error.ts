@@ -23,3 +23,7 @@ export class NotFoundError extends HttpError {
 export class NotImplementedError extends HttpError {
   readonly statusCode = 501;
 }
+
+export class InternalError extends HttpError {
+  readonly statusCode = 500;
+}

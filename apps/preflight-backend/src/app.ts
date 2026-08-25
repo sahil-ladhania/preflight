@@ -5,6 +5,8 @@
 import cors from "cors";
 import express, { type Express } from "express";
 
+import assetsRouter from "./features/assets/assets.route.js";
+import findingsRouter from "./features/findings/findings.route.js";
 import { errorHandler } from "./middleware/error.js";
 
 export function createApp(): Express {
@@ -15,6 +17,9 @@ export function createApp(): Express {
   app.get("/api/health", (_req, res) => {
     res.status(200).json({ success: true, data: { ok: true } });
   });
+
+  app.use("/api/assets", assetsRouter);
+  app.use("/api/findings", findingsRouter);
 
   app.use(errorHandler);
 
