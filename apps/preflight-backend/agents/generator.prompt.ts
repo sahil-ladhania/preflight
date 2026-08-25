@@ -23,7 +23,5 @@ export function buildGeneratorPrompt(input: GeneratorPromptInput): string {
     "",
     "Compliance rules (respect these wordings):",
     ...ruleLines,
-    "",
-    'Respond with JSON only: {"headline":"...","body":"...","disclaimer":"...","cta":"..."}',
   ].join("\n");
 }

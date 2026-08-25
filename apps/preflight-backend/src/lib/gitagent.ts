@@ -8,6 +8,10 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { env } from "../config/env.js";
+import {
+  buildAgentSystemPrompt,
+  readAgentRuntimeConfig,
+} from "./agent-dir.js";
 
 export type AgentName = "extractor" | "generator" | "judge" | "explainer";
 
@@ -25,6 +29,10 @@ const DEFAULT_TIMEOUT_MS = 60_000;
 export function getAgentDir(name: AgentName): string {
   const libDir = fileURLToPath(new URL(".", import.meta.url));
   return join(libDir, "../../agents/defs", name);
+}
+
+function resolveModel(manifestPreferred: string): string {
+  return env.OPENAI_MODEL ?? manifestPreferred;
 }
 
 async function collectAssistantContent(stream: Query): Promise<RunAgentResult> {
@@ -72,15 +80,19 @@ export async function runAgent(
   options: RunAgentOptions = {},
 ): Promise<RunAgentResult> {
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  const agentDir = getAgentDir(name);
+  const runtime = await readAgentRuntimeConfig(agentDir);
+  const systemPrompt = await buildAgentSystemPrompt(agentDir);
 
   process.env.OPENAI_API_KEY = env.OPENAI_API_KEY;
 
   const stream = query({
-    dir: getAgentDir(name),
+    dir: agentDir,
     prompt,
-    model: "openai:gpt-4o-mini",
+    model: resolveModel(runtime.modelPreferred),
+    systemPrompt,
     replaceBuiltinTools: true,
-    maxTurns: 1,
+    maxTurns: runtime.maxTurns,
     abortController: new AbortController(),
   });
 

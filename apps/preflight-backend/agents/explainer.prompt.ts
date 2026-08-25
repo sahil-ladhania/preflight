@@ -22,8 +22,5 @@ export function buildExplainerPrompt(input: ExplainerPromptInput): string {
     "",
     "Rule catalog:",
     ...catalogLines,
-    "",
-    'Respond with JSON only: {"message":"...","ruleIds":["..."]}',
-    "ruleIds must cite ids from the catalog above.",
   ].join("\n");
 }
