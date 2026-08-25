@@ -1,7 +1,8 @@
 /**
- * api — axios instance with baseURL '/api'.
- * Why: single client parse point for ApiResponse from schemas.
+ * api — axios clients with baseURL '/api'.
+ * Why: default 30s for CRUD; 90s agent client for LLM routes.
  */
+// size: dual axios clients + shared envelope parse; split adds indirection only
 
 import axios, {
   AxiosError,
@@ -15,6 +16,9 @@ import {
 } from "@preflight/schemas";
 
 type ApiDataSchema = Parameters<typeof parseApiResponse>[0];
+
+export const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
+export const AGENT_REQUEST_TIMEOUT_MS = 90_000;
 
 export type ApiErrorKind =
   | "validation"
@@ -42,32 +46,41 @@ export class ApiClientError extends Error {
   }
 }
 
-export const apiClient: AxiosInstance = axios.create({
-  baseURL: "/api",
-  timeout: 30_000,
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  },
-});
-
-apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  if (import.meta.env.DEV) {
-    const method = config.method?.toUpperCase() ?? "GET";
-    console.info(`${method} ${config.url ?? ""}`);
-  }
-  return config;
-});
-
-apiClient.interceptors.response.use(
-  (response: AxiosResponse) => response,
-  (error: unknown) => {
-    if (import.meta.env.DEV && error instanceof AxiosError && error.response) {
-      console.error(`HTTP ${error.response.status} ${error.config?.url ?? ""}`);
+function attachDevLogging(client: AxiosInstance): void {
+  client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+    if (import.meta.env.DEV) {
+      const method = config.method?.toUpperCase() ?? "GET";
+      console.info(`${method} ${config.url ?? ""}`);
     }
-    throw error;
-  },
-);
+    return config;
+  });
+
+  client.interceptors.response.use(
+    (response: AxiosResponse) => response,
+    (error: unknown) => {
+      if (import.meta.env.DEV && error instanceof AxiosError && error.response) {
+        console.error(`HTTP ${error.response.status} ${error.config?.url ?? ""}`);
+      }
+      throw error;
+    },
+  );
+}
+
+function createApiClient(timeoutMs: number): AxiosInstance {
+  const client = axios.create({
+    baseURL: "/api",
+    timeout: timeoutMs,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  });
+  attachDevLogging(client);
+  return client;
+}
+
+export const apiClient = createApiClient(DEFAULT_REQUEST_TIMEOUT_MS);
+export const apiClientAgent = createApiClient(AGENT_REQUEST_TIMEOUT_MS);
 
 function parseEnvelopeError(data: unknown): string | null {
   const parsed = apiErrorSchema.safeParse(data);
@@ -85,6 +98,14 @@ function mapAxiosError(
   const operation = `Failed to request ${method} ${path}`;
 
   if (!error.response) {
+    if (error.code === "ECONNABORTED") {
+      return new ApiClientError(
+        "Request timed out. Check OPENAI_API_KEY and try again.",
+        "network",
+        null,
+        null,
+      );
+    }
     return new ApiClientError(operation, "network", null, null);
   }
 
@@ -133,12 +154,14 @@ export async function apiRequest<T>(
     body?: unknown;
     signal?: AbortSignal;
     dataSchema: ApiDataSchema;
+    agent?: boolean;
   },
 ): Promise<T> {
   const operation = `Failed to request ${method} ${path}`;
+  const client = options.agent === true ? apiClientAgent : apiClient;
 
   try {
-    const response = await apiClient.request({
+    const response = await client.request({
       method,
       url: path,
       data: options.body,

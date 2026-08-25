@@ -118,6 +118,7 @@ export async function extractCampaignBriefService(
       body,
       signal,
       dataSchema: ExtractorOutputSchema,
+      agent: true,
     });
   } catch (error: unknown) {
     if (error instanceof ApiClientError) {
@@ -163,6 +164,7 @@ export async function generateCampaignAssetsService(
       body,
       signal,
       dataSchema: GenerateResponseDTOSchema,
+      agent: true,
     });
   } catch (error: unknown) {
     if (error instanceof ApiClientError) {

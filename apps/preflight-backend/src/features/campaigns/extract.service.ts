@@ -5,6 +5,7 @@
 import { ExtractorOutputSchema, type ExtractorOutput } from "@preflight/schemas";
 
 import { buildExtractorPrompt } from "../../../agents/extractor.prompt.js";
+import { env } from "../../config/env.js";
 import { InternalError, NotFoundError } from "../../lib/http-error.js";
 import { prisma } from "../../lib/prisma.js";
 
@@ -46,6 +47,10 @@ export async function extractBrief(
   } catch (error) {
     if (error instanceof InternalError) {
       throw error;
+    }
+
+    if (env.NODE_ENV === "development") {
+      console.error("extractBrief agent failure:", error);
     }
 
     throw new InternalError("Extract failed.");

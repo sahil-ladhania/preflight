@@ -20,6 +20,7 @@ export async function sendWorkbenchChatService(
       body,
       signal,
       dataSchema: WorkbenchChatResponseSchema,
+      agent: true,
     });
   } catch (error: unknown) {
     if (error instanceof ApiClientError) {
