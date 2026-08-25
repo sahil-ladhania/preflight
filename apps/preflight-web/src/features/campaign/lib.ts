@@ -4,7 +4,12 @@
  */
 
 import { StructuredBriefSchema } from "@preflight/schemas";
-import type { BriefField, Channel, StructuredBriefInput } from "@preflight/schemas";
+import type {
+  BriefField,
+  Channel,
+  CompileResponseDTO,
+  StructuredBriefInput,
+} from "@preflight/schemas";
 
 export const CHANNEL_OPTIONS: Channel[] = [
   "email",
@@ -106,4 +111,46 @@ export function proposedKeysFromPartial(
     keys.add(key);
   }
   return keys;
+}
+
+export function campaignGateState(input: {
+  brief: StructuredBriefInput;
+  savedBrief: StructuredBriefInput;
+  briefSaved: boolean;
+  compileResult: CompileResponseDTO | null;
+  emptySetAcknowledged: boolean;
+  generateInFlight: boolean;
+}): {
+  briefDirty: boolean;
+  s2Dimmed: boolean;
+  s3Dimmed: boolean;
+  staleBanner: boolean;
+  saveDisabled: boolean;
+  generateCaption: string | null;
+  generateDisabled: boolean;
+} {
+  const briefDirty = !briefEquals(input.brief, input.savedBrief);
+  const s2Dimmed = !input.briefSaved;
+  const s3Dimmed = input.compileResult === null;
+  const staleBanner = input.compileResult !== null && briefDirty;
+  const saveDisabled =
+    !briefIsValid(input.brief) || (!briefDirty && input.briefSaved);
+  const generateCaption = generateDisabledCaption({
+    s3Dimmed,
+    ruleCount: input.compileResult?.ruleIds.length ?? 0,
+    emptySetAcknowledged: input.emptySetAcknowledged,
+    briefDirty,
+    generateInFlight: input.generateInFlight,
+  });
+  const generateDisabled = generateCaption !== null;
+
+  return {
+    briefDirty,
+    s2Dimmed,
+    s3Dimmed,
+    staleBanner,
+    saveDisabled,
+    generateCaption,
+    generateDisabled,
+  };
 }

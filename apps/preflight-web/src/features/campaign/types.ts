@@ -12,11 +12,50 @@ import type {
 } from "@preflight/schemas";
 import type { BriefField } from "@preflight/schemas";
 
+import type { CampaignStepId } from "@/features/campaign/CampaignStepNav";
+
 export type CampaignView = "loaded" | "loading" | "error";
+
+export interface CampaignLoadingStateProps {
+  showSpinner: boolean;
+}
+
+export interface CampaignErrorStateProps {
+  onRetry?: () => void;
+}
 
 export interface CampaignProps {
   campaign: CampaignDTO;
   view?: CampaignView;
+  showLoadingSpinner?: boolean;
+  freeText?: string;
+  brief?: StructuredBriefInput;
+  proposedFieldKeys?: ReadonlySet<BriefField>;
+  compileResult?: CompileResponseDTO | null;
+  emptySetAcknowledged?: boolean;
+  extractInFlight?: boolean;
+  saveInFlight?: boolean;
+  compileInFlight?: boolean;
+  generateInFlight?: boolean;
+  saveDisabled?: boolean;
+  generateDisabled?: boolean;
+  generateCaption?: string | null;
+  staleBanner?: boolean;
+  s2Dimmed?: boolean;
+  s3Dimmed?: boolean;
+  briefDirty?: boolean;
+  activeStep?: CampaignStepId;
+  initialCompileResult?: CompileResponseDTO | null;
+  zeroRulesCompile?: boolean;
+  onFreeTextChange?: (value: string) => void;
+  onBriefChange?: (brief: StructuredBriefInput) => void;
+  onFieldEdit?: (field: BriefField) => void;
+  onEmptySetAckChange?: (checked: boolean) => void;
+  onExtract?: () => void;
+  onSave?: () => void;
+  onCompile?: () => void;
+  onGenerate?: () => void;
+  onRetry?: () => void;
 }
 
 export interface CampaignStepProps {

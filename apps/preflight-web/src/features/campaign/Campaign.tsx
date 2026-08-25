@@ -1,176 +1,167 @@
 /**
  * Campaign — Screen 3 three-step orchestrator.
  * Why: brief → compile → generate on one scroll page.
- * size: three step regions extracted; orchestrator holds gate state only.
  */
+// size: controlled + fixture modes share one tree; fixture hook extracted
 
-import { useState, type ReactElement } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import type { ReactElement } from "react";
+import { useParams } from "react-router-dom";
 
-import { Button } from "@/components/ui/button";
 import { BriefForm } from "@/features/campaign/BriefForm";
 import { CampaignStep } from "@/features/campaign/CampaignStep";
 import {
   activeCampaignStep,
   CampaignStepNav,
 } from "@/features/campaign/CampaignStepNav";
+import {
+  CampaignErrorState,
+  CampaignLoadingState,
+  CampaignNotFoundState,
+} from "@/features/campaign/CampaignStates";
 import { ConstraintCards } from "@/features/campaign/ConstraintCards";
 import { GenerateBlock } from "@/features/campaign/GenerateBlock";
-import {
-  briefEquals,
-  briefFromCampaign,
-  briefIsValid,
-  generateDisabledCaption,
-  mergeExtractProposal,
-  proposedKeysFromPartial,
-} from "@/features/campaign/lib";
+import { briefFromCampaign, campaignGateState } from "@/features/campaign/lib";
 import type { CampaignProps } from "@/features/campaign/types";
-import {
-  CAMPAIGNS,
-  COMPILE_RESULT,
-  COMPILE_ZERO_RULES,
-  EXTRACT_PROPOSAL,
-  GENERATE_ASSET_ID,
-} from "@/fixtures/campaign";
-import type { BriefField, CompileResponseDTO } from "@preflight/schemas";
-
-function LoadingState(): ReactElement {
-  return (
-    <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center">
-      <div
-        className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
-        aria-label="Loading"
-      />
-    </div>
-  );
-}
-
-function ErrorState(): ReactElement {
-  const handleRetry = (): void => {
-    // Will re-GET /campaigns/:id.
-  };
-
-  return (
-    <div className="flex min-h-[calc(100vh-3rem)] flex-col items-center justify-center gap-4">
-      <p className="text-caption text-fg-muted">Could not load campaign.</p>
-      <Button type="button" variant="outline" onClick={handleRetry}>
-        Retry
-      </Button>
-    </div>
-  );
-}
-
-function NotFoundState(): ReactElement {
-  return (
-    <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center">
-      <p className="text-caption text-fg-muted">Campaign not found</p>
-    </div>
-  );
-}
+import { useCampaign } from "@/features/campaign/useCampaign";
+import { useCampaignFixture } from "@/features/campaign/useCampaignFixture";
 
 export function Campaign({
   campaign,
   view = "loaded",
+  showLoadingSpinner = true,
+  freeText: freeTextProp,
+  brief: briefProp,
+  proposedFieldKeys: proposedFieldKeysProp,
+  compileResult: compileResultProp,
+  emptySetAcknowledged: emptySetAcknowledgedProp,
+  extractInFlight: extractInFlightProp,
+  saveInFlight: saveInFlightProp,
+  compileInFlight: compileInFlightProp,
+  generateInFlight: generateInFlightProp,
+  saveDisabled: saveDisabledProp,
+  generateDisabled: generateDisabledProp,
+  generateCaption: generateCaptionProp,
+  staleBanner: staleBannerProp,
+  s2Dimmed: s2DimmedProp,
+  s3Dimmed: s3DimmedProp,
+  briefDirty: briefDirtyProp,
+  activeStep: activeStepProp,
   initialCompileResult = null,
   zeroRulesCompile = false,
-}: CampaignProps & {
-  initialCompileResult?: CompileResponseDTO | null;
-  zeroRulesCompile?: boolean;
-}): ReactElement {
-  const navigate = useNavigate();
-  const [freeText, setFreeText] = useState<string>(campaign.freeText);
-  const [brief, setBrief] = useState(() => briefFromCampaign(campaign.structuredBrief));
-  const [savedBrief, setSavedBrief] = useState(() =>
-    briefFromCampaign(campaign.structuredBrief),
+  onFreeTextChange,
+  onBriefChange,
+  onFieldEdit,
+  onEmptySetAckChange,
+  onExtract,
+  onSave,
+  onCompile,
+  onGenerate,
+  onRetry,
+}: CampaignProps): ReactElement {
+  const fixture = useCampaignFixture(
+    campaign,
+    initialCompileResult,
+    zeroRulesCompile,
   );
-  const [briefSaved, setBriefSaved] = useState<boolean>(
-    campaign.structuredBrief !== null,
-  );
-  const [proposedFieldKeys, setProposedFieldKeys] = useState<Set<BriefField>>(
-    () => new Set(),
-  );
-  const [compileResult, setCompileResult] = useState<CompileResponseDTO | null>(
-    () => initialCompileResult ?? campaign.lastCompile,
-  );
-  const [emptySetAcknowledged, setEmptySetAcknowledged] =
-    useState<boolean>(false);
-  const [extractInFlight, setExtractInFlight] = useState<boolean>(false);
-  const [saveInFlight, setSaveInFlight] = useState<boolean>(false);
-  const [compileInFlight, setCompileInFlight] = useState<boolean>(false);
-  const [generateInFlight, setGenerateInFlight] = useState<boolean>(false);
+  const controlled = onSave !== undefined;
 
   if (view === "loading") {
-    return <LoadingState />;
+    return <CampaignLoadingState showSpinner={showLoadingSpinner} />;
   }
 
   if (view === "error") {
-    return <ErrorState />;
+    return <CampaignErrorState onRetry={onRetry} />;
   }
 
-  const briefDirty = !briefEquals(brief, savedBrief);
-  const s2Dimmed = !briefSaved;
-  const s3Dimmed = compileResult === null;
-  const staleBanner = compileResult !== null && briefDirty;
-  const saveDisabled =
-    !briefIsValid(brief) || (!briefDirty && briefSaved);
-  const generateCaption = generateDisabledCaption({
-    s3Dimmed,
-    ruleCount: compileResult?.ruleIds.length ?? 0,
-    emptySetAcknowledged,
-    briefDirty,
-    generateInFlight,
+  const freeText = controlled ? (freeTextProp ?? "") : fixture.freeText;
+  const brief = controlled
+    ? (briefProp ?? briefFromCampaign(null))
+    : fixture.brief;
+  const proposedFieldKeys = controlled
+    ? (proposedFieldKeysProp ?? new Set())
+    : fixture.proposedFieldKeys;
+  const compileResult = controlled
+    ? (compileResultProp ?? null)
+    : fixture.compileResult;
+  const emptySetAcknowledged = controlled
+    ? (emptySetAcknowledgedProp ?? false)
+    : fixture.emptySetAcknowledged;
+  const extractInFlight = controlled
+    ? (extractInFlightProp ?? false)
+    : fixture.extractInFlight;
+  const saveInFlight = controlled
+    ? (saveInFlightProp ?? false)
+    : fixture.saveInFlight;
+  const compileInFlight = controlled
+    ? (compileInFlightProp ?? false)
+    : fixture.compileInFlight;
+  const generateInFlight = controlled
+    ? (generateInFlightProp ?? false)
+    : fixture.generateInFlight;
+
+  const fixtureGate = campaignGateState({
+    brief: fixture.brief,
+    savedBrief: fixture.savedBrief,
+    briefSaved: fixture.briefSaved,
+    compileResult: fixture.compileResult,
+    emptySetAcknowledged: fixture.emptySetAcknowledged,
+    generateInFlight: fixture.generateInFlight,
   });
-  const generateDisabled = generateCaption !== null;
-  const activeStep = activeCampaignStep({
-    briefSaved,
-    compileDone: compileResult !== null,
-  });
+
+  const saveDisabled = controlled
+    ? (saveDisabledProp ?? true)
+    : fixtureGate.saveDisabled;
+  const generateCaption = controlled
+    ? (generateCaptionProp ?? null)
+    : fixtureGate.generateCaption;
+  const generateDisabled = controlled
+    ? (generateDisabledProp ?? true)
+    : fixtureGate.generateDisabled;
+  const staleBanner = controlled
+    ? (staleBannerProp ?? false)
+    : fixtureGate.staleBanner;
+  const s2Dimmed = controlled ? (s2DimmedProp ?? true) : fixtureGate.s2Dimmed;
+  const s3Dimmed = controlled ? (s3DimmedProp ?? true) : fixtureGate.s3Dimmed;
+  const briefDirty = controlled
+    ? (briefDirtyProp ?? false)
+    : fixtureGate.briefDirty;
+  const activeStep =
+    activeStepProp ??
+    activeCampaignStep({
+      briefSaved: controlled ? !s2Dimmed : fixture.briefSaved,
+      compileDone: compileResult !== null,
+    });
 
   const handleExtract = (): void => {
-    setExtractInFlight(true);
-    // Will POST /campaigns/:id/extract.
-    setBrief(mergeExtractProposal(brief, EXTRACT_PROPOSAL));
-    setProposedFieldKeys(proposedKeysFromPartial(EXTRACT_PROPOSAL));
-    setExtractInFlight(false);
-  };
-
-  const handleFieldEdit = (field: BriefField): void => {
-    setProposedFieldKeys((current) => {
-      if (!current.has(field)) {
-        return current;
-      }
-      const next = new Set(current);
-      next.delete(field);
-      return next;
-    });
+    if (onExtract !== undefined) {
+      void onExtract();
+      return;
+    }
+    fixture.handleExtract();
   };
 
   const handleSave = (): void => {
-    if (!briefIsValid(brief)) {
+    if (onSave !== undefined) {
+      void onSave();
       return;
     }
-    setSaveInFlight(true);
-    // Will PUT /campaigns/:id/brief.
-    setSavedBrief(brief);
-    setBriefSaved(true);
-    setProposedFieldKeys(new Set());
-    setSaveInFlight(false);
+    fixture.handleSave();
   };
 
   const handleCompile = (): void => {
-    setCompileInFlight(true);
-    // Will POST /campaigns/:id/compile.
-    const result = zeroRulesCompile ? COMPILE_ZERO_RULES : COMPILE_RESULT;
-    setCompileResult(result);
-    setEmptySetAcknowledged(false);
-    setCompileInFlight(false);
+    if (onCompile !== undefined) {
+      void onCompile();
+      return;
+    }
+    fixture.handleCompile();
   };
 
   const handleGenerate = (): void => {
-    setGenerateInFlight(true);
-    // Will POST /campaigns/:id/generate.
-    setGenerateInFlight(false);
-    void navigate(`/assets/${GENERATE_ASSET_ID}`);
+    if (onGenerate !== undefined) {
+      void onGenerate();
+      return;
+    }
+    fixture.handleGenerate();
   };
 
   return (
@@ -189,9 +180,9 @@ export function Campaign({
           saveDisabled={saveDisabled}
           saveInFlight={saveInFlight}
           extractInFlight={extractInFlight}
-          onFreeTextChange={setFreeText}
-          onBriefChange={setBrief}
-          onFieldEdit={handleFieldEdit}
+          onFreeTextChange={onFreeTextChange ?? fixture.setFreeText}
+          onBriefChange={onBriefChange ?? fixture.setBrief}
+          onFieldEdit={onFieldEdit ?? fixture.handleFieldEdit}
           onExtract={handleExtract}
           onSave={handleSave}
         />
@@ -210,7 +201,9 @@ export function Campaign({
           emptySetAcknowledged={emptySetAcknowledged}
           staleBanner={staleBanner}
           onCompile={handleCompile}
-          onEmptySetAckChange={setEmptySetAcknowledged}
+          onEmptySetAckChange={
+            onEmptySetAckChange ?? fixture.setEmptySetAcknowledged
+          }
         />
       </CampaignStep>
       <CampaignStep
@@ -237,12 +230,67 @@ export function Campaign({
 
 export function CampaignRoute(): ReactElement {
   const { campaignId } = useParams<{ campaignId: string }>();
-  if (campaignId === undefined) {
-    return <NotFoundState />;
+  const hook = useCampaign(campaignId);
+
+  if (hook.notFound) {
+    return <CampaignNotFoundState />;
   }
-  const campaign = CAMPAIGNS[campaignId];
-  if (campaign === undefined) {
-    return <NotFoundState />;
+
+  if (hook.view !== "loaded" || hook.campaign === null) {
+    return (
+      <Campaign
+        campaign={{
+          id: campaignId ?? "",
+          freeText: "",
+          structuredBrief: null,
+          currentConstraintSetId: null,
+          updatedAt: new Date(0).toISOString(),
+          lastCompile: null,
+        }}
+        view={hook.view}
+        showLoadingSpinner={hook.showLoadingSpinner}
+        onRetry={hook.retryLoad}
+      />
+    );
   }
-  return <Campaign campaign={campaign} />;
+
+  return (
+    <Campaign
+      campaign={hook.campaign}
+      view={hook.view}
+      freeText={hook.freeText}
+      brief={hook.brief}
+      proposedFieldKeys={hook.proposedFieldKeys}
+      compileResult={hook.compileResult}
+      emptySetAcknowledged={hook.emptySetAcknowledged}
+      extractInFlight={hook.extractInFlight}
+      saveInFlight={hook.saveInFlight}
+      compileInFlight={hook.compileInFlight}
+      generateInFlight={hook.generateInFlight}
+      saveDisabled={hook.saveDisabled}
+      generateDisabled={hook.generateDisabled}
+      generateCaption={hook.generateCaption}
+      staleBanner={hook.staleBanner}
+      s2Dimmed={hook.s2Dimmed}
+      s3Dimmed={hook.s3Dimmed}
+      briefDirty={hook.briefDirty}
+      activeStep={hook.activeStep}
+      onFreeTextChange={hook.setFreeText}
+      onBriefChange={hook.setBrief}
+      onFieldEdit={hook.onFieldEdit}
+      onEmptySetAckChange={hook.onEmptySetAckChange}
+      onExtract={() => {
+        void hook.extract();
+      }}
+      onSave={() => {
+        void hook.save();
+      }}
+      onCompile={() => {
+        void hook.compile();
+      }}
+      onGenerate={() => {
+        void hook.generate();
+      }}
+    />
+  );
 }
