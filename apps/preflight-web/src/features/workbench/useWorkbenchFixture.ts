@@ -7,12 +7,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
+  handoffBriefFromMessages,
   handoffEnabled as computeHandoffEnabled,
   nextMessageId,
   replaceMessageById,
 } from "@/features/workbench/lib";
 import type { WorkbenchMessage } from "@/features/workbench/types";
-import { CAMPAIGN_ID, EXTRACT_PROPOSAL } from "@/fixtures/campaign";
+import { CAMPAIGN_ID } from "@/fixtures/campaign";
 import { resolveWorkbenchChat } from "@/fixtures/workbench";
 
 const FIXTURE_RESPONSE_DELAY_MS = 600;
@@ -52,15 +53,16 @@ export function useWorkbenchFixture(input: {
   };
 
   const handleStartCampaignFromConversation = (): void => {
+    const proposal = handoffBriefFromMessages(messages);
+    if (proposal === null) {
+      return;
+    }
+
     setHandoffInFlight(true);
     void navigate(`/campaign/${CAMPAIGN_ID}`, {
       state: {
         handoff: {
-          proposal: EXTRACT_PROPOSAL,
-          freeText: messages
-            .filter((message) => message.role === "user")
-            .map((message) => message.text)
-            .join("\n\n"),
+          proposal,
         },
       },
     });
@@ -107,6 +109,7 @@ export function useWorkbenchFixture(input: {
             text: result.data.message,
             ruleIds: result.data.ruleIds,
             suggestedAction: result.data.suggestedAction,
+            brief: result.data.brief,
             reveal: true,
           }),
         );

@@ -1,30 +1,14 @@
 /**
- * handoff.service — Workbench → Campaign extract sequence.
+ * handoff.service — Workbench → Campaign id resolution.
  * Why: doc 19 §9.3 client handoff without new endpoints.
  */
 
-import type { ExtractorOutput } from "@preflight/schemas";
-
 import {
   createCampaignService,
-  extractCampaignBriefService,
   getCampaignService,
   getLatestCampaignIdService,
 } from "@/features/campaign/campaign.service";
 import { ApiClientError } from "@/lib/api";
-
-export interface WorkbenchHandoffResult {
-  campaignId: string;
-  proposal: ExtractorOutput;
-  freeText: string;
-}
-
-export function buildHandoffFreeText(userTexts: string[]): string {
-  return userTexts
-    .map((text) => text.trim())
-    .filter((text) => text.length > 0)
-    .join("\n\n");
-}
 
 function campaignBriefInUse(freeText: string, hasStructuredBrief: boolean): boolean {
   return freeText.trim().length > 0 || hasStructuredBrief;
@@ -60,17 +44,4 @@ export async function resolveCampaignForHandoff(
         : "resolveCampaignForHandoff failed";
     throw new Error(message, { cause: error });
   }
-}
-
-export async function handoffExtract(
-  campaignId: string,
-  freeText: string,
-  signal: AbortSignal,
-): Promise<WorkbenchHandoffResult> {
-  const proposal = await extractCampaignBriefService(
-    campaignId,
-    { freeText },
-    signal,
-  );
-  return { campaignId, proposal, freeText };
 }

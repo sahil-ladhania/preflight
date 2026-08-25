@@ -35,6 +35,7 @@ export function useCampaign(campaignId: string | undefined): {
   compileInFlight: boolean;
   generateInFlight: boolean;
   saveDisabled: boolean;
+  saveDisabledCaption: string | null;
   generateDisabled: boolean;
   generateCaption: string | null;
   staleBanner: boolean;
@@ -82,13 +83,12 @@ export function useCampaign(campaignId: string | undefined): {
     }
 
     handoffAppliedRef.current = true;
-    load.setFreeText(pendingHandoff.freeText);
     load.setBrief((current) =>
       mergeExtractProposal(current, pendingHandoff.proposal),
     );
     setProposedFieldKeys(proposedKeysFromPartial(pendingHandoff.proposal));
     clearHandoff();
-  }, [load.view, pendingHandoff, load.setFreeText, load.setBrief, clearHandoff]);
+  }, [load.view, pendingHandoff, load.setBrief, clearHandoff]);
 
   const gate = useMemo(
     () =>
@@ -159,6 +159,7 @@ export function useCampaign(campaignId: string | undefined): {
     compileInFlight,
     generateInFlight,
     saveDisabled: gate.saveDisabled,
+    saveDisabledCaption: gate.saveDisabledCaption,
     generateDisabled: gate.generateDisabled,
     generateCaption: gate.generateCaption,
     staleBanner: gate.staleBanner,

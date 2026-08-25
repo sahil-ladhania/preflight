@@ -37,6 +37,7 @@ export function Campaign({
   compileInFlight: compileInFlightProp,
   generateInFlight: generateInFlightProp,
   saveDisabled: saveDisabledProp,
+  saveDisabledCaption: saveDisabledCaptionProp,
   generateDisabled: generateDisabledProp,
   generateCaption: generateCaptionProp,
   staleBanner: staleBannerProp,
@@ -109,6 +110,9 @@ export function Campaign({
   const saveDisabled = controlled
     ? (saveDisabledProp ?? true)
     : fixtureGate.saveDisabled;
+  const saveDisabledCaption = controlled
+    ? (saveDisabledCaptionProp ?? null)
+    : fixtureGate.saveDisabledCaption;
   const generateCaption = controlled
     ? (generateCaptionProp ?? null)
     : fixtureGate.generateCaption;
@@ -177,6 +181,7 @@ export function Campaign({
                 brief={brief}
                 proposedFieldKeys={proposedFieldKeys}
                 saveDisabled={saveDisabled}
+                saveDisabledCaption={saveDisabledCaption}
                 saveInFlight={saveInFlight}
                 extractInFlight={extractInFlight}
                 onFreeTextChange={onFreeTextChange ?? fixture.setFreeText}
@@ -264,6 +269,7 @@ export function CampaignRoute(): ReactElement {
       compileInFlight={hook.compileInFlight}
       generateInFlight={hook.generateInFlight}
       saveDisabled={hook.saveDisabled}
+      saveDisabledCaption={hook.saveDisabledCaption}
       generateDisabled={hook.generateDisabled}
       generateCaption={hook.generateCaption}
       staleBanner={hook.staleBanner}

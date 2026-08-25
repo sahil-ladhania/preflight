@@ -157,8 +157,17 @@ export type { GeneratorOutput } from "./generator-output.js"
 export { JudgeOutputSchema } from "./judge-output.js"
 export type { JudgeOutput } from "./judge-output.js"
 
-export { ExplainerOutputSchema, ExplainerSuggestedActionSchema } from "./explainer-output.js"
-export type { ExplainerOutput, ExplainerSuggestedAction } from "./explainer-output.js"
+export {
+  ExplainerOutputSchema,
+  ExplainerBriefDraftSchema,
+  ExplainerSuggestedActionSchema,
+  coerceExplainerOutput,
+} from "./explainer-output.js"
+export type {
+  ExplainerOutput,
+  ExplainerBriefDraft,
+  ExplainerSuggestedAction,
+} from "./explainer-output.js"
 
 export {
   WorkbenchChatRequestSchema,

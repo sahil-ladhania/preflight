@@ -7,6 +7,7 @@ import type { ReactElement } from "react";
 import { Link } from "react-router-dom";
 
 import { Workbench } from "@/features/workbench/Workbench";
+import { WORKBENCH_HANDOFF_BRIEF } from "@/fixtures/workbench";
 import { RULES_CATALOG } from "@/fixtures/rules-catalog";
 
 export function WorkbenchStates(): ReactElement {
@@ -69,9 +70,10 @@ export function WorkbenchHandoffSuggestedDemo(): ReactElement {
         {
           id: "demo-assistant",
           role: "assistant",
-          text: "That fits a multi-channel brief. Start a campaign from this conversation to extract structured fields on Campaign.",
+          text: "Your brief is complete. Start a campaign from this conversation to review structured fields on Campaign.",
           ruleIds: ["SEBI-02", "BRAND-02"],
           suggestedAction: "handoff_campaign",
+          brief: WORKBENCH_HANDOFF_BRIEF,
         },
       ]}
     />

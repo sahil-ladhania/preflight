@@ -3,9 +3,10 @@
  * Why: catalog filter and message id generation.
  */
 
-import type { WorkbenchChatHistoryItem } from "@preflight/schemas";
+import type { StructuredBriefInput, WorkbenchChatHistoryItem } from "@preflight/schemas";
 import type { RuleCatalogRowDTO } from "@preflight/schemas";
 
+import { briefIsValid } from "@/features/campaign/lib";
 import type { WorkbenchMessage } from "@/features/workbench/types";
 
 export const WORKBENCH_INVITATION =
@@ -47,29 +48,30 @@ export function toChatHistory(
     }));
 }
 
-export function handoffSuggested(messages: WorkbenchMessage[]): boolean {
+export function handoffBriefFromMessages(
+  messages: WorkbenchMessage[],
+): StructuredBriefInput | null {
   const lastAssistant = [...messages]
     .reverse()
     .find((message) => message.role === "assistant");
-  return (
-    lastAssistant !== undefined &&
-    lastAssistant.role === "assistant" &&
-    lastAssistant.suggestedAction === "handoff_campaign"
-  );
+  if (
+    lastAssistant === undefined ||
+    lastAssistant.role !== "assistant" ||
+    lastAssistant.suggestedAction !== "handoff_campaign" ||
+    lastAssistant.brief === undefined
+  ) {
+    return null;
+  }
+  return lastAssistant.brief;
 }
 
-export function hasUserTurn(messages: WorkbenchMessage[]): boolean {
-  return messages.some((message) => message.role === "user");
-}
-
-export function userMessageTexts(messages: WorkbenchMessage[]): string[] {
-  return messages
-    .filter((message) => message.role === "user")
-    .map((message) => message.text);
+export function handoffSuggested(messages: WorkbenchMessage[]): boolean {
+  return handoffBriefFromMessages(messages) !== null;
 }
 
 export function handoffEnabled(messages: WorkbenchMessage[]): boolean {
-  return hasUserTurn(messages) || handoffSuggested(messages);
+  const brief = handoffBriefFromMessages(messages);
+  return brief !== null && briefIsValid(brief);
 }
 
 export function rulesForIds(

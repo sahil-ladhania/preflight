@@ -3,7 +3,7 @@
  * Why: no inline type declarations in components.
  */
 
-import type { ExplainerSuggestedAction } from "@preflight/schemas";
+import type { ExplainerSuggestedAction, StructuredBriefInput } from "@preflight/schemas";
 import type { ReactNode } from "react";
 
 import type { RuleCatalogRowDTO } from "@preflight/schemas";
@@ -17,6 +17,7 @@ export type WorkbenchMessage =
       text: string;
       ruleIds: string[];
       suggestedAction?: ExplainerSuggestedAction;
+      brief?: StructuredBriefInput;
       reveal?: boolean;
     }
   | { id: string; role: "error"; text: string };

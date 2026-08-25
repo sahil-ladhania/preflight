@@ -4,11 +4,14 @@
  */
 import {
   ExplainerOutputSchema,
+  coerceExplainerOutput,
   type WorkbenchChatHistoryItem,
   type WorkbenchChatResponse,
 } from "@preflight/schemas";
+import { ZodError } from "zod";
 
 import { buildExplainerPrompt } from "../../../agents/explainer.prompt.js";
+import { env } from "../../config/env.js";
 import { getLiveCatalog } from "../../lib/catalog.js";
 import { InternalError } from "../../lib/http-error.js";
 
@@ -21,8 +24,18 @@ function stripJsonFence(content: string): string {
 function parseExplainerOutput(content: string): WorkbenchChatResponse {
   try {
     const parsed: unknown = JSON.parse(stripJsonFence(content));
-    return ExplainerOutputSchema.parse(parsed);
-  } catch {
+    return coerceExplainerOutput(ExplainerOutputSchema.parse(parsed));
+  } catch (error: unknown) {
+    if (env.NODE_ENV === "development") {
+      const preview = content.slice(0, 500);
+      if (error instanceof ZodError) {
+        console.error("parseExplainerOutput schema failure:", error.issues);
+      } else {
+        console.error("parseExplainerOutput failure:", error);
+      }
+      console.error("parseExplainerOutput raw content:", preview);
+    }
+
     throw new InternalError("Explainer failed.");
   }
 }
@@ -46,6 +59,10 @@ export async function chat(
   } catch (error) {
     if (error instanceof InternalError) {
       throw error;
+    }
+
+    if (env.NODE_ENV === "development") {
+      console.error("workbench chat agent failure:", error);
     }
 
     throw new InternalError("Explainer failed.");

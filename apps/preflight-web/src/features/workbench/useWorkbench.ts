@@ -14,17 +14,13 @@ import { getRulesService } from "@/features/rulebook/rulebook.service";
 import { resolveWorkbenchCampaignHandoff } from "@/features/shell/campaign-nav.service";
 import { useToastContext } from "@/features/shell/ToastHost";
 import {
-  buildHandoffFreeText,
-  handoffExtract,
-  resolveCampaignForHandoff,
-} from "@/features/workbench/handoff.service";
-import {
+  handoffBriefFromMessages,
   handoffEnabled,
   nextMessageId,
   replaceMessageById,
   toChatHistory,
-  userMessageTexts,
 } from "@/features/workbench/lib";
+import { resolveCampaignForHandoff } from "@/features/workbench/handoff.service";
 import { sendWorkbenchChatService } from "@/features/workbench/workbench.service";
 import type { WorkbenchMessage } from "@/features/workbench/types";
 import { ApiClientError } from "@/lib/api";
@@ -149,6 +145,7 @@ export function useWorkbench(): {
           text: response.message,
           ruleIds: response.ruleIds,
           suggestedAction: response.suggestedAction,
+          brief: response.brief,
           reveal: true,
         }),
       );
@@ -185,7 +182,8 @@ export function useWorkbench(): {
   }, [navigate, toastApiError]);
 
   const startCampaignFromConversation = useCallback(async (): Promise<void> => {
-    if (handoffInFlight || !handoffEnabled(messages)) {
+    const proposal = handoffBriefFromMessages(messages);
+    if (handoffInFlight || proposal === null || !handoffEnabled(messages)) {
       return;
     }
 
@@ -193,14 +191,11 @@ export function useWorkbench(): {
     setHandoffInFlight(true);
 
     try {
-      const freeText = buildHandoffFreeText(userMessageTexts(messages));
       const campaignId = await resolveCampaignForHandoff(controller.signal);
-      const result = await handoffExtract(campaignId, freeText, controller.signal);
-      void navigate(`/campaign/${result.campaignId}`, {
+      void navigate(`/campaign/${campaignId}`, {
         state: {
           handoff: {
-            proposal: result.proposal,
-            freeText: result.freeText,
+            proposal,
           },
         },
       });

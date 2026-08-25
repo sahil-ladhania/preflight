@@ -1,16 +1,15 @@
 /**
  * useCampaignHandoff — read Workbench navigation state once.
- * Why: apply extract proposal without re-running on refresh.
+ * Why: apply structured brief proposal without re-running on refresh.
  */
 
 import { useCallback, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import type { ExtractorOutput } from "@preflight/schemas";
+import type { StructuredBriefInput } from "@preflight/schemas";
 
 export interface CampaignHandoffPayload {
-  proposal: ExtractorOutput;
-  freeText: string;
+  proposal: StructuredBriefInput;
 }
 
 type LocationState = {

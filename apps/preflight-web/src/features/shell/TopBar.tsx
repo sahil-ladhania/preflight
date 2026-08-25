@@ -15,11 +15,9 @@ function LogoMark(): ReactElement {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      width="24"
-      height="24"
       role="img"
       aria-hidden="true"
-      className="shrink-0 text-primary"
+      className="size-8 shrink-0 text-primary"
     >
       <rect x="6" y="4" width="2" height="16" fill="currentColor" />
       <rect x="6" y="14" width="12" height="2" fill="currentColor" />
@@ -29,8 +27,8 @@ function LogoMark(): ReactElement {
 
 function navLinkClass(isActive: boolean): string {
   return cn(
-    "text-ui no-underline",
-    isActive ? "font-semibold text-primary" : "font-medium text-fg",
+    "text-ui no-underline transition-colors",
+    isActive ? "font-semibold text-primary" : "font-medium text-fg hover:text-primary",
   );
 }
 
@@ -61,14 +59,16 @@ export function TopBar(): ReactElement {
   const { navigating, navigateToCampaign } = useCampaignNavTarget();
 
   return (
-    <header className="flex h-12 shrink-0 items-center justify-between border-b border-border bg-canvas-subtle px-4">
+    <header className="sticky top-0 z-50 flex h-12 shrink-0 items-center justify-between border-b border-border bg-canvas-subtle/90 px-4 backdrop-blur-md backdrop-saturate-150">
       <Link
         to="/workbench"
-        className="flex items-center gap-2 no-underline"
+        className="flex items-center gap-2.5 no-underline transition-opacity hover:opacity-90"
         aria-label="Preflight home"
       >
         <LogoMark />
-        <span className="text-ui font-semibold text-primary">Preflight</span>
+        <span className="text-title font-semibold tracking-tight text-primary">
+          Preflight
+        </span>
       </Link>
       <nav className="flex items-center gap-8">
         <NavLink

@@ -3,10 +3,22 @@
  * Why: POST /workbench/chat stub without wiring.
  */
 
-import type { WorkbenchChatResponse } from "@preflight/schemas";
+import type { StructuredBriefInput, WorkbenchChatResponse } from "@preflight/schemas";
 
 export const WORKBENCH_EMPTY_PROMPT =
   "Ask about a rule, applicability, or what Preflight checks.";
+
+export const WORKBENCH_HANDOFF_BRIEF: StructuredBriefInput = {
+  objective:
+    "Launch a professional LinkedIn and email campaign for Bluepeak Flexi Cap.",
+  schemeName: "Bluepeak Flexi Cap Fund",
+  schemeCategory: "Flexi Cap",
+  audience: "HNI investors in India",
+  channels: ["email", "linkedin"],
+  market: "India",
+  performanceFigures: [{ value: "18.2%", period: "3-year CAGR" }],
+  claims: ["Highlight flexibility across market caps"],
+};
 
 export const WORKBENCH_STUB_SUCCESS: WorkbenchChatResponse = {
   message:
@@ -16,9 +28,17 @@ export const WORKBENCH_STUB_SUCCESS: WorkbenchChatResponse = {
 
 export const WORKBENCH_STUB_CAMPAIGN: WorkbenchChatResponse = {
   message:
-    "A LinkedIn and email campaign for Bluepeak Flexi Cap fits the brief fields we extract — scheme name, channels, audience, and objective. When you are ready, start a campaign from this conversation and review the proposed brief on Campaign.",
+    "Your brief is complete. Start a campaign from this conversation to review the structured fields on Campaign, then Save, Compile, and Generate.",
   ruleIds: ["SEBI-02", "BRAND-02"],
   suggestedAction: "handoff_campaign",
+  brief: WORKBENCH_HANDOFF_BRIEF,
+};
+
+export const WORKBENCH_STUB_CAMPAIGN_INCOMPLETE: WorkbenchChatResponse = {
+  message:
+    "Which market should this campaign target — India only, or a broader geography?",
+  ruleIds: ["SEBI-02"],
+  suggestedAction: "none",
 };
 
 export const WORKBENCH_STUB_SUCCESS_ALT: WorkbenchChatResponse = {
@@ -45,7 +65,10 @@ export function resolveWorkbenchChat(
     trimmed.toLowerCase().includes("campaign") ||
     trimmed.toLowerCase().includes("linkedin")
   ) {
-    return { ok: true, data: WORKBENCH_STUB_CAMPAIGN };
+    if (turnIndex >= 1) {
+      return { ok: true, data: WORKBENCH_STUB_CAMPAIGN };
+    }
+    return { ok: true, data: WORKBENCH_STUB_CAMPAIGN_INCOMPLETE };
   }
   const data =
     turnIndex % 2 === 0 ? WORKBENCH_STUB_SUCCESS : WORKBENCH_STUB_SUCCESS_ALT;

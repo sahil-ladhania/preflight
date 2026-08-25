@@ -31,7 +31,13 @@ export function ChannelsField({
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-caption text-fg-muted">Channels</p>
+      <p className="text-caption text-fg-muted">
+        Channels
+        <span className="text-fail" aria-hidden="true">
+          {" "}
+          *
+        </span>
+      </p>
       <div
         className={cn(
           "flex flex-col gap-2 rounded-md border border-border px-4 py-3",
@@ -67,6 +73,11 @@ export function PerformanceFiguresField({
   proposed: boolean;
   onChange: (figures: Array<{ value: string; period: string }>) => void;
 }): ReactElement {
+  const canAddFigure =
+    figures.length === 0 ||
+    ((figures[figures.length - 1]?.value.trim().length ?? 0) > 0 &&
+      (figures[figures.length - 1]?.period.trim().length ?? 0) > 0);
+
   const updateRow = (
     index: number,
     key: "value" | "period",
@@ -107,6 +118,7 @@ export function PerformanceFiguresField({
           type="button"
           variant="outline"
           size="sm"
+          disabled={!canAddFigure}
           onClick={() => onChange([...figures, { value: "", period: "" }])}
         >
           Add figure
@@ -128,6 +140,10 @@ export function ClaimsField({
   proposed: boolean;
   onChange: (claims: string[]) => void;
 }): ReactElement {
+  const canAddClaim =
+    claims.length === 0 ||
+    (claims[claims.length - 1]?.trim().length ?? 0) > 0;
+
   const updateClaim = (index: number, value: string): void => {
     const next = claims.map((claim, claimIndex) =>
       claimIndex === index ? value : claim,
@@ -157,6 +173,7 @@ export function ClaimsField({
           type="button"
           variant="outline"
           size="sm"
+          disabled={!canAddClaim}
           onClick={() => onChange([...claims, ""])}
         >
           Add claim

@@ -112,8 +112,35 @@ export function briefEquals(
   return JSON.stringify(left) === JSON.stringify(right);
 }
 
+export function normalizeBrief(
+  brief: StructuredBriefInput,
+): StructuredBriefInput {
+  return {
+    ...brief,
+    performanceFigures: brief.performanceFigures.filter(
+      (row) =>
+        !(row.value.trim().length === 0 && row.period.trim().length === 0),
+    ),
+    claims: brief.claims.filter((claim) => claim.trim().length > 0),
+  };
+}
+
 export function briefIsValid(brief: StructuredBriefInput): boolean {
-  return StructuredBriefSchema.safeParse(brief).success;
+  return StructuredBriefSchema.safeParse(normalizeBrief(brief)).success;
+}
+
+export function saveDisabledCaption(input: {
+  saveDisabled: boolean;
+  briefDirty: boolean;
+  briefSaved: boolean;
+}): string | null {
+  if (!input.saveDisabled) {
+    return null;
+  }
+  if (!input.briefDirty && input.briefSaved) {
+    return "No changes to save.";
+  }
+  return "Complete required fields before saving.";
 }
 
 export function shortHash(hash: string): string {
@@ -192,6 +219,7 @@ export function campaignGateState(input: {
   s3Dimmed: boolean;
   staleBanner: boolean;
   saveDisabled: boolean;
+  saveDisabledCaption: string | null;
   generateCaption: string | null;
   generateDisabled: boolean;
 } {
@@ -201,6 +229,11 @@ export function campaignGateState(input: {
   const staleBanner = input.compileResult !== null && briefDirty;
   const saveDisabled =
     !briefIsValid(input.brief) || (!briefDirty && input.briefSaved);
+  const saveCaption = saveDisabledCaption({
+    saveDisabled,
+    briefDirty,
+    briefSaved: input.briefSaved,
+  });
   const generateCaption = generateDisabledCaption({
     s3Dimmed,
     ruleCount: input.compileResult?.ruleIds.length ?? 0,
@@ -216,6 +249,7 @@ export function campaignGateState(input: {
     s3Dimmed,
     staleBanner,
     saveDisabled,
+    saveDisabledCaption: saveCaption,
     generateCaption,
     generateDisabled,
   };

@@ -22,6 +22,7 @@ import {
 import {
   briefFromCampaign,
   mergeExtractProposal,
+  normalizeBrief,
   proposedKeysFromPartial,
 } from "@/features/campaign/lib";
 
@@ -125,9 +126,10 @@ export function useCampaignMutations(input: {
     setSaveInFlight(true);
 
     try {
+      const normalized = normalizeBrief(brief);
       const updated = await updateCampaignBriefService(
         campaignId,
-        { structuredBrief: brief },
+        { structuredBrief: normalized },
         controller.signal,
       );
       const hydrated = hydrateFromCampaign(updated);

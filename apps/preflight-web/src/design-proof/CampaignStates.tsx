@@ -11,8 +11,8 @@ import {
   CAMPAIGN_ID_FRESH,
   CAMPAIGN_FRESH,
   CAMPAIGN_SEED,
-  EXTRACT_PROPOSAL,
 } from "@/fixtures/campaign";
+import { WORKBENCH_HANDOFF_BRIEF } from "@/fixtures/workbench";
 import { Campaign } from "@/features/campaign/Campaign";
 import {
   mergeExtractProposal,
@@ -30,13 +30,12 @@ export function CampaignZeroRulesDemo(): ReactElement {
 }
 
 export function CampaignHandoffDemo(): ReactElement {
-  const brief = mergeExtractProposal(briefFromCampaign(null), EXTRACT_PROPOSAL);
+  const brief = mergeExtractProposal(briefFromCampaign(null), WORKBENCH_HANDOFF_BRIEF);
   return (
     <Campaign
       campaign={CAMPAIGN_FRESH}
-      freeText="LinkedIn and email for Bluepeak Flexi Cap with professional tone."
       brief={brief}
-      proposedFieldKeys={proposedKeysFromPartial(EXTRACT_PROPOSAL)}
+      proposedFieldKeys={proposedKeysFromPartial(WORKBENCH_HANDOFF_BRIEF)}
     />
   );
 }

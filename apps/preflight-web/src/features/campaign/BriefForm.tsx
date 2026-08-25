@@ -45,11 +45,16 @@ function ScalarField({
     <div className="flex flex-col gap-2">
       <label htmlFor={fieldKey} className="text-caption text-fg-muted">
         {label}
+        <span className="text-fail" aria-hidden="true">
+          {" "}
+          *
+        </span>
       </label>
       <Input
         id={fieldKey}
         value={value}
         placeholder={placeholder}
+        aria-required
         onChange={(event) => onChange(event.target.value)}
         className={cn(
           proposed ? CAMPAIGN_INPUT_PROPOSED_CLASS : CAMPAIGN_INPUT_CLASS,
@@ -67,6 +72,7 @@ export function BriefForm({
   brief,
   proposedFieldKeys,
   saveDisabled,
+  saveDisabledCaption,
   saveInFlight,
   extractInFlight,
   onFreeTextChange,
@@ -145,7 +151,7 @@ export function BriefForm({
             }}
           />
         </div>
-        <div className="flex justify-end">
+        <div className="flex flex-col items-end gap-1">
           <Button
             type="button"
             variant="outline"
@@ -159,6 +165,11 @@ export function BriefForm({
               "Save brief"
             )}
           </Button>
+          {saveDisabledCaption !== null ? (
+            <span className="text-caption text-fg-muted">
+              {saveDisabledCaption}
+            </span>
+          ) : null}
         </div>
       </div>
     </div>

@@ -38,6 +38,7 @@ export interface CampaignProps {
   compileInFlight?: boolean;
   generateInFlight?: boolean;
   saveDisabled?: boolean;
+  saveDisabledCaption?: string | null;
   generateDisabled?: boolean;
   generateCaption?: string | null;
   staleBanner?: boolean;
@@ -68,6 +69,7 @@ export interface BriefFormProps {
   brief: StructuredBriefInput;
   proposedFieldKeys: ReadonlySet<BriefField>;
   saveDisabled: boolean;
+  saveDisabledCaption: string | null;
   saveInFlight: boolean;
   extractInFlight: boolean;
   onFreeTextChange: (value: string) => void;
