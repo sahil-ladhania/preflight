@@ -4,7 +4,13 @@
  */
 // size: six mutation handlers co-located per 15 §4.2 policy.
 
-import { useCallback, type Dispatch, type SetStateAction } from "react";
+import {
+  useCallback,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { useNavigate } from "react-router-dom";
 
 import type { RerunStripDTO } from "@preflight/schemas";
@@ -55,9 +61,15 @@ export function useAssetDetailMutations({
   rerun: () => Promise<void>;
   regenerate: () => Promise<void>;
   accept: () => void;
+  regenerateInFlight: boolean;
+  rerunInFlight: boolean;
 } {
   const navigate = useNavigate();
   const { enqueue } = useToastContext();
+  const [regenerateInFlight, setRegenerateInFlight] = useState<boolean>(false);
+  const [rerunInFlight, setRerunInFlight] = useState<boolean>(false);
+  const regenerateGuardRef = useRef<boolean>(false);
+  const rerunGuardRef = useRef<boolean>(false);
 
   const toastApiError = useCallback(
     (error: unknown): void => {
@@ -182,24 +194,31 @@ export function useAssetDetailMutations({
   );
 
   const rerun = useCallback(async (): Promise<void> => {
-    if (assetId === undefined) {
+    if (assetId === undefined || rerunGuardRef.current) {
       return;
     }
 
+    rerunGuardRef.current = true;
+    setRerunInFlight(true);
     const controller = new AbortController();
     try {
       const strip = await rerunAssetService(assetId, controller.signal);
       setRerunStrip(strip);
     } catch (error: unknown) {
       toastApiError(error);
+    } finally {
+      rerunGuardRef.current = false;
+      setRerunInFlight(false);
     }
   }, [assetId, setRerunStrip, toastApiError]);
 
   const regenerate = useCallback(async (): Promise<void> => {
-    if (asset === null) {
+    if (asset === null || regenerateGuardRef.current) {
       return;
     }
 
+    regenerateGuardRef.current = true;
+    setRegenerateInFlight(true);
     const controller = new AbortController();
     try {
       const response = await generateCampaignAssetsService(
@@ -213,6 +232,9 @@ export function useAssetDetailMutations({
       }
     } catch (error: unknown) {
       toastApiError(error);
+    } finally {
+      regenerateGuardRef.current = false;
+      setRegenerateInFlight(false);
     }
   }, [asset, navigate, toastApiError]);
 
@@ -227,5 +249,7 @@ export function useAssetDetailMutations({
     rerun,
     regenerate,
     accept,
+    regenerateInFlight,
+    rerunInFlight,
   };
 }

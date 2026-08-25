@@ -4,6 +4,7 @@
  */
 
 import type { ReactElement } from "react";
+import { Loader2 } from "lucide-react";
 
 import type { DriftItemDTO, RerunStripDTO } from "@preflight/schemas";
 
@@ -81,6 +82,12 @@ function StripBody({ strip }: { strip: RerunStripDTO }): ReactElement {
         {strip.runHash} {strip.rerunHash}{" "}
         {strip.hashesMatch ? "Hashes match." : "Engine mismatch."}
       </p>
+      <p className="text-hash text-fg-muted">
+        {strip.rulesetHash} {strip.liveRulesetHash}{" "}
+        {strip.rulesetHash === strip.liveRulesetHash
+          ? "Ruleset pin matches live catalog."
+          : "Ruleset pin differs from live catalog."}
+      </p>
       {strip.driftItems.length > 0 ? (
         <>
           <span className="inline-flex w-fit rounded-md border border-border px-2 py-0.5 text-caption text-fg-muted">
@@ -95,7 +102,11 @@ function StripBody({ strip }: { strip: RerunStripDTO }): ReactElement {
   );
 }
 
-export function RerunStrip({ strip, onRerun }: RerunStripProps): ReactElement {
+export function RerunStrip({
+  strip,
+  onRerun,
+  rerunInFlight = false,
+}: RerunStripProps): ReactElement {
   const handleRerun = (): void => {
     // Will POST /assets/:id/rerun and replace strip from response.
     onRerun();
@@ -104,8 +115,17 @@ export function RerunStrip({ strip, onRerun }: RerunStripProps): ReactElement {
   return (
     <div className="shrink-0 border-t border-border bg-canvas-subtle">
       <div className="px-4 py-3">
-        <Button type="button" variant="outline" onClick={handleRerun}>
-          Re-run deterministic
+        <Button
+          type="button"
+          variant="outline"
+          disabled={rerunInFlight}
+          onClick={handleRerun}
+        >
+          {rerunInFlight ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+          ) : (
+            "Re-run deterministic"
+          )}
         </Button>
       </div>
       {strip !== null ? <StripBody strip={strip} /> : null}

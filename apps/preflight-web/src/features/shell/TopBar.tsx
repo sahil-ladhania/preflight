@@ -37,11 +37,13 @@ function navLinkClass(isActive: boolean): string {
 function CampaignNavLink({
   campaignHref,
   disabled,
+  navigating,
   isActive,
+  onNavigate,
 }: CampaignNavLinkProps): ReactElement {
   const className = navLinkClass(isActive);
 
-  if (campaignHref === null || disabled) {
+  if (disabled) {
     return (
       <span
         className={cn(className, "cursor-not-allowed opacity-50")}
@@ -52,17 +54,33 @@ function CampaignNavLink({
     );
   }
 
+  if (campaignHref !== null) {
+    return (
+      <Link to={campaignHref} className={className}>
+        Campaign
+      </Link>
+    );
+  }
+
   return (
-    <Link to={campaignHref} className={className}>
+    <button
+      type="button"
+      className={cn(className, "cursor-pointer border-0 bg-transparent p-0")}
+      disabled={navigating}
+      onClick={() => {
+        void onNavigate();
+      }}
+    >
       Campaign
-    </Link>
+    </button>
   );
 }
 
 export function TopBar(): ReactElement {
   const location = useLocation();
   const campaignActive = location.pathname.startsWith("/campaign/");
-  const { campaignHref, disabled } = useCampaignNavTarget();
+  const { campaignHref, disabled, navigating, navigateToCampaign } =
+    useCampaignNavTarget();
 
   return (
     <header className="flex h-12 shrink-0 items-center justify-between border-b border-border bg-canvas-subtle px-4">
@@ -85,7 +103,9 @@ export function TopBar(): ReactElement {
         <CampaignNavLink
           campaignHref={campaignHref}
           disabled={disabled}
+          navigating={navigating}
           isActive={campaignActive}
+          onNavigate={navigateToCampaign}
         />
         <NavLink
           to="/rulebook"

@@ -97,7 +97,7 @@ export function useWorkbench(): {
 
   const send = useCallback(async (): Promise<void> => {
     const text = composerText.trim();
-    if (text.length === 0 || sendInFlight || prefetchFailed) {
+    if (text.length === 0 || sendInFlight) {
       return;
     }
 
@@ -142,7 +142,7 @@ export function useWorkbench(): {
     } finally {
       setSendInFlight(false);
     }
-  }, [composerText, prefetchFailed, sendInFlight, toastApiError]);
+  }, [composerText, sendInFlight, toastApiError]);
 
   const goToCampaign = useCallback(async (): Promise<void> => {
     const controller = new AbortController();

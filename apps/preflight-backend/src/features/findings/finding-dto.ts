@@ -39,7 +39,7 @@ export async function loadSnapshotWording(
   });
 
   if (!snapshot) {
-    throw new InternalError("Constraint snapshot not found for finding.");
+    throw new InternalError("Internal server error.");
   }
 
   return snapshot.wording;

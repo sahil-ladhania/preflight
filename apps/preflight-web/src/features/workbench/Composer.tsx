@@ -12,7 +12,7 @@ import type { ComposerProps } from "@/features/workbench/types";
 
 export function Composer({
   value,
-  disabled,
+  disabled = false,
   sendInFlight,
   onChange,
   onSend,

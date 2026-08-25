@@ -4,6 +4,7 @@
  */
 
 import type { ReactElement } from "react";
+import { Loader2 } from "lucide-react";
 
 import type { FindingDTO } from "@preflight/schemas";
 
@@ -94,6 +95,7 @@ export function AssetPane({
   onSpanClick,
   onAccept,
   onRegenerate,
+  regenerateInFlight = false,
 }: AssetPaneProps): ReactElement {
   const acceptEnabled = acceptIsEnabled(asset.status);
   const disabledCaption = acceptDisabledCaption(
@@ -149,9 +151,14 @@ export function AssetPane({
               type="button"
               variant="outline"
               className="h-8 rounded-md px-4"
+              disabled={regenerateInFlight}
               onClick={handleRegenerate}
             >
-              Regenerate
+              {regenerateInFlight ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                "Regenerate"
+              )}
             </Button>
           </div>
         </div>

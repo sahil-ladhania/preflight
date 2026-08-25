@@ -66,6 +66,8 @@ export interface AssetDetailProps {
   onRerun?: () => void;
   onRegenerate?: () => void;
   onAccept?: () => void;
+  regenerateInFlight?: boolean;
+  rerunInFlight?: boolean;
   onCloseReasonModal?: () => void;
   onSubmitReason?: (reason: string) => void;
   onRetryLoad?: () => void;
@@ -85,6 +87,7 @@ export interface AssetPaneProps {
   onSpanClick: (findingId: string) => void;
   onAccept: () => void;
   onRegenerate: () => void;
+  regenerateInFlight?: boolean;
 }
 
 export interface LedgerPaneProps {
@@ -109,6 +112,7 @@ export interface LedgerExpandedProps {
 export interface RerunStripProps {
   strip: RerunStripDTO | null;
   onRerun: () => void;
+  rerunInFlight?: boolean;
 }
 
 export interface ReasonModalProps {

@@ -78,6 +78,8 @@ export function AssetDetail({
   onRerun,
   onRegenerate,
   onAccept,
+  regenerateInFlight = false,
+  rerunInFlight = false,
   onCloseReasonModal,
   onSubmitReason,
   onRetryLoad,
@@ -187,6 +189,7 @@ export function AssetDetail({
                 void onRegenerate();
               }
             }}
+            regenerateInFlight={regenerateInFlight}
           />
         </div>
         <div className="min-h-0 w-[42%] shrink-0 p-2 pl-0">
@@ -221,7 +224,11 @@ export function AssetDetail({
           />
         </div>
       </div>
-      <RerunStrip strip={rerunStrip} onRerun={handleRerun} />
+      <RerunStrip
+        strip={rerunStrip}
+        onRerun={handleRerun}
+        rerunInFlight={rerunInFlight}
+      />
       <ReasonModal
         mode={reasonModal.mode}
         onClose={closeModal}
@@ -252,6 +259,8 @@ export function AssetDetailRoute(): ReactElement {
     rerun,
     regenerate,
     accept,
+    regenerateInFlight,
+    rerunInFlight,
     retryLoad,
   } = useAssetDetail(id);
 
@@ -285,6 +294,8 @@ export function AssetDetailRoute(): ReactElement {
       }}
       onRegenerate={regenerate}
       onAccept={accept}
+      regenerateInFlight={regenerateInFlight}
+      rerunInFlight={rerunInFlight}
       onCloseReasonModal={closeReasonModal}
       onSubmitReason={submitReason}
       onRetryLoad={retryLoad}

@@ -57,7 +57,7 @@ export interface ThreadProps {
 
 export interface ComposerProps {
   value: string;
-  disabled: boolean;
+  disabled?: boolean;
   sendInFlight: boolean;
   onChange: (value: string) => void;
   onSend: () => void;

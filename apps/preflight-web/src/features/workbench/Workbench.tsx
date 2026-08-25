@@ -89,7 +89,6 @@ export function Workbench({
         <div className="mx-auto w-full max-w-[720px] px-8 py-4">
           <Composer
             value={composerText}
-            disabled={prefetchFailed}
             sendInFlight={sendInFlight}
             onChange={onComposerTextChange ?? fixture.setComposerText}
             onSend={handleSend}

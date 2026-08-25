@@ -3,7 +3,7 @@
  * Why: split from useCampaign to stay under file line limit.
  */
 
-import { useCallback, type Dispatch, type SetStateAction } from "react";
+import { useCallback, useRef, type Dispatch, type SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
 
 import type {
@@ -83,6 +83,8 @@ export function useCampaignMutations(input: {
     setGenerateInFlight,
     toastApiError,
   } = input;
+
+  const generateGuardRef = useRef<boolean>(false);
 
   const extract = useCallback(async (): Promise<void> => {
     if (campaignId === undefined) {
@@ -180,10 +182,16 @@ export function useCampaignMutations(input: {
   ]);
 
   const generate = useCallback(async (): Promise<void> => {
-    if (campaignId === undefined || compileResult === null || generateDisabled) {
+    if (
+      campaignId === undefined ||
+      compileResult === null ||
+      generateDisabled ||
+      generateGuardRef.current
+    ) {
       return;
     }
 
+    generateGuardRef.current = true;
     const controller = new AbortController();
     setGenerateInFlight(true);
 
@@ -202,6 +210,7 @@ export function useCampaignMutations(input: {
     } catch (error: unknown) {
       toastApiError(error);
     } finally {
+      generateGuardRef.current = false;
       setGenerateInFlight(false);
     }
   }, [

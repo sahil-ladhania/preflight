@@ -46,6 +46,8 @@ export function useAssetDetail(id: string | undefined): {
   rerun: () => Promise<void>;
   regenerate: () => Promise<void>;
   accept: () => void;
+  regenerateInFlight: boolean;
+  rerunInFlight: boolean;
   retryLoad: () => void;
 } {
   const [asset, setAsset] = useState<AssetDetailFixture | null>(null);
@@ -157,6 +159,8 @@ export function useAssetDetail(id: string | undefined): {
     rerun,
     regenerate,
     accept,
+    regenerateInFlight,
+    rerunInFlight,
   } = useAssetDetailMutations({
     assetId: id,
     asset,
@@ -191,6 +195,8 @@ export function useAssetDetail(id: string | undefined): {
     rerun,
     regenerate,
     accept,
+    regenerateInFlight,
+    rerunInFlight,
     retryLoad,
   };
 }
