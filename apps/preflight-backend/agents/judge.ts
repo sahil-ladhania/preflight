@@ -1,4 +1,5 @@
 /**
- * judge — GitAgent def for judge.
- * Why: single-rule evaluation registration.
+ * judge — GitAgent registration for judge.
+ * Why: agent name const for runAgent gateway.
  */
+export const AGENT_NAME = "judge" as const;

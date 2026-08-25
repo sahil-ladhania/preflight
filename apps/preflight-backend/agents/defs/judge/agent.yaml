@@ -1,0 +1,11 @@
+name: preflight-judge
+version: "1.0.0"
+description: Evaluate one compliance rule against marketing copy.
+
+model:
+  preferred: openai:gpt-4o-mini
+
+tools: []
+
+runtime:
+  max_turns: 1

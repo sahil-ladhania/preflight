@@ -9,11 +9,8 @@ import {
   toFindingDTO,
 } from "./finding-dto.js";
 import { env } from "../../config/env.js";
-import {
-  NotFoundError,
-  NotImplementedError,
-  ValidationError,
-} from "../../lib/http-error.js";
+import { NotFoundError, ValidationError } from "../../lib/http-error.js";
+import { evaluateFinding } from "./judge.service.js";
 import { prisma } from "../../lib/prisma.js";
 
 function assertHumanActionAllowed(finding: {
@@ -111,5 +108,34 @@ export async function decideFinding(
 export async function retryFinding(
   findingId: string,
 ): Promise<FindingMutationResponseDTO> {
-  throw new NotImplementedError("Judgement retry is not available yet.");
+  const { finding, asset } = await loadFindingContext(findingId);
+
+  if (finding.evaluationStatus !== "unavailable") {
+    throw new ValidationError("Retry is only available for unavailable evaluations.");
+  }
+
+  if (finding.kind !== "judgement") {
+    throw new ValidationError("Retry applies to judgement evaluations only.");
+  }
+
+  await prisma.finding.update({
+    where: { id: findingId },
+    data: {
+      evaluationStatus: "pending",
+      machineVerdict: null,
+      machineReason: null,
+      spans: [],
+      machineAt: null,
+    },
+  });
+
+  void evaluateFinding(findingId);
+
+  const updated = await prisma.finding.findUniqueOrThrow({ where: { id: findingId } });
+  const status = await refoldAssetStatus(asset.id, asset.constraintSetId);
+
+  return {
+    finding: await toFindingDTO(updated, asset.constraintSetId),
+    status,
+  };
 }
