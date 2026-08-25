@@ -18,6 +18,7 @@ import type {
 import { useAssetDetailMutations } from "@/features/assets/useAssetDetailMutations";
 import { usePendingPoll } from "@/features/assets/usePendingPoll";
 import { useDelayedLoading } from "@/features/shell/useDelayedLoading";
+import { useToastContext } from "@/features/shell/ToastHost";
 import { ApiClientError } from "@/lib/api";
 
 export function useAssetDetail(id: string | undefined): {
@@ -39,6 +40,9 @@ export function useAssetDetail(id: string | undefined): {
   rerun: () => Promise<void>;
   regenerate: () => Promise<void>;
   accept: () => void;
+  complianceDeskOpen: boolean;
+  closeComplianceDesk: () => void;
+  confirmComplianceDesk: () => void;
   regenerateInFlight: boolean;
   rerunInFlight: boolean;
   retryLoad: () => void;
@@ -53,6 +57,8 @@ export function useAssetDetail(id: string | undefined): {
     mode: "closed",
     findingId: null,
   });
+  const [complianceDeskOpen, setComplianceDeskOpen] = useState<boolean>(false);
+  const { enqueue } = useToastContext();
   const abortRef = useRef<AbortController | null>(null);
   const showLoadingSpinner = useDelayedLoading(view === "loading");
 
@@ -161,7 +167,6 @@ export function useAssetDetail(id: string | undefined): {
     retryFinding,
     rerun,
     regenerate,
-    accept,
     regenerateInFlight,
     rerunInFlight,
   } = useAssetDetailMutations({
@@ -178,6 +183,19 @@ export function useAssetDetail(id: string | undefined): {
     setNotFound(false);
     void load();
   }, [load]);
+
+  const accept = useCallback((): void => {
+    setComplianceDeskOpen(true);
+  }, []);
+
+  const closeComplianceDesk = useCallback((): void => {
+    setComplianceDeskOpen(false);
+  }, []);
+
+  const confirmComplianceDesk = useCallback((): void => {
+    enqueue("Handoff recorded — compliance desk is outside Preflight.");
+    setComplianceDeskOpen(false);
+  }, [enqueue]);
 
   return {
     asset,
@@ -198,6 +216,9 @@ export function useAssetDetail(id: string | undefined): {
     rerun,
     regenerate,
     accept,
+    complianceDeskOpen,
+    closeComplianceDesk,
+    confirmComplianceDesk,
     regenerateInFlight,
     rerunInFlight,
     retryLoad,

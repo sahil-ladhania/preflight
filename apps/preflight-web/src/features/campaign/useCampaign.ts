@@ -4,14 +4,19 @@
  */
 // size: load in useCampaignLoad; mutations in useCampaignMutations.ts
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { StructuredBriefInput } from "@preflight/schemas";
 import type { BriefField } from "@preflight/schemas";
 
 import { activeCampaignStep } from "@/features/campaign/CampaignStepNav";
 import type { CampaignStepId } from "@/features/campaign/CampaignStepNav";
-import { campaignGateState } from "@/features/campaign/lib";
+import {
+  campaignGateState,
+  mergeExtractProposal,
+  proposedKeysFromPartial,
+} from "@/features/campaign/lib";
+import { useCampaignHandoff } from "@/features/campaign/useCampaignHandoff";
 import { useCampaignLoad } from "@/features/campaign/useCampaignLoad";
 import { useCampaignMutations } from "@/features/campaign/useCampaignMutations";
 
@@ -56,13 +61,34 @@ export function useCampaign(campaignId: string | undefined): {
   const [saveInFlight, setSaveInFlight] = useState<boolean>(false);
   const [compileInFlight, setCompileInFlight] = useState<boolean>(false);
   const [generateInFlight, setGenerateInFlight] = useState<boolean>(false);
+  const handoffAppliedRef = useRef<boolean>(false);
+  const { pendingHandoff, clearHandoff } = useCampaignHandoff();
 
   const onHydrated = useCallback((): void => {
     setProposedFieldKeys(new Set());
     setEmptySetAcknowledged(false);
+    handoffAppliedRef.current = false;
   }, []);
 
   const load = useCampaignLoad(campaignId, onHydrated);
+
+  useEffect(() => {
+    if (
+      load.view !== "loaded" ||
+      pendingHandoff === null ||
+      handoffAppliedRef.current
+    ) {
+      return;
+    }
+
+    handoffAppliedRef.current = true;
+    load.setFreeText(pendingHandoff.freeText);
+    load.setBrief((current) =>
+      mergeExtractProposal(current, pendingHandoff.proposal),
+    );
+    setProposedFieldKeys(proposedKeysFromPartial(pendingHandoff.proposal));
+    clearHandoff();
+  }, [load.view, pendingHandoff, load.setFreeText, load.setBrief, clearHandoff]);
 
   const gate = useMemo(
     () =>

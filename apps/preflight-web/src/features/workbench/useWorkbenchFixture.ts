@@ -6,9 +6,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { nextMessageId } from "@/features/workbench/lib";
+import {
+  handoffEnabled as computeHandoffEnabled,
+  nextMessageId,
+} from "@/features/workbench/lib";
 import type { WorkbenchMessage } from "@/features/workbench/types";
-import { CAMPAIGN_ID } from "@/fixtures/campaign";
+import { CAMPAIGN_ID, EXTRACT_PROPOSAL } from "@/fixtures/campaign";
 import { resolveWorkbenchChat } from "@/fixtures/workbench";
 
 export function useWorkbenchFixture(input: {
@@ -18,12 +21,15 @@ export function useWorkbenchFixture(input: {
   messages: WorkbenchMessage[];
   composerText: string;
   sendInFlight: boolean;
+  handoffInFlight: boolean;
+  handoffEnabled: boolean;
   showSearchFallback: boolean;
   searchQuery: string;
   setComposerText: (value: string) => void;
   setSearchQuery: (value: string) => void;
   handleSend: () => void;
   handleGoToCampaign: () => void;
+  handleStartCampaignFromConversation: () => void;
 } {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<WorkbenchMessage[]>(
@@ -31,6 +37,7 @@ export function useWorkbenchFixture(input: {
   );
   const [composerText, setComposerText] = useState<string>("");
   const [sendInFlight, setSendInFlight] = useState<boolean>(false);
+  const [handoffInFlight, setHandoffInFlight] = useState<boolean>(false);
   const [showSearchFallback, setShowSearchFallback] = useState<boolean>(
     input.initialShowSearchFallback,
   );
@@ -39,6 +46,22 @@ export function useWorkbenchFixture(input: {
 
   const handleGoToCampaign = (): void => {
     void navigate(`/campaign/${CAMPAIGN_ID}`);
+  };
+
+  const handleStartCampaignFromConversation = (): void => {
+    setHandoffInFlight(true);
+    void navigate(`/campaign/${CAMPAIGN_ID}`, {
+      state: {
+        handoff: {
+          proposal: EXTRACT_PROPOSAL,
+          freeText: messages
+            .filter((message) => message.role === "user")
+            .map((message) => message.text)
+            .join("\n\n"),
+        },
+      },
+    });
+    setHandoffInFlight(false);
   };
 
   const handleSend = (): void => {
@@ -71,6 +94,7 @@ export function useWorkbenchFixture(input: {
           role: "assistant",
           text: result.data.message,
           ruleIds: result.data.ruleIds,
+          suggestedAction: result.data.suggestedAction,
         },
       ]);
       setAssistantTurns((count) => count + 1);
@@ -82,11 +106,14 @@ export function useWorkbenchFixture(input: {
     messages,
     composerText,
     sendInFlight,
+    handoffInFlight,
+    handoffEnabled: computeHandoffEnabled(messages),
     showSearchFallback,
     searchQuery,
     setComposerText,
     setSearchQuery,
     handleSend,
     handleGoToCampaign,
+    handleStartCampaignFromConversation,
   };
 }

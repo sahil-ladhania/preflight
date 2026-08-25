@@ -63,7 +63,7 @@ export function TopBar(): ReactElement {
   return (
     <header className="flex h-12 shrink-0 items-center justify-between border-b border-border bg-canvas-subtle px-4">
       <Link
-        to="/assets"
+        to="/workbench"
         className="flex items-center gap-2 no-underline"
         aria-label="Preflight home"
       >
@@ -72,11 +72,11 @@ export function TopBar(): ReactElement {
       </Link>
       <nav className="flex items-center gap-8">
         <NavLink
-          to="/assets"
-          end={false}
+          to="/workbench"
+          end
           className={({ isActive }) => navLinkClass(isActive)}
         >
-          Assets
+          Workbench
         </NavLink>
         <CampaignNavLink
           navigating={navigating}
@@ -84,18 +84,18 @@ export function TopBar(): ReactElement {
           onNavigate={navigateToCampaign}
         />
         <NavLink
+          to="/assets"
+          end={false}
+          className={({ isActive }) => navLinkClass(isActive)}
+        >
+          Assets
+        </NavLink>
+        <NavLink
           to="/rulebook"
           end
           className={({ isActive }) => navLinkClass(isActive)}
         >
           Rulebook
-        </NavLink>
-        <NavLink
-          to="/workbench"
-          end
-          className={({ isActive }) => navLinkClass(isActive)}
-        >
-          Workbench
         </NavLink>
       </nav>
     </header>

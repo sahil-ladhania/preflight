@@ -26,6 +26,7 @@ import { ASSET_A } from "@/fixtures/assets-detail/a";
 import { CampaignRoute } from "@/features/campaign/Campaign";
 import {
   CampaignErrorDemo,
+  CampaignHandoffDemo,
   CampaignLoadingDemo,
   CampaignStates,
   CampaignZeroRulesDemo,
@@ -38,6 +39,7 @@ import {
 import { RulebookRoute } from "@/features/rulebook/Rulebook";
 import {
   WorkbenchErrorFallbackDemo,
+  WorkbenchHandoffSuggestedDemo,
   WorkbenchPrefetchErrorDemo,
   WorkbenchStates,
 } from "@/design-proof/WorkbenchStates";
@@ -66,7 +68,7 @@ export default function App(): ReactElement {
       <ToastHost>
         <Routes>
           <Route element={<ShellFrame />}>
-            <Route index element={<Navigate to="/assets" replace />} />
+            <Route index element={<Navigate to="/workbench" replace />} />
             <Route path="assets" element={<AssetsListRoute />} />
             <Route path="assets/:id" element={<AssetDetailRoute />} />
             <Route path="campaign/:campaignId" element={<CampaignRoute />} />
@@ -142,6 +144,14 @@ export default function App(): ReactElement {
             <Route
               path="design-proof/workbench/error-fallback"
               element={<WorkbenchErrorFallbackDemo />}
+            />
+            <Route
+              path="design-proof/campaign/handoff"
+              element={<CampaignHandoffDemo />}
+            />
+            <Route
+              path="design-proof/workbench/handoff-suggested"
+              element={<WorkbenchHandoffSuggestedDemo />}
             />
             <Route path="*" element={<NotFound />} />
           </Route>

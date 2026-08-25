@@ -1,5 +1,5 @@
 /**
- * CampaignStepNav — sticky Brief · Constraint set · Generate rail.
+ * CampaignStepNav — sticky Brief · Freeze · Generate rail.
  * Why: scroll-to-section without route wizard (09 lock).
  */
 
@@ -8,9 +8,21 @@ import type { ReactElement } from "react";
 import { cn } from "@/lib/utils";
 
 const STEPS = [
-  { id: "campaign-brief", label: "Brief" },
-  { id: "campaign-constraints", label: "Constraint set" },
-  { id: "campaign-generate", label: "Generate" },
+  {
+    id: "campaign-brief",
+    label: "Brief",
+    subtitle: "GitAgent extractor",
+  },
+  {
+    id: "campaign-constraints",
+    label: "Freeze",
+    subtitle: "Server compile",
+  },
+  {
+    id: "campaign-generate",
+    label: "Generate",
+    subtitle: "GitAgent generator",
+  },
 ] as const;
 
 export type CampaignStepId = (typeof STEPS)[number]["id"];
@@ -35,13 +47,14 @@ export function CampaignStepNav({
           type="button"
           onClick={() => scrollTo(step.id)}
           className={cn(
-            "text-ui no-underline",
+            "flex flex-col items-start gap-0.5 text-left text-ui no-underline",
             activeStep === step.id
               ? "font-semibold text-fg"
               : "font-normal text-fg-muted hover:text-fg",
           )}
         >
-          {step.label}
+          <span>{step.label}</span>
+          <span className="text-caption font-normal">{step.subtitle}</span>
         </button>
       ))}
     </nav>

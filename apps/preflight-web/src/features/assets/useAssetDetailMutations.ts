@@ -50,7 +50,6 @@ export function useAssetDetailMutations({
   retryFinding: (findingId: string) => Promise<void>;
   rerun: () => Promise<void>;
   regenerate: () => Promise<void>;
-  accept: () => void;
   regenerateInFlight: boolean;
   rerunInFlight: boolean;
 } {
@@ -259,17 +258,12 @@ export function useAssetDetailMutations({
     }
   }, [assetDto, navigate, toastApiError]);
 
-  const accept = useCallback((): void => {
-    enqueue("Would ship — demo has no publishing.");
-  }, [enqueue]);
-
   return {
     confirmFinding,
     submitReason,
     retryFinding,
     rerun,
     regenerate,
-    accept,
     regenerateInFlight,
     rerunInFlight,
   };

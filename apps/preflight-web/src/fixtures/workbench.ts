@@ -14,6 +14,13 @@ export const WORKBENCH_STUB_SUCCESS: WorkbenchChatResponse = {
   ruleIds: ["SEBI-06", "BRAND-03"],
 };
 
+export const WORKBENCH_STUB_CAMPAIGN: WorkbenchChatResponse = {
+  message:
+    "A LinkedIn and email campaign for Bluepeak Flexi Cap fits the brief fields we extract — scheme name, channels, audience, and objective. When you are ready, start a campaign from this conversation and review the proposed brief on Campaign.",
+  ruleIds: ["SEBI-02", "BRAND-02"],
+  suggestedAction: "handoff_campaign",
+};
+
 export const WORKBENCH_STUB_SUCCESS_ALT: WorkbenchChatResponse = {
   message:
     "Deterministic rules such as SEBI-01 require the standard risk disclaimer in asset copy. They run on every generate and block shipping when they fail unwaived.",
@@ -33,6 +40,12 @@ export function resolveWorkbenchChat(
       ok: false,
       error: "Explainer unavailable — try search below.",
     };
+  }
+  if (
+    trimmed.toLowerCase().includes("campaign") ||
+    trimmed.toLowerCase().includes("linkedin")
+  ) {
+    return { ok: true, data: WORKBENCH_STUB_CAMPAIGN };
   }
   const data =
     turnIndex % 2 === 0 ? WORKBENCH_STUB_SUCCESS : WORKBENCH_STUB_SUCCESS_ALT;

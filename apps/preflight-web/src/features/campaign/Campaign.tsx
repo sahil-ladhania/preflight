@@ -184,7 +184,7 @@ export function Campaign({
     >
       <CampaignStep
         title="Brief"
-        subtitle="Step 1 — paste and structure the brief."
+        subtitle="Phase 1 — GitAgent extractor structures the brief from free text."
         sectionId="campaign-brief"
       >
         <BriefForm
@@ -202,8 +202,8 @@ export function Campaign({
         />
       </CampaignStep>
       <CampaignStep
-        title="Constraint set"
-        subtitle="Step 2 — compile predicates against the saved brief."
+        title="Freeze"
+        subtitle="Phase 2 — server compile freezes predicates and constraint cards."
         dimmed={s2Dimmed}
         collapsed={s2Dimmed}
         sectionId="campaign-constraints"
@@ -222,7 +222,7 @@ export function Campaign({
       </CampaignStep>
       <CampaignStep
         title="Generate"
-        subtitle="Step 3 — freeze and create assets."
+        subtitle="Phase 3 — GitAgent generator creates channel assets."
         dimmed={s3Dimmed}
         collapsed={s3Dimmed}
         sectionId="campaign-generate"

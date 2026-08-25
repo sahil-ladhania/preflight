@@ -14,7 +14,6 @@ export function SearchFallback({
   rules,
   query,
   onQueryChange,
-  onGoToCampaign,
 }: SearchFallbackProps): ReactElement {
   const results = searchRules(rules, query);
 
@@ -32,11 +31,7 @@ export function SearchFallback({
       {results.length > 0 ? (
         <div className="grid grid-cols-1 gap-3">
           {results.map((rule) => (
-            <RuleCard
-              key={rule.ruleId}
-              rule={rule}
-              onGoToCampaign={onGoToCampaign}
-            />
+            <RuleCard key={rule.ruleId} rule={rule} />
           ))}
         </div>
       ) : null}

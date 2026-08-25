@@ -19,7 +19,7 @@ export function WorkbenchStates(): ReactElement {
           /workbench
         </Link>
         . Type a message containing &quot;fail&quot; to trigger the error
-        fallback.
+        fallback, or &quot;campaign&quot; for handoff suggestion.
       </p>
       <nav className="flex flex-col gap-2">
         <Link
@@ -33,6 +33,12 @@ export function WorkbenchStates(): ReactElement {
           className="text-ui text-fg underline"
         >
           Error fallback visible
+        </Link>
+        <Link
+          to="/design-proof/workbench/handoff-suggested"
+          className="text-ui text-fg underline"
+        >
+          Handoff suggested thread
         </Link>
       </nav>
       <Link to="/design-proof" className="text-caption text-fg-muted underline">
@@ -48,6 +54,28 @@ export function WorkbenchPrefetchErrorDemo(): ReactElement {
 
 export function WorkbenchErrorFallbackDemo(): ReactElement {
   return <WorkbenchWithErrorFallback />;
+}
+
+export function WorkbenchHandoffSuggestedDemo(): ReactElement {
+  return (
+    <Workbench
+      rules={RULES_CATALOG}
+      initialMessages={[
+        {
+          id: "demo-user",
+          role: "user",
+          text: "I want a LinkedIn and email campaign for Bluepeak Flexi Cap.",
+        },
+        {
+          id: "demo-assistant",
+          role: "assistant",
+          text: "That fits a multi-channel brief. Start a campaign from this conversation to extract structured fields on Campaign.",
+          ruleIds: ["SEBI-02", "BRAND-02"],
+          suggestedAction: "handoff_campaign",
+        },
+      ]}
+    />
+  );
 }
 
 function WorkbenchWithErrorFallback(): ReactElement {

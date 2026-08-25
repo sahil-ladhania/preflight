@@ -3,13 +3,20 @@
  * Why: no inline type declarations in components.
  */
 
+import type { ExplainerSuggestedAction } from "@preflight/schemas";
 import type { ReactNode } from "react";
 
 import type { RuleCatalogRowDTO } from "@preflight/schemas";
 
 export type WorkbenchMessage =
   | { id: string; role: "user"; text: string }
-  | { id: string; role: "assistant"; text: string; ruleIds: string[] }
+  | {
+      id: string;
+      role: "assistant";
+      text: string;
+      ruleIds: string[];
+      suggestedAction?: ExplainerSuggestedAction;
+    }
   | { id: string; role: "error"; text: string };
 
 export interface WorkbenchProps {
@@ -26,6 +33,9 @@ export interface WorkbenchProps {
   onSearchQueryChange?: (value: string) => void;
   onSend?: () => void;
   onGoToCampaign?: () => void;
+  onStartCampaignFromConversation?: () => void;
+  handoffInFlight?: boolean;
+  handoffEnabled?: boolean;
 }
 
 export interface CommentSheetProps {
@@ -36,14 +46,12 @@ export interface CommentSheetProps {
 export interface RuleCardsProps {
   ruleIds: string[];
   rules: RuleCatalogRowDTO[];
-  onGoToCampaign: () => void;
 }
 
 export interface SearchFallbackProps {
   rules: RuleCatalogRowDTO[];
   query: string;
   onQueryChange: (query: string) => void;
-  onGoToCampaign: () => void;
 }
 
 export interface ThreadProps {
@@ -52,14 +60,16 @@ export interface ThreadProps {
   showSearchFallback: boolean;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
-  onGoToCampaign: () => void;
 }
 
 export interface ComposerProps {
   value: string;
   disabled?: boolean;
   sendInFlight: boolean;
+  handoffInFlight?: boolean;
+  handoffEnabled?: boolean;
   onChange: (value: string) => void;
   onSend: () => void;
   onGoToCampaign?: () => void;
+  onStartCampaignFromConversation?: () => void;
 }

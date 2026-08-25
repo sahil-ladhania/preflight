@@ -12,6 +12,7 @@ import {
   LoadingState,
   NotFoundState,
 } from "@/features/assets/AssetDetailStates";
+import { ComplianceDeskModal } from "@/features/assets/ComplianceDeskModal";
 import { useAssetDetail } from "@/features/assets/useAssetDetail";
 
 export function AssetDetailRoute(): ReactElement {
@@ -35,6 +36,9 @@ export function AssetDetailRoute(): ReactElement {
     rerun,
     regenerate,
     accept,
+    complianceDeskOpen,
+    closeComplianceDesk,
+    confirmComplianceDesk,
     regenerateInFlight,
     rerunInFlight,
     retryLoad,
@@ -53,28 +57,36 @@ export function AssetDetailRoute(): ReactElement {
   }
 
   return (
-    <AssetDetail
-      asset={asset}
-      view="loaded"
-      rerunStrip={rerunStrip}
-      openFindingId={openFindingId}
-      reasonModal={reasonModal}
-      onSpanClick={selectSpanFinding}
-      onRowClick={selectRowFinding}
-      onConfirm={confirmFinding}
-      onOverride={openOverride}
-      onWaive={openWaive}
-      onRetry={retryFinding}
-      onRerun={() => {
-        void rerun();
-      }}
-      onRegenerate={regenerate}
-      onAccept={accept}
-      regenerateInFlight={regenerateInFlight}
-      rerunInFlight={rerunInFlight}
-      onCloseReasonModal={closeReasonModal}
-      onSubmitReason={submitReason}
-      onRetryLoad={retryLoad}
-    />
+    <>
+      <AssetDetail
+        asset={asset}
+        view="loaded"
+        rerunStrip={rerunStrip}
+        openFindingId={openFindingId}
+        reasonModal={reasonModal}
+        onSpanClick={selectSpanFinding}
+        onRowClick={selectRowFinding}
+        onConfirm={confirmFinding}
+        onOverride={openOverride}
+        onWaive={openWaive}
+        onRetry={retryFinding}
+        onRerun={() => {
+          void rerun();
+        }}
+        onRegenerate={regenerate}
+        onAccept={accept}
+        regenerateInFlight={regenerateInFlight}
+        rerunInFlight={rerunInFlight}
+        onCloseReasonModal={closeReasonModal}
+        onSubmitReason={submitReason}
+        onRetryLoad={retryLoad}
+      />
+      <ComplianceDeskModal
+        open={complianceDeskOpen}
+        clientName={asset.brandKit.clientName}
+        onClose={closeComplianceDesk}
+        onConfirm={confirmComplianceDesk}
+      />
+    </>
   );
 }

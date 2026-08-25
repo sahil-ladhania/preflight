@@ -1,93 +1,22 @@
 /**
- * AssetPane — R3 left copy pane.
- * Why: renders copy and span paint segments.
+ * AssetPane — R3 left copy pane with channel preview.
+ * Why: preview frame above audit copy fields (doc 19 §8.4).
  */
 
 import type { ReactElement } from "react";
 import { Loader2 } from "lucide-react";
 
-import type { FindingDTO } from "@preflight/schemas";
-
 import { Button } from "@/components/ui/button";
-import type { AssetPaneProps, CopySegments, SpanSegment } from "@/features/assets/types";
+import { AssetCopyField } from "@/features/assets/AssetCopyField";
+import { ChannelPreview } from "@/features/assets/previews/ChannelPreview";
+import type { AssetPaneProps, CopySegments } from "@/features/assets/types";
 import {
   acceptDisabledCaption,
   acceptIsEnabled,
-  findingById,
   formatGeneratedAt,
-  isFailFinding,
   shortId,
 } from "@/features/assets/lib";
 import { StatusChip } from "@/features/assets/StatusChip";
-import { cn } from "@/lib/utils";
-
-function spanClassName(
-  finding: FindingDTO | undefined,
-  selected: boolean,
-): string | null {
-  if (finding === undefined || !isFailFinding(finding)) {
-    return null;
-  }
-  if (finding.humanVerdict === "overridden") {
-    return cn("span-overridden", selected && "span-fail-selected");
-  }
-  if (finding.humanVerdict === "waived") {
-    return cn("span-waived-fail", selected && "span-fail-selected");
-  }
-  return cn("span-fail", selected && "span-fail-selected");
-}
-
-function CopyField({
-  label,
-  segments,
-  contentClass,
-  findings,
-  openFindingId,
-  onSpanClick,
-}: {
-  label: string;
-  segments: SpanSegment[];
-  contentClass: string;
-  findings: FindingDTO[];
-  openFindingId: string | null;
-  onSpanClick: (findingId: string) => void;
-}): ReactElement {
-  return (
-    <div className="flex flex-col gap-1 px-4 py-2">
-      <p className="text-caption text-fg-muted">{label}</p>
-      <p className={contentClass}>
-        {segments.map((segment, index) => {
-          if (segment.findingId === null) {
-            return <span key={index}>{segment.text}</span>;
-          }
-          const finding = findingById(findings, segment.findingId);
-          const mark = spanClassName(finding, openFindingId === segment.findingId);
-          if (mark === null) {
-            return <span key={index}>{segment.text}</span>;
-          }
-          return (
-            <span
-              key={index}
-              role="button"
-              tabIndex={0}
-              data-finding-span={segment.findingId}
-              className={mark}
-              onClick={() => onSpanClick(segment.findingId as string)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  onSpanClick(segment.findingId as string);
-                }
-              }}
-            >
-              {segment.text}
-            </span>
-          );
-        })}
-      </p>
-    </div>
-  );
-}
 
 export function AssetPane({
   asset,
@@ -103,17 +32,12 @@ export function AssetPane({
     asset.findings.length,
   );
 
-  const handleRegenerate = (): void => {
-    // Will POST /campaigns/:campaignId/generate with regeneratedFromId.
-    onRegenerate();
-  };
-
   const renderCopy = (
     segments: CopySegments[keyof CopySegments],
     label: string,
     contentClass: string,
   ): ReactElement => (
-    <CopyField
+    <AssetCopyField
       label={label}
       segments={segments}
       contentClass={contentClass}
@@ -145,14 +69,14 @@ export function AssetPane({
               disabled={!acceptEnabled}
               onClick={acceptEnabled ? onAccept : undefined}
             >
-              Accept
+              Ready for compliance desk
             </Button>
             <Button
               type="button"
               variant="outline"
               className="h-8 rounded-md px-4"
               disabled={regenerateInFlight}
-              onClick={handleRegenerate}
+              onClick={onRegenerate}
             >
               {regenerateInFlight ? (
                 <Loader2 className="size-4 animate-spin" aria-hidden />
@@ -167,6 +91,17 @@ export function AssetPane({
             {disabledCaption}
           </p>
         ) : null}
+      </div>
+      <div className="border-b border-border px-4 py-3">
+        <p className="mb-2 text-caption text-fg-muted">Channel preview</p>
+        <ChannelPreview
+          channel={asset.channel}
+          headline={asset.headline}
+          body={asset.body}
+          disclaimer={asset.disclaimer}
+          cta={asset.cta}
+          brandKit={asset.brandKit}
+        />
       </div>
       {renderCopy(asset.copySegments.headline, "Headline", "text-title text-fg")}
       {renderCopy(asset.copySegments.body, "Body", "text-body text-fg")}

@@ -3,13 +3,57 @@
  * Why: catalog filter and message id generation.
  */
 
+import type { WorkbenchChatHistoryItem } from "@preflight/schemas";
 import type { RuleCatalogRowDTO } from "@preflight/schemas";
 
+import type { WorkbenchMessage } from "@/features/workbench/types";
+
 export const WORKBENCH_EMPTY_PROMPT =
-  "Ask about a rule, applicability, or what Preflight checks.";
+  "Describe a campaign you want to run, or ask about a rule and how Preflight checks it.";
 
 export function nextMessageId(): string {
   return crypto.randomUUID();
+}
+
+export function toChatHistory(
+  messages: WorkbenchMessage[],
+): WorkbenchChatHistoryItem[] {
+  return messages
+    .filter(
+      (message): message is Extract<
+        WorkbenchMessage,
+        { role: "user" | "assistant" }
+      > => message.role === "user" || message.role === "assistant",
+    )
+    .map((message) => ({
+      role: message.role,
+      content: message.text,
+    }));
+}
+
+export function handoffSuggested(messages: WorkbenchMessage[]): boolean {
+  const lastAssistant = [...messages]
+    .reverse()
+    .find((message) => message.role === "assistant");
+  return (
+    lastAssistant !== undefined &&
+    lastAssistant.role === "assistant" &&
+    lastAssistant.suggestedAction === "handoff_campaign"
+  );
+}
+
+export function hasUserTurn(messages: WorkbenchMessage[]): boolean {
+  return messages.some((message) => message.role === "user");
+}
+
+export function userMessageTexts(messages: WorkbenchMessage[]): string[] {
+  return messages
+    .filter((message) => message.role === "user")
+    .map((message) => message.text);
+}
+
+export function handoffEnabled(messages: WorkbenchMessage[]): boolean {
+  return hasUserTurn(messages) || handoffSuggested(messages);
 }
 
 export function rulesForIds(

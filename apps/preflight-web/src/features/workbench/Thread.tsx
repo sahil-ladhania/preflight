@@ -22,11 +22,9 @@ function EmptyPrompt(): ReactElement {
 function MessageBlock({
   message,
   rules,
-  onGoToCampaign,
 }: {
   message: WorkbenchMessage;
   rules: ThreadProps["rules"];
-  onGoToCampaign: () => void;
 }): ReactElement {
   if (message.role === "user") {
     return (
@@ -44,11 +42,7 @@ function MessageBlock({
         <p className="whitespace-pre-wrap text-body-airy text-fg">
           {message.text}
         </p>
-        <RuleCards
-          ruleIds={message.ruleIds}
-          rules={rules}
-          onGoToCampaign={onGoToCampaign}
-        />
+        <RuleCards ruleIds={message.ruleIds} rules={rules} />
       </CommentSheet>
     );
   }
@@ -68,7 +62,6 @@ export function Thread({
   showSearchFallback,
   searchQuery,
   onSearchQueryChange,
-  onGoToCampaign,
 }: ThreadProps): ReactElement {
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -82,12 +75,7 @@ export function Thread({
         <EmptyPrompt />
       ) : (
         messages.map((message) => (
-          <MessageBlock
-            key={message.id}
-            message={message}
-            rules={rules}
-            onGoToCampaign={onGoToCampaign}
-          />
+          <MessageBlock key={message.id} message={message} rules={rules} />
         ))
       )}
       {showSearchFallback ? (
@@ -95,7 +83,6 @@ export function Thread({
           rules={rules}
           query={searchQuery}
           onQueryChange={onSearchQueryChange}
-          onGoToCampaign={onGoToCampaign}
         />
       ) : null}
       <div ref={endRef} />

@@ -22,12 +22,15 @@ export function Workbench({
   messages: messagesProp,
   composerText: composerTextProp,
   sendInFlight: sendInFlightProp,
+  handoffInFlight: handoffInFlightProp,
+  handoffEnabled: handoffEnabledProp,
   showSearchFallback: showSearchFallbackProp,
   searchQuery: searchQueryProp,
   onComposerTextChange,
   onSearchQueryChange,
   onSend,
   onGoToCampaign,
+  onStartCampaignFromConversation,
 }: WorkbenchProps): ReactElement {
   const { enqueue } = useToastContext();
   const fixture = useWorkbenchFixture({
@@ -49,6 +52,12 @@ export function Workbench({
   const sendInFlight = controlled
     ? (sendInFlightProp ?? false)
     : fixture.sendInFlight;
+  const handoffInFlight = controlled
+    ? (handoffInFlightProp ?? false)
+    : fixture.handoffInFlight;
+  const handoffEnabled = controlled
+    ? (handoffEnabledProp ?? false)
+    : fixture.handoffEnabled;
   const showSearchFallback = controlled
     ? (showSearchFallbackProp ?? false)
     : fixture.showSearchFallback;
@@ -70,6 +79,14 @@ export function Workbench({
     fixture.handleGoToCampaign();
   };
 
+  const handleStartCampaign = (): void => {
+    if (onStartCampaignFromConversation !== undefined) {
+      void onStartCampaignFromConversation();
+      return;
+    }
+    fixture.handleStartCampaignFromConversation();
+  };
+
   return (
     <div className="flex h-[calc(100vh-3rem)] flex-col bg-canvas-subtle">
       <div className="mx-auto flex min-h-0 w-full max-w-[720px] flex-1 flex-col px-8 pt-6">
@@ -82,7 +99,6 @@ export function Workbench({
           onSearchQueryChange={
             onSearchQueryChange ?? fixture.setSearchQuery
           }
-          onGoToCampaign={handleGoToCampaign}
         />
       </div>
       <div className="shrink-0 border-t border-border bg-canvas">
@@ -90,9 +106,12 @@ export function Workbench({
           <Composer
             value={composerText}
             sendInFlight={sendInFlight}
+            handoffInFlight={handoffInFlight}
+            handoffEnabled={handoffEnabled}
             onChange={onComposerTextChange ?? fixture.setComposerText}
             onSend={handleSend}
             onGoToCampaign={handleGoToCampaign}
+            onStartCampaignFromConversation={handleStartCampaign}
           />
         </div>
       </div>
@@ -110,6 +129,8 @@ export function WorkbenchRoute(): ReactElement {
       messages={hook.messages}
       composerText={hook.composerText}
       sendInFlight={hook.sendInFlight}
+      handoffInFlight={hook.handoffInFlight}
+      handoffEnabled={hook.handoffEnabled}
       showSearchFallback={hook.showSearchFallback}
       searchQuery={hook.searchQuery}
       onComposerTextChange={hook.setComposerText}
@@ -119,6 +140,9 @@ export function WorkbenchRoute(): ReactElement {
       }}
       onGoToCampaign={() => {
         void hook.goToCampaign();
+      }}
+      onStartCampaignFromConversation={() => {
+        void hook.startCampaignFromConversation();
       }}
     />
   );

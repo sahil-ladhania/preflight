@@ -11,14 +11,32 @@ import {
   CAMPAIGN_ID_FRESH,
   CAMPAIGN_FRESH,
   CAMPAIGN_SEED,
+  EXTRACT_PROPOSAL,
 } from "@/fixtures/campaign";
 import { Campaign } from "@/features/campaign/Campaign";
+import {
+  mergeExtractProposal,
+  proposedKeysFromPartial,
+  briefFromCampaign,
+} from "@/features/campaign/lib";
 
 export function CampaignZeroRulesDemo(): ReactElement {
   return (
     <Campaign
       campaign={{ ...CAMPAIGN_SEED, lastCompile: null, currentConstraintSetId: null }}
       zeroRulesCompile
+    />
+  );
+}
+
+export function CampaignHandoffDemo(): ReactElement {
+  const brief = mergeExtractProposal(briefFromCampaign(null), EXTRACT_PROPOSAL);
+  return (
+    <Campaign
+      campaign={CAMPAIGN_FRESH}
+      freeText="LinkedIn and email for Bluepeak Flexi Cap with professional tone."
+      brief={brief}
+      proposedFieldKeys={proposedKeysFromPartial(EXTRACT_PROPOSAL)}
     />
   );
 }
@@ -32,7 +50,7 @@ export function CampaignStates(): ReactElement {
         <Link to={`/campaign/${CAMPAIGN_ID}`} className="text-fg underline">
           /campaign/:campaignId
         </Link>
-        .
+        . Phase rail: Brief · Freeze · Generate.
       </p>
       <nav className="flex flex-col gap-2">
         <Link
@@ -40,6 +58,12 @@ export function CampaignStates(): ReactElement {
           className="text-ui text-fg underline"
         >
           Fresh campaign
+        </Link>
+        <Link
+          to="/design-proof/campaign/handoff"
+          className="text-ui text-fg underline"
+        >
+          Workbench handoff (dashed fields)
         </Link>
         <Link
           to="/design-proof/campaign/loading"
