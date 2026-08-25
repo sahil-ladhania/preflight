@@ -7,7 +7,8 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "check-types": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "judgement-golden": "tsx scripts/run-judgement-golden.ts"
   },
   "dependencies": {
     "@open-gitagent/gitagent": "2.2.0",

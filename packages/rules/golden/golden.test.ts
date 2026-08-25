@@ -34,9 +34,9 @@ describe("golden det", () => {
   }
 });
 
-describe.skip("golden judgement", () => {
-  it("not run — GitAgent judge not wired in Phase 2.5", () => {
+describe("golden judgement", () => {
+  it("runs via backend script — npm run judgement-golden in preflight-backend", () => {
     const cases = judgementCases as GoldenJudgementCase[];
-    expect(cases.length).toBeGreaterThan(0);
+    expect(cases.length).toBe(3);
   });
 });

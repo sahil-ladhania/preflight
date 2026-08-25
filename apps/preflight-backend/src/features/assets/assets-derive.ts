@@ -10,6 +10,14 @@ import type {
 } from "@preflight/schemas";
 import { foldStatus } from "@preflight/schemas";
 
+export interface FindingStatusInput {
+  ruleId: string;
+  kind: FindingDTO["kind"];
+  evaluationStatus: FindingDTO["evaluationStatus"];
+  machineVerdict: FindingDTO["machineVerdict"];
+  humanVerdict: FindingDTO["humanVerdict"];
+}
+
 function formatRuleIds(ruleIds: string[]): string {
   if (ruleIds.length === 0) {
     return "";
@@ -23,7 +31,7 @@ function formatRuleIds(ruleIds: string[]): string {
 }
 
 export function buildStatusDetail(
-  findings: FindingDTO[],
+  findings: FindingStatusInput[],
   status: AssetStatus,
   pendingCount: number,
 ): string {

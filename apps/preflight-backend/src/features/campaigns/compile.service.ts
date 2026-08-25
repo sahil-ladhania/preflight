@@ -72,6 +72,26 @@ function buildCompileRuleCards(
   }));
 }
 
+function buildCompileRuleCardsFromSnapshots(
+  brief: StructuredBrief,
+  snapshots: Array<{ ruleId: string; kind: string; wording: string }>,
+  catalogById: Map<string, CatalogEntry>,
+): CompileRuleCardDTO[] {
+  return snapshots.map((snapshot) => {
+    const entry = catalogById.get(snapshot.ruleId);
+    const kind = snapshot.kind as CompileRuleCardDTO["kind"];
+
+    return {
+      ruleId: snapshot.ruleId,
+      kind,
+      wording: snapshot.wording,
+      applicabilityReason: entry
+        ? buildApplicabilityReason(brief, entry)
+        : "Frozen rule (no longer in live catalog).",
+    };
+  });
+}
+
 function matchedRules(
   catalog: CatalogEntry[],
   brief: StructuredBrief,
@@ -108,11 +128,7 @@ export async function loadLastCompile(
   const catalogById = new Map(catalog.map((entry) => [entry.ruleId, entry]));
   const brief = toStructuredBrief(structuredBrief);
 
-  const frozenEntries = snapshots
-    .map((snapshot) => catalogById.get(snapshot.ruleId))
-    .filter((entry): entry is CatalogEntry => entry !== undefined);
-
-  const rules = buildCompileRuleCards(brief, frozenEntries);
+  const rules = buildCompileRuleCardsFromSnapshots(brief, snapshots, catalogById);
 
   return {
     constraintSetId,

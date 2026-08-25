@@ -2,6 +2,8 @@
  * assets.service — Assets list and detail DTOs.
  * Why: foldStatus; lineage + exceptions derivation.
  */
+import type { Finding } from "@prisma/client";
+
 import type {
   AssetDetailDTO,
   AssetListItemDTO,
@@ -14,12 +16,12 @@ import {
   buildExceptions,
   buildLineage,
   buildStatusDetail,
-  countPending,
   sortFindingsBySnapshotOrder,
 } from "./assets-derive.js";
 import {
   toFindingDTO,
   toFoldFinding,
+  toFoldFindingFromRow,
   toIso,
 } from "../findings/finding-dto.js";
 import { NotFoundError } from "../../lib/http-error.js";
@@ -27,6 +29,20 @@ import { prisma } from "../../lib/prisma.js";
 
 function parseFieldOffsets(value: unknown): FieldOffsets {
   return value as FieldOffsets;
+}
+
+function countPendingRows(rows: Finding[]): number {
+  return rows.filter((row) => row.evaluationStatus === "pending").length;
+}
+
+function toStatusInput(row: Finding) {
+  return {
+    ruleId: row.ruleId,
+    kind: row.kind as AssetDetailDTO["findings"][number]["kind"],
+    evaluationStatus: row.evaluationStatus as AssetDetailDTO["findings"][number]["evaluationStatus"],
+    machineVerdict: row.machineVerdict as AssetDetailDTO["findings"][number]["machineVerdict"],
+    humanVerdict: row.humanVerdict as AssetDetailDTO["findings"][number]["humanVerdict"],
+  };
 }
 
 async function loadSnapshotOrder(constraintSetId: string): Promise<string[]> {
@@ -45,23 +61,19 @@ async function loadSnapshotOrder(constraintSetId: string): Promise<string[]> {
   return [...deterministic, ...judgement].map((snapshot) => snapshot.ruleId);
 }
 
-async function mapAssetListItem(asset: {
-  id: string;
-  channel: string;
-  headline: string;
-  constraintSetId: string;
-  generationIndex: number;
-  regeneratedFromId: string | null;
-  generatedAt: Date;
-}): Promise<AssetListItemDTO> {
-  const findingRows = await prisma.finding.findMany({
-    where: { assetId: asset.id },
-  });
-  const findings = await Promise.all(
-    findingRows.map((row) => toFindingDTO(row, asset.constraintSetId)),
-  );
-  const status = foldStatus(findings.map(toFoldFinding));
-  const pendingCount = countPending(findings);
+function mapAssetListItem(
+  asset: {
+    id: string;
+    channel: string;
+    headline: string;
+    generationIndex: number;
+    regeneratedFromId: string | null;
+    generatedAt: Date;
+  },
+  findingRows: Finding[],
+): AssetListItemDTO {
+  const status = foldStatus(findingRows.map(toFoldFindingFromRow));
+  const pendingCount = countPendingRows(findingRows);
 
   return {
     id: asset.id,
@@ -72,7 +84,11 @@ async function mapAssetListItem(asset: {
     regeneratedFromId: asset.regeneratedFromId,
     generatedAt: toIso(asset.generatedAt),
     pendingCount,
-    statusDetail: buildStatusDetail(findings, status, pendingCount),
+    statusDetail: buildStatusDetail(
+      findingRows.map(toStatusInput),
+      status,
+      pendingCount,
+    ),
   };
 }
 
@@ -83,14 +99,31 @@ export async function listAssets(): Promise<AssetsListResponse> {
       id: true,
       channel: true,
       headline: true,
-      constraintSetId: true,
       generationIndex: true,
       regeneratedFromId: true,
       generatedAt: true,
     },
   });
 
-  const listItems = await Promise.all(assets.map((asset) => mapAssetListItem(asset)));
+  if (assets.length === 0) {
+    return { assets: [] };
+  }
+
+  const findingRows = await prisma.finding.findMany({
+    where: { assetId: { in: assets.map((asset) => asset.id) } },
+  });
+
+  const findingsByAssetId = new Map<string, Finding[]>();
+  for (const row of findingRows) {
+    const bucket = findingsByAssetId.get(row.assetId) ?? [];
+    bucket.push(row);
+    findingsByAssetId.set(row.assetId, bucket);
+  }
+
+  const listItems = assets.map((asset) =>
+    mapAssetListItem(asset, findingsByAssetId.get(asset.id) ?? []),
+  );
+
   return { assets: listItems };
 }
 
@@ -147,7 +180,7 @@ export async function getAssetDetail(id: string): Promise<AssetDetailDTO> {
     fieldOffsets: parseFieldOffsets(asset.fieldOffsets),
     runHash: asset.runHash,
     rulesetHash: asset.rulesetHash,
-    generatedAt: toIso(asset.generatedAt),
+    generatedAt: asset.generatedAt.toISOString(),
     regeneratedFromId: asset.regeneratedFromId,
     generationIndex: asset.generationIndex,
     status,

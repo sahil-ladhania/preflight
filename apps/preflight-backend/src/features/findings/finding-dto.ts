@@ -77,6 +77,15 @@ export function toFoldFinding(dto: FindingDTO): FoldFinding {
   };
 }
 
+export function toFoldFindingFromRow(row: Finding): FoldFinding {
+  return {
+    kind: row.kind as FoldFinding["kind"],
+    evaluationStatus: row.evaluationStatus as FoldFinding["evaluationStatus"],
+    machineVerdict: row.machineVerdict as FoldFinding["machineVerdict"],
+    humanVerdict: row.humanVerdict as FoldFinding["humanVerdict"],
+  };
+}
+
 export async function refoldAssetStatus(
   assetId: string,
   constraintSetId: string,

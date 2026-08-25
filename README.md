@@ -103,10 +103,12 @@ Open [http://localhost:5173](http://localhost:5173). Vite proxies `/api` to the 
 - **Localization fan-out.** The proof primitive is a character span on one text asset. N locales is N assets, not a feature.
 - **Ingesting external assets.** That is proof-of-arbitrary-creative, not a constrained generation loop. The ledger is cheap because the constraints were declared first.
 - **Override on deterministic fails.** The matcher is byte-identical. Calling a fail a misread would launder it into a clean pass. Waive is the only honest ship-anyway.
+- **Prompt injection on judge path.** Judgement calls treat asset copy as untrusted prose; delimiters reduce conflation with instructions but do not eliminate elicited false passes — machine pass is advisory, and human confirm, override, or waive is the gate.
 
 
 
-## Golden-set results *(pending)*
+## Golden-set results
 
-Det matcher score on the frozen golden cases, and judgement 3× agreement — or `not run`. No number until it is measured.
+- **Deterministic:** 30/30 (100%) on frozen golden cases (`cd packages/rules && npm test`).
+- **Judgement:** 9/9 (100%) agreement across 3 cases × 3 runs (`cd apps/preflight-backend && npm run judgement-golden`). No flipping case ids on 2026-03-25 run.
 

@@ -2,12 +2,15 @@
  * judge.service — judge fan-out and retry.
  * Why: one query() + indexOf span locate + persist.
  */
+import type { Prisma } from "@prisma/client";
 import type { JudgeOutput, Span } from "@preflight/schemas";
 import { JudgeOutputSchema } from "@preflight/schemas";
 
 import { buildJudgePrompt } from "../../../agents/judge.prompt.js";
 import { prisma } from "../../lib/prisma.js";
 import { loadSnapshotWording } from "./finding-dto.js";
+
+const JUDGE_FAN_OUT_CONCURRENCY = 3;
 
 function stripJsonFence(content: string): string {
   const trimmed = content.trim();
@@ -43,16 +46,25 @@ function locateSpan(spanText: string, canonicalText: string): Span[] | null {
   return [{ start: index, end: index + spanText.length, text: spanText }];
 }
 
+async function persistIfPending(
+  findingId: string,
+  data: Prisma.FindingUpdateInput,
+): Promise<boolean> {
+  const result = await prisma.finding.updateMany({
+    where: { id: findingId, evaluationStatus: "pending" },
+    data,
+  });
+
+  return result.count > 0;
+}
+
 async function persistUnavailable(findingId: string, reason: string): Promise<void> {
-  await prisma.finding.update({
-    where: { id: findingId },
-    data: {
-      evaluationStatus: "unavailable",
-      machineVerdict: null,
-      machineReason: reason,
-      spans: [],
-      machineAt: new Date(),
-    },
+  await persistIfPending(findingId, {
+    evaluationStatus: "unavailable",
+    machineVerdict: null,
+    machineReason: reason,
+    spans: [],
+    machineAt: new Date(),
   });
 }
 
@@ -64,29 +76,23 @@ async function persistJudgeResult(
   const now = new Date();
 
   if (output.verdict === "pass") {
-    await prisma.finding.update({
-      where: { id: findingId },
-      data: {
-        evaluationStatus: "complete",
-        machineVerdict: "pass",
-        machineReason: output.reason,
-        spans: [],
-        machineAt: now,
-      },
+    await persistIfPending(findingId, {
+      evaluationStatus: "complete",
+      machineVerdict: "pass",
+      machineReason: output.reason,
+      spans: [],
+      machineAt: now,
     });
     return;
   }
 
   if (!output.spanText) {
-    await prisma.finding.update({
-      where: { id: findingId },
-      data: {
-        evaluationStatus: "complete",
-        machineVerdict: "fail",
-        machineReason: output.reason,
-        spans: [],
-        machineAt: now,
-      },
+    await persistIfPending(findingId, {
+      evaluationStatus: "complete",
+      machineVerdict: "fail",
+      machineReason: output.reason,
+      spans: [],
+      machineAt: now,
     });
     return;
   }
@@ -94,29 +100,53 @@ async function persistJudgeResult(
   const spans = locateSpan(output.spanText, canonicalText);
 
   if (!spans) {
-    await prisma.finding.update({
-      where: { id: findingId },
-      data: {
-        evaluationStatus: "unavailable",
-        machineVerdict: null,
-        machineReason: output.reason,
-        spans: [],
-        machineAt: now,
-      },
+    await persistIfPending(findingId, {
+      evaluationStatus: "unavailable",
+      machineVerdict: null,
+      machineReason: output.reason,
+      spans: [],
+      machineAt: now,
     });
     return;
   }
 
-  await prisma.finding.update({
-    where: { id: findingId },
-    data: {
-      evaluationStatus: "complete",
-      machineVerdict: "fail",
-      machineReason: output.reason,
-      spans,
-      machineAt: now,
-    },
+  await persistIfPending(findingId, {
+    evaluationStatus: "complete",
+    machineVerdict: "fail",
+    machineReason: output.reason,
+    spans,
+    machineAt: now,
   });
+}
+
+async function runWithConcurrency<T>(
+  items: T[],
+  concurrency: number,
+  worker: (item: T) => Promise<void>,
+): Promise<void> {
+  if (items.length === 0) {
+    return;
+  }
+
+  const queue = [...items];
+  const poolSize = Math.min(concurrency, queue.length);
+
+  await Promise.all(
+    Array.from({ length: poolSize }, async () => {
+      while (queue.length > 0) {
+        const item = queue.shift();
+        if (item === undefined) {
+          return;
+        }
+
+        try {
+          await worker(item);
+        } catch (error: unknown) {
+          console.error("Judge fan-out task rejected:", error);
+        }
+      }
+    }),
+  );
 }
 
 export function fanOutJudgement(assetIds: string[]): void {
@@ -130,15 +160,9 @@ export function fanOutJudgement(assetIds: string[]): void {
       select: { id: true },
     });
 
-    const results = await Promise.allSettled(
-      findings.map((finding) => evaluateFinding(finding.id)),
+    await runWithConcurrency(findings, JUDGE_FAN_OUT_CONCURRENCY, (finding) =>
+      evaluateFinding(finding.id),
     );
-
-    for (const result of results) {
-      if (result.status === "rejected") {
-        console.error("Judge fan-out task rejected:", result.reason);
-      }
-    }
   })();
 }
 
@@ -147,6 +171,10 @@ export async function evaluateFinding(findingId: string): Promise<void> {
     const finding = await prisma.finding.findUnique({ where: { id: findingId } });
 
     if (!finding || finding.kind !== "judgement") {
+      return;
+    }
+
+    if (finding.evaluationStatus !== "pending") {
       return;
     }
 
