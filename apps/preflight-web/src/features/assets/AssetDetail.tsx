@@ -4,7 +4,7 @@
  */
 // size: optional wired handlers for design-proof plus AssetDetailRoute shell.
 
-import { useState, type ReactElement } from "react";
+import { useState, useEffect, useRef, type ReactElement } from "react";
 import { useParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { LedgerPane } from "@/features/assets/LedgerPane";
 import { LineageBanner } from "@/features/assets/LineageBanner";
 import { ReasonModal } from "@/features/assets/ReasonModal";
 import { RerunStrip } from "@/features/assets/RerunStrip";
+import { scrollFindingTarget } from "@/features/assets/lib";
 import type { AssetDetailProps, ReasonModalState } from "@/features/assets/types";
 import { useAssetDetail } from "@/features/assets/useAssetDetail";
 import { useToastContext } from "@/features/shell/ToastHost";
@@ -69,6 +70,7 @@ export function AssetDetail({
   openFindingId: openFindingIdProp,
   reasonModal: reasonModalProp,
   onSpanClick,
+  onRowClick,
   onConfirm,
   onOverride,
   onWaive,
@@ -89,18 +91,41 @@ export function AssetDetail({
     findingId: null,
   });
   const [localRerunStrip, setLocalRerunStrip] = useState(rerunStripProp);
+  const scrollTargetRef = useRef<"span" | "row" | null>(null);
 
   const openFindingId = openFindingIdProp ?? localOpenFindingId;
   const reasonModal = reasonModalProp ?? localReasonModal;
   const rerunStrip = onRerun !== undefined ? rerunStripProp : localRerunStrip;
 
-  const selectFinding = (findingId: string): void => {
+  const selectSpanFinding = (findingId: string): void => {
     if (onSpanClick !== undefined) {
       onSpanClick(findingId);
       return;
     }
+    scrollTargetRef.current = "row";
     setLocalOpenFindingId(findingId);
   };
+
+  const selectRowFinding = (findingId: string): void => {
+    if (onRowClick !== undefined) {
+      onRowClick(findingId);
+      return;
+    }
+    scrollTargetRef.current = "span";
+    setLocalOpenFindingId(findingId);
+  };
+
+  useEffect(() => {
+    if (openFindingIdProp !== undefined || openFindingId === null) {
+      return;
+    }
+    if (scrollTargetRef.current === null) {
+      return;
+    }
+    const target = scrollTargetRef.current;
+    scrollTargetRef.current = null;
+    scrollFindingTarget(openFindingId, target);
+  }, [openFindingId, openFindingIdProp]);
 
   if (view === "loading") {
     return <LoadingState showSpinner={showLoadingSpinner} />;
@@ -155,7 +180,7 @@ export function AssetDetail({
           <AssetPane
             asset={asset}
             openFindingId={openFindingId}
-            onSpanClick={selectFinding}
+            onSpanClick={selectSpanFinding}
             onAccept={handleAccept}
             onRegenerate={() => {
               if (onRegenerate !== undefined) {
@@ -168,7 +193,7 @@ export function AssetDetail({
           <LedgerPane
             findings={asset.findings}
             openFindingId={openFindingId}
-            onRowClick={selectFinding}
+            onRowClick={selectRowFinding}
             onConfirm={(findingId) => {
               if (onConfirm !== undefined) {
                 void onConfirm(findingId);
@@ -215,7 +240,8 @@ export function AssetDetailRoute(): ReactElement {
     showLoadingSpinner,
     rerunStrip,
     openFindingId,
-    setOpenFindingId,
+    selectSpanFinding,
+    selectRowFinding,
     reasonModal,
     openOverride,
     openWaive,
@@ -248,9 +274,8 @@ export function AssetDetailRoute(): ReactElement {
       rerunStrip={rerunStrip}
       openFindingId={openFindingId}
       reasonModal={reasonModal}
-      onSpanClick={(findingId) => {
-        setOpenFindingId(findingId);
-      }}
+      onSpanClick={selectSpanFinding}
+      onRowClick={selectRowFinding}
       onConfirm={confirmFinding}
       onOverride={openOverride}
       onWaive={openWaive}

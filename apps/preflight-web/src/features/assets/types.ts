@@ -36,6 +36,7 @@ export type AssetDetailFixture = AssetDetailDTO & {
 export interface AssetsListProps {
   assets: AssetListItemDTO[];
   view?: AssetsListView;
+  pollError?: boolean;
   onRetry?: () => void;
   onNewCampaign?: () => void;
   showLoadingSpinner?: boolean;
@@ -57,6 +58,7 @@ export interface AssetDetailProps {
   openFindingId?: string | null;
   reasonModal?: ReasonModalState;
   onSpanClick?: (findingId: string) => void;
+  onRowClick?: (findingId: string) => void;
   onConfirm?: (findingId: string) => void;
   onOverride?: (findingId: string) => void;
   onWaive?: (findingId: string) => void;

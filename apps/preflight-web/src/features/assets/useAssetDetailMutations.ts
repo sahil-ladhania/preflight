@@ -97,21 +97,34 @@ export function useAssetDetailMutations({
     [setAsset],
   );
 
+  const refetchDetail = useCallback(
+    async (controller: AbortController): Promise<void> => {
+      if (assetId === undefined) {
+        return;
+      }
+      const detail = await getAssetDetailService(assetId, controller.signal);
+      if (!controller.signal.aborted) {
+        setAsset(toFixture(detail));
+      }
+    },
+    [assetId, setAsset],
+  );
+
   const confirmFinding = useCallback(
     async (findingId: string): Promise<void> => {
       const controller = new AbortController();
       try {
-        const response = await decideFindingService(
+        await decideFindingService(
           findingId,
           { verdict: "confirmed" },
           controller.signal,
         );
-        patchFinding(findingId, response.status, response.finding);
+        await refetchDetail(controller);
       } catch (error: unknown) {
         toastApiError(error);
       }
     },
-    [patchFinding, toastApiError],
+    [refetchDetail, toastApiError],
   );
 
   const submitReason = useCallback(
@@ -125,29 +138,22 @@ export function useAssetDetailMutations({
 
       try {
         if (mode === "override") {
-          const response = await decideFindingService(
+          await decideFindingService(
             findingId,
             { verdict: "overridden", reason },
             controller.signal,
           );
-          patchFinding(findingId, response.status, response.finding);
+          await refetchDetail(controller);
           closeReasonModal();
           return;
         }
 
-        const response = await waiveFindingService(
+        await waiveFindingService(
           findingId,
           { reason },
           controller.signal,
         );
-        patchFinding(findingId, response.status, response.finding);
-
-        if (assetId !== undefined) {
-          const detail = await getAssetDetailService(assetId, controller.signal);
-          if (!controller.signal.aborted) {
-            setAsset(toFixture(detail));
-          }
-        }
+        await refetchDetail(controller);
 
         closeReasonModal();
       } catch (error: unknown) {
@@ -155,11 +161,9 @@ export function useAssetDetailMutations({
       }
     },
     [
-      assetId,
       closeReasonModal,
-      patchFinding,
       reasonModal,
-      setAsset,
+      refetchDetail,
       toastApiError,
     ],
   );

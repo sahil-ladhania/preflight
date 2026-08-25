@@ -67,3 +67,14 @@ export function isFailFinding(finding: FindingDTO): boolean {
     finding.evaluationStatus === "complete" && finding.machineVerdict === "fail"
   );
 }
+
+export function scrollFindingTarget(
+  findingId: string,
+  target: "span" | "row",
+): void {
+  const attribute =
+    target === "span" ? "data-finding-span" : "data-finding-row";
+  document
+    .querySelector(`[${attribute}="${findingId}"]`)
+    ?.scrollIntoView({ block: "nearest" });
+}

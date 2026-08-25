@@ -69,6 +69,7 @@ function CopyField({
               key={index}
               role="button"
               tabIndex={0}
+              data-finding-span={segment.findingId}
               className={mark}
               onClick={() => onSpanClick(segment.findingId as string)}
               onKeyDown={(event) => {

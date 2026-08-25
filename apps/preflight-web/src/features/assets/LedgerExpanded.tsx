@@ -23,11 +23,6 @@ function SnippetBlock({ finding }: { finding: FindingDTO }): ReactElement {
   }
 
   if (finding.evaluationStatus === "unavailable") {
-    if (finding.spans.length === 0) {
-      return (
-        <p className="text-caption text-fg-muted">{UNAVAILABLE_COPY}</p>
-      );
-    }
     if (finding.machineReason !== null) {
       return (
         <p className="text-caption text-fg-muted">{finding.machineReason}</p>

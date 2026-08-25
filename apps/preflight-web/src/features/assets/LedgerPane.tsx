@@ -89,6 +89,7 @@ function LedgerRow({
     <div className="border-b border-border bg-canvas">
       <button
         type="button"
+        data-finding-row={finding.id}
         onClick={() => onRowClick(finding.id)}
         className={cn(
           "flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-canvas-subtle",

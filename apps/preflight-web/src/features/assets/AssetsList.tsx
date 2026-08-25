@@ -87,6 +87,23 @@ function LoadingState({
   );
 }
 
+function PollErrorBanner({ onRetry }: { onRetry?: () => void }): ReactElement {
+  const handleRetry = (): void => {
+    onRetry?.();
+  };
+
+  return (
+    <div className="flex items-center justify-between gap-4 border-b border-border bg-canvas-subtle px-4 py-2">
+      <p className="text-caption text-fg-muted">
+        Could not refresh assets. Showing last loaded rows.
+      </p>
+      <Button type="button" variant="outline" size="sm" onClick={handleRetry}>
+        Retry
+      </Button>
+    </div>
+  );
+}
+
 function ErrorState({ onRetry }: { onRetry?: () => void }): ReactElement {
   const handleRetry = (): void => {
     onRetry?.();
@@ -105,6 +122,7 @@ function ErrorState({ onRetry }: { onRetry?: () => void }): ReactElement {
 export function AssetsList({
   assets,
   view = "loaded",
+  pollError = false,
   onRetry,
   onNewCampaign,
   showLoadingSpinner = true,
@@ -134,6 +152,7 @@ export function AssetsList({
   return (
     <div className="bg-canvas-subtle">
       <PageHeader onNewCampaign={onNewCampaign} />
+      {pollError ? <PollErrorBanner onRetry={onRetry} /> : null}
       <div className="bg-canvas">
         <ListHeaderRow />
         {assets.map((asset) => (
@@ -145,13 +164,14 @@ export function AssetsList({
 }
 
 export function AssetsListRoute(): ReactElement {
-  const { assets, view, showLoadingSpinner, retry, createCampaignAndGo } =
+  const { assets, view, pollError, showLoadingSpinner, retry, createCampaignAndGo } =
     useAssetsList();
 
   return (
     <AssetsList
       assets={assets}
       view={view}
+      pollError={pollError}
       onRetry={retry}
       onNewCampaign={() => {
         void createCampaignAndGo();

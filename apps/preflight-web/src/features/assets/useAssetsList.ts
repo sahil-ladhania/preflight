@@ -19,6 +19,7 @@ import { ApiClientError } from "@/lib/api";
 export function useAssetsList(): {
   assets: AssetListItemDTO[];
   view: AssetsListView;
+  pollError: boolean;
   showLoadingSpinner: boolean;
   retry: () => void;
   createCampaignAndGo: () => Promise<void>;
@@ -27,6 +28,7 @@ export function useAssetsList(): {
   const { enqueue } = useToastContext();
   const [assets, setAssets] = useState<AssetListItemDTO[]>([]);
   const [view, setView] = useState<AssetsListView>("loading");
+  const [pollError, setPollError] = useState<boolean>(false);
   const abortRef = useRef<AbortController | null>(null);
   const showLoadingSpinner = useDelayedLoading(view === "loading");
 
@@ -41,6 +43,7 @@ export function useAssetsList(): {
         return;
       }
       setAssets(data.assets);
+      setPollError(false);
       setView("loaded");
     } catch (error: unknown) {
       if (controller.signal.aborted) {
@@ -49,12 +52,20 @@ export function useAssetsList(): {
       if (error instanceof ApiClientError && error.kind === "abort") {
         return;
       }
-      setView("error");
+      setAssets((current) => {
+        if (current.length > 0) {
+          setPollError(true);
+          return current;
+        }
+        setView("error");
+        return current;
+      });
     }
   }, []);
 
   useEffect(() => {
     setView("loading");
+    setPollError(false);
     void load();
 
     return () => {
@@ -63,14 +74,19 @@ export function useAssetsList(): {
   }, [load]);
 
   const pollActive =
-    view === "loaded" && assets.some((asset) => asset.pendingCount > 0);
+    view === "loaded" &&
+    !pollError &&
+    assets.some((asset) => asset.pendingCount > 0);
 
   usePendingPoll(() => load(), pollActive);
 
   const retry = useCallback((): void => {
-    setView("loading");
+    setPollError(false);
+    if (assets.length === 0) {
+      setView("loading");
+    }
     void load();
-  }, [load]);
+  }, [assets.length, load]);
 
   const createCampaignAndGo = useCallback(async (): Promise<void> => {
     const controller = new AbortController();
@@ -98,6 +114,7 @@ export function useAssetsList(): {
   return {
     assets,
     view,
+    pollError,
     showLoadingSpinner,
     retry,
     createCampaignAndGo,

@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { RerunStripDTO } from "@preflight/schemas";
 
 import { getAssetDetailService } from "@/features/assets/assets.service";
+import { scrollFindingTarget } from "@/features/assets/lib";
 import { buildCopySegments } from "@/features/assets/span-highlight";
 import type {
   AssetDetailFixture,
@@ -33,7 +34,8 @@ export function useAssetDetail(id: string | undefined): {
   showLoadingSpinner: boolean;
   rerunStrip: RerunStripDTO | null;
   openFindingId: string | null;
-  setOpenFindingId: (findingId: string | null) => void;
+  selectSpanFinding: (findingId: string) => void;
+  selectRowFinding: (findingId: string) => void;
   reasonModal: ReasonModalState;
   openOverride: (findingId: string) => void;
   openWaive: (findingId: string) => void;
@@ -51,6 +53,7 @@ export function useAssetDetail(id: string | undefined): {
   const [notFound, setNotFound] = useState<boolean>(false);
   const [rerunStrip, setRerunStrip] = useState<RerunStripDTO | null>(null);
   const [openFindingId, setOpenFindingId] = useState<string | null>(null);
+  const scrollTargetRef = useRef<"span" | "row" | null>(null);
   const [reasonModal, setReasonModal] = useState<ReasonModalState>({
     mode: "closed",
     findingId: null,
@@ -116,6 +119,25 @@ export function useAssetDetail(id: string | undefined): {
 
   usePendingPoll(() => load(), pollActive);
 
+  useEffect(() => {
+    if (openFindingId === null || scrollTargetRef.current === null) {
+      return;
+    }
+    const target = scrollTargetRef.current;
+    scrollTargetRef.current = null;
+    scrollFindingTarget(openFindingId, target);
+  }, [openFindingId]);
+
+  const selectSpanFinding = useCallback((findingId: string): void => {
+    scrollTargetRef.current = "row";
+    setOpenFindingId(findingId);
+  }, []);
+
+  const selectRowFinding = useCallback((findingId: string): void => {
+    scrollTargetRef.current = "span";
+    setOpenFindingId(findingId);
+  }, []);
+
   const openOverride = useCallback((findingId: string): void => {
     setReasonModal({ mode: "override", findingId });
   }, []);
@@ -157,7 +179,8 @@ export function useAssetDetail(id: string | undefined): {
     showLoadingSpinner,
     rerunStrip,
     openFindingId,
-    setOpenFindingId,
+    selectSpanFinding,
+    selectRowFinding,
     reasonModal,
     openOverride,
     openWaive,

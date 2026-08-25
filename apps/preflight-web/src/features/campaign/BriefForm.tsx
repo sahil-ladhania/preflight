@@ -3,8 +3,8 @@
  * Why: proposed-field dashed borders from extract.
  */
 
-import { useState, type ReactElement } from "react";
-import { ChevronDown, Loader2 } from "lucide-react";
+import type { ReactElement } from "react";
+import { Loader2 } from "lucide-react";
 
 import type { BriefField } from "@preflight/schemas";
 
@@ -67,7 +67,6 @@ export function BriefForm({
   onExtract,
   onSave,
 }: BriefFormProps): ReactElement {
-  const [advancedOpen, setAdvancedOpen] = useState<boolean>(false);
   const patchScalar = (key: BriefField, value: string): void => {
     onFieldEdit(key);
     onBriefChange({ ...brief, [key]: value });
@@ -117,41 +116,22 @@ export function BriefForm({
             onBriefChange({ ...brief, channels });
           }}
         />
-        <button
-          type="button"
-          className="flex w-fit items-center gap-1 text-ui text-fg-muted hover:text-fg"
-          aria-expanded={advancedOpen}
-          onClick={() => setAdvancedOpen((open) => !open)}
-        >
-          <ChevronDown
-            className={cn(
-              "size-4 transition-transform",
-              advancedOpen && "rotate-180",
-            )}
-            aria-hidden
-          />
-          Advanced
-        </button>
-        {advancedOpen ? (
-          <div className="flex flex-col gap-3">
-            <PerformanceFiguresField
-              figures={brief.performanceFigures}
-              proposed={proposedFieldKeys.has("performanceFigures")}
-              onChange={(figures) => {
-                onFieldEdit("performanceFigures");
-                onBriefChange({ ...brief, performanceFigures: figures });
-              }}
-            />
-            <ClaimsField
-              claims={brief.claims}
-              proposed={proposedFieldKeys.has("claims")}
-              onChange={(claims) => {
-                onFieldEdit("claims");
-                onBriefChange({ ...brief, claims });
-              }}
-            />
-          </div>
-        ) : null}
+        <PerformanceFiguresField
+          figures={brief.performanceFigures}
+          proposed={proposedFieldKeys.has("performanceFigures")}
+          onChange={(figures) => {
+            onFieldEdit("performanceFigures");
+            onBriefChange({ ...brief, performanceFigures: figures });
+          }}
+        />
+        <ClaimsField
+          claims={brief.claims}
+          proposed={proposedFieldKeys.has("claims")}
+          onChange={(claims) => {
+            onFieldEdit("claims");
+            onBriefChange({ ...brief, claims });
+          }}
+        />
       </div>
       <Button
         type="button"
