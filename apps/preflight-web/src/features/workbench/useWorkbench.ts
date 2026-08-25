@@ -10,7 +10,7 @@ import type { RuleCatalogRowDTO } from "@preflight/schemas";
 
 import { sortCatalogRules } from "@/features/rulebook/lib";
 import { getRulesService } from "@/features/rulebook/rulebook.service";
-import { resolveCampaignNavService } from "@/features/shell/campaign-nav.service";
+import { resolveWorkbenchCampaignHandoff } from "@/features/shell/campaign-nav.service";
 import { useToastContext } from "@/features/shell/ToastHost";
 import { nextMessageId } from "@/features/workbench/lib";
 import { sendWorkbenchChatService } from "@/features/workbench/workbench.service";
@@ -148,7 +148,7 @@ export function useWorkbench(): {
     const controller = new AbortController();
 
     try {
-      const campaignId = await resolveCampaignNavService(controller.signal);
+      const campaignId = await resolveWorkbenchCampaignHandoff(controller.signal);
       void navigate(`/campaign/${campaignId}`);
     } catch (error: unknown) {
       toastApiError(error);

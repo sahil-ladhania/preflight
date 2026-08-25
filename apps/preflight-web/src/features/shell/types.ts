@@ -17,15 +17,11 @@ export interface ToastContextValue {
 }
 
 export interface CampaignNavTarget {
-  campaignHref: string | null;
-  disabled: boolean;
   navigating: boolean;
   navigateToCampaign: () => Promise<void>;
 }
 
 export interface CampaignNavLinkProps {
-  campaignHref: string | null;
-  disabled: boolean;
   navigating: boolean;
   isActive: boolean;
   onNavigate: () => void;

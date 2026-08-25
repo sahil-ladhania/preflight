@@ -7,6 +7,7 @@
 import type { ReactElement } from "react";
 import { useParams } from "react-router-dom";
 
+import { Button } from "@/components/ui/button";
 import { BriefForm } from "@/features/campaign/BriefForm";
 import { CampaignStep } from "@/features/campaign/CampaignStep";
 import {
@@ -24,6 +25,7 @@ import { briefFromCampaign, campaignGateState } from "@/features/campaign/lib";
 import type { CampaignProps } from "@/features/campaign/types";
 import { useCampaign } from "@/features/campaign/useCampaign";
 import { useCampaignFixture } from "@/features/campaign/useCampaignFixture";
+import { useCreateCampaign } from "@/features/campaign/useCreateCampaign";
 
 export function Campaign({
   campaign,
@@ -57,6 +59,8 @@ export function Campaign({
   onCompile,
   onGenerate,
   onRetry,
+  onNewCampaign,
+  newCampaignInFlight = false,
 }: CampaignProps): ReactElement {
   const fixture = useCampaignFixture(
     campaign,
@@ -166,7 +170,21 @@ export function Campaign({
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-[720px] flex-col gap-4 bg-canvas-subtle px-8 py-6">
-      <h1 className="text-title text-fg">Campaign</h1>
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-title text-fg">Campaign</h1>
+        {onNewCampaign !== undefined ? (
+          <Button
+            type="button"
+            className="h-8 shrink-0 rounded-md px-4"
+            disabled={newCampaignInFlight}
+            onClick={() => {
+              void onNewCampaign();
+            }}
+          >
+            New campaign
+          </Button>
+        ) : null}
+      </div>
       <CampaignStepNav activeStep={activeStep} />
       <CampaignStep
         title="Brief"
@@ -231,6 +249,7 @@ export function Campaign({
 export function CampaignRoute(): ReactElement {
   const { campaignId } = useParams<{ campaignId: string }>();
   const hook = useCampaign(campaignId);
+  const { createInFlight, createCampaignAndGo } = useCreateCampaign();
 
   if (hook.notFound) {
     return <CampaignNotFoundState />;
@@ -291,6 +310,10 @@ export function CampaignRoute(): ReactElement {
       onGenerate={() => {
         void hook.generate();
       }}
+      onNewCampaign={() => {
+        void createCampaignAndGo();
+      }}
+      newCampaignInFlight={createInFlight}
     />
   );
 }

@@ -56,6 +56,8 @@ export interface CampaignProps {
   onCompile?: () => void;
   onGenerate?: () => void;
   onRetry?: () => void;
+  onNewCampaign?: () => void;
+  newCampaignInFlight?: boolean;
 }
 
 export interface CampaignStepProps {

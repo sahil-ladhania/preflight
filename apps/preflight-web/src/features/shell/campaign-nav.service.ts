@@ -1,6 +1,6 @@
 /**
- * campaign-nav.service — resolve Campaign nav target id.
- * Why: TopBar prefetches latest; create-on-click when none exists (15 §4.8).
+ * campaign-nav.service — Campaign nav create + Workbench handoff.
+ * Why: top nav always starts fresh; Workbench resumes latest (09 Screen 5).
  */
 
 import { ApiClientError } from "@/lib/api";
@@ -10,28 +10,27 @@ import {
   getLatestCampaignIdService,
 } from "@/features/campaign/campaign.service";
 
-export async function prefetchCampaignNavHref(
+export async function createNewCampaignNavService(
   signal: AbortSignal,
-): Promise<string | null> {
+): Promise<string> {
   try {
-    const latest = await getLatestCampaignIdService(signal);
-    return `/campaign/${latest.id}`;
+    const created = await createCampaignService({ freeText: "" }, signal);
+    return created.id;
   } catch (error: unknown) {
-    if (error instanceof ApiClientError && error.kind === "not_found") {
-      return null;
-    }
-
     if (error instanceof ApiClientError) {
       throw error;
     }
 
     const message =
-      error instanceof Error ? error.message : "prefetchCampaignNavHref failed";
-    throw new Error(`prefetchCampaignNavHref: ${message}`, { cause: error });
+      error instanceof Error
+        ? error.message
+        : "createNewCampaignNavService failed";
+    throw new Error(`createNewCampaignNavService: ${message}`, { cause: error });
   }
 }
 
-export async function resolveCampaignNavService(
+/** Workbench handoff — latest campaign, or create when none exist. */
+export async function resolveWorkbenchCampaignHandoff(
   signal: AbortSignal,
 ): Promise<string> {
   try {
@@ -39,18 +38,7 @@ export async function resolveCampaignNavService(
     return latest.id;
   } catch (error: unknown) {
     if (error instanceof ApiClientError && error.kind === "not_found") {
-      try {
-        const created = await createCampaignService({ freeText: "" }, signal);
-        return created.id;
-      } catch (createError: unknown) {
-        const message =
-          createError instanceof Error
-            ? createError.message
-            : "resolveCampaignNavService create failed";
-        throw new Error(`resolveCampaignNavService: ${message}`, {
-          cause: createError,
-        });
-      }
+      return createNewCampaignNavService(signal);
     }
 
     if (error instanceof ApiClientError) {
@@ -58,7 +46,11 @@ export async function resolveCampaignNavService(
     }
 
     const message =
-      error instanceof Error ? error.message : "resolveCampaignNavService failed";
-    throw new Error(`resolveCampaignNavService: ${message}`, { cause: error });
+      error instanceof Error
+        ? error.message
+        : "resolveWorkbenchCampaignHandoff failed";
+    throw new Error(`resolveWorkbenchCampaignHandoff: ${message}`, {
+      cause: error,
+    });
   }
 }

@@ -35,32 +35,11 @@ function navLinkClass(isActive: boolean): string {
 }
 
 function CampaignNavLink({
-  campaignHref,
-  disabled,
   navigating,
   isActive,
   onNavigate,
 }: CampaignNavLinkProps): ReactElement {
   const className = navLinkClass(isActive);
-
-  if (disabled) {
-    return (
-      <span
-        className={cn(className, "cursor-not-allowed opacity-50")}
-        aria-disabled="true"
-      >
-        Campaign
-      </span>
-    );
-  }
-
-  if (campaignHref !== null) {
-    return (
-      <Link to={campaignHref} className={className}>
-        Campaign
-      </Link>
-    );
-  }
 
   return (
     <button
@@ -79,8 +58,7 @@ function CampaignNavLink({
 export function TopBar(): ReactElement {
   const location = useLocation();
   const campaignActive = location.pathname.startsWith("/campaign/");
-  const { campaignHref, disabled, navigating, navigateToCampaign } =
-    useCampaignNavTarget();
+  const { navigating, navigateToCampaign } = useCampaignNavTarget();
 
   return (
     <header className="flex h-12 shrink-0 items-center justify-between border-b border-border bg-canvas-subtle px-4">
@@ -101,8 +79,6 @@ export function TopBar(): ReactElement {
           Assets
         </NavLink>
         <CampaignNavLink
-          campaignHref={campaignHref}
-          disabled={disabled}
           navigating={navigating}
           isActive={campaignActive}
           onNavigate={navigateToCampaign}
