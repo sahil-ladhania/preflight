@@ -78,10 +78,16 @@ function detRunRules(): DetRunRule[] {
 }
 
 export function computeRunHash(canonicalText: string, rulesetHash: string): string {
-  const { matcherOutputs } = runDeterministic({
+  const { findings } = runDeterministic({
     canonicalText,
     rules: detRunRules(),
   });
+
+  const matcherOutputs = findings.map((finding) => ({
+    ruleId: finding.ruleId,
+    machineVerdict: finding.machineVerdict,
+    spans: finding.spans,
+  }));
 
   return hashRun({ canonicalText, rulesetHash, matcherOutputs });
 }

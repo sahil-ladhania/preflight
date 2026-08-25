@@ -2,8 +2,6 @@
  * cagr — SEBI-03 CAGR / performance period matcher.
  * Why: adversarial cases in same file (07-build-order.md).
  */
-import { describe, expect, it } from "vitest";
-
 import { spanForMatch } from "../lib/span.js";
 import type { MatcherResult } from "../span.js";
 
@@ -70,24 +68,28 @@ export function matchCagr(canonicalText: string): MatcherResult {
   };
 }
 
-describe("matchCagr", () => {
-  it("passes when no performance percentage is present", () => {
-    const text = "Bluepeak Flexi Cap Fund offers diversified exposure.";
-    expect(matchCagr(text).machineVerdict).toBe("pass");
-  });
+if (import.meta.vitest) {
+  const { describe, expect, it } = import.meta.vitest;
 
-  it("passes when percentage includes a period in the same window", () => {
-    const text = "Past performance of 18.4% over 3 years shown for illustration.";
-    expect(matchCagr(text).machineVerdict).toBe("pass");
-  });
+  describe("matchCagr", () => {
+    it("passes when no performance percentage is present", () => {
+      const text = "Bluepeak Flexi Cap Fund offers diversified exposure.";
+      expect(matchCagr(text).machineVerdict).toBe("pass");
+    });
 
-  it("fails when percentage lacks a period label", () => {
-    const text = "Delivered 18.4% returns with strong momentum.";
-    expect(matchCagr(text).machineVerdict).toBe("fail");
-  });
+    it("passes when percentage includes a period in the same window", () => {
+      const text = "Past performance of 18.4% over 3 years shown for illustration.";
+      expect(matchCagr(text).machineVerdict).toBe("pass");
+    });
 
-  it("passes when CAGR label appears in the previous sentence", () => {
-    const text = "3-year CAGR. Returns reached 18.2% in the latest period.";
-    expect(matchCagr(text).machineVerdict).toBe("pass");
+    it("fails when percentage lacks a period label", () => {
+      const text = "Delivered 18.4% returns with strong momentum.";
+      expect(matchCagr(text).machineVerdict).toBe("fail");
+    });
+
+    it("passes when CAGR label appears in the previous sentence", () => {
+      const text = "3-year CAGR. Returns reached 18.2% in the latest period.";
+      expect(matchCagr(text).machineVerdict).toBe("pass");
+    });
   });
-});
+}

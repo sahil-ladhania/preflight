@@ -2,8 +2,6 @@
  * banned-phrase — SEBI-04 banned promotional phrase matcher.
  * Why: adversarial cases in same file (07-build-order.md).
  */
-import { describe, expect, it } from "vitest";
-
 import { collapseForScan } from "../lib/text.js";
 import { spanForMatch } from "../lib/span.js";
 import type { MatcherResult } from "../span.js";
@@ -67,7 +65,10 @@ function findRawNeedle(canonicalText: string, phrase: string): string | null {
   return null;
 }
 
-describe("matchBannedPhrase", () => {
+if (import.meta.vitest) {
+  const { describe, expect, it } = import.meta.vitest;
+
+  describe("matchBannedPhrase", () => {
   it("passes clean promotional copy", () => {
     const text = "Bluepeak Flexi Cap Fund offers diversified flexi cap exposure.";
     expect(matchBannedPhrase(text).machineVerdict).toBe("pass");
@@ -87,4 +88,5 @@ describe("matchBannedPhrase", () => {
     const text = 'Critics say we are "risk free" but compliance disagrees.';
     expect(matchBannedPhrase(text).machineVerdict).toBe("fail");
   });
-});
+  });
+}

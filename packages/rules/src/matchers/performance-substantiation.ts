@@ -2,8 +2,6 @@
  * performance-substantiation — SEBI-05 substantiation matcher.
  * Why: fifth det rule in seed freeze (14-backend-design.md Area 7).
  */
-import { describe, expect, it } from "vitest";
-
 import { collapseForScan } from "../lib/text.js";
 import { spanForMatch } from "../lib/span.js";
 import type { MatcherResult } from "../span.js";
@@ -59,26 +57,30 @@ export function matchPerformanceSubstantiation(
   };
 }
 
-describe("matchPerformanceSubstantiation", () => {
-  it("passes when no performance figure is cited", () => {
-    const text = "Bluepeak Flexi Cap Fund offers diversified flexi cap exposure.";
-    expect(matchPerformanceSubstantiation(text).machineVerdict).toBe("pass");
-  });
+if (import.meta.vitest) {
+  const { describe, expect, it } = import.meta.vitest;
 
-  it("fails when past performance lacks substantiation markers", () => {
-    const text =
-      "Past performance of 18.4% over 3 years shown for illustration.";
-    expect(matchPerformanceSubstantiation(text).machineVerdict).toBe("fail");
-  });
+  describe("matchPerformanceSubstantiation", () => {
+    it("passes when no performance figure is cited", () => {
+      const text = "Bluepeak Flexi Cap Fund offers diversified flexi cap exposure.";
+      expect(matchPerformanceSubstantiation(text).machineVerdict).toBe("pass");
+    });
 
-  it("passes when substantiation language is present", () => {
-    const text =
-      "Past performance of 18.4% over 3 years is not indicative of future results.";
-    expect(matchPerformanceSubstantiation(text).machineVerdict).toBe("pass");
-  });
+    it("fails when past performance lacks substantiation markers", () => {
+      const text =
+        "Past performance of 18.4% over 3 years shown for illustration.";
+      expect(matchPerformanceSubstantiation(text).machineVerdict).toBe("fail");
+    });
 
-  it("fails on percentage claim without substantiation", () => {
-    const text = "Returns reached 18.4% last quarter with strong inflows.";
-    expect(matchPerformanceSubstantiation(text).machineVerdict).toBe("fail");
+    it("passes when substantiation language is present", () => {
+      const text =
+        "Past performance of 18.4% over 3 years is not indicative of future results.";
+      expect(matchPerformanceSubstantiation(text).machineVerdict).toBe("pass");
+    });
+
+    it("fails on percentage claim without substantiation", () => {
+      const text = "Returns reached 18.4% last quarter with strong inflows.";
+      expect(matchPerformanceSubstantiation(text).machineVerdict).toBe("fail");
+    });
   });
-});
+}

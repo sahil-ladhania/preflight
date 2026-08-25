@@ -2,8 +2,6 @@
  * disclaimer — SEBI-01 standard risk disclaimer matcher.
  * Why: adversarial cases in same file (07-build-order.md).
  */
-import { describe, expect, it } from "vitest";
-
 import { collapseForScan, normalizeWhitespace } from "../lib/text.js";
 import { spanAt } from "../lib/span.js";
 import type { MatcherResult } from "../span.js";
@@ -35,28 +33,32 @@ export function matchDisclaimer(canonicalText: string): MatcherResult {
   };
 }
 
-describe("matchDisclaimer", () => {
-  it("passes when required phrase is present", () => {
-    const text =
-      "Grow wealth. Mutual fund investments are subject to market risks. Invest now.";
-    expect(matchDisclaimer(text).machineVerdict).toBe("pass");
-  });
+if (import.meta.vitest) {
+  const { describe, expect, it } = import.meta.vitest;
 
-  it("passes with extra whitespace and mixed case", () => {
-    const text = "MUTUAL   FUND  investments are subject to market risks.";
-    expect(matchDisclaimer(text).machineVerdict).toBe("pass");
-  });
+  describe("matchDisclaimer", () => {
+    it("passes when required phrase is present", () => {
+      const text =
+        "Grow wealth. Mutual fund investments are subject to market risks. Invest now.";
+      expect(matchDisclaimer(text).machineVerdict).toBe("pass");
+    });
 
-  it("fails on near-miss reworded disclaimer", () => {
-    const text = "Mutual funds are subject to market risk.";
-    expect(matchDisclaimer(text).machineVerdict).toBe("fail");
-  });
+    it("passes with extra whitespace and mixed case", () => {
+      const text = "MUTUAL   FUND  investments are subject to market risks.";
+      expect(matchDisclaimer(text).machineVerdict).toBe("pass");
+    });
 
-  it("fails when disclaimer is entirely absent", () => {
-    const text =
-      "Grow your wealth with Bluepeak Flexi Cap. No disclaimer included in this short update.";
-    const result = matchDisclaimer(text);
-    expect(result.machineVerdict).toBe("fail");
-    expect(normalizeWhitespace(result.machineReason)).toContain("absent");
+    it("fails on near-miss reworded disclaimer", () => {
+      const text = "Mutual funds are subject to market risk.";
+      expect(matchDisclaimer(text).machineVerdict).toBe("fail");
+    });
+
+    it("fails when disclaimer is entirely absent", () => {
+      const text =
+        "Grow your wealth with Bluepeak Flexi Cap. No disclaimer included in this short update.";
+      const result = matchDisclaimer(text);
+      expect(result.machineVerdict).toBe("fail");
+      expect(normalizeWhitespace(result.machineReason)).toContain("absent");
+    });
   });
-});
+}
