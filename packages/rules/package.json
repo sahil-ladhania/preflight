@@ -9,6 +9,7 @@
   "dependencies": {},
   "scripts": {
     "test": "vitest run",
+    "golden-report": "node --import tsx/esm scripts/golden-report.ts",
     "check-types": "tsc --noEmit",
     "lint": "eslint ."
   },

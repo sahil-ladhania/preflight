@@ -4,6 +4,7 @@
  */
 import type { NextFunction, Request, Response } from "express";
 
+import { env } from "../config/env.js";
 import { HttpError } from "../lib/http-error.js";
 
 export function errorHandler(
@@ -14,7 +15,7 @@ export function errorHandler(
 ): void {
   void _next;
 
-  if (process.env.NODE_ENV !== "production" && err instanceof Error) {
+  if (env.NODE_ENV !== "production" && err instanceof Error) {
     console.error(err.stack);
   }
 

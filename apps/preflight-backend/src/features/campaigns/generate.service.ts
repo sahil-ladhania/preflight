@@ -141,9 +141,10 @@ export async function generateAssets(
   }
 
   const ruleWordings = snapshotRules(snapshots);
-  const prepared: PreparedChannel[] = [];
 
-  for (const channel of channels) {
+  const rulesetHash = constraintSet.rulesetHash;
+
+  async function prepareChannel(channel: Channel): Promise<PreparedChannel> {
     const output = await callGenerator(channel, structuredBrief, ruleWordings);
     const { canonicalText, fieldOffsets } = buildCanonicalText(output);
     const { findings } = runDeterministicSafe(canonicalText, detRules);
@@ -154,19 +155,21 @@ export async function generateAssets(
     }));
     const runHash = hashRun({
       canonicalText,
-      rulesetHash: constraintSet.rulesetHash,
+      rulesetHash,
       matcherOutputs,
     });
 
-    prepared.push({
+    return {
       channel,
       output,
       canonicalText,
       fieldOffsets,
       runHash,
       detFindings: findings,
-    });
+    };
   }
+
+  const prepared = await Promise.all(channels.map(prepareChannel));
 
   const now = new Date();
   const assetIds: string[] = [];

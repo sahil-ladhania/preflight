@@ -6,6 +6,7 @@
 import { StructuredBriefSchema } from "@preflight/schemas";
 import type {
   BriefField,
+  CampaignDTO,
   Channel,
   CompileResponseDTO,
   StructuredBriefInput,
@@ -50,6 +51,23 @@ export function briefFromCampaign(
     return emptyBrief();
   }
   return structuredBrief;
+}
+
+export function hydrateFromCampaign(data: CampaignDTO): {
+  freeText: string;
+  brief: StructuredBriefInput;
+  savedBrief: StructuredBriefInput;
+  briefSaved: boolean;
+  compileResult: CompileResponseDTO | null;
+} {
+  const brief = briefFromCampaign(data.structuredBrief);
+  return {
+    freeText: data.freeText,
+    brief,
+    savedBrief: brief,
+    briefSaved: data.structuredBrief !== null,
+    compileResult: data.lastCompile,
+  };
 }
 
 export function briefEquals(

@@ -1,6 +1,6 @@
 /**
  * performance-substantiation — SEBI-05 substantiation matcher.
- * Why: fifth det rule in seed freeze (14-backend-design.md Area 7).
+ * Why: adversarial cases in same file (07-build-order.md).
  */
 import { collapseForScan } from "../lib/text.js";
 import { spanForMatch } from "../lib/span.js";
@@ -81,6 +81,11 @@ if (import.meta.vitest) {
     it("fails on percentage claim without substantiation", () => {
       const text = "Returns reached 18.4% last quarter with strong inflows.";
       expect(matchPerformanceSubstantiation(text).machineVerdict).toBe("fail");
+    });
+
+    it("passes when verified and audited markers are present", () => {
+      const text = "Past performance of 12% verified by audited statements.";
+      expect(matchPerformanceSubstantiation(text).machineVerdict).toBe("pass");
     });
   });
 }

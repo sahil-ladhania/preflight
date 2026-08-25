@@ -5,7 +5,7 @@
 
 import { z } from "zod"
 import { RuleKindSchema, ChannelSchema } from "./enums.js"
-import { HashSchema, IsoDateTimeSchema } from "./primitives.js"
+import { AGENT_INPUT_MAX_LENGTH, HashSchema, IsoDateTimeSchema } from "./primitives.js"
 import { StructuredBriefSchema } from "./brief.js"
 
 export const CompileRuleCardDTOSchema = z.object({
@@ -53,13 +53,13 @@ export const ConstraintSnapshotDTOSchema = z.object({
 export type ConstraintSnapshotDTO = z.infer<typeof ConstraintSnapshotDTOSchema>
 
 export const CreateCampaignRequestSchema = z.object({
-  freeText: z.string().default(""),
+  freeText: z.string().max(AGENT_INPUT_MAX_LENGTH).default(""),
 })
 export type CreateCampaignRequest = z.infer<typeof CreateCampaignRequestSchema>
 
 export const ExtractRequestSchema = z
   .object({
-    freeText: z.string(),
+    freeText: z.string().max(AGENT_INPUT_MAX_LENGTH),
   })
   .strict()
 export type ExtractRequest = z.infer<typeof ExtractRequestSchema>

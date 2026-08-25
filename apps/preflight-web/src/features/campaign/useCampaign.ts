@@ -2,53 +2,28 @@
  * useCampaign — Campaign fetch and mutations.
  * Why: GET/PUT brief, extract, compile, generate orchestration.
  */
-// size: load + gate state here; mutations in useCampaignMutations.ts
+// size: load in useCampaignLoad; mutations in useCampaignMutations.ts
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
-import type {
-  CampaignDTO,
-  CompileResponseDTO,
-  StructuredBriefInput,
-} from "@preflight/schemas";
+import type { StructuredBriefInput } from "@preflight/schemas";
 import type { BriefField } from "@preflight/schemas";
 
-import { getCampaignService } from "@/features/campaign/campaign.service";
 import { activeCampaignStep } from "@/features/campaign/CampaignStepNav";
 import type { CampaignStepId } from "@/features/campaign/CampaignStepNav";
-import { briefFromCampaign, campaignGateState } from "@/features/campaign/lib";
-import type { CampaignView } from "@/features/campaign/types";
+import { campaignGateState } from "@/features/campaign/lib";
+import { useCampaignLoad } from "@/features/campaign/useCampaignLoad";
 import { useCampaignMutations } from "@/features/campaign/useCampaignMutations";
-import { useDelayedLoading } from "@/features/shell/useDelayedLoading";
-import { useToastContext } from "@/features/shell/ToastHost";
-import { ApiClientError } from "@/lib/api";
-
-function hydrateFromCampaign(data: CampaignDTO): {
-  freeText: string;
-  brief: StructuredBriefInput;
-  savedBrief: StructuredBriefInput;
-  briefSaved: boolean;
-  compileResult: CompileResponseDTO | null;
-} {
-  const brief = briefFromCampaign(data.structuredBrief);
-  return {
-    freeText: data.freeText,
-    brief,
-    savedBrief: brief,
-    briefSaved: data.structuredBrief !== null,
-    compileResult: data.lastCompile,
-  };
-}
 
 export function useCampaign(campaignId: string | undefined): {
-  campaign: CampaignDTO | null;
-  view: CampaignView;
+  campaign: ReturnType<typeof useCampaignLoad>["campaign"];
+  view: ReturnType<typeof useCampaignLoad>["view"];
   notFound: boolean;
   showLoadingSpinner: boolean;
   freeText: string;
   brief: StructuredBriefInput;
   proposedFieldKeys: ReadonlySet<BriefField>;
-  compileResult: CompileResponseDTO | null;
+  compileResult: ReturnType<typeof useCampaignLoad>["compileResult"];
   emptySetAcknowledged: boolean;
   extractInFlight: boolean;
   saveInFlight: boolean;
@@ -72,23 +47,8 @@ export function useCampaign(campaignId: string | undefined): {
   generate: () => Promise<void>;
   retryLoad: () => void;
 } {
-  const { enqueue } = useToastContext();
-  const [campaign, setCampaign] = useState<CampaignDTO | null>(null);
-  const [view, setView] = useState<CampaignView>("loading");
-  const [notFound, setNotFound] = useState<boolean>(false);
-  const [freeText, setFreeText] = useState<string>("");
-  const [brief, setBrief] = useState<StructuredBriefInput>(() =>
-    briefFromCampaign(null),
-  );
-  const [savedBrief, setSavedBrief] = useState<StructuredBriefInput>(() =>
-    briefFromCampaign(null),
-  );
-  const [briefSaved, setBriefSaved] = useState<boolean>(false);
   const [proposedFieldKeys, setProposedFieldKeys] = useState<Set<BriefField>>(
     () => new Set(),
-  );
-  const [compileResult, setCompileResult] = useState<CompileResponseDTO | null>(
-    null,
   );
   const [emptySetAcknowledged, setEmptySetAcknowledged] =
     useState<boolean>(false);
@@ -96,96 +56,29 @@ export function useCampaign(campaignId: string | undefined): {
   const [saveInFlight, setSaveInFlight] = useState<boolean>(false);
   const [compileInFlight, setCompileInFlight] = useState<boolean>(false);
   const [generateInFlight, setGenerateInFlight] = useState<boolean>(false);
-  const abortRef = useRef<AbortController | null>(null);
-  const showLoadingSpinner = useDelayedLoading(view === "loading");
 
-  const load = useCallback(async (): Promise<void> => {
-    if (campaignId === undefined) {
-      setNotFound(true);
-      setCampaign(null);
-      setView("error");
-      return;
-    }
+  const onHydrated = useCallback((): void => {
+    setProposedFieldKeys(new Set());
+    setEmptySetAcknowledged(false);
+  }, []);
 
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-
-    try {
-      const data = await getCampaignService(campaignId, controller.signal);
-      if (controller.signal.aborted) {
-        return;
-      }
-      const hydrated = hydrateFromCampaign(data);
-      setCampaign(data);
-      setFreeText(hydrated.freeText);
-      setBrief(hydrated.brief);
-      setSavedBrief(hydrated.savedBrief);
-      setBriefSaved(hydrated.briefSaved);
-      setCompileResult(hydrated.compileResult);
-      setProposedFieldKeys(new Set());
-      setEmptySetAcknowledged(false);
-      setNotFound(false);
-      setView("loaded");
-    } catch (error: unknown) {
-      if (controller.signal.aborted) {
-        return;
-      }
-      if (error instanceof ApiClientError && error.kind === "abort") {
-        return;
-      }
-      if (error instanceof ApiClientError && error.kind === "not_found") {
-        setNotFound(true);
-        setCampaign(null);
-        setView("error");
-        return;
-      }
-      setNotFound(false);
-      setView("error");
-    }
-  }, [campaignId]);
-
-  useEffect(() => {
-    setView("loading");
-    setNotFound(false);
-    void load();
-
-    return () => {
-      abortRef.current?.abort();
-    };
-  }, [load]);
-
-  const toastApiError = useCallback(
-    (error: unknown): void => {
-      if (error instanceof ApiClientError && error.kind === "abort") {
-        return;
-      }
-      if (error instanceof ApiClientError) {
-        enqueue(error.apiError ?? error.message);
-        return;
-      }
-      if (error instanceof Error) {
-        enqueue(error.message);
-      }
-    },
-    [enqueue],
-  );
+  const load = useCampaignLoad(campaignId, onHydrated);
 
   const gate = useMemo(
     () =>
       campaignGateState({
-        brief,
-        savedBrief,
-        briefSaved,
-        compileResult,
+        brief: load.brief,
+        savedBrief: load.savedBrief,
+        briefSaved: load.briefSaved,
+        compileResult: load.compileResult,
         emptySetAcknowledged,
         generateInFlight,
       }),
     [
-      brief,
-      savedBrief,
-      briefSaved,
-      compileResult,
+      load.brief,
+      load.savedBrief,
+      load.briefSaved,
+      load.compileResult,
       emptySetAcknowledged,
       generateInFlight,
     ],
@@ -193,25 +86,25 @@ export function useCampaign(campaignId: string | undefined): {
 
   const { extract, save, compile, generate } = useCampaignMutations({
     campaignId,
-    freeText,
-    brief,
-    briefSaved,
+    freeText: load.freeText,
+    brief: load.brief,
+    briefSaved: load.briefSaved,
     briefDirty: gate.briefDirty,
-    compileResult,
+    compileResult: load.compileResult,
     generateDisabled: gate.generateDisabled,
     saveDisabled: gate.saveDisabled,
-    setCampaign,
-    setBrief,
-    setSavedBrief,
-    setBriefSaved,
+    setCampaign: load.setCampaign,
+    setBrief: load.setBrief,
+    setSavedBrief: load.setSavedBrief,
+    setBriefSaved: load.setBriefSaved,
     setProposedFieldKeys,
-    setCompileResult,
+    setCompileResult: load.setCompileResult,
     setEmptySetAcknowledged,
     setExtractInFlight,
     setSaveInFlight,
     setCompileInFlight,
     setGenerateInFlight,
-    toastApiError,
+    toastApiError: load.toastApiError,
   });
 
   const onFieldEdit = useCallback((field: BriefField): void => {
@@ -225,20 +118,15 @@ export function useCampaign(campaignId: string | undefined): {
     });
   }, []);
 
-  const retryLoad = useCallback((): void => {
-    setView("loading");
-    void load();
-  }, [load]);
-
   return {
-    campaign,
-    view,
-    notFound,
-    showLoadingSpinner,
-    freeText,
-    brief,
+    campaign: load.campaign,
+    view: load.view,
+    notFound: load.notFound,
+    showLoadingSpinner: load.showLoadingSpinner,
+    freeText: load.freeText,
+    brief: load.brief,
     proposedFieldKeys,
-    compileResult,
+    compileResult: load.compileResult,
     emptySetAcknowledged,
     extractInFlight,
     saveInFlight,
@@ -252,17 +140,17 @@ export function useCampaign(campaignId: string | undefined): {
     s3Dimmed: gate.s3Dimmed,
     briefDirty: gate.briefDirty,
     activeStep: activeCampaignStep({
-      briefSaved,
-      compileDone: compileResult !== null,
+      briefSaved: load.briefSaved,
+      compileDone: load.compileResult !== null,
     }),
-    setFreeText,
-    setBrief,
+    setFreeText: load.setFreeText,
+    setBrief: load.setBrief,
     onFieldEdit,
     onEmptySetAckChange: setEmptySetAcknowledged,
     extract,
     save,
     compile,
     generate,
-    retryLoad,
+    retryLoad: load.retryLoad,
   };
 }

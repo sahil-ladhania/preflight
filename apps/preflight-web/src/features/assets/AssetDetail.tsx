@@ -1,14 +1,15 @@
 /**
  * AssetDetail — Screen 1 orchestrator.
- * Why: region siblings extracted; orchestrator stays ≤250 lines.
+ * Why: region siblings extracted; route and states are separate modules.
  */
-// size: optional wired handlers for design-proof plus AssetDetailRoute shell.
 
 import { useState, useEffect, useRef, type ReactElement } from "react";
-import { useParams } from "react-router-dom";
 
-import { Button } from "@/components/ui/button";
 import { AssetPane } from "@/features/assets/AssetPane";
+import {
+  ErrorState,
+  LoadingState,
+} from "@/features/assets/AssetDetailStates";
 import { ExceptionsSummary } from "@/features/assets/ExceptionsSummary";
 import { LedgerPane } from "@/features/assets/LedgerPane";
 import { LineageBanner } from "@/features/assets/LineageBanner";
@@ -16,51 +17,10 @@ import { ReasonModal } from "@/features/assets/ReasonModal";
 import { RerunStrip } from "@/features/assets/RerunStrip";
 import { scrollFindingTarget } from "@/features/assets/lib";
 import type { AssetDetailProps, ReasonModalState } from "@/features/assets/types";
-import { useAssetDetail } from "@/features/assets/useAssetDetail";
 import { useToastContext } from "@/features/shell/ToastHost";
 import { RERUN_STRIPS } from "@/fixtures/assets-detail";
 
-function LoadingState({
-  showSpinner,
-}: {
-  showSpinner: boolean;
-}): ReactElement {
-  if (!showSpinner) {
-    return <div className="min-h-[calc(100vh-3rem)] bg-canvas-subtle" />;
-  }
-
-  return (
-    <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center">
-      <div
-        className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
-        aria-label="Loading"
-      />
-    </div>
-  );
-}
-
-function ErrorState({ onRetry }: { onRetry?: () => void }): ReactElement {
-  const handleRetry = (): void => {
-    onRetry?.();
-  };
-
-  return (
-    <div className="flex min-h-[calc(100vh-3rem)] flex-col items-center justify-center gap-4">
-      <p className="text-caption text-fg-muted">Could not load asset.</p>
-      <Button type="button" variant="outline" onClick={handleRetry}>
-        Retry
-      </Button>
-    </div>
-  );
-}
-
-function NotFoundState(): ReactElement {
-  return (
-    <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center">
-      <p className="text-caption text-fg-muted">Asset not found</p>
-    </div>
-  );
-}
+export { AssetDetailRoute } from "@/features/assets/AssetDetailRoute";
 
 export function AssetDetail({
   asset,
@@ -235,70 +195,5 @@ export function AssetDetail({
         onSubmit={submitModal}
       />
     </div>
-  );
-}
-
-export function AssetDetailRoute(): ReactElement {
-  const { id } = useParams<{ id: string }>();
-  const {
-    asset,
-    view,
-    notFound,
-    showLoadingSpinner,
-    rerunStrip,
-    openFindingId,
-    selectSpanFinding,
-    selectRowFinding,
-    reasonModal,
-    openOverride,
-    openWaive,
-    closeReasonModal,
-    submitReason,
-    confirmFinding,
-    retryFinding,
-    rerun,
-    regenerate,
-    accept,
-    regenerateInFlight,
-    rerunInFlight,
-    retryLoad,
-  } = useAssetDetail(id);
-
-  if (notFound) {
-    return <NotFoundState />;
-  }
-
-  if (view === "loading") {
-    return <LoadingState showSpinner={showLoadingSpinner} />;
-  }
-
-  if (view === "error" || asset === null) {
-    return <ErrorState onRetry={retryLoad} />;
-  }
-
-  return (
-    <AssetDetail
-      asset={asset}
-      view="loaded"
-      rerunStrip={rerunStrip}
-      openFindingId={openFindingId}
-      reasonModal={reasonModal}
-      onSpanClick={selectSpanFinding}
-      onRowClick={selectRowFinding}
-      onConfirm={confirmFinding}
-      onOverride={openOverride}
-      onWaive={openWaive}
-      onRetry={retryFinding}
-      onRerun={() => {
-        void rerun();
-      }}
-      onRegenerate={regenerate}
-      onAccept={accept}
-      regenerateInFlight={regenerateInFlight}
-      rerunInFlight={rerunInFlight}
-      onCloseReasonModal={closeReasonModal}
-      onSubmitReason={submitReason}
-      onRetryLoad={retryLoad}
-    />
   );
 }

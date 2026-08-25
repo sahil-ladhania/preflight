@@ -3,9 +3,9 @@
  * Why: span↔row selection state lives here.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import type { RerunStripDTO } from "@preflight/schemas";
+import type { AssetDetailDTO, RerunStripDTO } from "@preflight/schemas";
 
 import { getAssetDetailService } from "@/features/assets/assets.service";
 import { scrollFindingTarget } from "@/features/assets/lib";
@@ -19,13 +19,6 @@ import { useAssetDetailMutations } from "@/features/assets/useAssetDetailMutatio
 import { usePendingPoll } from "@/features/assets/usePendingPoll";
 import { useDelayedLoading } from "@/features/shell/useDelayedLoading";
 import { ApiClientError } from "@/lib/api";
-
-function toFixture(dto: Parameters<typeof buildCopySegments>[0]): AssetDetailFixture {
-  return {
-    ...dto,
-    copySegments: buildCopySegments(dto),
-  };
-}
 
 export function useAssetDetail(id: string | undefined): {
   asset: AssetDetailFixture | null;
@@ -50,7 +43,7 @@ export function useAssetDetail(id: string | undefined): {
   rerunInFlight: boolean;
   retryLoad: () => void;
 } {
-  const [asset, setAsset] = useState<AssetDetailFixture | null>(null);
+  const [assetDto, setAssetDto] = useState<AssetDetailDTO | null>(null);
   const [view, setView] = useState<AssetDetailView>("loading");
   const [notFound, setNotFound] = useState<boolean>(false);
   const [rerunStrip, setRerunStrip] = useState<RerunStripDTO | null>(null);
@@ -63,11 +56,21 @@ export function useAssetDetail(id: string | undefined): {
   const abortRef = useRef<AbortController | null>(null);
   const showLoadingSpinner = useDelayedLoading(view === "loading");
 
+  const asset = useMemo((): AssetDetailFixture | null => {
+    if (assetDto === null) {
+      return null;
+    }
+    return {
+      ...assetDto,
+      copySegments: buildCopySegments(assetDto),
+    };
+  }, [assetDto]);
+
   const load = useCallback(async (): Promise<void> => {
     if (id === undefined) {
       setNotFound(true);
       setView("error");
-      setAsset(null);
+      setAssetDto(null);
       return;
     }
 
@@ -80,7 +83,7 @@ export function useAssetDetail(id: string | undefined): {
       if (controller.signal.aborted) {
         return;
       }
-      setAsset(toFixture(detail));
+      setAssetDto(detail);
       setNotFound(false);
       setView("loaded");
     } catch (error: unknown) {
@@ -92,7 +95,7 @@ export function useAssetDetail(id: string | undefined): {
       }
       if (error instanceof ApiClientError && error.kind === "not_found") {
         setNotFound(true);
-        setAsset(null);
+        setAssetDto(null);
         setView("error");
         return;
       }
@@ -163,9 +166,9 @@ export function useAssetDetail(id: string | undefined): {
     rerunInFlight,
   } = useAssetDetailMutations({
     assetId: id,
-    asset,
+    assetDto,
     reasonModal,
-    setAsset,
+    setAssetDto,
     setRerunStrip,
     closeReasonModal,
   });

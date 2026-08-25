@@ -5,9 +5,10 @@
 
 import { z } from "zod"
 import { ExplainerOutputSchema } from "./explainer-output.js"
+import { AGENT_INPUT_MAX_LENGTH } from "./primitives.js"
 
 export const WorkbenchChatRequestSchema = z.object({
-  message: z.string().trim().min(1),
+  message: z.string().trim().min(1).max(AGENT_INPUT_MAX_LENGTH),
 })
 export type WorkbenchChatRequest = z.infer<typeof WorkbenchChatRequestSchema>
 

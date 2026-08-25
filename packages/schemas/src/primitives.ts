@@ -6,6 +6,9 @@
 import { z } from "zod"
 import { BriefFieldSchema, ChannelSchema } from "./enums.js"
 
+/** Max chars for LLM-bound free text (extract, workbench). */
+export const AGENT_INPUT_MAX_LENGTH = 50_000
+
 export const HashSchema = z.string().regex(/^[a-f0-9]{64}$/)
 export type Hash = z.infer<typeof HashSchema>
 

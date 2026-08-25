@@ -88,5 +88,15 @@ if (import.meta.vitest) {
     const text = 'Critics say we are "risk free" but compliance disagrees.';
     expect(matchBannedPhrase(text).machineVerdict).toBe("fail");
   });
+
+  it("fails on en-dash risk-free variant", () => {
+    const text = "This is a risk\u2013free way to grow wealth.";
+    expect(matchBannedPhrase(text).machineVerdict).toBe("fail");
+  });
+
+  it("fails on assured returns banned phrase", () => {
+    const text = "Assured returns await every new investor.";
+    expect(matchBannedPhrase(text).machineVerdict).toBe("fail");
+  });
   });
 }

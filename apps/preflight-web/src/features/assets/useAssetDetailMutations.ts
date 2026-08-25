@@ -6,6 +6,7 @@
 
 import {
   useCallback,
+  useEffect,
   useRef,
   useState,
   type Dispatch,
@@ -13,7 +14,7 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 
-import type { RerunStripDTO } from "@preflight/schemas";
+import type { AssetDetailDTO, RerunStripDTO } from "@preflight/schemas";
 
 import {
   decideFindingService,
@@ -22,36 +23,25 @@ import {
   retryFindingService,
   waiveFindingService,
 } from "@/features/assets/assets.service";
-import { buildCopySegments } from "@/features/assets/span-highlight";
-import type {
-  AssetDetailFixture,
-  ReasonModalState,
-} from "@/features/assets/types";
+import type { ReasonModalState } from "@/features/assets/types";
 import { generateCampaignAssetsService } from "@/features/campaign/campaign.service";
 import { useToastContext } from "@/features/shell/ToastHost";
 import { ApiClientError } from "@/lib/api";
 
 interface UseAssetDetailMutationsInput {
   assetId: string | undefined;
-  asset: AssetDetailFixture | null;
+  assetDto: AssetDetailDTO | null;
   reasonModal: ReasonModalState;
-  setAsset: Dispatch<SetStateAction<AssetDetailFixture | null>>;
+  setAssetDto: Dispatch<SetStateAction<AssetDetailDTO | null>>;
   setRerunStrip: Dispatch<SetStateAction<RerunStripDTO | null>>;
   closeReasonModal: () => void;
 }
 
-function toFixture(dto: Parameters<typeof buildCopySegments>[0]): AssetDetailFixture {
-  return {
-    ...dto,
-    copySegments: buildCopySegments(dto),
-  };
-}
-
 export function useAssetDetailMutations({
   assetId,
-  asset,
+  assetDto,
   reasonModal,
-  setAsset,
+  setAssetDto,
   setRerunStrip,
   closeReasonModal,
 }: UseAssetDetailMutationsInput): {
@@ -70,6 +60,13 @@ export function useAssetDetailMutations({
   const [rerunInFlight, setRerunInFlight] = useState<boolean>(false);
   const regenerateGuardRef = useRef<boolean>(false);
   const rerunGuardRef = useRef<boolean>(false);
+  const mutationAbortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => {
+      mutationAbortRef.current?.abort();
+    };
+  }, []);
 
   const toastApiError = useCallback(
     (error: unknown): void => {
@@ -87,13 +84,20 @@ export function useAssetDetailMutations({
     [enqueue],
   );
 
+  const beginMutation = (): AbortController => {
+    mutationAbortRef.current?.abort();
+    const controller = new AbortController();
+    mutationAbortRef.current = controller;
+    return controller;
+  };
+
   const patchFinding = useCallback(
     (
       findingId: string,
-      status: AssetDetailFixture["status"],
-      finding: AssetDetailFixture["findings"][number],
+      status: AssetDetailDTO["status"],
+      finding: AssetDetailDTO["findings"][number],
     ): void => {
-      setAsset((current) => {
+      setAssetDto((current) => {
         if (current === null) {
           return current;
         }
@@ -106,7 +110,7 @@ export function useAssetDetailMutations({
         };
       });
     },
-    [setAsset],
+    [setAssetDto],
   );
 
   const refetchDetail = useCallback(
@@ -116,21 +120,24 @@ export function useAssetDetailMutations({
       }
       const detail = await getAssetDetailService(assetId, controller.signal);
       if (!controller.signal.aborted) {
-        setAsset(toFixture(detail));
+        setAssetDto(detail);
       }
     },
-    [assetId, setAsset],
+    [assetId, setAssetDto],
   );
 
   const confirmFinding = useCallback(
     async (findingId: string): Promise<void> => {
-      const controller = new AbortController();
+      const controller = beginMutation();
       try {
         await decideFindingService(
           findingId,
           { verdict: "confirmed" },
           controller.signal,
         );
+        if (controller.signal.aborted) {
+          return;
+        }
         await refetchDetail(controller);
       } catch (error: unknown) {
         toastApiError(error);
@@ -146,7 +153,7 @@ export function useAssetDetailMutations({
         return;
       }
 
-      const controller = new AbortController();
+      const controller = beginMutation();
 
       try {
         if (mode === "override") {
@@ -155,6 +162,9 @@ export function useAssetDetailMutations({
             { verdict: "overridden", reason },
             controller.signal,
           );
+          if (controller.signal.aborted) {
+            return;
+          }
           await refetchDetail(controller);
           closeReasonModal();
           return;
@@ -165,6 +175,9 @@ export function useAssetDetailMutations({
           { reason },
           controller.signal,
         );
+        if (controller.signal.aborted) {
+          return;
+        }
         await refetchDetail(controller);
 
         closeReasonModal();
@@ -182,9 +195,12 @@ export function useAssetDetailMutations({
 
   const retryFinding = useCallback(
     async (findingId: string): Promise<void> => {
-      const controller = new AbortController();
+      const controller = beginMutation();
       try {
         const response = await retryFindingService(findingId, controller.signal);
+        if (controller.signal.aborted) {
+          return;
+        }
         patchFinding(findingId, response.status, response.finding);
       } catch (error: unknown) {
         toastApiError(error);
@@ -200,10 +216,12 @@ export function useAssetDetailMutations({
 
     rerunGuardRef.current = true;
     setRerunInFlight(true);
-    const controller = new AbortController();
+    const controller = beginMutation();
     try {
       const strip = await rerunAssetService(assetId, controller.signal);
-      setRerunStrip(strip);
+      if (!controller.signal.aborted) {
+        setRerunStrip(strip);
+      }
     } catch (error: unknown) {
       toastApiError(error);
     } finally {
@@ -213,19 +231,22 @@ export function useAssetDetailMutations({
   }, [assetId, setRerunStrip, toastApiError]);
 
   const regenerate = useCallback(async (): Promise<void> => {
-    if (asset === null || regenerateGuardRef.current) {
+    if (assetDto === null || regenerateGuardRef.current) {
       return;
     }
 
     regenerateGuardRef.current = true;
     setRegenerateInFlight(true);
-    const controller = new AbortController();
+    const controller = beginMutation();
     try {
       const response = await generateCampaignAssetsService(
-        asset.campaignId,
-        { regeneratedFromId: asset.id },
+        assetDto.campaignId,
+        { regeneratedFromId: assetDto.id },
         controller.signal,
       );
+      if (controller.signal.aborted) {
+        return;
+      }
       const nextId = response.assets[0]?.id;
       if (nextId !== undefined) {
         navigate(`/assets/${nextId}`);
@@ -236,7 +257,7 @@ export function useAssetDetailMutations({
       regenerateGuardRef.current = false;
       setRegenerateInFlight(false);
     }
-  }, [asset, navigate, toastApiError]);
+  }, [assetDto, navigate, toastApiError]);
 
   const accept = useCallback((): void => {
     enqueue("Would ship — demo has no publishing.");
