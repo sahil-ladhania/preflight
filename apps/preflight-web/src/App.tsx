@@ -36,13 +36,12 @@ import {
   RulebookStates,
 } from "@/design-proof/RulebookStates";
 import { RulebookRoute } from "@/features/rulebook/Rulebook";
-import { RULES_CATALOG } from "@/fixtures/rules-catalog";
 import {
   WorkbenchErrorFallbackDemo,
   WorkbenchPrefetchErrorDemo,
   WorkbenchStates,
 } from "@/design-proof/WorkbenchStates";
-import { Workbench } from "@/features/workbench/Workbench";
+import { WorkbenchRoute } from "@/features/workbench/Workbench";
 import { ErrorBoundary } from "@/features/shell/ErrorBoundary";
 import { NotFound } from "@/features/shell/NotFound";
 import { ToastHost } from "@/features/shell/ToastHost";
@@ -72,7 +71,7 @@ export default function App(): ReactElement {
             <Route path="assets/:id" element={<AssetDetailRoute />} />
             <Route path="campaign/:campaignId" element={<CampaignRoute />} />
             <Route path="rulebook" element={<RulebookRoute />} />
-            <Route path="workbench" element={<Workbench rules={RULES_CATALOG} />} />
+            <Route path="workbench" element={<WorkbenchRoute />} />
             <Route path="design-proof" element={<DesignProof />} />
             <Route path="design-proof/assets-list" element={<AssetsListStates />} />
             <Route

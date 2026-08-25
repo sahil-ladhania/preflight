@@ -1,83 +1,73 @@
 /**
  * Workbench — Screen 5 thread layout.
- * Why: canvas-subtle Workbench page.
+ * Why: canvas-subtle Workbench page; WorkbenchRoute wires useWorkbench.
  */
 
-import { useEffect, useState, type ReactElement } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, type ReactElement } from "react";
 
 import { Composer } from "@/features/workbench/Composer";
-import { nextMessageId } from "@/features/workbench/lib";
 import { Thread } from "@/features/workbench/Thread";
-import type { WorkbenchMessage, WorkbenchProps } from "@/features/workbench/types";
+import type { WorkbenchProps } from "@/features/workbench/types";
+import { useWorkbench } from "@/features/workbench/useWorkbench";
+import { useWorkbenchFixture } from "@/features/workbench/useWorkbenchFixture";
 import { useToastContext } from "@/features/shell/ToastHost";
-import { CAMPAIGN_ID } from "@/fixtures/campaign";
-import { resolveWorkbenchChat } from "@/fixtures/workbench";
+
+const PREFETCH_FAIL_TOAST = "Could not load rules catalog.";
 
 export function Workbench({
   rules,
   prefetchFailed = false,
   initialMessages = [],
   initialShowSearchFallback = false,
+  messages: messagesProp,
+  composerText: composerTextProp,
+  sendInFlight: sendInFlightProp,
+  showSearchFallback: showSearchFallbackProp,
+  searchQuery: searchQueryProp,
+  onComposerTextChange,
+  onSearchQueryChange,
+  onSend,
+  onGoToCampaign,
 }: WorkbenchProps): ReactElement {
-  const navigate = useNavigate();
   const { enqueue } = useToastContext();
-  const [messages, setMessages] = useState<WorkbenchMessage[]>(initialMessages);
-  const [composerText, setComposerText] = useState<string>("");
-  const [sendInFlight, setSendInFlight] = useState<boolean>(false);
-  const [showSearchFallback, setShowSearchFallback] = useState<boolean>(
+  const fixture = useWorkbenchFixture({
+    initialMessages,
     initialShowSearchFallback,
-  );
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [assistantTurns, setAssistantTurns] = useState<number>(0);
+  });
+  const controlled = onSend !== undefined;
 
   useEffect(() => {
-    if (prefetchFailed) {
-      enqueue("Could not load rules catalog.");
+    if (!controlled && prefetchFailed) {
+      enqueue(PREFETCH_FAIL_TOAST);
     }
-  }, [prefetchFailed, enqueue]);
+  }, [controlled, prefetchFailed, enqueue]);
 
-  const handleGoToCampaign = (): void => {
-    // Will GET /campaigns/latest or POST /campaigns before navigate.
-    void navigate(`/campaign/${CAMPAIGN_ID}`);
-  };
+  const messages = controlled ? (messagesProp ?? []) : fixture.messages;
+  const composerText = controlled
+    ? (composerTextProp ?? "")
+    : fixture.composerText;
+  const sendInFlight = controlled
+    ? (sendInFlightProp ?? false)
+    : fixture.sendInFlight;
+  const showSearchFallback = controlled
+    ? (showSearchFallbackProp ?? false)
+    : fixture.showSearchFallback;
+  const searchQuery = controlled ? (searchQueryProp ?? "") : fixture.searchQuery;
 
   const handleSend = (): void => {
-    const text = composerText.trim();
-    if (text.length === 0 || sendInFlight) {
+    if (onSend !== undefined) {
+      void onSend();
       return;
     }
+    fixture.handleSend();
+  };
 
-    setSendInFlight(true);
-    const userMessage: WorkbenchMessage = {
-      id: nextMessageId(),
-      role: "user",
-      text,
-    };
-    setMessages((current) => [...current, userMessage]);
-    setComposerText("");
-
-    // Will POST /workbench/chat.
-    const result = resolveWorkbenchChat(text, assistantTurns);
-    if (!result.ok) {
-      setMessages((current) => [
-        ...current,
-        { id: nextMessageId(), role: "error", text: result.error },
-      ]);
-      setShowSearchFallback(true);
-    } else {
-      setMessages((current) => [
-        ...current,
-        {
-          id: nextMessageId(),
-          role: "assistant",
-          text: result.data.message,
-          ruleIds: result.data.ruleIds,
-        },
-      ]);
-      setAssistantTurns((count) => count + 1);
+  const handleGoToCampaign = (): void => {
+    if (onGoToCampaign !== undefined) {
+      void onGoToCampaign();
+      return;
     }
-    setSendInFlight(false);
+    fixture.handleGoToCampaign();
   };
 
   return (
@@ -89,7 +79,9 @@ export function Workbench({
           rules={rules}
           showSearchFallback={showSearchFallback}
           searchQuery={searchQuery}
-          onSearchQueryChange={setSearchQuery}
+          onSearchQueryChange={
+            onSearchQueryChange ?? fixture.setSearchQuery
+          }
           onGoToCampaign={handleGoToCampaign}
         />
       </div>
@@ -99,12 +91,36 @@ export function Workbench({
             value={composerText}
             disabled={prefetchFailed}
             sendInFlight={sendInFlight}
-            onChange={setComposerText}
+            onChange={onComposerTextChange ?? fixture.setComposerText}
             onSend={handleSend}
             onGoToCampaign={handleGoToCampaign}
           />
         </div>
       </div>
     </div>
+  );
+}
+
+export function WorkbenchRoute(): ReactElement {
+  const hook = useWorkbench();
+
+  return (
+    <Workbench
+      rules={hook.rules}
+      prefetchFailed={hook.prefetchFailed}
+      messages={hook.messages}
+      composerText={hook.composerText}
+      sendInFlight={hook.sendInFlight}
+      showSearchFallback={hook.showSearchFallback}
+      searchQuery={hook.searchQuery}
+      onComposerTextChange={hook.setComposerText}
+      onSearchQueryChange={hook.setSearchQuery}
+      onSend={() => {
+        void hook.send();
+      }}
+      onGoToCampaign={() => {
+        void hook.goToCampaign();
+      }}
+    />
   );
 }

@@ -17,6 +17,15 @@ export interface WorkbenchProps {
   prefetchFailed?: boolean;
   initialMessages?: WorkbenchMessage[];
   initialShowSearchFallback?: boolean;
+  messages?: WorkbenchMessage[];
+  composerText?: string;
+  sendInFlight?: boolean;
+  showSearchFallback?: boolean;
+  searchQuery?: string;
+  onComposerTextChange?: (value: string) => void;
+  onSearchQueryChange?: (value: string) => void;
+  onSend?: () => void;
+  onGoToCampaign?: () => void;
 }
 
 export interface CommentSheetProps {

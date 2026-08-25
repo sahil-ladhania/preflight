@@ -9,7 +9,7 @@ import { CommentSheet } from "@/features/workbench/CommentSheet";
 import { RuleCards } from "@/features/workbench/RuleCards";
 import { SearchFallback } from "@/features/workbench/SearchFallback";
 import type { ThreadProps, WorkbenchMessage } from "@/features/workbench/types";
-import { WORKBENCH_EMPTY_PROMPT } from "@/fixtures/workbench";
+import { WORKBENCH_EMPTY_PROMPT } from "@/features/workbench/lib";
 
 function EmptyPrompt(): ReactElement {
   return (

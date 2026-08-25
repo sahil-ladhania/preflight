@@ -5,6 +5,9 @@
 
 import type { RuleCatalogRowDTO } from "@preflight/schemas";
 
+export const WORKBENCH_EMPTY_PROMPT =
+  "Ask about a rule, applicability, or what Preflight checks.";
+
 export function nextMessageId(): string {
   return crypto.randomUUID();
 }
