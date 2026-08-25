@@ -4,7 +4,7 @@
  */
 
 import type { ReactElement } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
 
 import type { DriftItemDTO, RerunStripDTO } from "@preflight/schemas";
 
@@ -108,23 +108,26 @@ export function RerunStrip({
   rerunInFlight = false,
 }: RerunStripProps): ReactElement {
   const handleRerun = (): void => {
-    // Will POST /assets/:id/rerun and replace strip from response.
     onRerun();
   };
 
   return (
-    <div className="shrink-0 border-t border-border bg-canvas-subtle">
+    <div className="shrink-0 rounded-md border border-border bg-canvas-subtle">
       <div className="px-4 py-3">
         <Button
           type="button"
           variant="outline"
+          className="h-8 rounded-md px-4"
           disabled={rerunInFlight}
           onClick={handleRerun}
         >
           {rerunInFlight ? (
             <Loader2 className="size-4 animate-spin" aria-hidden />
           ) : (
-            "Re-run deterministic"
+            <>
+              <RefreshCw className="size-4 shrink-0" aria-hidden />
+              Re-run deterministic
+            </>
           )}
         </Button>
       </div>

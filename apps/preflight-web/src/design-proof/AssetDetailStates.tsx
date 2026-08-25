@@ -20,7 +20,7 @@ export function AssetDetailStates(): ReactElement {
       <h1 className="text-title text-fg">Assets detail states</h1>
       <p className="text-caption text-fg-muted">
         Loaded fixtures A–H live at{" "}
-        <Link to={`/assets/${ASSET_ID_A}`} className="text-fg underline">
+        <Link to={`/assets/${ASSET_ID_A}`} className="text-primary underline">
           /assets/:id
         </Link>
         . Channel previews and compliance desk on clear assets.
@@ -28,55 +28,55 @@ export function AssetDetailStates(): ReactElement {
       <nav className="flex flex-col gap-2">
         <Link
           to="/design-proof/assets-detail/loading"
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Loading
         </Link>
         <Link
           to="/design-proof/assets-detail/error"
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Error
         </Link>
         <Link
           to="/design-proof/assets-detail/not-found"
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Not found
         </Link>
         <Link
           to={`/assets/${ASSET_ID_E}`}
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Email preview + clear (asset E)
         </Link>
         <Link
           to={`/assets/${ASSET_ID_B}`}
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           LinkedIn preview (asset B)
         </Link>
         <Link
           to={`/assets/${ASSET_ID_D}`}
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Display preview + compliance desk (asset D)
         </Link>
         <Link
           to={`/assets/${ASSET_ID_C}`}
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           WhatsApp preview (asset C)
         </Link>
         <Link
           to={`/assets/${ASSET_ID_A}`}
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Re-run hash match (asset A)
         </Link>
         <Link
           to="/design-proof/assets-detail/engine-mismatch"
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Engine mismatch rerun strip
         </Link>

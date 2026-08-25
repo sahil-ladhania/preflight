@@ -8,11 +8,27 @@ import type { RuleCatalogRowDTO } from "@preflight/schemas";
 
 import type { WorkbenchMessage } from "@/features/workbench/types";
 
-export const WORKBENCH_EMPTY_PROMPT =
-  "Describe a campaign you want to run, or ask about a rule and how Preflight checks it.";
+export const WORKBENCH_INVITATION =
+  "Ask about rules, compliance, or what Preflight checks before you generate.";
+
+export const WORKBENCH_PROMPT_CHIPS = [
+  "What does Preflight check before generate?",
+  "When is a performance claim allowed?",
+  "How do judgement rules differ from det?",
+] as const;
 
 export function nextMessageId(): string {
   return crypto.randomUUID();
+}
+
+export function replaceMessageById(
+  messages: WorkbenchMessage[],
+  id: string,
+  replacement: WorkbenchMessage,
+): WorkbenchMessage[] {
+  return messages.map((message) =>
+    message.id === id ? replacement : message,
+  );
 }
 
 export function toChatHistory(

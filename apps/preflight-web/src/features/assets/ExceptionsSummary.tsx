@@ -12,7 +12,7 @@ export function ExceptionsSummary({
   exceptions,
 }: ExceptionsSummaryProps): ReactElement {
   return (
-    <div className="flex flex-col gap-2 border-b border-border bg-canvas px-4 py-2">
+    <div className="flex flex-col gap-2 rounded-md border border-border bg-canvas px-4 py-2">
       <p className="text-caption text-fg-muted">Exceptions</p>
       {exceptions.map((item) => (
         <div key={item.findingId} className="flex flex-col gap-1">

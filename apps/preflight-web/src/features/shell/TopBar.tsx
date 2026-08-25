@@ -19,7 +19,7 @@ function LogoMark(): ReactElement {
       height="24"
       role="img"
       aria-hidden="true"
-      className="shrink-0 text-fg"
+      className="shrink-0 text-primary"
     >
       <rect x="6" y="4" width="2" height="16" fill="currentColor" />
       <rect x="6" y="14" width="12" height="2" fill="currentColor" />
@@ -30,7 +30,7 @@ function LogoMark(): ReactElement {
 function navLinkClass(isActive: boolean): string {
   return cn(
     "text-ui no-underline",
-    isActive ? "font-semibold text-fg" : "font-medium text-fg",
+    isActive ? "font-semibold text-primary" : "font-medium text-fg",
   );
 }
 
@@ -68,7 +68,7 @@ export function TopBar(): ReactElement {
         aria-label="Preflight home"
       >
         <LogoMark />
-        <span className="text-ui font-semibold text-fg">Preflight</span>
+        <span className="text-ui font-semibold text-primary">Preflight</span>
       </Link>
       <nav className="flex items-center gap-8">
         <NavLink

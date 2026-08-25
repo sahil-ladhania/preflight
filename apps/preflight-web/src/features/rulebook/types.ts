@@ -73,11 +73,6 @@ export interface DeleteRuleModalProps {
   onConfirm: () => void;
 }
 
-export interface RulebookPageHeaderProps {
-  onAdd: () => void;
-  postSaveCaption: boolean;
-}
-
 export interface SheetShellProps {
   open: boolean;
   onClose: () => void;

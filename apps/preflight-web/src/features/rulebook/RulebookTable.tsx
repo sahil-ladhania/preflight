@@ -5,22 +5,20 @@
 
 import type { ReactElement } from "react";
 
+import { RULEBOOK_ROW_GRID } from "@/features/rulebook/lib";
 import { RulebookRow } from "@/features/rulebook/RulebookRow";
 import type { RulebookTableProps } from "@/features/rulebook/types";
-
-const GRID =
-  "grid grid-cols-[180px_56px_minmax(0,1fr)_200px_72px] items-center gap-4";
 
 function TableHeader(): ReactElement {
   return (
     <div
-      className={`sticky top-0 ${GRID} border-b border-border bg-canvas-subtle px-4 py-2`}
+      className={`sticky top-0 ${RULEBOOK_ROW_GRID} border-b border-border bg-canvas-subtle px-4 py-2`}
     >
       <span className="text-caption text-fg-muted">id</span>
       <span className="text-caption text-fg-muted">kind</span>
       <span className="text-caption text-fg-muted">Wording</span>
       <span className="text-caption text-fg-muted">Applies</span>
-      <span className="text-caption text-fg-muted">Act</span>
+      <span className="text-right text-caption text-fg-muted">Act</span>
     </div>
   );
 }

@@ -12,6 +12,8 @@ import type {
   StructuredBriefInput,
 } from "@preflight/schemas";
 
+import type { CampaignStepId } from "@/features/campaign/CampaignStepRail";
+
 export const CHANNEL_OPTIONS: Channel[] = [
   "email",
   "linkedin",
@@ -54,6 +56,15 @@ export const BRIEF_SCALAR_FIELDS: Array<{
 
 export const BRIEF_FREE_TEXT_PLACEHOLDER =
   "Paste the full marketing brief — scheme, audience, channels, performance figures, claims, and tone.";
+
+export const CAMPAIGN_INPUT_CLASS =
+  "h-auto rounded-xl border-transparent bg-canvas-subtle/50 px-4 py-3 text-body-airy shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0";
+
+export const CAMPAIGN_INPUT_PROPOSED_CLASS =
+  "h-auto rounded-xl border border-dashed border-border bg-canvas-subtle/50 px-4 py-3 text-body-airy shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0";
+
+export const CAMPAIGN_TEXTAREA_CLASS =
+  "min-h-[160px] rounded-xl border-transparent bg-canvas-subtle/50 px-4 py-3 text-body-airy shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0";
 
 export function emptyBrief(): StructuredBriefInput {
   return {
@@ -153,6 +164,19 @@ export function proposedKeysFromPartial(
     keys.add(key);
   }
   return keys;
+}
+
+export function isStepReachable(
+  stepId: CampaignStepId,
+  input: { s2Dimmed: boolean; s3Dimmed: boolean },
+): boolean {
+  if (stepId === "campaign-brief") {
+    return true;
+  }
+  if (stepId === "campaign-constraints") {
+    return !input.s2Dimmed;
+  }
+  return !input.s3Dimmed;
 }
 
 export function campaignGateState(input: {

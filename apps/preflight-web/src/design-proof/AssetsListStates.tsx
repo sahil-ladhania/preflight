@@ -12,22 +12,22 @@ export function AssetsListStates(): ReactElement {
       <h1 className="text-title text-fg">Assets list states</h1>
       <p className="text-caption text-fg-muted">
         Loaded list with eight rows (including pending) lives at{" "}
-        <Link to="/assets" className="text-fg underline">
+        <Link to="/assets" className="text-primary underline">
           /assets
         </Link>
         .
       </p>
       <nav className="flex flex-col gap-2">
-        <Link to="/design-proof/assets-list/empty" className="text-ui text-fg underline">
+        <Link to="/design-proof/assets-list/empty" className="text-ui text-primary underline">
           Empty
         </Link>
         <Link
           to="/design-proof/assets-list/loading"
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Loading
         </Link>
-        <Link to="/design-proof/assets-list/error" className="text-ui text-fg underline">
+        <Link to="/design-proof/assets-list/error" className="text-ui text-primary underline">
           Error
         </Link>
       </nav>

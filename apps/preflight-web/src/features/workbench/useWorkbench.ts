@@ -21,6 +21,7 @@ import {
 import {
   handoffEnabled,
   nextMessageId,
+  replaceMessageById,
   toChatHistory,
   userMessageTexts,
 } from "@/features/workbench/lib";
@@ -124,8 +125,13 @@ export function useWorkbench(): {
       role: "user",
       text,
     };
+    const pendingId = nextMessageId();
     const priorMessages = messages;
-    setMessages((current) => [...current, userMessage]);
+    setMessages((current) => [
+      ...current,
+      userMessage,
+      { id: pendingId, role: "pending" },
+    ]);
     setComposerText("");
 
     try {
@@ -136,16 +142,16 @@ export function useWorkbench(): {
         },
         controller.signal,
       );
-      setMessages((current) => [
-        ...current,
-        {
-          id: nextMessageId(),
+      setMessages((current) =>
+        replaceMessageById(current, pendingId, {
+          id: pendingId,
           role: "assistant",
           text: response.message,
           ruleIds: response.ruleIds,
           suggestedAction: response.suggestedAction,
-        },
-      ]);
+          reveal: true,
+        }),
+      );
     } catch (error: unknown) {
       const errorText =
         error instanceof ApiClientError
@@ -153,10 +159,13 @@ export function useWorkbench(): {
           : error instanceof Error
             ? error.message
             : "Explainer unavailable — try search below.";
-      setMessages((current) => [
-        ...current,
-        { id: nextMessageId(), role: "error", text: errorText },
-      ]);
+      setMessages((current) =>
+        replaceMessageById(current, pendingId, {
+          id: nextMessageId(),
+          role: "error",
+          text: errorText,
+        }),
+      );
       setShowSearchFallback(true);
       toastApiError(error);
     } finally {

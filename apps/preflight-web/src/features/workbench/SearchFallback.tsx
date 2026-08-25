@@ -23,7 +23,7 @@ export function SearchFallback({
         value={query}
         onChange={(event) => onQueryChange(event.target.value)}
         placeholder="Search rules by id or wording…"
-        className="h-auto px-4 py-3 text-body-airy"
+        className="h-auto rounded-xl px-4 py-3 text-body-airy"
       />
       {query.trim().length > 0 && results.length === 0 ? (
         <p className="text-caption text-fg-muted">No matching rules.</p>

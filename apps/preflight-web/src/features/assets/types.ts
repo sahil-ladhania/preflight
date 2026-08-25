@@ -3,10 +3,13 @@
  * Why: no inline type declarations in components.
  */
 
+import type { ReactNode } from "react";
+
 import type {
   AssetDetailDTO,
   AssetListItemDTO,
   AssetStatus,
+  Channel,
   ExceptionItemDTO,
   FindingDTO,
   LineageDTO,
@@ -39,6 +42,8 @@ export interface AssetsListProps {
   pollError?: boolean;
   onRetry?: () => void;
   showLoadingSpinner?: boolean;
+  createInFlight?: boolean;
+  onNewCampaign?: () => void;
 }
 
 export interface AssetListRowProps {
@@ -47,6 +52,14 @@ export interface AssetListRowProps {
 
 export interface StatusChipProps {
   status: AssetStatus;
+}
+
+export interface AssetDetailShellProps {
+  children: ReactNode;
+  headline?: string;
+  channel?: Channel;
+  assetId?: string;
+  generatedAt?: string;
 }
 
 export interface AssetDetailProps {

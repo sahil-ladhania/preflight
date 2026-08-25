@@ -6,16 +6,15 @@ One page, three steps: write the brief, review the frozen rules, generate copy. 
 |---|---|
 | `BriefArrayFields.tsx` | Channels, performance figures, and claims controls. |
 | `BriefForm.tsx` | Free-text and structured brief fields with extract borders. |
-| `Campaign.tsx` | Screen 3 three-step orchestrator on one scroll page. |
-| `CampaignPageHeader.tsx` | Full-bleed title row matching other screen headers. |
-| `CampaignPageShell.tsx` | Full-bleed chrome with 720px content column. |
+| `Campaign.tsx` | Screen 3 three-step orchestrator in a single active pane. |
+| `CampaignPageShell.tsx` | Two-column layout with phase rail and wider main pane. |
 | `CampaignStates.tsx` | Loading, error, and not-found shells. |
-| `CampaignStep.tsx` | Gated step section with dimming until prior step completes. |
-| `CampaignStepNav.tsx` | Sticky Brief · Constraint set · Generate scroll rail. |
+| `CampaignStep.tsx` | Phase subtitle wrapper for active pane content. |
+| `CampaignStepRail.tsx` | Vertical Brief → Freeze → Generate phase rail. |
 | `ConstraintCards.tsx` | Frozen constraint cards, zero-rules banner, and checkbox. |
 | `GenerateBlock.tsx` | Generate action block and status captions. |
 | `campaign.service.ts` | Campaign CRUD and extract/compile/generate HTTP. |
-| `lib.ts` | Brief defaults, dirty check, and generate gate captions. |
+| `lib.ts` | Brief defaults, dirty check, step reachability, and generate gate captions. |
 | `types.ts` | Feature props and local view shapes. |
 | `useCampaign.ts` | GET/PUT brief, extract, compile, generate orchestration. |
 | `useCampaignFixture.ts` | Local state for design-proof Campaign demos. |

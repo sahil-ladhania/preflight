@@ -12,7 +12,7 @@ import type {
 } from "@preflight/schemas";
 import type { BriefField } from "@preflight/schemas";
 
-import type { CampaignStepId } from "@/features/campaign/CampaignStepNav";
+import type { CampaignStepId } from "@/features/campaign/CampaignStepRail";
 
 export type CampaignView = "loaded" | "loading" | "error";
 
@@ -59,11 +59,7 @@ export interface CampaignProps {
 }
 
 export interface CampaignStepProps {
-  title: string;
   subtitle?: string;
-  dimmed?: boolean;
-  collapsed?: boolean;
-  sectionId: string;
   children?: ReactNode;
 }
 

@@ -10,12 +10,14 @@ import type { RuleCatalogRowDTO } from "@preflight/schemas";
 
 export type WorkbenchMessage =
   | { id: string; role: "user"; text: string }
+  | { id: string; role: "pending" }
   | {
       id: string;
       role: "assistant";
       text: string;
       ruleIds: string[];
       suggestedAction?: ExplainerSuggestedAction;
+      reveal?: boolean;
     }
   | { id: string; role: "error"; text: string };
 
@@ -39,7 +41,8 @@ export interface WorkbenchProps {
 }
 
 export interface CommentSheetProps {
-  label: string;
+  label?: string;
+  variant?: "user" | "assistant" | "error";
   children: ReactNode;
 }
 
@@ -68,6 +71,7 @@ export interface ComposerProps {
   sendInFlight: boolean;
   handoffInFlight?: boolean;
   handoffEnabled?: boolean;
+  showCampaignActions?: boolean;
   onChange: (value: string) => void;
   onSend: () => void;
   onGoToCampaign?: () => void;

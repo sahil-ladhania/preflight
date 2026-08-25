@@ -9,8 +9,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { StructuredBriefInput } from "@preflight/schemas";
 import type { BriefField } from "@preflight/schemas";
 
-import { activeCampaignStep } from "@/features/campaign/CampaignStepNav";
-import type { CampaignStepId } from "@/features/campaign/CampaignStepNav";
+import { activeCampaignStep } from "@/features/campaign/CampaignStepRail";
+import type { CampaignStepId } from "@/features/campaign/CampaignStepRail";
 import {
   campaignGateState,
   mergeExtractProposal,

@@ -1,18 +1,15 @@
 /**
  * RulebookRow — one catalog table row.
- * Why: det lock vs jdg Edit/Delete actions.
+ * Why: det lock vs jdg icon Edit/Delete actions.
  */
 
 import type { ReactElement } from "react";
-import { Lock } from "lucide-react";
+import { Lock, Pencil, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { appliesLabel } from "@/features/rulebook/lib";
+import { appliesLabel, RULEBOOK_ROW_GRID } from "@/features/rulebook/lib";
 import type { RulebookRowProps } from "@/features/rulebook/types";
 import { cn } from "@/lib/utils";
-
-const GRID =
-  "grid grid-cols-[180px_56px_minmax(0,1fr)_200px_72px] items-center gap-4";
 
 function KindBadge({
   kind,
@@ -34,7 +31,7 @@ export function RulebookRow({
   return (
     <div
       className={cn(
-        GRID,
+        RULEBOOK_ROW_GRID,
         "border-b border-border bg-canvas px-4 py-2 hover:bg-canvas-subtle",
       )}
     >
@@ -48,10 +45,10 @@ export function RulebookRow({
       <span className="truncate text-caption text-fg-muted" title={appliesLabel(rule)}>
         {appliesLabel(rule)}
       </span>
-      <div className="flex items-center justify-end gap-1">
+      <div className="flex min-w-[80px] items-center justify-end gap-1">
         {rule.kind === "deterministic" ? (
           <span
-            className="inline-flex items-center text-fg-muted"
+            className="inline-flex size-7 items-center justify-center text-fg-muted"
             title="Defined in code"
           >
             <Lock className="size-3.5 shrink-0" aria-label="Defined in code" />
@@ -60,19 +57,22 @@ export function RulebookRow({
           <>
             <Button
               type="button"
-              variant="outline"
-              className="h-7 rounded-md px-2 text-ui"
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Edit rule"
               onClick={() => onEdit(rule.ruleId)}
             >
-              Edit
+              <Pencil aria-hidden />
             </Button>
             <Button
               type="button"
-              variant="outline"
-              className="h-7 rounded-md px-2 text-ui"
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Delete rule"
+              className="text-fail hover:bg-fail-fill hover:text-fail"
               onClick={() => onDelete(rule.ruleId)}
             >
-              Del
+              <Trash2 aria-hidden />
             </Button>
           </>
         )}

@@ -11,7 +11,7 @@ export function NotFound(): ReactElement {
     <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center px-4">
       <p className="text-caption text-fg-muted">
         Page not found ·{" "}
-        <Link to="/assets" className="text-fg underline">
+        <Link to="/assets" className="text-primary underline">
           Assets
         </Link>
       </p>

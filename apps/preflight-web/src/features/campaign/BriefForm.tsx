@@ -16,7 +16,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { BRIEF_FREE_TEXT_PLACEHOLDER, BRIEF_SCALAR_FIELDS } from "@/features/campaign/lib";
+import {
+  BRIEF_FREE_TEXT_PLACEHOLDER,
+  BRIEF_SCALAR_FIELDS,
+  CAMPAIGN_INPUT_CLASS,
+  CAMPAIGN_INPUT_PROPOSED_CLASS,
+  CAMPAIGN_TEXTAREA_CLASS,
+} from "@/features/campaign/lib";
 import type { BriefFormProps } from "@/features/campaign/types";
 import { cn } from "@/lib/utils";
 
@@ -46,8 +52,7 @@ function ScalarField({
         placeholder={placeholder}
         onChange={(event) => onChange(event.target.value)}
         className={cn(
-          "h-auto px-4 py-3 text-body-airy",
-          proposed && "border-dashed",
+          proposed ? CAMPAIGN_INPUT_PROPOSED_CLASS : CAMPAIGN_INPUT_CLASS,
         )}
       />
       {proposed ? (
@@ -98,12 +103,12 @@ export function BriefForm({
           value={freeText}
           placeholder={BRIEF_FREE_TEXT_PLACEHOLDER}
           onChange={(event) => onFreeTextChange(event.target.value)}
-          className="min-h-[160px] px-4 py-3 text-body-airy"
+          className={CAMPAIGN_TEXTAREA_CLASS}
         />
       </div>
       <div className="flex flex-col gap-4 border-t border-border pt-4">
         <p className="text-caption text-fg-muted">Structured brief</p>
-        <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           {BRIEF_SCALAR_FIELDS.map(({ key, label, placeholder }) => (
             <ScalarField
               key={key}

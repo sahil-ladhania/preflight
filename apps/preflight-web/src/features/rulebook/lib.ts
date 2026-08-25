@@ -16,6 +16,12 @@ import type { JudgementFormState } from "@/features/rulebook/types";
 export const POST_SAVE_CAPTION =
   "Live catalog updated. Existing assets keep their frozen snapshots — recompile on Campaign or re-run on Assets to compare.";
 
+export const RULEBOOK_SUBTITLE =
+  "Compliance rules that Preflight checks — deterministic rules are fixed in code; judgement rules you can edit here.";
+
+export const RULEBOOK_ROW_GRID =
+  "grid grid-cols-[180px_56px_minmax(0,1fr)_200px_80px] items-center gap-4";
+
 export const PREDICATE_FIELD_OPTIONS: BriefField[] = [
   "objective",
   "schemeName",

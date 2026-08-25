@@ -15,7 +15,7 @@ export function RulebookStates(): ReactElement {
       <h1 className="text-title text-fg">Rulebook states</h1>
       <p className="text-caption text-fg-muted">
         Loaded catalog lives at{" "}
-        <Link to="/rulebook" className="text-fg underline">
+        <Link to="/rulebook" className="text-primary underline">
           /rulebook
         </Link>
         .
@@ -23,13 +23,13 @@ export function RulebookStates(): ReactElement {
       <nav className="flex flex-col gap-2">
         <Link
           to="/design-proof/rulebook/loading"
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Loading
         </Link>
         <Link
           to="/design-proof/rulebook/error"
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Error
         </Link>

@@ -39,7 +39,7 @@ function VersionCell({
           from{" "}
           <Link
             to={`/assets/${regeneratedFromId}`}
-            className="text-fg underline hover:underline"
+            className="text-primary underline hover:underline"
             onClick={onParentClick}
           >
             {shortId(regeneratedFromId)}

@@ -1,15 +1,17 @@
 /**
- * Workbench — Screen 5 thread layout.
- * Why: canvas-subtle Workbench page; WorkbenchRoute wires useWorkbench.
+ * Workbench — Screen 5 stage layout.
+ * Why: empty welcome or thread + stage-docked composer; no page footer strip.
  */
 
 import { useEffect, type ReactElement } from "react";
 
 import { Composer } from "@/features/workbench/Composer";
+import { EmptyStage } from "@/features/workbench/EmptyStage";
 import { Thread } from "@/features/workbench/Thread";
 import type { WorkbenchProps } from "@/features/workbench/types";
 import { useWorkbench } from "@/features/workbench/useWorkbench";
 import { useWorkbenchFixture } from "@/features/workbench/useWorkbenchFixture";
+import { PageStage } from "@/features/shell/PageStage";
 import { useToastContext } from "@/features/shell/ToastHost";
 
 const PREFETCH_FAIL_TOAST = "Could not load rules catalog.";
@@ -62,6 +64,9 @@ export function Workbench({
     ? (showSearchFallbackProp ?? false)
     : fixture.showSearchFallback;
   const searchQuery = controlled ? (searchQueryProp ?? "") : fixture.searchQuery;
+  const isEmpty = messages.length === 0;
+
+  const setComposerText = onComposerTextChange ?? fixture.setComposerText;
 
   const handleSend = (): void => {
     if (onSend !== undefined) {
@@ -87,34 +92,48 @@ export function Workbench({
     fixture.handleStartCampaignFromConversation();
   };
 
+  const composer = (
+    <Composer
+      value={composerText}
+      disabled={prefetchFailed}
+      sendInFlight={sendInFlight}
+      handoffInFlight={handoffInFlight}
+      handoffEnabled={handoffEnabled}
+      showCampaignActions={!isEmpty}
+      onChange={setComposerText}
+      onSend={handleSend}
+      onGoToCampaign={handleGoToCampaign}
+      onStartCampaignFromConversation={handleStartCampaign}
+    />
+  );
+
   return (
-    <div className="flex h-[calc(100vh-3rem)] flex-col bg-canvas-subtle">
-      <div className="mx-auto flex min-h-0 w-full max-w-[720px] flex-1 flex-col px-8 pt-6">
-        <h1 className="mb-4 shrink-0 text-title text-fg">Workbench</h1>
-        <Thread
-          messages={messages}
-          rules={rules}
-          showSearchFallback={showSearchFallback}
-          searchQuery={searchQuery}
-          onSearchQueryChange={
-            onSearchQueryChange ?? fixture.setSearchQuery
-          }
-        />
-      </div>
-      <div className="shrink-0 border-t border-border bg-canvas">
-        <div className="mx-auto w-full max-w-[720px] px-8 py-4">
-          <Composer
-            value={composerText}
-            sendInFlight={sendInFlight}
+    <div className="bg-canvas-subtle">
+      <PageStage>
+        {isEmpty ? (
+          <EmptyStage
+            composer={composer}
             handoffInFlight={handoffInFlight}
-            handoffEnabled={handoffEnabled}
-            onChange={onComposerTextChange ?? fixture.setComposerText}
-            onSend={handleSend}
+            onPromptSelect={setComposerText}
             onGoToCampaign={handleGoToCampaign}
-            onStartCampaignFromConversation={handleStartCampaign}
           />
-        </div>
-      </div>
+        ) : (
+          <>
+            <Thread
+              messages={messages}
+              rules={rules}
+              showSearchFallback={showSearchFallback}
+              searchQuery={searchQuery}
+              onSearchQueryChange={
+                onSearchQueryChange ?? fixture.setSearchQuery
+              }
+            />
+            <div className="shrink-0 border-t border-border p-4 sm:px-6">
+              {composer}
+            </div>
+          </>
+        )}
+      </PageStage>
     </div>
   );
 }

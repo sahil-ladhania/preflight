@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { DeleteRuleModal } from "@/features/rulebook/DeleteRuleModal";
 import { JudgementSheet } from "@/features/rulebook/JudgementSheet";
 import { emptyJudgementForm } from "@/features/rulebook/lib";
-import { RulebookPageHeader } from "@/features/rulebook/RulebookPageHeader";
+import { RulebookShell } from "@/features/rulebook/RulebookShell";
 import { RulebookTable } from "@/features/rulebook/RulebookTable";
 import type {
   RulebookLoadingStateProps,
@@ -17,13 +17,9 @@ import type {
 } from "@/features/rulebook/types";
 import { useRulebook } from "@/features/rulebook/useRulebook";
 
-function LoadingState({ showSpinner }: RulebookLoadingStateProps): ReactElement {
-  if (!showSpinner) {
-    return <div className="min-h-[calc(100vh-3rem)] bg-canvas-subtle" />;
-  }
-
+function StageSpinner(): ReactElement {
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center">
+    <div className="flex min-h-48 items-center justify-center bg-canvas">
       <div
         className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
         aria-label="Loading"
@@ -32,18 +28,34 @@ function LoadingState({ showSpinner }: RulebookLoadingStateProps): ReactElement 
   );
 }
 
-function ErrorState({ onRetry }: { onRetry?: () => void }): ReactElement {
+function StageError({ onRetry }: { onRetry?: () => void }): ReactElement {
   const handleRetry = (): void => {
     onRetry?.();
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] flex-col items-center justify-center gap-4">
+    <div className="flex min-h-48 flex-col items-center justify-center gap-4 bg-canvas">
       <p className="text-caption text-fg-muted">Could not load rules.</p>
       <Button type="button" variant="outline" onClick={handleRetry}>
         Retry
       </Button>
     </div>
+  );
+}
+
+function LoadingState({ showSpinner }: RulebookLoadingStateProps): ReactElement {
+  if (!showSpinner) {
+    return (
+      <RulebookShell postSaveCaption={false} onAdd={() => {}}>
+        <div className="min-h-48 bg-canvas" />
+      </RulebookShell>
+    );
+  }
+
+  return (
+    <RulebookShell postSaveCaption={false} onAdd={() => {}}>
+      <StageSpinner />
+    </RulebookShell>
   );
 }
 
@@ -73,7 +85,16 @@ export function Rulebook({
   }
 
   if (view === "error") {
-    return <ErrorState onRetry={onRetry} />;
+    return (
+      <RulebookShell
+        postSaveCaption={false}
+        onAdd={() => {
+          onAdd?.();
+        }}
+      >
+        <StageError onRetry={onRetry} />
+      </RulebookShell>
+    );
   }
 
   const editingRule =
@@ -93,23 +114,23 @@ export function Rulebook({
     }
   };
 
+  const handleAdd = (): void => {
+    onAdd?.();
+  };
+
   return (
-    <div className="bg-canvas-subtle">
-      <RulebookPageHeader
-        onAdd={() => {
-          onAdd?.();
-        }}
-        postSaveCaption={postSaveCaption}
-      />
-      <RulebookTable
-        rules={rules}
-        onEdit={(ruleId) => {
-          onEdit?.(ruleId);
-        }}
-        onDelete={(ruleId) => {
-          onDeleteRequest?.(ruleId);
-        }}
-      />
+    <>
+      <RulebookShell postSaveCaption={postSaveCaption} onAdd={handleAdd}>
+        <RulebookTable
+          rules={rules}
+          onEdit={(ruleId) => {
+            onEdit?.(ruleId);
+          }}
+          onDelete={(ruleId) => {
+            onDeleteRequest?.(ruleId);
+          }}
+        />
+      </RulebookShell>
       <JudgementSheet
         mode={sheetMode}
         rule={editingRule}
@@ -133,7 +154,7 @@ export function Rulebook({
         }}
         onConfirm={handleConfirmDelete}
       />
-    </div>
+    </>
   );
 }
 

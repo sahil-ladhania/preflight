@@ -1,13 +1,15 @@
 /**
  * AssetsList — Screen 2 list page body.
- * Why: assets ledger entry list.
+ * Why: assets ledger entry list inside PageStage shell.
  */
 
 import type { ReactElement } from "react";
 
 import { Button } from "@/components/ui/button";
 import { AssetListRow } from "@/features/assets/AssetListRow";
+import { AssetsListShell } from "@/features/assets/AssetsListShell";
 import type { AssetsListProps } from "@/features/assets/types";
+import { useCreateCampaign } from "@/features/campaign/useCreateCampaign";
 import { useAssetsList } from "@/features/assets/useAssetsList";
 import { cn } from "@/lib/utils";
 
@@ -28,36 +30,20 @@ function ListHeaderRow(): ReactElement {
   );
 }
 
-function PageHeader(): ReactElement {
-  return (
-    <div className="border-b border-border bg-canvas px-4 py-3">
-      <h1 className="text-title text-fg">Assets</h1>
-    </div>
-  );
-}
-
 function EmptyState(): ReactElement {
   return (
-    <div className="flex flex-col items-center gap-2 py-16">
+    <div className="flex flex-col items-center gap-2 bg-canvas py-16">
       <p className="text-caption text-fg-muted">No assets yet</p>
       <p className="text-caption text-fg-muted">
-        Open Campaign in the nav to start a brief.
+        Start a new campaign to generate your first asset.
       </p>
     </div>
   );
 }
 
-function LoadingState({ showSpinner }: { showSpinner: boolean }): ReactElement {
-  if (!showSpinner) {
-    return (
-      <div className="bg-canvas">
-        <PageHeader />
-      </div>
-    );
-  }
-
+function StageSpinner(): ReactElement {
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center">
+    <div className="flex min-h-48 items-center justify-center bg-canvas">
       <div
         className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
         aria-label="Loading"
@@ -83,13 +69,13 @@ function PollErrorBanner({ onRetry }: { onRetry?: () => void }): ReactElement {
   );
 }
 
-function ErrorState({ onRetry }: { onRetry?: () => void }): ReactElement {
+function StageError({ onRetry }: { onRetry?: () => void }): ReactElement {
   const handleRetry = (): void => {
     onRetry?.();
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] flex-col items-center justify-center gap-4">
+    <div className="flex min-h-48 flex-col items-center justify-center gap-4 bg-canvas">
       <p className="text-caption text-fg-muted">Could not load assets.</p>
       <Button type="button" variant="outline" onClick={handleRetry}>
         Retry
@@ -104,40 +90,44 @@ export function AssetsList({
   pollError = false,
   onRetry,
   showLoadingSpinner = true,
+  createInFlight = false,
+  onNewCampaign = (): void => {},
 }: AssetsListProps): ReactElement {
+  const shell = (content: ReactElement): ReactElement => (
+    <AssetsListShell
+      createInFlight={createInFlight}
+      onNewCampaign={onNewCampaign}
+    >
+      {content}
+    </AssetsListShell>
+  );
+
   if (view === "loading") {
-    return <LoadingState showSpinner={showLoadingSpinner} />;
+    return shell(showLoadingSpinner ? <StageSpinner /> : <div className="min-h-48 bg-canvas" />);
   }
 
   if (view === "error") {
-    return <ErrorState onRetry={onRetry} />;
+    return shell(<StageError onRetry={onRetry} />);
   }
 
   if (assets.length === 0) {
-    return (
-      <div className="bg-canvas">
-        <PageHeader />
-        <EmptyState />
-      </div>
-    );
+    return shell(<EmptyState />);
   }
 
-  return (
-    <div className="bg-canvas-subtle">
-      <PageHeader />
+  return shell(
+    <div className="bg-canvas">
       {pollError ? <PollErrorBanner onRetry={onRetry} /> : null}
-      <div className="bg-canvas">
-        <ListHeaderRow />
-        {assets.map((asset) => (
-          <AssetListRow key={asset.id} asset={asset} />
-        ))}
-      </div>
-    </div>
+      <ListHeaderRow />
+      {assets.map((asset) => (
+        <AssetListRow key={asset.id} asset={asset} />
+      ))}
+    </div>,
   );
 }
 
 export function AssetsListRoute(): ReactElement {
   const { assets, view, pollError, showLoadingSpinner, retry } = useAssetsList();
+  const { createInFlight, createCampaignAndGo } = useCreateCampaign();
 
   return (
     <AssetsList
@@ -146,6 +136,10 @@ export function AssetsListRoute(): ReactElement {
       pollError={pollError}
       onRetry={retry}
       showLoadingSpinner={showLoadingSpinner}
+      createInFlight={createInFlight}
+      onNewCampaign={() => {
+        void createCampaignAndGo();
+      }}
     />
   );
 }

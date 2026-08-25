@@ -2,9 +2,11 @@
  * AssetDetail — Screen 1 orchestrator.
  * Why: region siblings extracted; route and states are separate modules.
  */
+// size: orchestrator wires shell, split, modals — extract loses load order clarity
 
 import { useState, useEffect, useRef, type ReactElement } from "react";
 
+import { AssetDetailShell } from "@/features/assets/AssetDetailShell";
 import { AssetPane } from "@/features/assets/AssetPane";
 import {
   ErrorState,
@@ -130,15 +132,20 @@ export function AssetDetail({
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] flex-col bg-canvas-subtle">
+    <AssetDetailShell
+      headline={asset.headline}
+      channel={asset.channel}
+      assetId={asset.id}
+      generatedAt={asset.generatedAt}
+    >
       {asset.lineage !== null ? (
         <LineageBanner lineage={asset.lineage} />
       ) : null}
       {asset.exceptions.length > 0 ? (
         <ExceptionsSummary exceptions={asset.exceptions} />
       ) : null}
-      <div className="flex min-h-0 flex-1 gap-0 p-0">
-        <div className="min-h-0 w-[58%] shrink-0 p-2">
+      <div className="flex min-h-0 flex-1 gap-2">
+        <div className="min-h-0 w-[58%] shrink-0">
           <AssetPane
             asset={asset}
             openFindingId={openFindingId}
@@ -152,7 +159,7 @@ export function AssetDetail({
             regenerateInFlight={regenerateInFlight}
           />
         </div>
-        <div className="min-h-0 w-[42%] shrink-0 p-2 pl-0">
+        <div className="min-h-0 w-[42%] shrink-0">
           <LedgerPane
             findings={asset.findings}
             openFindingId={openFindingId}
@@ -194,6 +201,6 @@ export function AssetDetail({
         onClose={closeModal}
         onSubmit={submitModal}
       />
-    </div>
+    </AssetDetailShell>
   );
 }

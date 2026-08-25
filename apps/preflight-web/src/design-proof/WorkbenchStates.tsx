@@ -15,7 +15,7 @@ export function WorkbenchStates(): ReactElement {
       <h1 className="text-title text-fg">Workbench states</h1>
       <p className="text-caption text-fg-muted">
         Loaded thread lives at{" "}
-        <Link to="/workbench" className="text-fg underline">
+        <Link to="/workbench" className="text-primary underline">
           /workbench
         </Link>
         . Type a message containing &quot;fail&quot; to trigger the error
@@ -24,19 +24,19 @@ export function WorkbenchStates(): ReactElement {
       <nav className="flex flex-col gap-2">
         <Link
           to="/design-proof/workbench/prefetch-error"
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Prefetch rules error
         </Link>
         <Link
           to="/design-proof/workbench/error-fallback"
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Error fallback visible
         </Link>
         <Link
           to="/design-proof/workbench/handoff-suggested"
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Handoff suggested thread
         </Link>

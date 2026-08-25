@@ -47,7 +47,7 @@ export function CampaignStates(): ReactElement {
       <h1 className="text-title text-fg">Campaign states</h1>
       <p className="text-caption text-fg-muted">
         Seed campaign (saved + compiled) lives at{" "}
-        <Link to={`/campaign/${CAMPAIGN_ID}`} className="text-fg underline">
+        <Link to={`/campaign/${CAMPAIGN_ID}`} className="text-primary underline">
           /campaign/:campaignId
         </Link>
         . Phase rail: Brief · Freeze · Generate.
@@ -55,37 +55,37 @@ export function CampaignStates(): ReactElement {
       <nav className="flex flex-col gap-2">
         <Link
           to={`/campaign/${CAMPAIGN_ID_FRESH}`}
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Fresh campaign
         </Link>
         <Link
           to="/design-proof/campaign/handoff"
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Workbench handoff (dashed fields)
         </Link>
         <Link
           to="/design-proof/campaign/loading"
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Loading
         </Link>
         <Link
           to="/design-proof/campaign/error"
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Error
         </Link>
         <Link
           to="/design-proof/campaign/not-found"
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Not found
         </Link>
         <Link
           to="/design-proof/campaign/zero-rules"
-          className="text-ui text-fg underline"
+          className="text-ui text-primary underline"
         >
           Zero-rules compile
         </Link>

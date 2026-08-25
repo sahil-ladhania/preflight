@@ -52,31 +52,31 @@ export function DesignProof(): ReactElement {
       <CrashTrigger shouldThrow={shouldThrow} />
       <section className="flex flex-col gap-2 border-t border-border pt-4">
         <h2 className="text-ui font-semibold text-fg">Assets list states</h2>
-        <Link to="/design-proof/assets-list" className="text-ui text-fg underline">
+        <Link to="/design-proof/assets-list" className="text-ui text-primary underline">
           Open assets list state variants
         </Link>
       </section>
       <section className="flex flex-col gap-2 border-t border-border pt-4">
         <h2 className="text-ui font-semibold text-fg">Assets detail states</h2>
-        <Link to="/design-proof/assets-detail" className="text-ui text-fg underline">
+        <Link to="/design-proof/assets-detail" className="text-ui text-primary underline">
           Open assets detail state variants
         </Link>
       </section>
       <section className="flex flex-col gap-2 border-t border-border pt-4">
         <h2 className="text-ui font-semibold text-fg">Campaign states</h2>
-        <Link to="/design-proof/campaign" className="text-ui text-fg underline">
+        <Link to="/design-proof/campaign" className="text-ui text-primary underline">
           Open campaign state variants
         </Link>
       </section>
       <section className="flex flex-col gap-2 border-t border-border pt-4">
         <h2 className="text-ui font-semibold text-fg">Rulebook states</h2>
-        <Link to="/design-proof/rulebook" className="text-ui text-fg underline">
+        <Link to="/design-proof/rulebook" className="text-ui text-primary underline">
           Open rulebook state variants
         </Link>
       </section>
       <section className="flex flex-col gap-2 border-t border-border pt-4">
         <h2 className="text-ui font-semibold text-fg">Workbench states</h2>
-        <Link to="/design-proof/workbench" className="text-ui text-fg underline">
+        <Link to="/design-proof/workbench" className="text-ui text-primary underline">
           Open workbench state variants
         </Link>
       </section>

@@ -9,10 +9,13 @@ import { useNavigate } from "react-router-dom";
 import {
   handoffEnabled as computeHandoffEnabled,
   nextMessageId,
+  replaceMessageById,
 } from "@/features/workbench/lib";
 import type { WorkbenchMessage } from "@/features/workbench/types";
 import { CAMPAIGN_ID, EXTRACT_PROPOSAL } from "@/fixtures/campaign";
 import { resolveWorkbenchChat } from "@/fixtures/workbench";
+
+const FIXTURE_RESPONSE_DELAY_MS = 600;
 
 export function useWorkbenchFixture(input: {
   initialMessages: WorkbenchMessage[];
@@ -76,30 +79,41 @@ export function useWorkbenchFixture(input: {
       role: "user",
       text,
     };
-    setMessages((current) => [...current, userMessage]);
+    const pendingId = nextMessageId();
+    const turn = assistantTurns;
+    setMessages((current) => [
+      ...current,
+      userMessage,
+      { id: pendingId, role: "pending" },
+    ]);
     setComposerText("");
 
-    const result = resolveWorkbenchChat(text, assistantTurns);
-    if (!result.ok) {
-      setMessages((current) => [
-        ...current,
-        { id: nextMessageId(), role: "error", text: result.error },
-      ]);
-      setShowSearchFallback(true);
-    } else {
-      setMessages((current) => [
-        ...current,
-        {
-          id: nextMessageId(),
-          role: "assistant",
-          text: result.data.message,
-          ruleIds: result.data.ruleIds,
-          suggestedAction: result.data.suggestedAction,
-        },
-      ]);
-      setAssistantTurns((count) => count + 1);
-    }
-    setSendInFlight(false);
+    window.setTimeout(() => {
+      const result = resolveWorkbenchChat(text, turn);
+      if (!result.ok) {
+        setMessages((current) =>
+          replaceMessageById(current, pendingId, {
+            id: nextMessageId(),
+            role: "error",
+            text: result.error,
+          }),
+        );
+        setShowSearchFallback(true);
+      } else {
+        setMessages((current) =>
+          replaceMessageById(current, pendingId, {
+            id: pendingId,
+            role: "assistant",
+            text: result.data.message,
+            ruleIds: result.data.ruleIds,
+            suggestedAction: result.data.suggestedAction,
+            reveal: true,
+          }),
+        );
+        setAssistantTurns((count) => count + 1);
+      }
+      setSendInFlight(false);
+    }, FIXTURE_RESPONSE_DELAY_MS);
   };
 
   return {

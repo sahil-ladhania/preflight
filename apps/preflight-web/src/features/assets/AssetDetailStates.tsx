@@ -6,6 +6,7 @@
 import type { ReactElement } from "react";
 
 import { Button } from "@/components/ui/button";
+import { AssetDetailShell } from "@/features/assets/AssetDetailShell";
 
 export function LoadingState({
   showSpinner,
@@ -13,16 +14,22 @@ export function LoadingState({
   showSpinner: boolean;
 }): ReactElement {
   if (!showSpinner) {
-    return <div className="min-h-[calc(100vh-3rem)] bg-canvas-subtle" />;
+    return (
+      <AssetDetailShell>
+        <div className="min-h-48 flex-1" />
+      </AssetDetailShell>
+    );
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center">
-      <div
-        className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
-        aria-label="Loading"
-      />
-    </div>
+    <AssetDetailShell>
+      <div className="flex min-h-48 flex-1 items-center justify-center">
+        <div
+          className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
+          aria-label="Loading"
+        />
+      </div>
+    </AssetDetailShell>
   );
 }
 
@@ -32,19 +39,23 @@ export function ErrorState({ onRetry }: { onRetry?: () => void }): ReactElement 
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] flex-col items-center justify-center gap-4">
-      <p className="text-caption text-fg-muted">Could not load asset.</p>
-      <Button type="button" variant="outline" onClick={handleRetry}>
-        Retry
-      </Button>
-    </div>
+    <AssetDetailShell>
+      <div className="flex min-h-48 flex-1 flex-col items-center justify-center gap-4">
+        <p className="text-caption text-fg-muted">Could not load asset.</p>
+        <Button type="button" variant="outline" onClick={handleRetry}>
+          Retry
+        </Button>
+      </div>
+    </AssetDetailShell>
   );
 }
 
 export function NotFoundState(): ReactElement {
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center">
-      <p className="text-caption text-fg-muted">Asset not found</p>
-    </div>
+    <AssetDetailShell>
+      <div className="flex min-h-48 flex-1 items-center justify-center">
+        <p className="text-caption text-fg-muted">Asset not found</p>
+      </div>
+    </AssetDetailShell>
   );
 }

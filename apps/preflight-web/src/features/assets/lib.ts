@@ -3,7 +3,38 @@
  * Why: shortId 8-char truncate and co-located helpers.
  */
 
-import type { AssetStatus, FindingDTO, HumanVerdict } from "@preflight/schemas";
+import type {
+  AssetStatus,
+  Channel,
+  FindingDTO,
+  HumanVerdict,
+} from "@preflight/schemas";
+
+export const ASSETS_LIST_SUBTITLE =
+  "All generated copy and its compliance status — open a row to review.";
+
+export const LEDGER_ROW_GRID =
+  "grid grid-cols-[28px_72px_minmax(0,1fr)_40px_56px_auto] items-center gap-2";
+
+const CHANNEL_LABELS: Record<Channel, string> = {
+  email: "Email",
+  linkedin: "LinkedIn",
+  display: "Display",
+  whatsapp: "WhatsApp",
+  landing: "Landing",
+};
+
+export function channelLabel(channel: Channel): string {
+  return CHANNEL_LABELS[channel];
+}
+
+export function formatAssetDetailSubtitle(
+  channel: Channel,
+  assetId: string,
+  generatedAt: string,
+): string {
+  return `${channelLabel(channel)} · ${shortId(assetId)} · ${formatGeneratedAt(generatedAt)}`;
+}
 
 const ACCEPT_DISABLED: Partial<Record<AssetStatus, string>> = {
   blocked: "Deterministic blocker still open.",

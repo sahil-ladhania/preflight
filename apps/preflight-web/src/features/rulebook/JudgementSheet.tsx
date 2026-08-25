@@ -132,7 +132,7 @@ export function JudgementSheet({
           {!isAdd ? (
             <Button
               type="button"
-              variant="outline"
+              variant="destructive"
               disabled={disabled}
               onClick={onDelete}
             >

@@ -10,7 +10,7 @@ import type { Channel } from "@preflight/schemas";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { CHANNEL_OPTIONS } from "@/features/campaign/lib";
+import { CHANNEL_OPTIONS, CAMPAIGN_INPUT_CLASS } from "@/features/campaign/lib";
 import { cn } from "@/lib/utils";
 
 export function ChannelsField({
@@ -93,13 +93,13 @@ export function PerformanceFiguresField({
               value={row.value}
               placeholder="e.g. 16.8%"
               onChange={(event) => updateRow(index, "value", event.target.value)}
-              className="h-auto px-4 py-3 text-body-airy"
+              className={CAMPAIGN_INPUT_CLASS}
             />
             <Input
               value={row.period}
               placeholder="e.g. 5-year CAGR"
               onChange={(event) => updateRow(index, "period", event.target.value)}
-              className="h-auto px-4 py-3 text-body-airy"
+              className={CAMPAIGN_INPUT_CLASS}
             />
           </div>
         ))}
@@ -150,7 +150,7 @@ export function ClaimsField({
             value={claim}
             placeholder="e.g. Market-leading research process"
             onChange={(event) => updateClaim(index, event.target.value)}
-            className="h-auto px-4 py-3 text-body-airy"
+            className={CAMPAIGN_INPUT_CLASS}
           />
         ))}
         <Button

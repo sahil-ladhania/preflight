@@ -1,6 +1,6 @@
 /**
  * Campaign — Screen 3 three-step orchestrator.
- * Why: brief → compile → generate on one scroll page.
+ * Why: brief → compile → generate in a single active pane.
  */
 // size: controlled + fixture modes share one tree; fixture hook extracted
 
@@ -10,7 +10,7 @@ import { useParams } from "react-router-dom";
 import { BriefForm } from "@/features/campaign/BriefForm";
 import { CampaignPageShell } from "@/features/campaign/CampaignPageShell";
 import { CampaignStep } from "@/features/campaign/CampaignStep";
-import { activeCampaignStep } from "@/features/campaign/CampaignStepNav";
+import { activeCampaignStep } from "@/features/campaign/CampaignStepRail";
 import {
   CampaignErrorState,
   CampaignLoadingState,
@@ -165,68 +165,61 @@ export function Campaign({
   return (
     <CampaignPageShell
       activeStep={activeStep}
-      generateFooter={
-        !s3Dimmed ? (
-          <div className="sticky bottom-0 border-t border-border bg-canvas">
-            <div className="mx-auto max-w-[720px] px-8 py-4">
-              <GenerateBlock
-                compileResult={compileResult}
-                dimmed={s3Dimmed}
-                disabled={generateDisabled}
-                disabledCaption={generateCaption}
-                generateInFlight={generateInFlight}
-                onGenerate={handleGenerate}
-              />
-            </div>
-          </div>
-        ) : null
-      }
+      s2Dimmed={s2Dimmed}
+      s3Dimmed={s3Dimmed}
     >
-      <CampaignStep
-        title="Brief"
-        subtitle="Phase 1 — GitAgent extractor structures the brief from free text."
-        sectionId="campaign-brief"
-      >
-        <BriefForm
-          freeText={freeText}
-          brief={brief}
-          proposedFieldKeys={proposedFieldKeys}
-          saveDisabled={saveDisabled}
-          saveInFlight={saveInFlight}
-          extractInFlight={extractInFlight}
-          onFreeTextChange={onFreeTextChange ?? fixture.setFreeText}
-          onBriefChange={onBriefChange ?? fixture.setBrief}
-          onFieldEdit={onFieldEdit ?? fixture.handleFieldEdit}
-          onExtract={handleExtract}
-          onSave={handleSave}
-        />
-      </CampaignStep>
-      <CampaignStep
-        title="Freeze"
-        subtitle="Phase 2 — server compile freezes predicates and constraint cards."
-        dimmed={s2Dimmed}
-        collapsed={s2Dimmed}
-        sectionId="campaign-constraints"
-      >
-        <ConstraintCards
-          compileResult={compileResult}
-          compileInFlight={compileInFlight}
-          compileDisabled={s2Dimmed || briefDirty}
-          emptySetAcknowledged={emptySetAcknowledged}
-          staleBanner={staleBanner}
-          onCompile={handleCompile}
-          onEmptySetAckChange={
-            onEmptySetAckChange ?? fixture.setEmptySetAcknowledged
-          }
-        />
-      </CampaignStep>
-      <CampaignStep
-        title="Generate"
-        subtitle="Phase 3 — GitAgent generator creates channel assets."
-        dimmed={s3Dimmed}
-        collapsed={s3Dimmed}
-        sectionId="campaign-generate"
-      />
+      {(viewStep) => {
+        if (viewStep === "campaign-brief") {
+          return (
+            <CampaignStep subtitle="Paste your brief as free text, use Extract to fill the form, then review and save.">
+              <BriefForm
+                freeText={freeText}
+                brief={brief}
+                proposedFieldKeys={proposedFieldKeys}
+                saveDisabled={saveDisabled}
+                saveInFlight={saveInFlight}
+                extractInFlight={extractInFlight}
+                onFreeTextChange={onFreeTextChange ?? fixture.setFreeText}
+                onBriefChange={onBriefChange ?? fixture.setBrief}
+                onFieldEdit={onFieldEdit ?? fixture.handleFieldEdit}
+                onExtract={handleExtract}
+                onSave={handleSave}
+              />
+            </CampaignStep>
+          );
+        }
+
+        if (viewStep === "campaign-constraints") {
+          return (
+            <CampaignStep subtitle="Compile your saved brief to see which compliance rules apply to this campaign.">
+              <ConstraintCards
+                compileResult={compileResult}
+                compileInFlight={compileInFlight}
+                compileDisabled={s2Dimmed || briefDirty}
+                emptySetAcknowledged={emptySetAcknowledged}
+                staleBanner={staleBanner}
+                onCompile={handleCompile}
+                onEmptySetAckChange={
+                  onEmptySetAckChange ?? fixture.setEmptySetAcknowledged
+                }
+              />
+            </CampaignStep>
+          );
+        }
+
+        return (
+          <CampaignStep subtitle="Generate marketing copy for your selected channels under those rules.">
+            <GenerateBlock
+              compileResult={compileResult}
+              dimmed={s3Dimmed}
+              disabled={generateDisabled}
+              disabledCaption={generateCaption}
+              generateInFlight={generateInFlight}
+              onGenerate={handleGenerate}
+            />
+          </CampaignStep>
+        );
+      }}
     </CampaignPageShell>
   );
 }
