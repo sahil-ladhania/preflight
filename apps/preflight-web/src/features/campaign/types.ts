@@ -56,8 +56,6 @@ export interface CampaignProps {
   onCompile?: () => void;
   onGenerate?: () => void;
   onRetry?: () => void;
-  onNewCampaign?: () => void;
-  newCampaignInFlight?: boolean;
 }
 
 export interface CampaignStepProps {
@@ -66,7 +64,7 @@ export interface CampaignStepProps {
   dimmed?: boolean;
   collapsed?: boolean;
   sectionId: string;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export interface BriefFormProps {

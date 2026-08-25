@@ -11,10 +11,6 @@ import type { AssetsListProps } from "@/features/assets/types";
 import { useAssetsList } from "@/features/assets/useAssetsList";
 import { cn } from "@/lib/utils";
 
-interface HeaderActionsProps {
-  onNewCampaign?: () => void;
-}
-
 function ListHeaderRow(): ReactElement {
   return (
     <div
@@ -32,47 +28,30 @@ function ListHeaderRow(): ReactElement {
   );
 }
 
-function NewCampaignButton({ onNewCampaign }: HeaderActionsProps): ReactElement {
-  const handleClick = (): void => {
-    onNewCampaign?.();
-  };
-
+function PageHeader(): ReactElement {
   return (
-    <Button type="button" className="h-8 rounded-md px-4" onClick={handleClick}>
-      New campaign
-    </Button>
-  );
-}
-
-function PageHeader({ onNewCampaign }: HeaderActionsProps): ReactElement {
-  return (
-    <div className="flex items-center justify-between border-b border-border bg-canvas px-4 py-3">
+    <div className="border-b border-border bg-canvas px-4 py-3">
       <h1 className="text-title text-fg">Assets</h1>
-      <NewCampaignButton onNewCampaign={onNewCampaign} />
     </div>
   );
 }
 
-function EmptyState({ onNewCampaign }: HeaderActionsProps): ReactElement {
+function EmptyState(): ReactElement {
   return (
-    <div className="flex flex-col items-center gap-4 py-16">
+    <div className="flex flex-col items-center gap-2 py-16">
       <p className="text-caption text-fg-muted">No assets yet</p>
-      <NewCampaignButton onNewCampaign={onNewCampaign} />
+      <p className="text-caption text-fg-muted">
+        Open Campaign in the nav to start a brief.
+      </p>
     </div>
   );
 }
 
-function LoadingState({
-  showSpinner,
-  onNewCampaign,
-}: {
-  showSpinner: boolean;
-  onNewCampaign?: () => void;
-}): ReactElement {
+function LoadingState({ showSpinner }: { showSpinner: boolean }): ReactElement {
   if (!showSpinner) {
     return (
       <div className="bg-canvas">
-        <PageHeader onNewCampaign={onNewCampaign} />
+        <PageHeader />
       </div>
     );
   }
@@ -124,16 +103,10 @@ export function AssetsList({
   view = "loaded",
   pollError = false,
   onRetry,
-  onNewCampaign,
   showLoadingSpinner = true,
 }: AssetsListProps): ReactElement {
   if (view === "loading") {
-    return (
-      <LoadingState
-        showSpinner={showLoadingSpinner}
-        onNewCampaign={onNewCampaign}
-      />
-    );
+    return <LoadingState showSpinner={showLoadingSpinner} />;
   }
 
   if (view === "error") {
@@ -143,15 +116,15 @@ export function AssetsList({
   if (assets.length === 0) {
     return (
       <div className="bg-canvas">
-        <PageHeader onNewCampaign={onNewCampaign} />
-        <EmptyState onNewCampaign={onNewCampaign} />
+        <PageHeader />
+        <EmptyState />
       </div>
     );
   }
 
   return (
     <div className="bg-canvas-subtle">
-      <PageHeader onNewCampaign={onNewCampaign} />
+      <PageHeader />
       {pollError ? <PollErrorBanner onRetry={onRetry} /> : null}
       <div className="bg-canvas">
         <ListHeaderRow />
@@ -164,8 +137,7 @@ export function AssetsList({
 }
 
 export function AssetsListRoute(): ReactElement {
-  const { assets, view, pollError, showLoadingSpinner, retry, createCampaignAndGo } =
-    useAssetsList();
+  const { assets, view, pollError, showLoadingSpinner, retry } = useAssetsList();
 
   return (
     <AssetsList
@@ -173,9 +145,6 @@ export function AssetsListRoute(): ReactElement {
       view={view}
       pollError={pollError}
       onRetry={retry}
-      onNewCampaign={() => {
-        void createCampaignAndGo();
-      }}
       showLoadingSpinner={showLoadingSpinner}
     />
   );

@@ -23,13 +23,37 @@ export const CHANNEL_OPTIONS: Channel[] = [
 export const BRIEF_SCALAR_FIELDS: Array<{
   key: BriefField;
   label: string;
+  placeholder: string;
 }> = [
-  { key: "objective", label: "Objective" },
-  { key: "schemeName", label: "Scheme name" },
-  { key: "schemeCategory", label: "Scheme category" },
-  { key: "audience", label: "Audience" },
-  { key: "market", label: "Market" },
+  {
+    key: "objective",
+    label: "Objective",
+    placeholder: "Drive awareness among digital investors ahead of Q4",
+  },
+  {
+    key: "schemeName",
+    label: "Scheme name",
+    placeholder: "Bluepeak Flexi Cap Fund",
+  },
+  {
+    key: "schemeCategory",
+    label: "Scheme category",
+    placeholder: "Flexi Cap",
+  },
+  {
+    key: "audience",
+    label: "Audience",
+    placeholder: "Retail investors aged 25–45 in metro India",
+  },
+  {
+    key: "market",
+    label: "Market",
+    placeholder: "India",
+  },
 ];
+
+export const BRIEF_FREE_TEXT_PLACEHOLDER =
+  "Paste the full marketing brief — scheme, audience, channels, performance figures, claims, and tone.";
 
 export function emptyBrief(): StructuredBriefInput {
   return {

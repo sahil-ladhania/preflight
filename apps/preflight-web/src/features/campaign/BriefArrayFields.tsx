@@ -91,13 +91,13 @@ export function PerformanceFiguresField({
           <div key={index} className="grid grid-cols-2 gap-2">
             <Input
               value={row.value}
-              placeholder="Value"
+              placeholder="e.g. 16.8%"
               onChange={(event) => updateRow(index, "value", event.target.value)}
               className="h-auto px-4 py-3 text-body-airy"
             />
             <Input
               value={row.period}
-              placeholder="Period"
+              placeholder="e.g. 5-year CAGR"
               onChange={(event) => updateRow(index, "period", event.target.value)}
               className="h-auto px-4 py-3 text-body-airy"
             />
@@ -148,6 +148,7 @@ export function ClaimsField({
           <Input
             key={index}
             value={claim}
+            placeholder="e.g. Market-leading research process"
             onChange={(event) => updateClaim(index, event.target.value)}
             className="h-auto px-4 py-3 text-body-airy"
           />

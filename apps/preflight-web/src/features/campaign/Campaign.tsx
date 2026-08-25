@@ -7,13 +7,10 @@
 import type { ReactElement } from "react";
 import { useParams } from "react-router-dom";
 
-import { Button } from "@/components/ui/button";
 import { BriefForm } from "@/features/campaign/BriefForm";
+import { CampaignPageShell } from "@/features/campaign/CampaignPageShell";
 import { CampaignStep } from "@/features/campaign/CampaignStep";
-import {
-  activeCampaignStep,
-  CampaignStepNav,
-} from "@/features/campaign/CampaignStepNav";
+import { activeCampaignStep } from "@/features/campaign/CampaignStepNav";
 import {
   CampaignErrorState,
   CampaignLoadingState,
@@ -25,7 +22,6 @@ import { briefFromCampaign, campaignGateState } from "@/features/campaign/lib";
 import type { CampaignProps } from "@/features/campaign/types";
 import { useCampaign } from "@/features/campaign/useCampaign";
 import { useCampaignFixture } from "@/features/campaign/useCampaignFixture";
-import { useCreateCampaign } from "@/features/campaign/useCreateCampaign";
 
 export function Campaign({
   campaign,
@@ -59,8 +55,6 @@ export function Campaign({
   onCompile,
   onGenerate,
   onRetry,
-  onNewCampaign,
-  newCampaignInFlight = false,
 }: CampaignProps): ReactElement {
   const fixture = useCampaignFixture(
     campaign,
@@ -169,23 +163,25 @@ export function Campaign({
   };
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-[720px] flex-col gap-4 bg-canvas-subtle px-8 py-6">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-title text-fg">Campaign</h1>
-        {onNewCampaign !== undefined ? (
-          <Button
-            type="button"
-            className="h-8 shrink-0 rounded-md px-4"
-            disabled={newCampaignInFlight}
-            onClick={() => {
-              void onNewCampaign();
-            }}
-          >
-            New campaign
-          </Button>
-        ) : null}
-      </div>
-      <CampaignStepNav activeStep={activeStep} />
+    <CampaignPageShell
+      activeStep={activeStep}
+      generateFooter={
+        !s3Dimmed ? (
+          <div className="sticky bottom-0 border-t border-border bg-canvas">
+            <div className="mx-auto max-w-[720px] px-8 py-4">
+              <GenerateBlock
+                compileResult={compileResult}
+                dimmed={s3Dimmed}
+                disabled={generateDisabled}
+                disabledCaption={generateCaption}
+                generateInFlight={generateInFlight}
+                onGenerate={handleGenerate}
+              />
+            </div>
+          </div>
+        ) : null
+      }
+    >
       <CampaignStep
         title="Brief"
         subtitle="Step 1 — paste and structure the brief."
@@ -230,26 +226,14 @@ export function Campaign({
         dimmed={s3Dimmed}
         collapsed={s3Dimmed}
         sectionId="campaign-generate"
-      >
-        <div className="sticky bottom-0 -mx-8 border-t border-border bg-canvas px-8 py-4">
-          <GenerateBlock
-            compileResult={compileResult}
-            dimmed={s3Dimmed}
-            disabled={generateDisabled}
-            disabledCaption={generateCaption}
-            generateInFlight={generateInFlight}
-            onGenerate={handleGenerate}
-          />
-        </div>
-      </CampaignStep>
-    </div>
+      />
+    </CampaignPageShell>
   );
 }
 
 export function CampaignRoute(): ReactElement {
   const { campaignId } = useParams<{ campaignId: string }>();
   const hook = useCampaign(campaignId);
-  const { createInFlight, createCampaignAndGo } = useCreateCampaign();
 
   if (hook.notFound) {
     return <CampaignNotFoundState />;
@@ -310,10 +294,6 @@ export function CampaignRoute(): ReactElement {
       onGenerate={() => {
         void hook.generate();
       }}
-      onNewCampaign={() => {
-        void createCampaignAndGo();
-      }}
-      newCampaignInFlight={createInFlight}
     />
   );
 }

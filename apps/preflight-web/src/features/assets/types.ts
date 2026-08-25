@@ -38,7 +38,6 @@ export interface AssetsListProps {
   view?: AssetsListView;
   pollError?: boolean;
   onRetry?: () => void;
-  onNewCampaign?: () => void;
   showLoadingSpinner?: boolean;
 }
 

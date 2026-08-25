@@ -10,7 +10,6 @@ import type { AssetListItemDTO } from "@preflight/schemas";
 import { getAssetsService } from "@/features/assets/assets.service";
 import type { AssetsListView } from "@/features/assets/types";
 import { usePendingPoll } from "@/features/assets/usePendingPoll";
-import { useCreateCampaign } from "@/features/campaign/useCreateCampaign";
 import { useDelayedLoading } from "@/features/shell/useDelayedLoading";
 import { ApiClientError } from "@/lib/api";
 
@@ -20,9 +19,7 @@ export function useAssetsList(): {
   pollError: boolean;
   showLoadingSpinner: boolean;
   retry: () => void;
-  createCampaignAndGo: () => Promise<void>;
 } {
-  const { createCampaignAndGo } = useCreateCampaign();
   const [assets, setAssets] = useState<AssetListItemDTO[]>([]);
   const [view, setView] = useState<AssetsListView>("loading");
   const [pollError, setPollError] = useState<boolean>(false);
@@ -91,6 +88,5 @@ export function useAssetsList(): {
     pollError,
     showLoadingSpinner,
     retry,
-    createCampaignAndGo,
   };
 }

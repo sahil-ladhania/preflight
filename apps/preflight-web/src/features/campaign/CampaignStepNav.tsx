@@ -27,7 +27,7 @@ export function CampaignStepNav({
   return (
     <nav
       aria-label="Campaign steps"
-      className="sticky top-0 z-10 -mx-8 flex gap-8 border-b border-border bg-canvas-subtle px-8 py-2"
+      className="sticky top-0 z-10 flex gap-8 border-b border-border bg-canvas px-4 py-2"
     >
       {STEPS.map((step) => (
         <button
