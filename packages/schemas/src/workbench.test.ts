@@ -114,6 +114,47 @@ describe("ExplainerOutputSchema", () => {
     expect(coerced.brief).toBeUndefined();
   });
 
+  it("accepts suggestedAction compile and generate", () => {
+    expect(
+      ExplainerOutputSchema.parse({
+        message: "Save, then freeze constraints.",
+        ruleIds: ["SEBI-01"],
+        suggestedAction: "compile",
+      }).suggestedAction,
+    ).toBe("compile");
+    expect(
+      ExplainerOutputSchema.parse({
+        message: "Ready to generate copy.",
+        ruleIds: [],
+        suggestedAction: "generate",
+      }).suggestedAction,
+    ).toBe("generate");
+  });
+
+  it("strips brief on coerce for compile and generate", () => {
+    const compileCoerced = coerceExplainerOutput(
+      ExplainerOutputSchema.parse({
+        message: "Freeze next.",
+        ruleIds: [],
+        suggestedAction: "compile",
+        brief: { schemeName: "Bluepeak Flexi Cap Fund" },
+      }),
+    );
+    expect(compileCoerced.suggestedAction).toBe("compile");
+    expect(compileCoerced.brief).toBeUndefined();
+
+    const generateCoerced = coerceExplainerOutput(
+      ExplainerOutputSchema.parse({
+        message: "Generate next.",
+        ruleIds: [],
+        suggestedAction: "generate",
+        brief: { schemeName: "Bluepeak Flexi Cap Fund" },
+      }),
+    );
+    expect(generateCoerced.suggestedAction).toBe("generate");
+    expect(generateCoerced.brief).toBeUndefined();
+  });
+
   it("rejects unknown suggestedAction", () => {
     expect(() =>
       ExplainerOutputSchema.parse({

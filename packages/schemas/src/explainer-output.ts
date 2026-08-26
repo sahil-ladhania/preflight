@@ -11,6 +11,8 @@ import { PerformanceFigureSchema } from "./primitives.js"
 
 export const ExplainerSuggestedActionSchema = z.enum([
   "handoff_campaign",
+  "compile",
+  "generate",
   "none",
 ])
 

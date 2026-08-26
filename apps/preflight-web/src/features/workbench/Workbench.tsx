@@ -33,6 +33,7 @@ export function Workbench({
   onSend,
   onGoToCampaign,
   onStartCampaignFromConversation,
+  journey,
 }: WorkbenchProps): ReactElement {
   const { enqueue } = useToastContext();
   const fixture = useWorkbenchFixture({
@@ -127,6 +128,7 @@ export function Workbench({
               onSearchQueryChange={
                 onSearchQueryChange ?? fixture.setSearchQuery
               }
+              journey={journey}
             />
             <div className="shrink-0 border-t border-border p-4 sm:px-6">
               {composer}
@@ -163,6 +165,7 @@ export function WorkbenchRoute(): ReactElement {
       onStartCampaignFromConversation={() => {
         void hook.startCampaignFromConversation();
       }}
+      journey={hook.journey}
     />
   );
 }

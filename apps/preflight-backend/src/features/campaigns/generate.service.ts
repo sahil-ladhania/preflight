@@ -19,6 +19,7 @@ import { kitFingerprint } from "../../lib/brand-kit.js";
 import { getPackageMatch } from "../../lib/catalog.js";
 import { InternalError, NotFoundError, ValidationError } from "../../lib/http-error.js";
 import { prisma } from "../../lib/prisma.js";
+import { unionSkillsRead } from "./generate-agent.js";
 import { prepareChannelForGenerate } from "./generate-prepare.js";
 import { loadRegenRevisionContext } from "./generate-revision.js";
 import type { RegenRevisionInput } from "../../../agents/generator.prompt.js";
@@ -202,5 +203,6 @@ export async function generateAssets(
       id: assetIds[index] ?? "",
       channel: row.channel,
     })),
+    skillsRead: unionSkillsRead(prepared.map((row) => row.skillsRead)),
   };
 }

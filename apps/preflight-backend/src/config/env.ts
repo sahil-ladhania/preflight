@@ -13,6 +13,7 @@ const envSchema = z.object({
   OPENAI_API_KEY: z.string().min(1),
   OPENAI_MODEL: z.string().min(1).optional(),
   DEMO_OPERATOR_NAME: z.string().min(1),
+  PREFLIGHT_SKILL_DUMP: z.enum(["0", "1"]).optional(),
 });
 
 export const env = envSchema.parse(process.env);

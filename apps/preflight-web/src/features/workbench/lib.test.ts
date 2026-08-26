@@ -12,6 +12,7 @@ import {
   handoffBriefFromMessages,
   handoffEnabled,
   seedProposalFromExplainer,
+  toChatHistory,
 } from "@/features/workbench/lib";
 import type { WorkbenchMessage } from "@/features/workbench/types";
 
@@ -71,6 +72,24 @@ describe("handoffEnabled", () => {
     ];
     expect(handoffEnabled(messages)).toBe(true);
     expect(handoffBriefFromMessages(messages)).toEqual(completeBrief);
+  });
+});
+
+describe("toChatHistory", () => {
+  it("omits journey cards from explainer history", () => {
+    const messages: WorkbenchMessage[] = [
+      { id: "user-1", role: "user", text: "First turn" },
+      assistantMessage({ text: "Reply" }),
+      {
+        id: "extract-1",
+        role: "journey_extract",
+        proposal: { objective: "Launch" },
+      },
+    ];
+    expect(toChatHistory(messages)).toEqual([
+      { role: "user", content: "First turn" },
+      { role: "assistant", content: "Reply" },
+    ]);
   });
 });
 

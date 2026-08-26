@@ -32,7 +32,9 @@ export function buildExplainerPrompt(input: ExplainerPromptInput): string {
     "When the operator describes a campaign, interview them: gather every StructuredBrief field from the full conversation before handoff.",
     "Ask one missing required field at a time. Accept 'none' for performance figures and claims (use empty arrays).",
     "Set suggestedAction to handoff_campaign only when you include a complete brief object in JSON.",
-    "Omit the brief key entirely until handoff — do not emit partial brief objects during the interview.",
+    "After the operator has a campaign, you may propose suggestedAction compile or generate — never execute compile or generate yourself.",
+    "ruleIds are catalog citations only — never freeze/compile ids.",
+    "Omit the brief key entirely unless suggestedAction is handoff_campaign.",
     "",
     ...formatHistory(input.history ?? []),
     "Question:",
@@ -41,7 +43,7 @@ export function buildExplainerPrompt(input: ExplainerPromptInput): string {
     "Rule catalog:",
     ...catalogLines,
     "",
-    'Respond JSON only: {"message":"...","ruleIds":[],"suggestedAction":"handoff_campaign"|"none","brief":{...}}',
+    'Respond JSON only: {"message":"...","ruleIds":[],"suggestedAction":"handoff_campaign"|"compile"|"generate"|"none","brief":{...}}',
     "Include brief only on the handoff turn when every required field is known.",
   ].join("\n");
 }

@@ -14,6 +14,7 @@ import { ensureSebi01Disclaimer } from "./generate-disclaimer.js";
 export interface PreparedChannel {
   channel: Channel;
   output: GeneratorOutput;
+  skillsRead: string[];
   canonicalText: string;
   fieldOffsets: ReturnType<typeof buildCanonicalText>["fieldOffsets"];
   runHash: string;
@@ -41,14 +42,14 @@ export async function prepareChannelForGenerate(input: {
   sebi01Pinned: boolean;
   revisionContext?: RegenRevisionInput;
 }): Promise<PreparedChannel> {
-  const rawOutput = await callGenerator({
+  const raw = await callGenerator({
     channel: input.channel,
     brief: input.structuredBrief,
     rules: input.ruleWordings,
     pinnedDetRuleIds: input.pinnedDetRuleIds,
     revisionContext: input.revisionContext,
   });
-  const output = ensureSebi01Disclaimer(rawOutput, input.sebi01Pinned);
+  const output = ensureSebi01Disclaimer(raw.output, input.sebi01Pinned);
   const { canonicalText, fieldOffsets } = buildCanonicalText(output);
   const { findings } = runDeterministicSafe(canonicalText, input.detRules);
   const matcherOutputs = findings.map((finding) => ({
@@ -65,6 +66,7 @@ export async function prepareChannelForGenerate(input: {
   return {
     channel: input.channel,
     output,
+    skillsRead: raw.skillsRead,
     canonicalText,
     fieldOffsets,
     runHash,

@@ -16,7 +16,10 @@ import {
   type RegenRevisionInput,
 } from "../../../agents/generator.prompt.js";
 import { InternalError } from "../../lib/http-error.js";
-import { resolveGeneratorSkillNames } from "../../lib/agent-skills.js";
+import {
+  resolveGeneratorSkillNames,
+  skillFilePath,
+} from "../../lib/agent-skills.js";
 import { loadBrandKit } from "../../lib/brand-kit.js";
 
 function stripJsonFence(content: string): string {
@@ -33,14 +36,36 @@ export interface CallGeneratorInput {
   revisionContext?: RegenRevisionInput;
 }
 
+export interface CallGeneratorResult {
+  output: GeneratorOutput;
+  skillsRead: string[];
+}
+
+export function unionSkillsRead(groups: string[][]): string[] {
+  const seen = new Set<string>();
+  const merged: string[] = [];
+
+  for (const group of groups) {
+    for (const path of group) {
+      if (!seen.has(path)) {
+        seen.add(path);
+        merged.push(path);
+      }
+    }
+  }
+
+  return merged;
+}
+
 export async function callGenerator(
   input: CallGeneratorInput,
-): Promise<GeneratorOutput> {
+): Promise<CallGeneratorResult> {
   try {
     const detHintLines = buildGeneratorHintLines(input.pinnedDetRuleIds, {
       schemeName: input.brief.schemeName,
       performanceFigures: input.brief.performanceFigures,
     });
+    const inScope = resolveGeneratorSkillNames(input.channel);
     const prompt = buildGeneratorPrompt({
       channel: input.channel,
       brief: input.brief,
@@ -48,13 +73,20 @@ export async function callGenerator(
       rules: input.rules,
       detHintLines,
       revisionContext: input.revisionContext,
+      inScopeSkillPaths: inScope.map(skillFilePath),
     });
     const { runAgent } = await import("../../lib/gitagent.js");
-    const { content } = await runAgent("generator", prompt, {
-      skillNames: resolveGeneratorSkillNames(input.channel),
+    const { content, skillsRead } = await runAgent("generator", prompt, {
+      skillNames: inScope,
     });
+    if (skillsRead.length === 0) {
+      console.info("no skill read", { channel: input.channel });
+    }
     const parsed: unknown = JSON.parse(stripJsonFence(content));
-    return GeneratorOutputSchema.parse(parsed);
+    return {
+      output: GeneratorOutputSchema.parse(parsed),
+      skillsRead,
+    };
   } catch {
     throw new InternalError("Generate failed.");
   }

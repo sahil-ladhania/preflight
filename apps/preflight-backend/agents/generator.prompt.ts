@@ -23,10 +23,19 @@ export interface GeneratorPromptInput {
   rules: Array<{ ruleId: string; kind: RuleKind; wording: string }>;
   detHintLines: string[];
   revisionContext?: RegenRevisionInput;
+  inScopeSkillPaths: string[];
+}
+
+function buildMustReadSkillsSection(paths: string[]): string[] {
+  return [
+    "Must-read in-scope skills via the read tool BEFORE emitting JSON:",
+    ...paths.map((path) => `- ${path}`),
+    "Do not emit JSON until those files have been read. Optional yaml skills may be read if relevant.",
+  ];
 }
 
 const BINDING_SKILLS_INSTRUCTION =
-  "Your system prompt includes brand-voice, sebi-copy-constraints, and the active channel skill. Treat them as binding layout and voice rules. The read tool may refresh skill text; do not skip them.";
+  "In-scope skills (brand-voice, sebi-copy-constraints, active channel skill) are binding layout and voice rules. Read their SKILL.md files via the read tool before JSON.";
 
 function buildChannelConstraintsSection(
   channel: Channel,
@@ -80,6 +89,8 @@ export function buildGeneratorPrompt(input: GeneratorPromptInput): string {
     `Required disclaimer (use verbatim in disclaimer field): ${input.brandKit.requiredDisclaimer}`,
     "",
     BINDING_SKILLS_INSTRUCTION,
+    "",
+    ...buildMustReadSkillsSection(input.inScopeSkillPaths),
     "",
     "Structured brief:",
     JSON.stringify(input.brief, null, 2),

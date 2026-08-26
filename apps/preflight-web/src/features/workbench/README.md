@@ -13,5 +13,11 @@ Ask a question about the rules. The reply is a comment thread, not chat bubbles,
 | `lib.ts` | Catalog filter and message id generation helpers. |
 | `types.ts` | Feature props and local view shapes. |
 | `useWorkbench.ts` | POST /workbench/chat; prefetches GET /rules for cards. |
+| `JourneyActions.tsx` | In-thread Save, Freeze, Generate using campaign HTTP. |
+| `ExtractResultCard.tsx` | Dashed extract field summary after handoff. |
+| `FreezeResultCard.tsx` | Frozen rule count, applicability, short hash. |
+| `GenerateResultCard.tsx` | Asset links plus generator `skillsRead` or `no skill read`. |
+| `useWorkbenchJourney.ts` | Stay-on-Workbench extract → save → freeze → generate. |
+| `journey.ts` | Journey captions and campaign hydrate helpers. |
 | `useWorkbenchFixture.ts` | Local chat state for design-proof Workbench demos. |
 | `workbench.service.ts` | Workbench chat HTTP via the shared api client. |

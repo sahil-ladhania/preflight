@@ -8,10 +8,14 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 import {
+  buildAgentSkillSuffix,
+  buildSkillCatalogSuffix,
   buildSkillPromptSuffix,
+  extractReadPath,
   loadSkillBodiesForSuffix,
   readAgentSkillNames,
   resolveGeneratorSkillNames,
+  skillFilePath,
 } from "./agent-skills.js";
 
 const libDir = fileURLToPath(new URL(".", import.meta.url));
@@ -88,6 +92,68 @@ test("loadSkillBodiesForSuffix binding header when binding option set", async ()
 
   assert.match(suffix, /Binding skills for this call/);
   assert.doesNotMatch(suffix, /also loadable via read tool/);
+});
+
+test("buildSkillCatalogSuffix lists in-scope must-read and optional paths", () => {
+  const suffix = buildSkillCatalogSuffix(
+    ["brand-voice", "sebi-copy-constraints", "channel-email"],
+    ["channel-tiktok"],
+  );
+
+  assert.match(suffix, /In-scope \(must read before answering\)/);
+  assert.match(suffix, /brand-voice → skills\/brand-voice\/SKILL.md/);
+  assert.match(suffix, /Optional \(read if relevant\)/);
+  assert.match(suffix, /channel-tiktok → skills\/channel-tiktok\/SKILL.md/);
+  assert.doesNotMatch(suffix, /Binding skills for this call/);
+});
+
+test("buildAgentSkillSuffix catalogs tiktok as optional for email in-scope", async () => {
+  const suffix = await buildAgentSkillSuffix(
+    generatorDir,
+    resolveGeneratorSkillNames("email"),
+    false,
+  );
+
+  assert.match(suffix, /channel-email → skills\/channel-email\/SKILL.md/);
+  assert.match(suffix, /Optional \(read if relevant\)/);
+  assert.match(suffix, /channel-tiktok → skills\/channel-tiktok\/SKILL.md/);
+  assert.doesNotMatch(suffix, /Skill: brand-voice/);
+});
+
+test("buildAgentSkillSuffix dump inlines in-scope bodies only", async () => {
+  const suffix = await buildAgentSkillSuffix(
+    generatorDir,
+    resolveGeneratorSkillNames("email"),
+    true,
+  );
+
+  assert.match(suffix, /Binding skills for this call/);
+  assert.match(suffix, /Skill: channel-email/);
+  assert.doesNotMatch(suffix, /Skill: channel-tiktok/);
+});
+
+test("extractReadPath records read tool paths", () => {
+  assert.equal(
+    extractReadPath({
+      type: "tool_use",
+      name: "read",
+      input: { path: "skills/brand-voice/SKILL.md" },
+    }),
+    "skills/brand-voice/SKILL.md",
+  );
+  assert.equal(
+    extractReadPath({
+      type: "tool_use",
+      toolName: "read",
+      args: { path: " skills/channel-email/SKILL.md " },
+    }),
+    "skills/channel-email/SKILL.md",
+  );
+  assert.equal(
+    extractReadPath({ type: "tool_use", name: "write", input: { path: "x" } }),
+    null,
+  );
+  assert.equal(skillFilePath("brand-voice"), "skills/brand-voice/SKILL.md");
 });
 
 test("channel-filtered suffix loads active channel skill only", async () => {

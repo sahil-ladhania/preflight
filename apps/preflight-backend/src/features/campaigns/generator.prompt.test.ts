@@ -21,6 +21,12 @@ const SAMPLE_BRIEF: StructuredBriefInput = {
   claims: ["Market-leading flexibility"],
 };
 
+const EMAIL_SKILL_PATHS = [
+  "skills/brand-voice/SKILL.md",
+  "skills/sebi-copy-constraints/SKILL.md",
+  "skills/channel-email/SKILL.md",
+];
+
 const CHANNEL_HEADLINE_CAPS: Record<Channel, number> = {
   email: 80,
   linkedin: 120,
@@ -37,6 +43,7 @@ for (const [channel, maxHeadlineChars] of Object.entries(CHANNEL_HEADLINE_CAPS))
       brandKit: loadBrandKit(),
       rules: [{ ruleId: "SEBI-01", kind: "deterministic", wording: "Include disclaimer." }],
       detHintLines: [],
+      inScopeSkillPaths: EMAIL_SKILL_PATHS,
     });
 
     assert.match(prompt, new RegExp(`maxHeadlineChars: ${maxHeadlineChars}`));
@@ -51,9 +58,11 @@ test("buildGeneratorPrompt uses binding skills language not optional read", () =
     brandKit: loadBrandKit(),
     rules: [],
     detHintLines: [],
+    inScopeSkillPaths: EMAIL_SKILL_PATHS,
   });
 
-  assert.match(prompt, /Treat them as binding layout and voice rules/);
+  assert.match(prompt, /Read their SKILL.md files via the read tool before JSON/);
+  assert.match(prompt, /skills\/brand-voice\/SKILL.md/);
   assert.doesNotMatch(prompt, /when helpful/i);
   assert.doesNotMatch(prompt, /Channel tone:/);
 });
@@ -66,6 +75,7 @@ test("buildGeneratorPrompt keeps full kit JSON and required disclaimer", () => {
     brandKit,
     rules: [],
     detHintLines: [],
+    inScopeSkillPaths: EMAIL_SKILL_PATHS,
   });
 
   assert.match(prompt, /"kitId": "bluepeak-v1"/);

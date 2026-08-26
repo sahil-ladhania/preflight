@@ -86,5 +86,5 @@ Models never pick compile `ruleIds`. Deterministic matchers never sit on the age
 ## Read next
 
 - [README](README.md) — run locally
-- [Walkthrough](https://www.loom.com/share/YOUR_LOOM_ID)
+- [Walkthrough](https://www.loom.com/share/2e1dccfde6b740f1a604ed5cb3e4b906)
 

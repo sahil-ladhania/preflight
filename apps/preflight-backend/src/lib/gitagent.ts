@@ -8,10 +8,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { env } from "../config/env.js";
-import {
-  buildSkillPromptSuffix,
-  loadSkillBodiesForSuffix,
-} from "./agent-skills.js";
+import { buildAgentSkillSuffix, extractReadPath } from "./agent-skills.js";
 import { getAgentToolPolicy } from "./agent-tool-policy.js";
 import { createReadTool } from "./agent-tools.js";
 import {
@@ -23,12 +20,14 @@ export type AgentName = "extractor" | "generator" | "judge" | "explainer";
 
 export interface RunAgentResult {
   content: string;
+  skillsRead: string[];
   usage?: GCAssistantMessage["usage"];
 }
 
 export interface RunAgentOptions {
   timeoutMs?: number;
   skillNames?: string[];
+  skillLoad?: "catalog" | "dump";
 }
 
 const DEFAULT_TIMEOUT_MS = 60_000;
@@ -51,10 +50,21 @@ async function collectAssistantContent(
   options: CollectOptions,
 ): Promise<RunAgentResult> {
   let lastAssistant: GCAssistantMessage | null = null;
+  const skillsRead: string[] = [];
 
   for await (const message of stream) {
-    if (message.type === "tool_use" && !options.allowToolStream) {
-      throw new Error("Agent attempted tool use.");
+    if (message.type === "tool_use") {
+      if (!options.allowToolStream) {
+        throw new Error("Agent attempted tool use.");
+      }
+
+      const readPath = extractReadPath(message);
+      if (readPath !== null) {
+        skillsRead.push(readPath);
+        if (env.NODE_ENV === "development") {
+          console.info("gitagent read:", readPath);
+        }
+      }
     }
 
     if (message.type === "system" && message.subtype === "error") {
@@ -84,19 +94,9 @@ async function collectAssistantContent(
 
   return {
     content: lastAssistant.content,
+    skillsRead,
     usage: lastAssistant.usage,
   };
-}
-
-async function resolveSkillSuffix(
-  agentDir: string,
-  skillNames: string[] | undefined,
-): Promise<string> {
-  if (skillNames !== undefined) {
-    return loadSkillBodiesForSuffix(agentDir, skillNames, { binding: true });
-  }
-
-  return buildSkillPromptSuffix(agentDir);
 }
 
 function resolveTools(
@@ -110,6 +110,16 @@ function resolveTools(
   return [createReadTool(agentDir)];
 }
 
+function resolveDump(options: RunAgentOptions): boolean {
+  if (options.skillLoad === "dump") {
+    return true;
+  }
+  if (options.skillLoad === "catalog") {
+    return false;
+  }
+  return env.PREFLIGHT_SKILL_DUMP === "1";
+}
+
 export async function runAgent(
   name: AgentName,
   prompt: string,
@@ -120,7 +130,7 @@ export async function runAgent(
   const runtime = await readAgentRuntimeConfig(agentDir);
   const policy = getAgentToolPolicy(name);
   const skillSuffix = policy.allowReadTool
-    ? await resolveSkillSuffix(agentDir, options.skillNames)
+    ? await buildAgentSkillSuffix(agentDir, options.skillNames, resolveDump(options))
     : "";
   const basePrompt = await buildAgentSystemPrompt(agentDir);
   const systemPrompt =

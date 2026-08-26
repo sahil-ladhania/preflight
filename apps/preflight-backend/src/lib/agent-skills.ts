@@ -1,6 +1,6 @@
 /**
- * agent-skills — parse yaml skill list and load SKILL.md bodies.
- * Why: doc 19 §7 fallback suffix when model skips read tool.
+ * agent-skills — yaml skill list, catalog suffix, optional body dump.
+ * Why: happy path is read; PREFLIGHT_SKILL_DUMP=1 dumps bodies.
  */
 import type { Channel } from "@preflight/schemas";
 import { readFile } from "node:fs/promises";
@@ -18,6 +18,82 @@ const GENERATOR_CHANNEL_SKILL: Record<Channel, string> = {
 
 export function resolveGeneratorSkillNames(channel: Channel): string[] {
   return [...GENERATOR_BASE_SKILLS, GENERATOR_CHANNEL_SKILL[channel]];
+}
+
+export function skillFilePath(name: string): string {
+  return `skills/${name}/SKILL.md`;
+}
+
+export function extractReadPath(message: unknown): string | null {
+  if (typeof message !== "object" || message === null) {
+    return null;
+  }
+
+  const record = message as Record<string, unknown>;
+  if (record.type !== "tool_use") {
+    return null;
+  }
+
+  const toolName = record.name ?? record.toolName;
+  if (toolName !== "read" && toolName !== undefined) {
+    return null;
+  }
+
+  const input = record.input ?? record.args ?? record.arguments;
+  if (typeof input !== "object" || input === null) {
+    return null;
+  }
+
+  const path = (input as { path?: unknown }).path;
+  return typeof path === "string" && path.trim().length > 0 ? path.trim() : null;
+}
+
+export function buildSkillCatalogSuffix(
+  inScope: string[],
+  optional: string[] = [],
+): string {
+  if (inScope.length === 0 && optional.length === 0) {
+    return "";
+  }
+
+  const lines: string[] = [
+    "## Skills (load via read — bodies are not inlined)",
+    "Call read with the relative path before using a skill.",
+  ];
+
+  if (inScope.length > 0) {
+    lines.push("", "In-scope (must read before answering):");
+    for (const name of inScope) {
+      lines.push(`- ${name} → ${skillFilePath(name)}`);
+    }
+  }
+
+  if (optional.length > 0) {
+    lines.push("", "Optional (read if relevant):");
+    for (const name of optional) {
+      lines.push(`- ${name} → ${skillFilePath(name)}`);
+    }
+  }
+
+  return lines.join("\n");
+}
+
+export async function buildAgentSkillSuffix(
+  agentDir: string,
+  skillNames: string[] | undefined,
+  dump: boolean,
+): Promise<string> {
+  const yamlNames = await readAgentSkillNames(agentDir);
+  const inScope = skillNames ?? yamlNames;
+  const inScopeSet = new Set(inScope);
+  const optional = yamlNames.filter((name) => !inScopeSet.has(name));
+
+  if (dump) {
+    const dumpNames = skillNames !== undefined ? inScope : yamlNames;
+    return loadSkillBodiesForSuffix(agentDir, dumpNames, { binding: true });
+  }
+
+  return buildSkillCatalogSuffix(inScope, optional);
 }
 
 function parseYamlSkillNames(manifestRaw: string): string[] {

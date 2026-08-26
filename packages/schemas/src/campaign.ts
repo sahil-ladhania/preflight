@@ -88,6 +88,7 @@ export type GenerateResponseItem = z.infer<typeof GenerateResponseItemSchema>
 
 export const GenerateResponseDTOSchema = z.object({
   assets: z.array(GenerateResponseItemSchema).min(1),
+  skillsRead: z.array(z.string().min(1)),
 })
 export type GenerateResponseDTO = z.infer<typeof GenerateResponseDTOSchema>
 

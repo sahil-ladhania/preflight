@@ -39,7 +39,7 @@ flowchart LR
 
 ## Demo
 
-[Watch the walkthrough](https://www.loom.com/share/YOUR_LOOM_ID)
+[Watch the walkthrough](https://www.loom.com/share/2e1dccfde6b740f1a604ed5cb3e4b906)
 
 Workbench → campaign → generate → ledger. Seeded assets show the review states.
 

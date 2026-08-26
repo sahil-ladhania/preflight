@@ -2,7 +2,7 @@
  * useWorkbench — Workbench chat state.
  * Why: POST /workbench/chat; prefetch GET /rules for cards.
  */
-// size: handoff + multi-turn chat co-located per 19 §9; extract splits poorly.
+// size: prefetch + chat + journey wiring share one hook; extract splits poorly.
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -19,9 +19,9 @@ import {
   replaceMessageById,
   toChatHistory,
 } from "@/features/workbench/lib";
-import { runWorkbenchExtractHandoff } from "@/features/workbench/handoff.service";
 import { sendWorkbenchChatService } from "@/features/workbench/workbench.service";
-import type { WorkbenchMessage } from "@/features/workbench/types";
+import type { WorkbenchJourneyView, WorkbenchMessage } from "@/features/workbench/types";
+import { useWorkbenchJourney } from "@/features/workbench/useWorkbenchJourney";
 import { ApiClientError } from "@/lib/api";
 
 const PREFETCH_FAIL_TOAST = "Could not load rules catalog.";
@@ -41,6 +41,7 @@ export function useWorkbench(): {
   send: () => Promise<void>;
   goToCampaign: () => Promise<void>;
   startCampaignFromConversation: () => Promise<void>;
+  journey: WorkbenchJourneyView;
 } {
   const navigate = useNavigate();
   const { enqueue } = useToastContext();
@@ -49,11 +50,32 @@ export function useWorkbench(): {
   const [messages, setMessages] = useState<WorkbenchMessage[]>([]);
   const [composerText, setComposerText] = useState<string>("");
   const [sendInFlight, setSendInFlight] = useState<boolean>(false);
-  const [handoffInFlight, setHandoffInFlight] = useState<boolean>(false);
   const [showSearchFallback, setShowSearchFallback] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const abortRef = useRef<AbortController | null>(null);
   const prefetchToastShown = useRef<boolean>(false);
+
+  const toastApiError = useCallback(
+    (error: unknown): void => {
+      if (error instanceof ApiClientError && error.kind === "abort") {
+        return;
+      }
+      if (error instanceof ApiClientError) {
+        enqueue(error.apiError ?? error.message);
+        return;
+      }
+      if (error instanceof Error) {
+        enqueue(error.message);
+      }
+    },
+    [enqueue],
+  );
+
+  const journey = useWorkbenchJourney({
+    messages,
+    setMessages,
+    toastApiError,
+  });
 
   useEffect(() => {
     abortRef.current?.abort();
@@ -89,22 +111,6 @@ export function useWorkbench(): {
       controller.abort();
     };
   }, [enqueue]);
-
-  const toastApiError = useCallback(
-    (error: unknown): void => {
-      if (error instanceof ApiClientError && error.kind === "abort") {
-        return;
-      }
-      if (error instanceof ApiClientError) {
-        enqueue(error.apiError ?? error.message);
-        return;
-      }
-      if (error instanceof Error) {
-        enqueue(error.message);
-      }
-    },
-    [enqueue],
-  );
 
   const send = useCallback(async (): Promise<void> => {
     const text = composerText.trim();
@@ -170,6 +176,11 @@ export function useWorkbench(): {
   }, [composerText, messages, sendInFlight, toastApiError]);
 
   const goToCampaign = useCallback(async (): Promise<void> => {
+    if (journey.journeyCampaignId !== null) {
+      void navigate(`/campaign/${journey.journeyCampaignId}`);
+      return;
+    }
+
     const controller = new AbortController();
 
     try {
@@ -178,33 +189,7 @@ export function useWorkbench(): {
     } catch (error: unknown) {
       toastApiError(error);
     }
-  }, [navigate, toastApiError]);
-
-  const startCampaignFromConversation = useCallback(async (): Promise<void> => {
-    if (handoffInFlight || !handoffEnabled(messages)) {
-      return;
-    }
-
-    const controller = new AbortController();
-    setHandoffInFlight(true);
-
-    try {
-      const { campaignId, freeText, proposal } =
-        await runWorkbenchExtractHandoff(messages, controller.signal);
-      void navigate(`/campaign/${campaignId}`, {
-        state: {
-          handoff: {
-            proposal,
-            freeText,
-          },
-        },
-      });
-    } catch (error: unknown) {
-      toastApiError(error);
-    } finally {
-      setHandoffInFlight(false);
-    }
-  }, [handoffInFlight, messages, navigate, toastApiError]);
+  }, [journey.journeyCampaignId, navigate, toastApiError]);
 
   return {
     rules,
@@ -212,7 +197,7 @@ export function useWorkbench(): {
     messages,
     composerText,
     sendInFlight,
-    handoffInFlight,
+    handoffInFlight: journey.handoffInFlight,
     handoffEnabled: handoffEnabled(messages),
     showSearchFallback,
     searchQuery,
@@ -220,6 +205,7 @@ export function useWorkbench(): {
     setSearchQuery,
     send,
     goToCampaign,
-    startCampaignFromConversation,
+    startCampaignFromConversation: journey.startCampaignFromConversation,
+    journey: journey.view,
   };
 }
