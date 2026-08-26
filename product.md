@@ -13,6 +13,7 @@ Enterprise marketing in a regulated category stalls on **proof**, not on writing
 | -------------------------------------- | ------------------------------------- |
 | Pre-submit compliance and brand review | Localization fan-out                  |
 | Brief → structured intake              | Stakeholder inbox / idle-wait routing |
+| Record around the ledger               | Certification theatre — SOC 2, SSO, legal filing |
 
 
 A homepage agent starts the campaign. Compile and the ledger stay code. That is **agentic UX, non-agentic proof**.
@@ -34,14 +35,14 @@ flowchart LR
 
 | Step      | What happens                                                     |
 | --------- | ---------------------------------------------------------------- |
-| Workbench | GitAgent explainer. **Start campaign** runs extract.             |
-| Brief     | Operator reviews the structured brief and saves.                 |
+| Workbench | GitAgent interviews for a structured brief; handoff runs extract only when every required field is captured. |
+| Brief     | Operator reviews the brief; **Build it** runs save → freeze → generate in one chain, or step-by-step. |
 | Freeze    | Code compiles which rules apply. Wording is snapshotted.         |
 | Generate  | GitAgent writes copy under that freeze and a Bluepeak brand kit. |
 | Ledger    | Every asset has rule id, pass or fail, span, frozen wording.     |
 
 
-Channel **previews** are the same four fields in a kit frame. Proof is still `canonicalText`. **Ready for compliance desk** names the next human. It is not multiplayer review.
+Channel **previews** are the same four fields in a kit frame. Proof is still `canonicalText`. On asset detail, **Verify deterministic checks** re-runs frozen rules read-only and surfaces rulebook drift since freeze — pass/fail on the asset does not change. **Ready for compliance desk** names the next human. It is not multiplayer review.
 
 ## Split
 
@@ -72,13 +73,23 @@ Models never pick compile `ruleIds`. Deterministic matchers never sit on the age
 - **Override** — the machine misread. Not an exception. Forbidden on deterministic fails.
 - **Waive** — the machine is right, ship anyway. Both readings stay. Chip is Exception, never Clear.
 
+## Around the ledger
 
+The ledger is the proof. These are the records that sit around it:
+
+- Every AI call is logged — which agent, which model, how long, how many tokens. The asset shows who generated the copy.
+- Judge runs are locked for consistency; evals check the system still passes known cases.
+- Confirm, override, and waive each leave a history — who decided, when, and why, not just the latest chip.
+- Rulebook edits require a reason; old wording stays on record.
+- If a brief tries to override instructions, it is flagged and logged — nothing is silently fixed.
+- Export a compliance report as JSON — freeze, findings, exceptions, and run details in one file.
 
 ## Not this
 
 - Auth, tenants, or a compliance department.
 - Jasper's full surface (blogs, SEO, 40 templates).
 - Legal filing. Human `clear` is the audit *shape*.
+- SOC 2, a model-risk programme, or PII redaction. Shape of a trail, not a certification.
 - N locales as one feature. Each locale is another asset.
 
 

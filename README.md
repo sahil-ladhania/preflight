@@ -28,6 +28,7 @@ I took pre-submit compliance and brand, plus brief intake — not a copywriter.
 - Compile freezes the rules that apply. Generate runs under that freeze.
 - Every asset arrives with a rule-by-rule ledger: id, pass or fail, span, wording.
 - Review is spot-checking that ledger, not rebuilding the evidence.
+- The ledger sits in a record: who generated, who decided, which wording — exportable.
 
 ```mermaid
 flowchart LR
