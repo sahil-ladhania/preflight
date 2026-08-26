@@ -9,6 +9,8 @@ import { JudgeOutputSchema } from "@preflight/schemas";
 import { buildJudgePrompt } from "../../../agents/judge.prompt.js";
 import { prisma } from "../../lib/prisma.js";
 import { loadSnapshotWording } from "./finding-dto.js";
+import { recordAgentRun } from "../agent-runs/agent-runs.service.js";
+import { AgentInvocationError, hashAgentText } from "../../lib/gitagent.js";
 
 const JUDGE_FAN_OUT_CONCURRENCY = 3;
 
@@ -48,7 +50,7 @@ function locateSpan(spanText: string, canonicalText: string): Span[] | null {
 
 async function persistIfPending(
   findingId: string,
-  data: Prisma.FindingUpdateInput,
+  data: Prisma.FindingUncheckedUpdateManyInput,
 ): Promise<boolean> {
   const result = await prisma.finding.updateMany({
     where: { id: findingId, evaluationStatus: "pending" },
@@ -58,13 +60,18 @@ async function persistIfPending(
   return result.count > 0;
 }
 
-async function persistUnavailable(findingId: string, reason: string): Promise<void> {
+async function persistUnavailable(
+  findingId: string,
+  reason: string,
+  judgeRunId: string | null,
+): Promise<void> {
   await persistIfPending(findingId, {
     evaluationStatus: "unavailable",
     machineVerdict: null,
     machineReason: reason,
     spans: [],
     machineAt: new Date(),
+    judgeRunId,
   });
 }
 
@@ -72,6 +79,7 @@ async function persistJudgeResult(
   findingId: string,
   output: JudgeOutput,
   canonicalText: string,
+  judgeRunId: string | null,
 ): Promise<void> {
   const now = new Date();
 
@@ -82,6 +90,7 @@ async function persistJudgeResult(
       machineReason: output.reason,
       spans: [],
       machineAt: now,
+      judgeRunId,
     });
     return;
   }
@@ -93,6 +102,7 @@ async function persistJudgeResult(
       machineReason: output.reason,
       spans: [],
       machineAt: now,
+      judgeRunId,
     });
     return;
   }
@@ -106,6 +116,7 @@ async function persistJudgeResult(
       machineReason: output.reason,
       spans: [],
       machineAt: now,
+      judgeRunId,
     });
     return;
   }
@@ -116,6 +127,7 @@ async function persistJudgeResult(
     machineReason: output.reason,
     spans,
     machineAt: now,
+    judgeRunId,
   });
 }
 
@@ -191,15 +203,40 @@ export async function evaluateFinding(findingId: string): Promise<void> {
       ruleId: finding.ruleId,
     });
     const { runAgent } = await import("../../lib/gitagent.js");
-    const { content } = await runAgent("judge", prompt);
-    const output = parseJudgeOutput(content);
+    let judgeRunId: string | null = null;
 
-    await persistJudgeResult(findingId, output, asset.canonicalText);
+    try {
+      const { content, meta } = await runAgent("judge", prompt);
+
+      try {
+        const output = parseJudgeOutput(content);
+        judgeRunId = await recordAgentRun(meta, { kind: "finding", id: findingId });
+        await persistJudgeResult(findingId, output, asset.canonicalText, judgeRunId);
+      } catch {
+        const failedMeta = {
+          ...meta,
+          ok: false,
+          errorKind: "parse_failed",
+          output: content,
+          outputHash: hashAgentText(content),
+        };
+        judgeRunId = await recordAgentRun(failedMeta, { kind: "finding", id: findingId });
+        await persistUnavailable(findingId, "Judge returned invalid JSON.", judgeRunId);
+      }
+    } catch (error) {
+      if (error instanceof AgentInvocationError) {
+        judgeRunId = await recordAgentRun(error.meta, { kind: "finding", id: findingId });
+        await persistUnavailable(findingId, error.message, judgeRunId);
+        return;
+      }
+
+      throw error;
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Judge evaluation failed.";
 
     try {
-      await persistUnavailable(findingId, message);
+      await persistUnavailable(findingId, message, null);
     } catch (persistError) {
       console.error("Failed to persist unavailable judge result:", persistError);
     }

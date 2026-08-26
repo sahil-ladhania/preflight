@@ -56,6 +56,7 @@ export const ASSET_D: AssetDetailFixture = {
       humanReason: "Approved exception for internal demo static.",
       humanActor: DEMO_OPERATOR,
       humanAt: "2026-03-13T15:20:00.000Z",
+      judgeRun: null,
     },
     passFinding("d", "SEBI-06", "judgement"),
   ],

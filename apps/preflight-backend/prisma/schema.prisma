@@ -77,11 +77,13 @@ model Asset {
   generatedAt        DateTime @default(now())
   regeneratedFromId  String?
   generationIndex    Int
+  generatorRunId     String?
 
   campaign        Campaign      @relation(fields: [campaignId], references: [id], onDelete: Restrict)
   constraintSet   ConstraintSet @relation(fields: [constraintSetId], references: [id], onDelete: Restrict)
   regeneratedFrom Asset?        @relation("AssetLineage", fields: [regeneratedFromId], references: [id], onDelete: Restrict)
   regenerations   Asset[]       @relation("AssetLineage")
+  generatorRun    AgentRun?     @relation("AssetGeneratorRun", fields: [generatorRunId], references: [id], onDelete: Restrict)
   findings        Finding[]
 
   @@index([generatedAt])
@@ -101,8 +103,40 @@ model Finding {
   humanReason       String?
   humanActor        String?
   humanAt           DateTime?
+  judgeRunId        String?
 
-  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset    Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  judgeRun AgentRun? @relation("FindingJudgeRun", fields: [judgeRunId], references: [id], onDelete: Restrict)
 
   @@unique([assetId, ruleId])
+}
+
+model AgentRun {
+  id               String   @id @default(uuid())
+  agentName        String
+  agentDefVersion  String
+  model            String
+  linkageKind      String
+  linkageId        String?
+  promptHash       String
+  outputHash       String
+  promptPreview    String
+  outputPreview    String
+  inputTokens      Int?
+  outputTokens     Int?
+  totalTokens      Int?
+  costUsd          Float?
+  latencyMs        Int
+  skillsRead       Json
+  injectionSignals Json
+  chatFlags        Json
+  ok               Boolean
+  errorKind        String?
+  occurredAt       DateTime @default(now())
+
+  assets   Asset[]   @relation("AssetGeneratorRun")
+  findings Finding[] @relation("FindingJudgeRun")
+
+  @@index([agentName, occurredAt])
+  @@index([linkageKind, linkageId])
 }

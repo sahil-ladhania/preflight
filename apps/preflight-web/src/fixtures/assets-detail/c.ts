@@ -53,6 +53,7 @@ export const ASSET_C: AssetDetailFixture = {
       humanReason: null,
       humanActor: null,
       humanAt: null,
+      judgeRun: null,
     },
     passFinding("c", "SEBI-02", "deterministic"),
   ],

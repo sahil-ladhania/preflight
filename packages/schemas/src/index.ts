@@ -96,6 +96,12 @@ export type {
 } from "./campaign.js"
 
 export {
+  AgentNameSchema,
+  AgentRunSummaryDTOSchema,
+} from "./agent-run.js"
+export type { AgentName, AgentRunSummaryDTO } from "./agent-run.js"
+
+export {
   FieldOffsetRangeSchema,
   FieldOffsetsSchema,
   AssetDTOSchema,

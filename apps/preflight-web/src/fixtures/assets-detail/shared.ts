@@ -73,6 +73,7 @@ export const BLUEPEAK_BRAND_KIT: BrandKitDTO = {
 export const ASSET_KIT_FIELDS = {
   kitFingerprint: KIT_FINGERPRINT,
   brandKit: BLUEPEAK_BRAND_KIT,
+  generatorRun: null,
 } as const;
 
 export const FIELD_OFFSETS: FieldOffsets = {
@@ -122,5 +123,6 @@ export function passFinding(
     humanReason: null,
     humanActor: null,
     humanAt: null,
+    judgeRun: null,
   };
 }

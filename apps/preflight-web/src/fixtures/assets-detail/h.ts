@@ -56,6 +56,7 @@ export const ASSET_H: AssetDetailFixture = {
       humanReason: null,
       humanActor: null,
       humanAt: null,
+      judgeRun: null,
     },
     {
       id: BRAND03_ID,
@@ -71,6 +72,7 @@ export const ASSET_H: AssetDetailFixture = {
       humanReason: null,
       humanActor: null,
       humanAt: null,
+      judgeRun: null,
     },
   ],
   exceptions: [],

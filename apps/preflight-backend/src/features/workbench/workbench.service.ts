@@ -13,8 +13,10 @@ import { ZodError } from "zod";
 
 import { buildExplainerPrompt } from "../../../agents/explainer.prompt.js";
 import { env } from "../../config/env.js";
+import { AgentInvocationError, hashAgentText } from "../../lib/gitagent.js";
 import { getLiveCatalog } from "../../lib/catalog.js";
 import { InternalError } from "../../lib/http-error.js";
+import { recordAgentRun } from "../agent-runs/agent-runs.service.js";
 
 function stripJsonFence(content: string): string {
   const trimmed = content.trim();
@@ -61,9 +63,30 @@ export async function chat(
       catalogLines,
     });
     const { runAgent } = await import("../../lib/gitagent.js");
-    const { content } = await runAgent("explainer", prompt);
-    return parseExplainerOutput(content);
+    const { content, meta } = await runAgent("explainer", prompt);
+
+    try {
+      const parsed = parseExplainerOutput(content);
+      void recordAgentRun(meta, { kind: "chat", id: null });
+      return parsed;
+    } catch {
+      void recordAgentRun(
+        {
+          ...meta,
+          ok: false,
+          errorKind: "parse_failed",
+          output: content,
+          outputHash: hashAgentText(content),
+        },
+        { kind: "chat", id: null },
+      );
+      throw new InternalError("Explainer failed.");
+    }
   } catch (error) {
+    if (error instanceof AgentInvocationError) {
+      void recordAgentRun(error.meta, { kind: "chat", id: null });
+    }
+
     if (error instanceof InternalError) {
       throw error;
     }

@@ -4,6 +4,7 @@
  */
 
 import { z } from "zod"
+import { AgentRunSummaryDTOSchema } from "./agent-run.js"
 import {
   AssetStatusSchema,
   EvaluationStatusSchema,
@@ -27,6 +28,7 @@ export const FindingDTOSchema = z.object({
   humanReason: z.string().nullable(),
   humanActor: z.string().nullable(),
   humanAt: IsoDateTimeSchema.nullable(),
+  judgeRun: AgentRunSummaryDTOSchema.nullable(),
 })
 export type FindingDTO = z.infer<typeof FindingDTOSchema>
 

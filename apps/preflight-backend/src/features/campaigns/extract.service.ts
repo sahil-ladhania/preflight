@@ -10,8 +10,10 @@ import {
 
 import { buildExtractorPrompt } from "../../../agents/extractor.prompt.js";
 import { env } from "../../config/env.js";
+import { AgentInvocationError, hashAgentText } from "../../lib/gitagent.js";
 import { InternalError, NotFoundError } from "../../lib/http-error.js";
 import { prisma } from "../../lib/prisma.js";
+import { recordAgentRun } from "../agent-runs/agent-runs.service.js";
 
 function stripJsonFence(content: string): string {
   const trimmed = content.trim();
@@ -46,9 +48,31 @@ export async function extractBrief(
   try {
     const prompt = buildExtractorPrompt({ freeText });
     const { runAgent } = await import("../../lib/gitagent.js");
-    const { content, skillsRead } = await runAgent("extractor", prompt);
-    return { proposal: parseExtractorOutput(content), skillsRead };
+    const { content, skillsRead, meta } = await runAgent("extractor", prompt);
+
+    try {
+      const proposal = parseExtractorOutput(content);
+      void recordAgentRun(meta, { kind: "campaign", id: campaignId });
+      return { proposal, skillsRead };
+    } catch {
+      void recordAgentRun(
+        {
+          ...meta,
+          ok: false,
+          errorKind: "parse_failed",
+          output: content,
+          outputHash: hashAgentText(content),
+        },
+        { kind: "campaign", id: campaignId },
+      );
+      throw new InternalError("Extract failed.");
+    }
   } catch (error) {
+    if (error instanceof AgentInvocationError) {
+      void recordAgentRun(error.meta, { kind: "campaign", id: campaignId });
+      throw new InternalError("Extract failed.");
+    }
+
     if (error instanceof InternalError) {
       throw error;
     }

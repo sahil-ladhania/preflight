@@ -18,6 +18,7 @@ import {
   buildStatusDetail,
   sortFindingsBySnapshotOrder,
 } from "./assets-derive.js";
+import { toAgentRunSummary } from "../agent-runs/agent-run-dto.js";
 import {
   toFindingDTO,
   toFoldFinding,
@@ -129,13 +130,19 @@ export async function listAssets(): Promise<AssetsListResponse> {
 }
 
 export async function getAssetDetail(id: string): Promise<AssetDetailDTO> {
-  const asset = await prisma.asset.findUnique({ where: { id } });
+  const asset = await prisma.asset.findUnique({
+    where: { id },
+    include: { generatorRun: true },
+  });
 
   if (!asset) {
     throw new NotFoundError("Asset not found");
   }
 
-  const findingRows = await prisma.finding.findMany({ where: { assetId: id } });
+  const findingRows = await prisma.finding.findMany({
+    where: { assetId: id },
+    include: { judgeRun: true },
+  });
   const snapshotOrder = await loadSnapshotOrder(asset.constraintSetId);
   const findings = sortFindingsBySnapshotOrder(
     await Promise.all(
@@ -155,6 +162,7 @@ export async function getAssetDetail(id: string): Promise<AssetDetailDTO> {
     if (parent) {
       const parentFindingRows = await prisma.finding.findMany({
         where: { assetId: parent.id },
+        include: { judgeRun: true },
       });
       const parentFindings = await Promise.all(
         parentFindingRows.map((row) => toFindingDTO(row, parent.constraintSetId)),
@@ -186,6 +194,7 @@ export async function getAssetDetail(id: string): Promise<AssetDetailDTO> {
     regeneratedFromId: asset.regeneratedFromId,
     generationIndex: asset.generationIndex,
     brandKit: resolveBrandKit(asset.kitFingerprint),
+    generatorRun: toAgentRunSummary(asset.generatorRun),
     status,
     findings,
     exceptions,

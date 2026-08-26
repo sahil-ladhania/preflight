@@ -2,10 +2,12 @@
  * gitagent — sole in-process query() gateway.
  * Why: locked defaults for all agents (13-agent-architecture.md §6, doc 19 §7.4).
  */
-import { query } from "@open-gitagent/gitagent";
-import type { GCAssistantMessage, GCToolDefinition, Query } from "@open-gitagent/gitagent";
+import { createHash } from "node:crypto";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { query } from "@open-gitagent/gitagent";
+import type { GCAssistantMessage, GCToolDefinition, Query } from "@open-gitagent/gitagent";
 
 import { env } from "../config/env.js";
 import { buildAgentSkillSuffix, extractReadPath } from "./agent-skills.js";
@@ -18,10 +20,29 @@ import {
 
 export type AgentName = "extractor" | "generator" | "judge" | "explainer";
 
+export interface AgentRunMeta {
+  agentName: AgentName;
+  agentDefVersion: string;
+  model: string;
+  prompt: string;
+  output: string;
+  promptHash: string;
+  outputHash: string;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  totalTokens: number | null;
+  costUsd: number | null;
+  latencyMs: number;
+  skillsRead: string[];
+  ok: boolean;
+  errorKind: string | null;
+}
+
 export interface RunAgentResult {
   content: string;
   skillsRead: string[];
   usage?: GCAssistantMessage["usage"];
+  meta: AgentRunMeta;
 }
 
 export interface RunAgentOptions {
@@ -30,7 +51,52 @@ export interface RunAgentOptions {
   skillLoad?: "catalog" | "dump";
 }
 
+export class AgentInvocationError extends Error {
+  readonly meta: AgentRunMeta;
+
+  constructor(message: string, meta: AgentRunMeta) {
+    super(message);
+    this.name = "AgentInvocationError";
+    this.meta = meta;
+  }
+}
+
 const DEFAULT_TIMEOUT_MS = 60_000;
+
+export function hashAgentText(text: string): string {
+  return createHash("sha256").update(text).digest("hex");
+}
+
+export function buildAgentRunMeta(input: {
+  agentName: AgentName;
+  agentDefVersion: string;
+  model: string;
+  prompt: string;
+  output: string;
+  latencyMs: number;
+  skillsRead: string[];
+  usage?: GCAssistantMessage["usage"];
+  ok: boolean;
+  errorKind: string | null;
+}): AgentRunMeta {
+  return {
+    agentName: input.agentName,
+    agentDefVersion: input.agentDefVersion,
+    model: input.model,
+    prompt: input.prompt,
+    output: input.output,
+    promptHash: hashAgentText(input.prompt),
+    outputHash: hashAgentText(input.output),
+    inputTokens: input.usage?.inputTokens ?? null,
+    outputTokens: input.usage?.outputTokens ?? null,
+    totalTokens: input.usage?.totalTokens ?? null,
+    costUsd: input.usage?.costUsd ?? null,
+    latencyMs: input.latencyMs,
+    skillsRead: input.skillsRead,
+    ok: input.ok,
+    errorKind: input.errorKind,
+  };
+}
 
 export function getAgentDir(name: AgentName): string {
   const libDir = fileURLToPath(new URL(".", import.meta.url));
@@ -45,10 +111,16 @@ interface CollectOptions {
   allowToolStream: boolean;
 }
 
+interface CollectResult {
+  content: string;
+  skillsRead: string[];
+  usage?: GCAssistantMessage["usage"];
+}
+
 async function collectAssistantContent(
   stream: Query,
   options: CollectOptions,
-): Promise<RunAgentResult> {
+): Promise<CollectResult> {
   let lastAssistant: GCAssistantMessage | null = null;
   const skillsRead: string[] = [];
 
@@ -125,9 +197,11 @@ export async function runAgent(
   prompt: string,
   options: RunAgentOptions = {},
 ): Promise<RunAgentResult> {
+  const startedAt = Date.now();
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const agentDir = getAgentDir(name);
   const runtime = await readAgentRuntimeConfig(agentDir);
+  const model = resolveModel(runtime.modelPreferred);
   const policy = getAgentToolPolicy(name);
   const skillSuffix = policy.allowReadTool
     ? await buildAgentSkillSuffix(agentDir, options.skillNames, resolveDump(options))
@@ -141,7 +215,7 @@ export async function runAgent(
   const stream = query({
     dir: agentDir,
     prompt,
-    model: resolveModel(runtime.modelPreferred),
+    model,
     systemPrompt,
     tools: resolveTools(agentDir, policy.allowReadTool),
     replaceBuiltinTools: true,
@@ -150,9 +224,11 @@ export async function runAgent(
   });
 
   let timer: ReturnType<typeof setTimeout> | undefined;
+  let skillsRead: string[] = [];
+  let partialOutput = "";
 
   try {
-    return await Promise.race([
+    const collected = await Promise.race([
       collectAssistantContent(stream, {
         allowToolStream: policy.allowToolStream,
       }),
@@ -164,6 +240,43 @@ export async function runAgent(
         }, timeoutMs);
       }),
     ]);
+
+    skillsRead = collected.skillsRead;
+    partialOutput = collected.content;
+
+    const meta = buildAgentRunMeta({
+      agentName: name,
+      agentDefVersion: runtime.version,
+      model,
+      prompt,
+      output: collected.content,
+      latencyMs: Date.now() - startedAt,
+      skillsRead: collected.skillsRead,
+      usage: collected.usage,
+      ok: true,
+      errorKind: null,
+    });
+
+    return {
+      content: collected.content,
+      skillsRead: collected.skillsRead,
+      usage: collected.usage,
+      meta,
+    };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Agent call failed.";
+    const meta = buildAgentRunMeta({
+      agentName: name,
+      agentDefVersion: runtime.version,
+      model,
+      prompt,
+      output: partialOutput,
+      latencyMs: Date.now() - startedAt,
+      skillsRead,
+      ok: false,
+      errorKind: message,
+    });
+    throw new AgentInvocationError(message, meta);
   } finally {
     if (timer) {
       clearTimeout(timer);

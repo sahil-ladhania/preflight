@@ -167,6 +167,7 @@ export async function generateAssets(
           kitFingerprint: assetKitFingerprint,
           regeneratedFromId: regenFromId,
           generationIndex,
+          generatorRunId: row.generatorRunId,
           findings: {
             create: [
               ...row.detFindings.map((finding) => ({

@@ -15,12 +15,18 @@ import {
   buildGeneratorPrompt,
   type RegenRevisionInput,
 } from "../../../agents/generator.prompt.js";
+import {
+  AgentInvocationError,
+  hashAgentText,
+  type AgentRunMeta,
+} from "../../lib/gitagent.js";
 import { InternalError } from "../../lib/http-error.js";
 import {
   resolveGeneratorSkillNames,
   skillFilePath,
 } from "../../lib/agent-skills.js";
 import { loadBrandKit } from "../../lib/brand-kit.js";
+import { recordAgentRun } from "../agent-runs/agent-runs.service.js";
 
 function stripJsonFence(content: string): string {
   const trimmed = content.trim();
@@ -39,6 +45,7 @@ export interface CallGeneratorInput {
 export interface CallGeneratorResult {
   output: GeneratorOutput;
   skillsRead: string[];
+  meta: AgentRunMeta;
 }
 
 export function unionSkillsRead(groups: string[][]): string[] {
@@ -55,6 +62,10 @@ export function unionSkillsRead(groups: string[][]): string[] {
   }
 
   return merged;
+}
+
+async function recordGeneratorFailure(meta: AgentRunMeta): Promise<void> {
+  await recordAgentRun(meta, { kind: "asset", id: null });
 }
 
 export async function callGenerator(
@@ -76,18 +87,37 @@ export async function callGenerator(
       inScopeSkillPaths: inScope.map(skillFilePath),
     });
     const { runAgent } = await import("../../lib/gitagent.js");
-    const { content, skillsRead } = await runAgent("generator", prompt, {
+    const { content, skillsRead, meta } = await runAgent("generator", prompt, {
       skillNames: inScope,
     });
-    if (skillsRead.length === 0) {
-      console.info("no skill read", { channel: input.channel });
+
+    try {
+      const parsed: unknown = JSON.parse(stripJsonFence(content));
+      return {
+        output: GeneratorOutputSchema.parse(parsed),
+        skillsRead,
+        meta,
+      };
+    } catch {
+      await recordGeneratorFailure({
+        ...meta,
+        ok: false,
+        errorKind: "parse_failed",
+        output: content,
+        outputHash: hashAgentText(content),
+      });
+      throw new InternalError("Generate failed.");
     }
-    const parsed: unknown = JSON.parse(stripJsonFence(content));
-    return {
-      output: GeneratorOutputSchema.parse(parsed),
-      skillsRead,
-    };
-  } catch {
+  } catch (error) {
+    if (error instanceof AgentInvocationError) {
+      await recordGeneratorFailure(error.meta);
+      throw new InternalError("Generate failed.");
+    }
+
+    if (error instanceof InternalError) {
+      throw error;
+    }
+
     throw new InternalError("Generate failed.");
   }
 }

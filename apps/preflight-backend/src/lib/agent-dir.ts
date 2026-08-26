@@ -8,6 +8,7 @@ import { join } from "node:path";
 export interface AgentRuntimeConfig {
   modelPreferred: string;
   maxTurns: number;
+  version: string;
 }
 
 async function readFileOrEmpty(path: string): Promise<string> {
@@ -30,9 +31,14 @@ export async function readAgentRuntimeConfig(
   const manifestRaw = await readFileOrEmpty(join(agentDir, "agent.yaml"));
   const modelPreferred = matchYamlScalar(manifestRaw, "preferred");
   const maxTurnsRaw = matchYamlScalar(manifestRaw, "max_turns");
+  const version = matchYamlScalar(manifestRaw, "version");
 
   if (modelPreferred === null) {
     throw new Error(`agent.yaml missing model.preferred in ${agentDir}`);
+  }
+
+  if (version === null) {
+    throw new Error(`agent.yaml missing version in ${agentDir}`);
   }
 
   const maxTurns =
@@ -42,7 +48,7 @@ export async function readAgentRuntimeConfig(
     throw new Error(`agent.yaml invalid runtime.max_turns in ${agentDir}`);
   }
 
-  return { modelPreferred, maxTurns };
+  return { modelPreferred, maxTurns, version };
 }
 
 export async function buildAgentSystemPrompt(agentDir: string): Promise<string> {

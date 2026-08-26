@@ -6,6 +6,7 @@
 import { z } from "zod"
 import { AssetStatusSchema, ChannelSchema } from "./enums.js"
 import { HashSchema, IsoDateTimeSchema } from "./primitives.js"
+import { AgentRunSummaryDTOSchema } from "./agent-run.js"
 import { BrandKitDTOSchema } from "./brand-kit.js"
 import { FindingDTOSchema } from "./finding.js"
 
@@ -87,5 +88,6 @@ export const AssetDetailDTOSchema = AssetDTOSchema.extend({
   exceptions: z.array(ExceptionItemDTOSchema),
   lineage: LineageDTOSchema.nullable(),
   brandKit: BrandKitDTOSchema,
+  generatorRun: AgentRunSummaryDTOSchema.nullable(),
 })
 export type AssetDetailDTO = z.infer<typeof AssetDetailDTOSchema>

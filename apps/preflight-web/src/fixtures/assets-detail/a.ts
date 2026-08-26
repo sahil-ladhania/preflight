@@ -56,6 +56,7 @@ export const ASSET_A: AssetDetailFixture = {
       humanReason: "Confirmed misleading performance claim.",
       humanActor: DEMO_OPERATOR,
       humanAt: "2026-03-15T11:10:00.000Z",
+      judgeRun: null,
     },
   ],
   exceptions: [],

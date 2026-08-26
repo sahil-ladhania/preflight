@@ -2,7 +2,7 @@
  * finding-dto — Prisma finding row → wire DTO helpers.
  * Why: shared by assets and findings services (14-backend-design.md Area 3).
  */
-import type { Finding } from "@prisma/client";
+import type { AgentRun, Finding } from "@prisma/client";
 
 import {
   foldStatus,
@@ -12,6 +12,7 @@ import {
   type Span,
 } from "@preflight/schemas";
 
+import { toAgentRunSummary } from "../agent-runs/agent-run-dto.js";
 import { InternalError } from "../../lib/http-error.js";
 import { prisma } from "../../lib/prisma.js";
 
@@ -46,7 +47,7 @@ export async function loadSnapshotWording(
 }
 
 export async function toFindingDTO(
-  row: Finding,
+  row: Finding & { judgeRun?: AgentRun | null },
   constraintSetId: string,
 ): Promise<FindingDTO> {
   const frozenWording = await loadSnapshotWording(constraintSetId, row.ruleId);
@@ -65,6 +66,7 @@ export async function toFindingDTO(
     humanReason: row.humanReason,
     humanActor: row.humanActor,
     humanAt: row.humanAt ? toIso(row.humanAt) : null,
+    judgeRun: toAgentRunSummary(row.judgeRun ?? null),
   };
 }
 

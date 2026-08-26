@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ChannelBadge } from "@/features/assets/ChannelBadge";
+import { AgentRunBadge } from "@/features/assets/AgentRunBadge";
 import { AssetCopyField } from "@/features/assets/AssetCopyField";
 import { ChannelPreview } from "@/features/assets/previews/ChannelPreview";
 import {
@@ -68,6 +69,7 @@ export function AssetPane({
           </span>
           <span className="text-hash text-fg-muted">{shortId(asset.id)}</span>
         </div>
+        <AgentRunBadge run={asset.generatorRun} />
         <div className="flex flex-col gap-1">
           {!suppressHeaderActions ? (
             <>

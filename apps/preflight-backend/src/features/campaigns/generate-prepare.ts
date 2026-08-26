@@ -6,15 +6,19 @@ import { hashRun, runDeterministic, type DetRunRule } from "@preflight/rules";
 import type { Channel, GeneratorOutput, RuleKind, StructuredBriefInput } from "@preflight/schemas";
 
 import type { RegenRevisionInput } from "../../../agents/generator.prompt.js";
+import type { AgentRunMeta } from "../../lib/gitagent.js";
 import { InternalError } from "../../lib/http-error.js";
 import { callGenerator } from "./generate-agent.js";
 import { buildCanonicalText } from "./generate-canonical.js";
 import { ensureSebi01Disclaimer } from "./generate-disclaimer.js";
+import { recordAgentRun } from "../agent-runs/agent-runs.service.js";
 
 export interface PreparedChannel {
   channel: Channel;
   output: GeneratorOutput;
   skillsRead: string[];
+  meta: AgentRunMeta;
+  generatorRunId: string | null;
   canonicalText: string;
   fieldOffsets: ReturnType<typeof buildCanonicalText>["fieldOffsets"];
   runHash: string;
@@ -49,6 +53,7 @@ export async function prepareChannelForGenerate(input: {
     pinnedDetRuleIds: input.pinnedDetRuleIds,
     revisionContext: input.revisionContext,
   });
+  const generatorRunId = await recordAgentRun(raw.meta, { kind: "asset", id: null });
   const output = ensureSebi01Disclaimer(raw.output, input.sebi01Pinned);
   const { canonicalText, fieldOffsets } = buildCanonicalText(output);
   const { findings } = runDeterministicSafe(canonicalText, input.detRules);
@@ -67,6 +72,8 @@ export async function prepareChannelForGenerate(input: {
     channel: input.channel,
     output,
     skillsRead: raw.skillsRead,
+    meta: raw.meta,
+    generatorRunId,
     canonicalText,
     fieldOffsets,
     runHash,
