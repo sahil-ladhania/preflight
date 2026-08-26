@@ -110,6 +110,7 @@ export function toRuleCatalogRow(entry: LiveCatalogEntry): RuleCatalogRowDTO {
       predicateSpec: null,
       applicabilitySummary: null,
       editable: false,
+      lastChange: null,
     };
   }
 
@@ -122,6 +123,7 @@ export function toRuleCatalogRow(entry: LiveCatalogEntry): RuleCatalogRowDTO {
       ? formatApplicabilitySummary(entry.predicateSpec)
       : null,
     editable: true,
+    lastChange: null,
   };
 }
 

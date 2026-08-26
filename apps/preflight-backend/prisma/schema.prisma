@@ -60,6 +60,21 @@ model JudgementRule {
   updatedAt     DateTime @updatedAt
 }
 
+model RulebookChange {
+  id                String   @id @default(uuid())
+  ruleId            String
+  action            String
+  prevWording       String?
+  nextWording       String?
+  prevPredicateSpec Json?
+  nextPredicateSpec Json?
+  actor             String
+  reason            String
+  at                DateTime @default(now())
+
+  @@index([ruleId, at])
+}
+
 model Asset {
   id                 String   @id @default(uuid())
   campaignId         String

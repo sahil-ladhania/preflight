@@ -10,6 +10,7 @@ import {
 } from "@preflight/schemas";
 import type {
   CreateJudgementRuleRequest,
+  DeleteJudgementRuleRequest,
   RuleCatalogRowDTO,
   RulesListResponse,
   UpdateJudgementRuleRequest,
@@ -84,10 +85,12 @@ export async function updateJudgementRuleService(
 
 export async function deleteJudgementRuleService(
   id: string,
+  body: DeleteJudgementRuleRequest,
   signal: AbortSignal,
 ): Promise<Record<string, never>> {
   try {
     return await apiRequest("DELETE", `/rules/${id}`, {
+      body,
       signal,
       dataSchema: RetryRequestSchema,
     });

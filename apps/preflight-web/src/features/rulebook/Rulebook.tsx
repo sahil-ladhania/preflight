@@ -108,9 +108,9 @@ export function Rulebook({
     }
   };
 
-  const handleConfirmDelete = (): void => {
+  const handleConfirmDelete = (reason: string): void => {
     if (onConfirmDelete !== undefined) {
-      void onConfirmDelete();
+      void onConfirmDelete(reason);
     }
   };
 

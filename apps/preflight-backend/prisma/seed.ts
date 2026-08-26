@@ -18,6 +18,7 @@ async function resetDatabase(): Promise<void> {
   await prisma.constraintSnapshot.deleteMany();
   await prisma.campaign.updateMany({ data: { currentConstraintSetId: null } });
   await prisma.constraintSet.deleteMany();
+  await prisma.rulebookChange.deleteMany();
   await prisma.judgementRule.deleteMany();
   await prisma.campaign.deleteMany();
 }

@@ -6,6 +6,10 @@
 import { z } from "zod"
 import { RuleKindSchema } from "./enums.js"
 import { PredicateSpecSchema } from "./primitives.js"
+import {
+  ChangeReasonSchema,
+  RulebookChangeSummaryDTOSchema,
+} from "./rulebook-change.js"
 
 export const RuleCatalogRowDTOSchema = z.object({
   ruleId: z.string().min(1),
@@ -14,6 +18,7 @@ export const RuleCatalogRowDTOSchema = z.object({
   predicateSpec: PredicateSpecSchema.nullable(),
   applicabilitySummary: z.string().nullable(),
   editable: z.boolean(),
+  lastChange: RulebookChangeSummaryDTOSchema.nullable(),
 })
 export type RuleCatalogRowDTO = z.infer<typeof RuleCatalogRowDTOSchema>
 
@@ -28,15 +33,28 @@ export type RulesListResponse = z.infer<typeof RulesListResponseSchema>
 export const CreateJudgementRuleRequestSchema = z.object({
   wording: z.string().min(1),
   predicateSpec: PredicateSpecSchema,
+  changeReason: ChangeReasonSchema,
 })
-export type CreateJudgementRuleRequest = z.infer<typeof CreateJudgementRuleRequestSchema>
+export type CreateJudgementRuleRequest = z.infer<
+  typeof CreateJudgementRuleRequestSchema
+>
 
 export const UpdateJudgementRuleRequestSchema = z
   .object({
     wording: z.string().min(1).optional(),
     predicateSpec: PredicateSpecSchema.optional(),
+    changeReason: ChangeReasonSchema,
   })
   .refine((body) => body.wording !== undefined || body.predicateSpec !== undefined, {
     message: "At least one of wording or predicateSpec required",
   })
-export type UpdateJudgementRuleRequest = z.infer<typeof UpdateJudgementRuleRequestSchema>
+export type UpdateJudgementRuleRequest = z.infer<
+  typeof UpdateJudgementRuleRequestSchema
+>
+
+export const DeleteJudgementRuleRequestSchema = z.object({
+  changeReason: ChangeReasonSchema,
+})
+export type DeleteJudgementRuleRequest = z.infer<
+  typeof DeleteJudgementRuleRequestSchema
+>

@@ -126,6 +126,20 @@ export function JudgementSheet({
                 />
               </div>
             </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="change-reason" className="text-caption text-fg-muted">
+                Change reason
+              </label>
+              <Textarea
+                id="change-reason"
+                value={form.changeReason}
+                disabled={disabled}
+                onChange={(event) =>
+                  onFormChange({ ...form, changeReason: event.target.value })
+                }
+                className="min-h-20 text-body-airy"
+              />
+            </div>
           </div>
         </div>
         <div className="flex shrink-0 items-center justify-between gap-2 border-t border-border p-4">

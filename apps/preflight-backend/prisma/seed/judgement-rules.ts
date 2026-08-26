@@ -2,8 +2,12 @@
  * judgement-rules — JudgementRule seed rows.
  * Why: live catalog wording duplicated from fixtures; not imported from web.
  */
+import { randomUUID } from "node:crypto";
+
 import type { PrismaClient } from "@prisma/client";
 import type { PredicateSpec } from "@preflight/rules";
+
+import { buildRulebookChangeRowData } from "../../src/features/rulebook-changes/rulebook-changes.service.js";
 
 export const JUDGEMENT_RULE_IDS = {
   SEBI_06: "66666666-6666-4666-8666-666666660006",
@@ -67,6 +71,9 @@ const JUDGEMENT_ROWS: Array<{
   },
 ];
 
+const SEED_ACTOR = process.env.DEMO_OPERATOR_NAME ?? "Demo Operator";
+const SEED_REASON = "Seeded live catalog.";
+
 export async function seedJudgementRules(prisma: PrismaClient): Promise<void> {
   const now = new Date("2026-03-13T08:00:00.000Z");
 
@@ -81,4 +88,23 @@ export async function seedJudgementRules(prisma: PrismaClient): Promise<void> {
       },
     });
   }
+
+  await prisma.rulebookChange.createMany({
+    data: JUDGEMENT_ROWS.map((row) =>
+      buildRulebookChangeRowData(
+        {
+          ruleId: row.id,
+          action: "create",
+          prevWording: null,
+          nextWording: row.wording,
+          prevPredicateSpec: null,
+          nextPredicateSpec: row.predicateSpec,
+          actor: SEED_ACTOR,
+          reason: SEED_REASON,
+          at: now,
+        },
+        randomUUID(),
+      ),
+    ),
+  });
 }

@@ -16,6 +16,7 @@ export interface JudgementFormState {
   field: BriefField;
   op: PredicateSpec["op"];
   valueText: string;
+  changeReason: string;
 }
 
 export interface RulebookLoadingStateProps {
@@ -40,7 +41,7 @@ export interface RulebookProps {
   onCancel?: () => void;
   onDeleteFromSheet?: () => void;
   onCloseDelete?: () => void;
-  onConfirmDelete?: () => Promise<void>;
+  onConfirmDelete?: (reason: string) => Promise<void>;
   onRetry?: () => void;
 }
 
@@ -70,7 +71,7 @@ export interface JudgementSheetProps {
 export interface DeleteRuleModalProps {
   ruleId: string | null;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (reason: string) => void;
 }
 
 export interface SheetShellProps {

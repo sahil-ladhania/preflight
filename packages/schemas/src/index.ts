@@ -136,11 +136,23 @@ export {
 export type { FindingDTO, RetryRequest, FindingMutationResponseDTO } from "./finding.js"
 
 export {
+  RulebookChangeActionSchema,
+  RulebookChangeSummaryDTOSchema,
+  ChangeReasonSchema,
+} from "./rulebook-change.js"
+export type {
+  RulebookChangeAction,
+  RulebookChangeSummaryDTO,
+  ChangeReason,
+} from "./rulebook-change.js"
+
+export {
   RuleCatalogRowDTOSchema,
   JudgementRuleDTOSchema,
   RulesListResponseSchema,
   CreateJudgementRuleRequestSchema,
   UpdateJudgementRuleRequestSchema,
+  DeleteJudgementRuleRequestSchema,
 } from "./rule.js"
 export type {
   RuleCatalogRowDTO,
@@ -148,6 +160,7 @@ export type {
   RulesListResponse,
   CreateJudgementRuleRequest,
   UpdateJudgementRuleRequest,
+  DeleteJudgementRuleRequest,
 } from "./rule.js"
 
 export { WaiveRequestSchema } from "./waive.js"

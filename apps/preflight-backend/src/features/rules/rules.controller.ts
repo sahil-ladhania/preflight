@@ -7,6 +7,7 @@ import { ZodError } from "zod";
 
 import {
   CreateJudgementRuleRequestSchema,
+  DeleteJudgementRuleRequestSchema,
   UpdateJudgementRuleRequestSchema,
 } from "@preflight/schemas";
 
@@ -86,7 +87,8 @@ export async function deleteJudgementRuleHandler(
   next: NextFunction,
 ): Promise<void> {
   try {
-    await deleteJudgementRule(req.params.id);
+    const body = DeleteJudgementRuleRequestSchema.parse(req.body);
+    await deleteJudgementRule(req.params.id, body.changeReason);
     res.status(200).json({ success: true, data: {} });
   } catch (err: unknown) {
     handleError(err, res, next);

@@ -53,6 +53,7 @@ export function createRequestFromForm(
   return {
     wording: form.wording.trim(),
     predicateSpec,
+    changeReason: form.changeReason.trim(),
   };
 }
 
@@ -100,6 +101,7 @@ export function emptyJudgementForm(): JudgementFormState {
     field: "channels",
     op: "equals",
     valueText: "",
+    changeReason: "",
   };
 }
 
@@ -116,6 +118,7 @@ export function formFromRule(rule: RuleCatalogRowDTO): JudgementFormState {
     field: rule.predicateSpec.field,
     op: rule.predicateSpec.op,
     valueText,
+    changeReason: "",
   };
 }
 
@@ -140,7 +143,9 @@ export function parsePredicateSpec(
 }
 
 export function formIsValid(form: JudgementFormState): boolean {
-  return parsePredicateSpec(form) !== null;
+  return (
+    parsePredicateSpec(form) !== null && form.changeReason.trim().length >= 10
+  );
 }
 
 export function rowFromForm(
@@ -158,5 +163,6 @@ export function rowFromForm(
     predicateSpec,
     applicabilitySummary: formatPredicateSpec(predicateSpec),
     editable: true,
+    lastChange: null,
   };
 }

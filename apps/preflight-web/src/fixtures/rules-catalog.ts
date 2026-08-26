@@ -21,6 +21,7 @@ const JUDGEMENT_ROWS: RuleCatalogRowDTO[] = [
     },
     applicabilitySummary: "claims in performance, returns",
     editable: true,
+    lastChange: null,
   },
   {
     ruleId: "BRAND-02",
@@ -33,6 +34,7 @@ const JUDGEMENT_ROWS: RuleCatalogRowDTO[] = [
     },
     applicabilitySummary: "channels in linkedin, email",
     editable: true,
+    lastChange: null,
   },
   {
     ruleId: "BRAND-03",
@@ -45,6 +47,7 @@ const JUDGEMENT_ROWS: RuleCatalogRowDTO[] = [
     },
     applicabilitySummary: "claims in differentiation, market-leading",
     editable: true,
+    lastChange: null,
   },
   {
     ruleId: "44444444-4444-4444-8444-444444444402",
@@ -57,6 +60,7 @@ const JUDGEMENT_ROWS: RuleCatalogRowDTO[] = [
     },
     applicabilitySummary: "channels equals whatsapp",
     editable: true,
+    lastChange: null,
   },
 ];
 
@@ -68,6 +72,7 @@ function detRows(): RuleCatalogRowDTO[] {
     predicateSpec: null,
     applicabilitySummary: null,
     editable: false,
+    lastChange: null,
   }));
 }
 

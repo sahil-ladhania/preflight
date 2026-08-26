@@ -46,7 +46,7 @@ export function useRulebook(): {
   onFormChange: (form: JudgementFormState) => void;
   onSave: () => Promise<void>;
   onCancel: () => void;
-  onConfirmDelete: () => Promise<void>;
+  onConfirmDelete: (reason: string) => Promise<void>;
   onCloseDelete: () => void;
   retryLoad: () => void;
 } {
@@ -193,27 +193,34 @@ export function useRulebook(): {
     }
   }, [closeSheet, editingRuleId, form, sheetMode, toastApiError]);
 
-  const onConfirmDelete = useCallback(async (): Promise<void> => {
-    if (deleteRuleId === null) {
-      return;
-    }
+  const onConfirmDelete = useCallback(
+    async (changeReason: string): Promise<void> => {
+      if (deleteRuleId === null) {
+        return;
+      }
 
-    const controller = new AbortController();
+      const controller = new AbortController();
 
-    try {
-      await deleteJudgementRuleService(deleteRuleId, controller.signal);
-      setRules((current) =>
-        sortCatalogRules(
-          current.filter((rule) => rule.ruleId !== deleteRuleId),
-        ),
-      );
-      setPostSaveCaption(true);
-      closeSheet();
-      setDeleteRuleId(null);
-    } catch (error: unknown) {
-      toastApiError(error);
-    }
-  }, [closeSheet, deleteRuleId, toastApiError]);
+      try {
+        await deleteJudgementRuleService(
+          deleteRuleId,
+          { changeReason },
+          controller.signal,
+        );
+        setRules((current) =>
+          sortCatalogRules(
+            current.filter((rule) => rule.ruleId !== deleteRuleId),
+          ),
+        );
+        setPostSaveCaption(true);
+        closeSheet();
+        setDeleteRuleId(null);
+      } catch (error: unknown) {
+        toastApiError(error);
+      }
+    },
+    [closeSheet, deleteRuleId, toastApiError],
+  );
 
   const retryLoad = useCallback((): void => {
     setView("loading");

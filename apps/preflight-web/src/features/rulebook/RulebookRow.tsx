@@ -7,6 +7,7 @@ import type { ReactElement } from "react";
 import { Lock, Pencil, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { formatGeneratedAt } from "@/features/assets/lib";
 import { appliesLabel, RULEBOOK_ROW_GRID } from "@/features/rulebook/lib";
 import type { RulebookRowProps } from "@/features/rulebook/types";
 import { cn } from "@/lib/utils";
@@ -23,11 +24,25 @@ function KindBadge({
   );
 }
 
+function lastChangeCaption(
+  rule: RulebookRowProps["rule"],
+): string | null {
+  if (rule.lastChange === null) {
+    return null;
+  }
+
+  const prefix =
+    rule.lastChange.action === "create" ? "Created by" : "Last changed by";
+  return `${prefix} ${rule.lastChange.actor} · ${formatGeneratedAt(rule.lastChange.at)}`;
+}
+
 export function RulebookRow({
   rule,
   onEdit,
   onDelete,
 }: RulebookRowProps): ReactElement {
+  const changeCaption = lastChangeCaption(rule);
+
   return (
     <div
       className={cn(
@@ -39,9 +54,16 @@ export function RulebookRow({
         {rule.ruleId}
       </span>
       <KindBadge kind={rule.kind} />
-      <span className="truncate text-body text-fg" title={rule.wording}>
-        {rule.wording}
-      </span>
+      <div className="min-w-0">
+        <span className="block truncate text-body text-fg" title={rule.wording}>
+          {rule.wording}
+        </span>
+        {changeCaption !== null ? (
+          <span className="block truncate text-caption text-fg-muted">
+            {changeCaption}
+          </span>
+        ) : null}
+      </div>
       <span className="truncate text-caption text-fg-muted" title={appliesLabel(rule)}>
         {appliesLabel(rule)}
       </span>
