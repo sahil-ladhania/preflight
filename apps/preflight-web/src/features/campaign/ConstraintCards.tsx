@@ -57,7 +57,7 @@ export function ConstraintCards({
         {compileInFlight ? (
           <Loader2 className="size-4 animate-spin" aria-hidden />
         ) : (
-          "Compile"
+          "Freeze"
         )}
       </Button>
       {staleBanner ? (

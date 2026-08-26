@@ -38,7 +38,7 @@ export async function chatHandler(
 ): Promise<void> {
   try {
     const body = WorkbenchChatRequestSchema.parse(req.body);
-    const data = await chat(body.message, body.history);
+    const data = await chat(body.message, body.history, body.capturedBrief);
     res.status(200).json({ success: true, data });
   } catch (err: unknown) {
     handleError(err, res, next);

@@ -9,6 +9,7 @@ import { Loader2, SendHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { CampaignHandoffLink } from "@/features/workbench/CampaignHandoffLink";
+import { WORKBENCH_COMPOSER_PLACEHOLDER } from "@/features/workbench/lib";
 import type { ComposerProps } from "@/features/workbench/types";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,7 @@ export function Composer({
   sendInFlight,
   handoffInFlight = false,
   handoffEnabled = false,
+  handoffDisabledCaption = null,
   showCampaignActions = false,
   onChange,
   onSend,
@@ -32,6 +34,7 @@ export function Composer({
     !disabled &&
     onStartCampaignFromConversation !== undefined;
   const inputDisabled = disabled || sendInFlight || handoffInFlight;
+  const showHandoffButton = onStartCampaignFromConversation !== undefined;
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>): void => {
     if (event.key === "Enter" && !event.shiftKey) {
@@ -50,7 +53,7 @@ export function Composer({
           disabled={inputDisabled}
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Describe a campaign or ask about rules and compliance…"
+          placeholder={WORKBENCH_COMPOSER_PLACEHOLDER}
           className="min-h-16 max-h-28 resize-none rounded-xl border-transparent bg-canvas-subtle/50 py-3 pr-12 pl-4 text-body-airy shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
         />
         <button
@@ -74,12 +77,12 @@ export function Composer({
       </div>
       {showCampaignActions ? (
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-2">
-            {onStartCampaignFromConversation !== undefined && handoffEnabled ? (
+          <div className="flex flex-col gap-1">
+            {showHandoffButton ? (
               <Button
                 type="button"
                 variant="outline"
-                className="h-8 rounded-md px-4"
+                className="h-8 w-fit rounded-md px-4"
                 disabled={!canHandoff}
                 onClick={onStartCampaignFromConversation}
               >
@@ -89,6 +92,11 @@ export function Composer({
                   "Start campaign from this conversation"
                 )}
               </Button>
+            ) : null}
+            {showHandoffButton && !canHandoff && handoffDisabledCaption !== null ? (
+              <span className="text-caption text-fg-muted">
+                {handoffDisabledCaption}
+              </span>
             ) : null}
           </div>
           {onGoToCampaign !== undefined ? (

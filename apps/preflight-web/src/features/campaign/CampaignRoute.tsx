@@ -43,6 +43,7 @@ export function CampaignRoute(): ReactElement {
       freeText={hook.freeText}
       brief={hook.brief}
       proposedFieldKeys={hook.proposedFieldKeys}
+      extractSkillsRead={hook.extractSkillsRead}
       compileResult={hook.compileResult}
       emptySetAcknowledged={hook.emptySetAcknowledged}
       extractInFlight={hook.extractInFlight}
@@ -74,6 +75,14 @@ export function CampaignRoute(): ReactElement {
       }}
       onGenerate={() => {
         void hook.generate();
+      }}
+      buildPhase={hook.buildPhase}
+      buildInFlight={hook.buildInFlight}
+      runningStep={hook.runningStep}
+      narrations={hook.narrations}
+      missingFields={hook.missingFields}
+      onRunBuild={() => {
+        void hook.runBuild();
       }}
     />
   );

@@ -6,7 +6,7 @@
 import {
   CampaignDTOSchema,
   CompileResponseDTOSchema,
-  ExtractorOutputSchema,
+  ExtractResponseDTOSchema,
   GenerateResponseDTOSchema,
   LatestCampaignResponseSchema,
 } from "@preflight/schemas";
@@ -15,7 +15,7 @@ import type {
   CompileResponseDTO,
   CreateCampaignRequest,
   ExtractRequest,
-  ExtractorOutput,
+  ExtractResponseDTO,
   GenerateRequest,
   GenerateResponseDTO,
   LatestCampaignResponse,
@@ -112,12 +112,12 @@ export async function extractCampaignBriefService(
   id: string,
   body: ExtractRequest,
   signal: AbortSignal,
-): Promise<ExtractorOutput> {
+): Promise<ExtractResponseDTO> {
   try {
     return await apiRequest("POST", `/campaigns/${id}/extract`, {
       body,
       signal,
-      dataSchema: ExtractorOutputSchema,
+      dataSchema: ExtractResponseDTOSchema,
       agent: true,
     });
   } catch (error: unknown) {

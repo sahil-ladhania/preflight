@@ -48,3 +48,24 @@ export function truncateText(text: string, maxChars: number | undefined): string
   }
   return `${text.slice(0, maxChars - 1).trimEnd()}…`;
 }
+
+export function clientInitials(clientName: string): string {
+  const parts = clientName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) {
+    return "?";
+  }
+  if (parts.length === 1) {
+    return parts[0]!.slice(0, 2).toUpperCase();
+  }
+  return `${parts[0]![0] ?? ""}${parts[1]![0] ?? ""}`.toUpperCase();
+}
+
+export function logoMarkStyle(
+  brandKit: BrandKitDTO,
+): CSSProperties {
+  return {
+    backgroundColor: brandKit.colors.primary,
+    color: "#ffffff",
+    fontFamily: brandKit.typography.headingRole,
+  };
+}

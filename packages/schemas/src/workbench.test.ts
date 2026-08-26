@@ -61,7 +61,7 @@ describe("ExplainerOutputSchema", () => {
     expect(parsed.brief?.schemeName).toBe("Bluepeak Flexi Cap Fund");
   });
 
-  it("strips partial brief on coerce when not handoff", () => {
+  it("keeps partial brief on coerce during interview", () => {
     const parsed = ExplainerOutputSchema.parse({
       message: "What is the campaign objective?",
       ruleIds: [],
@@ -73,7 +73,7 @@ describe("ExplainerOutputSchema", () => {
     });
     const coerced = coerceExplainerOutput(parsed);
     expect(coerced.suggestedAction).toBe("none");
-    expect(coerced.brief).toBeUndefined();
+    expect(coerced.brief?.schemeName).toBe("Bluepeak Flexi Cap Fund");
   });
 
   it("keeps full brief on coerce when handoff is valid", () => {
@@ -88,7 +88,7 @@ describe("ExplainerOutputSchema", () => {
     expect(coerced.brief).toEqual(completeBrief);
   });
 
-  it("coerces handoff_campaign to none when brief is incomplete", () => {
+  it("coerces handoff_campaign to none but keeps draft when brief is incomplete", () => {
     const parsed = ExplainerOutputSchema.parse({
       message: "Almost ready.",
       ruleIds: [],
@@ -100,7 +100,7 @@ describe("ExplainerOutputSchema", () => {
     });
     const coerced = coerceExplainerOutput(parsed);
     expect(coerced.suggestedAction).toBe("none");
-    expect(coerced.brief).toBeUndefined();
+    expect(coerced.brief?.schemeName).toBe("Bluepeak Flexi Cap Fund");
   });
 
   it("coerces handoff_campaign to none when brief is missing", () => {
@@ -163,5 +163,33 @@ describe("ExplainerOutputSchema", () => {
         suggestedAction: "ship_now",
       }),
     ).toThrow();
+  });
+
+  it("sanitizes empty string brief placeholders from wire JSON", () => {
+    const parsed = ExplainerOutputSchema.parse({
+      message: "Thank you for the details.",
+      ruleIds: [],
+      suggestedAction: "none",
+      brief: {
+        objective: "launch awareness for the flexi cap category",
+        schemeName: "",
+        schemeCategory: "",
+        audience: "HNI investors in India",
+        channels: ["linkedin", "email"],
+        market: "",
+      },
+    });
+    expect(parsed.brief?.objective).toBe(
+      "launch awareness for the flexi cap category",
+    );
+    expect(parsed.brief?.audience).toBe("HNI investors in India");
+    expect(parsed.brief?.channels).toEqual(["linkedin", "email"]);
+    expect(parsed.brief?.schemeName).toBeUndefined();
+    expect(parsed.brief?.schemeCategory).toBeUndefined();
+    expect(parsed.brief?.market).toBeUndefined();
+
+    const coerced = coerceExplainerOutput(parsed);
+    expect(coerced.suggestedAction).toBe("none");
+    expect(coerced.brief?.channels).toEqual(["linkedin", "email"]);
   });
 });

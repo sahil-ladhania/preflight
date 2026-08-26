@@ -7,6 +7,8 @@ import type { ReactElement } from "react";
 
 import type { ChannelPreviewContentProps } from "@/features/assets/previews/preview-types";
 import {
+  clientInitials,
+  logoMarkStyle,
   previewFrameStyle,
   truncateText,
 } from "@/features/assets/previews/preview-styles";
@@ -29,15 +31,17 @@ export function LinkedInPreview({
     >
       <div className="mb-3 flex items-center gap-2">
         <div
-          className="size-8 rounded-full"
-          style={{ backgroundColor: brandKit.colors.primary }}
-        />
+          className="flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+          style={logoMarkStyle(brandKit)}
+        >
+          {clientInitials(brandKit.clientName)}
+        </div>
         <div>
           <p className="text-sm font-semibold" style={styles.heading}>
             {brandKit.clientName}
           </p>
           <p className="text-xs" style={{ color: "#64748b" }}>
-            Sponsored
+            Sponsored · Financial services
           </p>
         </div>
       </div>
@@ -50,9 +54,21 @@ export function LinkedInPreview({
       <p className="mb-2 text-xs" style={styles.disclaimer}>
         {disclaimer}
       </p>
-      <p className="text-sm font-medium" style={{ color: brandKit.colors.secondary }}>
-        {cta} →
-      </p>
+      <span
+        className="inline-block rounded-md px-3 py-1.5 text-sm font-semibold"
+        style={styles.cta}
+      >
+        {cta}
+      </span>
+      <div
+        className="mt-3 flex gap-4 border-t pt-2 text-xs"
+        style={{ color: "#64748b" }}
+      >
+        <span>Like</span>
+        <span>Comment</span>
+        <span>Repost</span>
+        <span>Send</span>
+      </div>
     </div>
   );
 }

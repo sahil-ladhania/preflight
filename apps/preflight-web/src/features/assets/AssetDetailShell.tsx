@@ -7,7 +7,8 @@ import { ChevronLeft } from "lucide-react";
 import type { ReactElement } from "react";
 import { Link } from "react-router-dom";
 
-import { formatAssetDetailSubtitle } from "@/features/assets/lib";
+import { ChannelBadge } from "@/features/assets/ChannelBadge";
+import { formatGeneratedAt, shortId } from "@/features/assets/lib";
 import type { AssetDetailShellProps } from "@/features/assets/types";
 
 export function AssetDetailShell({
@@ -17,10 +18,8 @@ export function AssetDetailShell({
   assetId,
   generatedAt,
 }: AssetDetailShellProps): ReactElement {
-  const subtitle =
-    channel !== undefined && assetId !== undefined && generatedAt !== undefined
-      ? formatAssetDetailSubtitle(channel, assetId, generatedAt)
-      : null;
+  const showMeta =
+    channel !== undefined && assetId !== undefined && generatedAt !== undefined;
 
   return (
     <div className="flex min-h-[calc(100vh-3rem)] flex-col bg-canvas-subtle p-4 sm:p-6">
@@ -35,8 +34,14 @@ export function AssetDetailShell({
         {headline !== undefined ? (
           <h1 className="truncate text-title text-fg">{headline}</h1>
         ) : null}
-        {subtitle !== null ? (
-          <p className="text-caption text-fg-muted">{subtitle}</p>
+        {showMeta ? (
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-fg-muted">
+            <ChannelBadge channel={channel} showLabel />
+            <span aria-hidden>·</span>
+            <span>{shortId(assetId)}</span>
+            <span aria-hidden>·</span>
+            <span>{formatGeneratedAt(generatedAt)}</span>
+          </p>
         ) : null}
       </header>
       <div className="flex min-h-0 flex-1 flex-col gap-2">{children}</div>

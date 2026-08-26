@@ -3,8 +3,9 @@
  * Why: no mutations (14-backend-design.md Area 3).
  */
 import {
-  ExplainerOutputSchema,
   coerceExplainerOutput,
+  parseExplainerWireOutput,
+  type ExplainerBriefDraft,
   type WorkbenchChatHistoryItem,
   type WorkbenchChatResponse,
 } from "@preflight/schemas";
@@ -24,7 +25,7 @@ function stripJsonFence(content: string): string {
 function parseExplainerOutput(content: string): WorkbenchChatResponse {
   try {
     const parsed: unknown = JSON.parse(stripJsonFence(content));
-    return coerceExplainerOutput(ExplainerOutputSchema.parse(parsed));
+    return coerceExplainerOutput(parseExplainerWireOutput(parsed));
   } catch (error: unknown) {
     if (env.NODE_ENV === "development") {
       const preview = content.slice(0, 500);
@@ -43,6 +44,7 @@ function parseExplainerOutput(content: string): WorkbenchChatResponse {
 export async function chat(
   message: string,
   history?: WorkbenchChatHistoryItem[],
+  capturedBrief?: ExplainerBriefDraft,
 ): Promise<WorkbenchChatResponse> {
   const catalog = await getLiveCatalog();
   const catalogLines = catalog.map((entry) => ({
@@ -52,7 +54,12 @@ export async function chat(
   }));
 
   try {
-    const prompt = buildExplainerPrompt({ message, history, catalogLines });
+    const prompt = buildExplainerPrompt({
+      message,
+      history,
+      capturedBrief,
+      catalogLines,
+    });
     const { runAgent } = await import("../../lib/gitagent.js");
     const { content } = await runAgent("explainer", prompt);
     return parseExplainerOutput(content);

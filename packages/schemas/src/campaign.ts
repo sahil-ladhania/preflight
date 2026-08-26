@@ -7,6 +7,7 @@ import { z } from "zod"
 import { RuleKindSchema, ChannelSchema } from "./enums.js"
 import { AGENT_INPUT_MAX_LENGTH, HashSchema, IsoDateTimeSchema } from "./primitives.js"
 import { StructuredBriefSchema } from "./brief.js"
+import { ExtractorOutputSchema } from "./extractor-output.js"
 
 export const CompileRuleCardDTOSchema = z.object({
   ruleId: z.string().min(1),
@@ -71,6 +72,12 @@ export const GenerateRequestSchema = z.object({
   regeneratedFromId: z.string().min(1).optional(),
 })
 export type GenerateRequest = z.infer<typeof GenerateRequestSchema>
+
+export const ExtractResponseDTOSchema = z.object({
+  proposal: ExtractorOutputSchema,
+  skillsRead: z.array(z.string().min(1)),
+})
+export type ExtractResponseDTO = z.infer<typeof ExtractResponseDTOSchema>
 
 export const CompileResponseDTOSchema = z.object({
   constraintSetId: z.string().min(1),

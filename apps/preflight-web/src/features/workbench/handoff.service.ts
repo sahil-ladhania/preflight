@@ -59,6 +59,7 @@ export interface WorkbenchExtractHandoffResult {
   campaignId: string;
   freeText: string;
   proposal: Partial<StructuredBriefInput>;
+  skillsRead: string[];
 }
 
 export async function runWorkbenchExtractHandoff(
@@ -77,9 +78,9 @@ export async function runWorkbenchExtractHandoff(
     signal,
   );
   const proposal = seedProposalFromExplainer(
-    extracted,
+    extracted.proposal,
     handoffBriefFromMessages(messages),
   );
 
-  return { campaignId, freeText, proposal };
+  return { campaignId, freeText, proposal, skillsRead: extracted.skillsRead };
 }

@@ -4,7 +4,7 @@
  */
 
 import type { ReactElement } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 import { AssetDetail } from "@/features/assets/AssetDetail";
 import {
@@ -15,8 +15,19 @@ import {
 import { ComplianceDeskModal } from "@/features/assets/ComplianceDeskModal";
 import { useAssetDetail } from "@/features/assets/useAssetDetail";
 
+/** Generate and regenerate hand the run's skill paths over in router state. */
+type AssetDetailLocationState = {
+  generatorSkillsRead?: string[];
+  buildNarration?: string;
+};
+
 export function AssetDetailRoute(): ReactElement {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
+  const locationState = location.state as AssetDetailLocationState | null;
+  const generatorSkillsRead = locationState?.generatorSkillsRead ?? null;
+  const buildNarration = locationState?.buildNarration ?? null;
+  const showVerdictBanner = buildNarration !== null;
   const {
     asset,
     view,
@@ -62,6 +73,9 @@ export function AssetDetailRoute(): ReactElement {
         asset={asset}
         view="loaded"
         rerunStrip={rerunStrip}
+        generatorSkillsRead={generatorSkillsRead}
+        buildNarration={buildNarration}
+        showVerdictBanner={showVerdictBanner}
         openFindingId={openFindingId}
         reasonModal={reasonModal}
         onSpanClick={selectSpanFinding}

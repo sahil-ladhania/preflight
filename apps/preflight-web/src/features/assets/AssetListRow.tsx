@@ -6,6 +6,7 @@
 import type { MouseEvent, ReactElement } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import { ChannelBadge } from "@/features/assets/ChannelBadge";
 import { formatGeneratedAt, shortId } from "@/features/assets/lib";
 import { PendingRing } from "@/features/assets/PendingRing";
 import { StatusChip } from "@/features/assets/StatusChip";
@@ -81,7 +82,10 @@ export function AssetListRow({ asset }: AssetListRowProps): ReactElement {
         <PendingRing active={asset.pendingCount > 0} />
         <StatusChip status={asset.status} />
       </div>
-      <span className="truncate text-body text-fg">{asset.headline}</span>
+      <span className="flex min-w-0 items-center gap-2 truncate text-body text-fg">
+        <ChannelBadge channel={asset.channel} showLabel={false} className="shrink-0" />
+        <span className="truncate">{asset.headline}</span>
+      </span>
       <span className="truncate text-caption text-fg-muted">
         {asset.statusDetail}
       </span>

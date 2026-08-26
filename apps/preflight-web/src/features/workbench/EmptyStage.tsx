@@ -1,11 +1,15 @@
 /**
  * EmptyStage — welcome centered; composer docked at stage bottom.
- * Why: logo + dotted prompts in middle; input + campaign handoff below (09 R2a).
+ * Why: logo + outcome-first copy + dotted prompts in middle (09 R2a).
  */
 
 import type { ReactElement, ReactNode } from "react";
 
-import { WORKBENCH_INVITATION, WORKBENCH_PROMPT_CHIPS } from "@/features/workbench/lib";
+import {
+  WORKBENCH_HEADLINE,
+  WORKBENCH_PROMPT_CHIPS,
+  WORKBENCH_SUBLINE,
+} from "@/features/workbench/lib";
 import { CampaignHandoffLink } from "@/features/workbench/CampaignHandoffLink";
 import { WorkbenchLogoMark } from "@/features/workbench/WorkbenchLogoMark";
 
@@ -47,9 +51,10 @@ export function EmptyStage({
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-8 sm:px-10">
         <WorkbenchLogoMark />
-        <p className="max-w-md text-center text-body-airy text-fg-muted">
-          {WORKBENCH_INVITATION}
-        </p>
+        <div className="flex max-w-lg flex-col gap-2 text-center">
+          <h2 className="text-title text-fg">{WORKBENCH_HEADLINE}</h2>
+          <p className="text-body-airy text-fg-muted">{WORKBENCH_SUBLINE}</p>
+        </div>
         <div className="flex flex-col items-center gap-3">
           {WORKBENCH_PROMPT_CHIPS.map((chip) => (
             <PromptSuggestion

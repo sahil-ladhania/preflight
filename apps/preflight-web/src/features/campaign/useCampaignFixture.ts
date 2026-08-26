@@ -18,7 +18,9 @@ import {
   COMPILE_RESULT,
   COMPILE_ZERO_RULES,
   EXTRACT_PROPOSAL,
+  EXTRACT_SKILLS_READ,
   GENERATE_ASSET_ID,
+  GENERATE_SKILLS_READ,
 } from "@/fixtures/campaign";
 
 export function useCampaignFixture(
@@ -33,6 +35,7 @@ export function useCampaignFixture(
   savedBrief: ReturnType<typeof briefFromCampaign>;
   briefSaved: boolean;
   proposedFieldKeys: Set<BriefField>;
+  extractSkillsRead: string[] | null;
   compileResult: CompileResponseDTO | null;
   emptySetAcknowledged: boolean;
   extractInFlight: boolean;
@@ -60,6 +63,9 @@ export function useCampaignFixture(
   const [proposedFieldKeys, setProposedFieldKeys] = useState<Set<BriefField>>(
     () => new Set(),
   );
+  const [extractSkillsRead, setExtractSkillsRead] = useState<string[] | null>(
+    null,
+  );
   const [compileResult, setCompileResult] = useState<CompileResponseDTO | null>(
     () => initialCompileResult ?? campaign.lastCompile,
   );
@@ -74,6 +80,7 @@ export function useCampaignFixture(
     setExtractInFlight(true);
     setBrief(mergeExtractProposal(brief, EXTRACT_PROPOSAL));
     setProposedFieldKeys(proposedKeysFromPartial(EXTRACT_PROPOSAL));
+    setExtractSkillsRead(EXTRACT_SKILLS_READ);
     setExtractInFlight(false);
   };
 
@@ -93,6 +100,7 @@ export function useCampaignFixture(
     setSavedBrief(brief);
     setBriefSaved(true);
     setProposedFieldKeys(new Set());
+    setExtractSkillsRead(null);
     setSaveInFlight(false);
   };
 
@@ -107,7 +115,9 @@ export function useCampaignFixture(
   const handleGenerate = (): void => {
     setGenerateInFlight(true);
     setGenerateInFlight(false);
-    void navigate(`/assets/${GENERATE_ASSET_ID}`);
+    void navigate(`/assets/${GENERATE_ASSET_ID}`, {
+      state: { generatorSkillsRead: GENERATE_SKILLS_READ },
+    });
   };
 
   return {
@@ -118,6 +128,7 @@ export function useCampaignFixture(
     savedBrief,
     briefSaved,
     proposedFieldKeys,
+    extractSkillsRead,
     compileResult,
     emptySetAcknowledged,
     extractInFlight,

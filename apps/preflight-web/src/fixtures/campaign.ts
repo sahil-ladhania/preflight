@@ -40,6 +40,14 @@ export const EXTRACT_PROPOSAL: Partial<StructuredBriefInput> = {
   market: "India",
 };
 
+export const EXTRACT_SKILLS_READ = ["skills/brief-structure/SKILL.md"];
+
+export const GENERATE_SKILLS_READ = [
+  "skills/brand-voice/SKILL.md",
+  "skills/sebi-copy-constraints/SKILL.md",
+  "skills/channel-email/SKILL.md",
+];
+
 const COMPILE_RULES: LastCompileDTO["rules"] = [
   {
     ruleId: "SEBI-01",

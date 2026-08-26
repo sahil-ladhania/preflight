@@ -7,10 +7,6 @@ import { useCallback, useEffect, useRef, type ReactElement } from "react";
 
 import { PendingRing } from "@/features/assets/PendingRing";
 import { CommentSheet } from "@/features/workbench/CommentSheet";
-import { ExtractResultCard } from "@/features/workbench/ExtractResultCard";
-import { FreezeResultCard } from "@/features/workbench/FreezeResultCard";
-import { GenerateResultCard } from "@/features/workbench/GenerateResultCard";
-import { JourneyActions } from "@/features/workbench/JourneyActions";
 import { RuleCards } from "@/features/workbench/RuleCards";
 import { SearchFallback } from "@/features/workbench/SearchFallback";
 import { useTypewriterReveal } from "@/features/workbench/useTypewriterReveal";
@@ -42,9 +38,7 @@ function AssistantMessageBlock({
       <p className="whitespace-pre-wrap text-body-airy text-fg">
         {shouldReveal ? visibleText : message.text}
       </p>
-      {!shouldReveal || isComplete ? (
-        <RuleCards ruleIds={message.ruleIds} rules={rules} />
-      ) : null}
+      <RuleCards ruleIds={message.ruleIds} rules={rules} />
     </CommentSheet>
   );
 }
@@ -89,23 +83,6 @@ function MessageBlock({
     );
   }
 
-  if (message.role === "journey_extract") {
-    return <ExtractResultCard proposal={message.proposal} />;
-  }
-
-  if (message.role === "journey_freeze") {
-    return <FreezeResultCard compile={message.compile} />;
-  }
-
-  if (message.role === "journey_generate") {
-    return (
-      <GenerateResultCard
-        assets={message.assets}
-        skillsRead={message.skillsRead}
-      />
-    );
-  }
-
   return (
     <CommentSheet label="Preflight" variant="error">
       <p className="whitespace-pre-wrap text-body-airy text-fg-muted">
@@ -121,7 +98,6 @@ export function Thread({
   showSearchFallback,
   searchQuery,
   onSearchQueryChange,
-  journey,
 }: ThreadProps): ReactElement {
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -147,7 +123,6 @@ export function Thread({
           onRevealProgress={scrollToEnd}
         />
       ))}
-      {journey !== undefined ? <JourneyActions {...journey} /> : null}
       {showSearchFallback ? (
         <SearchFallback
           rules={rules}

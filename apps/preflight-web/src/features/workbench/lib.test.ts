@@ -1,6 +1,6 @@
 /**
  * lib.test — workbench handoff gating and extract helpers.
- * Why: CTA when handoff suggested or campaign intent; extract seeds from explainer.
+ * Why: CTA when brief complete; extract seeds from explainer.
  */
 
 import { describe, expect, it } from "vitest";
@@ -40,29 +40,32 @@ function assistantMessage(
 }
 
 describe("handoffEnabled", () => {
-  it("is true when a user turn has campaign intent", () => {
+  it("is false for campaign intent alone without a complete brief", () => {
     const messages: WorkbenchMessage[] = [
       { id: "user-1", role: "user", text: "Bluepeak campaign for LinkedIn" },
     ];
-    expect(handoffEnabled(messages)).toBe(true);
+    expect(handoffEnabled(messages)).toBe(false);
   });
 
-  it("is false for pure rule questions without campaign intent", () => {
+  it("is false for pure rule questions without a complete brief", () => {
     const messages: WorkbenchMessage[] = [
       { id: "user-1", role: "user", text: "What is det vs judgement?" },
     ];
     expect(handoffEnabled(messages)).toBe(false);
   });
 
-  it("is true when handoff is suggested without a brief", () => {
+  it("is false when handoff is suggested but brief is incomplete", () => {
     const messages: WorkbenchMessage[] = [
       { id: "user-1", role: "user", text: "Campaign for Bluepeak" },
-      assistantMessage({ suggestedAction: "handoff_campaign" }),
+      assistantMessage({
+        suggestedAction: "handoff_campaign",
+        brief: { schemeName: "Bluepeak Flexi Cap Fund" },
+      }),
     ];
-    expect(handoffEnabled(messages)).toBe(true);
+    expect(handoffEnabled(messages)).toBe(false);
   });
 
-  it("still reads explainer brief when present on handoff turn", () => {
+  it("is true when accumulated brief is complete", () => {
     const messages: WorkbenchMessage[] = [
       { id: "user-1", role: "user", text: "Campaign for Bluepeak" },
       assistantMessage({
@@ -76,15 +79,12 @@ describe("handoffEnabled", () => {
 });
 
 describe("toChatHistory", () => {
-  it("omits journey cards from explainer history", () => {
+  it("omits pending and error cards from explainer history", () => {
     const messages: WorkbenchMessage[] = [
       { id: "user-1", role: "user", text: "First turn" },
       assistantMessage({ text: "Reply" }),
-      {
-        id: "extract-1",
-        role: "journey_extract",
-        proposal: { objective: "Launch" },
-      },
+      { id: "pending-1", role: "pending" },
+      { id: "error-1", role: "error", text: "Explainer unavailable" },
     ];
     expect(toChatHistory(messages)).toEqual([
       { role: "user", content: "First turn" },

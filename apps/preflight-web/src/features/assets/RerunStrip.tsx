@@ -1,76 +1,78 @@
 /**
- * RerunStrip — R5 re-run control and R6 hash/drift strip.
- * Why: read-only engine compare after POST /assets/:id/rerun.
+ * RerunStrip — verify deterministic checks + rulebook drift (read-only).
+ * Why: outcome-first audit strip after POST /assets/:id/rerun.
  */
 
-import type { ReactElement } from "react";
-import { Loader2, RefreshCw } from "lucide-react";
+import { useState, type ReactElement } from "react";
+import { ChevronDown, ChevronRight, Loader2, RefreshCw } from "lucide-react";
 
-import type { DriftItemDTO, RerunStripDTO } from "@preflight/schemas";
+import type { RerunStripDTO } from "@preflight/schemas";
 
 import { Button } from "@/components/ui/button";
+import { shortId } from "@/features/assets/lib";
+import {
+  DriftColumnHeaders,
+  RerunDriftItem,
+} from "@/features/assets/RerunDriftItem";
+import {
+  rerunDriftSummary,
+  rerunEngineVerdict,
+} from "@/features/assets/rerun-lib";
 import type { RerunStripProps } from "@/features/assets/types";
+import { cn } from "@/lib/utils";
 
-function DriftItemRow({ item }: { item: DriftItemDTO }): ReactElement {
-  if (item.kind === "definition_changed") {
-    const changeLabels = item.changes.map((change) => {
-      if (change === "wording") {
-        return "wording";
-      }
-      if (change === "predicate") {
-        return "applicability spec changed";
-      }
-      return "matcher changed";
-    });
+function VerdictCard({
+  title,
+  body,
+  tone = "neutral",
+}: {
+  title: string;
+  body: string;
+  tone?: "neutral" | "warn";
+}): ReactElement {
+  return (
+    <div
+      className={cn(
+        "flex flex-col gap-1 rounded-md border px-3 py-2",
+        tone === "warn"
+          ? "border-fail/40 bg-canvas"
+          : "border-border bg-canvas",
+      )}
+    >
+      <p className="text-caption font-medium text-fg">{title}</p>
+      <p className="text-caption text-fg-muted">{body}</p>
+    </div>
+  );
+}
 
-    return (
-      <div className="flex flex-col gap-2 border-t border-border pt-3">
-        <p className="text-mono text-fg-muted">{item.ruleId}</p>
-        <div className="flex flex-wrap gap-1">
-          {changeLabels.map((label) => (
-            <span
-              key={label}
-              className="rounded-md border border-border px-2 py-0.5 text-caption text-fg-muted"
-            >
-              {label}
-            </span>
-          ))}
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-md border border-border bg-canvas p-3 text-body text-fg">
-            {item.frozenWording}
-          </div>
-          <div className="rounded-md border border-border bg-canvas p-3 text-body text-fg">
-            {item.liveWording}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (item.kind === "rules_added_outside_freeze") {
-    return (
-      <div className="flex flex-col gap-2 border-t border-border pt-3">
-        <p className="text-mono text-fg-muted">{item.ruleId}</p>
-        <div className="grid grid-cols-2 gap-2">
-          <p className="text-caption text-fg-muted">not in this run</p>
-          <div className="rounded-md border border-border bg-canvas p-3 text-body text-fg">
-            {item.liveWording}
-          </div>
-        </div>
-      </div>
-    );
-  }
+function HashDisclosure({ strip }: { strip: RerunStripDTO }): ReactElement {
+  const [open, setOpen] = useState<boolean>(false);
 
   return (
-    <div className="flex flex-col gap-2 border-t border-border pt-3">
-      <p className="text-mono text-fg-muted">{item.ruleId}</p>
-      <div className="grid grid-cols-2 gap-2">
-        <div className="rounded-md border border-border bg-canvas p-3 text-body text-fg">
-          {item.frozenWording}
+    <div className="flex flex-col gap-2">
+      <button
+        type="button"
+        className="inline-flex w-fit items-center gap-1 text-caption text-primary underline underline-offset-4"
+        onClick={() => setOpen((current) => !current)}
+      >
+        {open ? (
+          <ChevronDown className="size-3.5 shrink-0" aria-hidden />
+        ) : (
+          <ChevronRight className="size-3.5 shrink-0" aria-hidden />
+        )}
+        Show technical hashes
+      </button>
+      {open ? (
+        <div className="flex flex-col gap-1 text-hash text-fg-muted">
+          <p>
+            Run {shortId(strip.runHash)} → re-run {shortId(strip.rerunHash)}
+          </p>
+          <p>
+            Ruleset {shortId(strip.rulesetHash)} → live{" "}
+            {shortId(strip.liveRulesetHash)}
+          </p>
         </div>
-        <p className="text-caption text-fg-muted">removed from catalog</p>
-      </div>
+      ) : null}
     </div>
   );
 }
@@ -78,26 +80,26 @@ function DriftItemRow({ item }: { item: DriftItemDTO }): ReactElement {
 function StripBody({ strip }: { strip: RerunStripDTO }): ReactElement {
   return (
     <div className="flex flex-col gap-3 border-t border-border bg-canvas-subtle px-4 py-3">
-      <p className="text-hash text-fg-muted">
-        {strip.runHash} {strip.rerunHash}{" "}
-        {strip.hashesMatch ? "Hashes match." : "Engine mismatch."}
-      </p>
-      <p className="text-hash text-fg-muted">
-        {strip.rulesetHash} {strip.liveRulesetHash}{" "}
-        {strip.rulesetHash === strip.liveRulesetHash
-          ? "Ruleset pin matches live catalog."
-          : "Ruleset pin differs from live catalog."}
-      </p>
+      <VerdictCard
+        title="Copy checks"
+        body={rerunEngineVerdict(strip)}
+        tone={strip.hashesMatch ? "neutral" : "warn"}
+      />
+      <VerdictCard
+        title="Rulebook since freeze"
+        body={rerunDriftSummary(strip)}
+        tone={strip.driftItems.length > 0 ? "warn" : "neutral"}
+      />
       {strip.driftItems.length > 0 ? (
-        <>
-          <span className="inline-flex w-fit rounded-md border border-border px-2 py-0.5 text-caption text-fg-muted">
-            {strip.driftItems.length} catalog changes
-          </span>
+        <div className="flex flex-col gap-2">
+          <p className="text-caption font-medium text-fg">What changed in the rulebook</p>
+          <DriftColumnHeaders />
           {strip.driftItems.map((item) => (
-            <DriftItemRow key={`${item.kind}-${item.ruleId}`} item={item} />
+            <RerunDriftItem key={`${item.kind}-${item.ruleId}`} item={item} />
           ))}
-        </>
+        </div>
       ) : null}
+      <HashDisclosure strip={strip} />
     </div>
   );
 }
@@ -107,29 +109,30 @@ export function RerunStrip({
   onRerun,
   rerunInFlight = false,
 }: RerunStripProps): ReactElement {
-  const handleRerun = (): void => {
-    onRerun();
-  };
-
   return (
     <div className="shrink-0 rounded-md border border-border bg-canvas-subtle">
-      <div className="px-4 py-3">
-        <Button
-          type="button"
-          variant="outline"
-          className="h-8 rounded-md px-4"
-          disabled={rerunInFlight}
-          onClick={handleRerun}
-        >
-          {rerunInFlight ? (
-            <Loader2 className="size-4 animate-spin" aria-hidden />
-          ) : (
-            <>
-              <RefreshCw className="size-4 shrink-0" aria-hidden />
-              Re-run deterministic
-            </>
-          )}
-        </Button>
+      <div className="flex flex-col gap-2 px-4 py-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            className="h-8 rounded-md px-4"
+            disabled={rerunInFlight}
+            onClick={onRerun}
+          >
+            {rerunInFlight ? (
+              <Loader2 className="size-4 animate-spin" aria-hidden />
+            ) : (
+              <>
+                <RefreshCw className="size-4 shrink-0" aria-hidden />
+                Verify deterministic checks
+              </>
+            )}
+          </Button>
+        </div>
+        <p className="text-caption text-fg-muted">
+          Re-runs frozen rules on this copy. Read-only — does not change pass/fail.
+        </p>
       </div>
       {strip !== null ? <StripBody strip={strip} /> : null}
     </div>

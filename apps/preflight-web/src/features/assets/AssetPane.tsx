@@ -7,6 +7,7 @@ import type { ReactElement } from "react";
 import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { ChannelBadge } from "@/features/assets/ChannelBadge";
 import { AssetCopyField } from "@/features/assets/AssetCopyField";
 import { ChannelPreview } from "@/features/assets/previews/ChannelPreview";
 import {
@@ -27,6 +28,7 @@ export function AssetPane({
   onAccept,
   onRegenerate,
   regenerateInFlight = false,
+  suppressHeaderActions = false,
 }: AssetPaneProps): ReactElement {
   const acceptEnabled = acceptIsEnabled(asset.status);
   const disabledCaption = acceptDisabledCaption(
@@ -67,37 +69,43 @@ export function AssetPane({
           <span className="text-hash text-fg-muted">{shortId(asset.id)}</span>
         </div>
         <div className="flex flex-col gap-1">
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <Button
-              type="button"
-              variant={acceptEnabled ? "default" : "outline"}
-              className="h-8 rounded-md px-4"
-              disabled={!acceptEnabled}
-              onClick={acceptEnabled ? onAccept : undefined}
-            >
-              Ready for compliance desk
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="h-8 rounded-md px-4"
-              disabled={regenerateInFlight}
-              onClick={onRegenerate}
-            >
-              {regenerateInFlight ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
-              ) : (
-                "Regenerate"
-              )}
-            </Button>
-          </div>
-          {!acceptEnabled && disabledCaption !== null ? (
-            <p className="text-caption text-fg-muted">{disabledCaption}</p>
+          {!suppressHeaderActions ? (
+            <>
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <Button
+                  type="button"
+                  variant={acceptEnabled ? "default" : "outline"}
+                  className="h-8 rounded-md px-4"
+                  disabled={!acceptEnabled}
+                  onClick={acceptEnabled ? onAccept : undefined}
+                >
+                  Ready for compliance desk
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-8 rounded-md px-4"
+                  disabled={regenerateInFlight}
+                  onClick={onRegenerate}
+                >
+                  {regenerateInFlight ? (
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                  ) : (
+                    "Regenerate"
+                  )}
+                </Button>
+              </div>
+              {!acceptEnabled && disabledCaption !== null ? (
+                <p className="text-caption text-fg-muted">{disabledCaption}</p>
+              ) : null}
+            </>
           ) : null}
         </div>
       </div>
       <div className="border-b border-border px-4 py-3">
-        <p className="mb-2 text-caption text-fg-muted">Channel preview</p>
+        <div className="mb-2">
+          <ChannelBadge channel={asset.channel} showLabel />
+        </div>
         <ChannelPreview
           channel={asset.channel}
           headline={asset.headline}

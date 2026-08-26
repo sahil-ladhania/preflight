@@ -2,7 +2,7 @@
  * useCampaign — Campaign fetch and mutations.
  * Why: GET/PUT brief, extract, compile, generate orchestration.
  */
-// size: load in useCampaignLoad; mutations in useCampaignMutations.ts
+// size: build chain in useCampaignBuild.ts; mutations in useCampaignMutations.ts
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -16,6 +16,9 @@ import {
   mergeExtractProposal,
   proposedKeysFromPartial,
 } from "@/features/campaign/lib";
+import { buildExtractNarration } from "@/features/campaign/narration";
+import type { BuildPhase, CampaignNarrations } from "@/features/campaign/types";
+import { useCampaignBuild } from "@/features/campaign/useCampaignBuild";
 import { useCampaignHandoff } from "@/features/campaign/useCampaignHandoff";
 import { useCampaignLoad } from "@/features/campaign/useCampaignLoad";
 import { useCampaignMutations } from "@/features/campaign/useCampaignMutations";
@@ -28,6 +31,7 @@ export function useCampaign(campaignId: string | undefined): {
   freeText: string;
   brief: StructuredBriefInput;
   proposedFieldKeys: ReadonlySet<BriefField>;
+  extractSkillsRead: string[] | null;
   compileResult: ReturnType<typeof useCampaignLoad>["compileResult"];
   emptySetAcknowledged: boolean;
   extractInFlight: boolean;
@@ -44,6 +48,11 @@ export function useCampaign(campaignId: string | undefined): {
   briefDirty: boolean;
   briefSaved: boolean;
   activeStep: CampaignStepId;
+  buildPhase: BuildPhase;
+  buildInFlight: boolean;
+  runningStep: CampaignStepId | undefined;
+  narrations: CampaignNarrations;
+  missingFields: BriefField[];
   setFreeText: (value: string) => void;
   setBrief: (brief: StructuredBriefInput) => void;
   onFieldEdit: (field: BriefField) => void;
@@ -52,10 +61,14 @@ export function useCampaign(campaignId: string | undefined): {
   save: () => Promise<void>;
   compile: () => Promise<void>;
   generate: () => Promise<void>;
+  runBuild: () => Promise<void>;
   retryLoad: () => void;
 } {
   const [proposedFieldKeys, setProposedFieldKeys] = useState<Set<BriefField>>(
     () => new Set(),
+  );
+  const [extractSkillsRead, setExtractSkillsRead] = useState<string[] | null>(
+    null,
   );
   const [emptySetAcknowledged, setEmptySetAcknowledged] =
     useState<boolean>(false);
@@ -68,11 +81,29 @@ export function useCampaign(campaignId: string | undefined): {
 
   const onHydrated = useCallback((): void => {
     setProposedFieldKeys(new Set());
+    setExtractSkillsRead(null);
     setEmptySetAcknowledged(false);
     handoffAppliedRef.current = false;
   }, []);
 
   const load = useCampaignLoad(campaignId, onHydrated);
+
+  const build = useCampaignBuild({
+    campaignId,
+    freeText: load.freeText,
+    brief: load.brief,
+    compileResult: load.compileResult,
+    emptySetAcknowledged,
+    setCampaign: load.setCampaign,
+    setBrief: load.setBrief,
+    setSavedBrief: load.setSavedBrief,
+    setBriefSaved: load.setBriefSaved,
+    setProposedFieldKeys,
+    setExtractSkillsRead,
+    setCompileResult: load.setCompileResult,
+    setEmptySetAcknowledged,
+    toastApiError: load.toastApiError,
+  });
 
   useEffect(() => {
     if (
@@ -91,8 +122,17 @@ export function useCampaign(campaignId: string | undefined): {
       mergeExtractProposal(current, pendingHandoff.proposal),
     );
     setProposedFieldKeys(proposedKeysFromPartial(pendingHandoff.proposal));
+    setExtractSkillsRead(pendingHandoff.skillsRead ?? null);
+    build.setBriefNarration(
+      buildExtractNarration(
+        pendingHandoff.proposal,
+        pendingHandoff.skillsRead ?? [],
+      ),
+    );
     clearHandoff();
-  }, [load.view, pendingHandoff, load.setBrief, load.setFreeText, clearHandoff]);
+    // handoff runs once per campaign load; build/load objects are stable enough here
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional single-fire handoff
+  }, [load.view, pendingHandoff, clearHandoff]);
 
   const gate = useMemo(
     () =>
@@ -128,6 +168,7 @@ export function useCampaign(campaignId: string | undefined): {
     setSavedBrief: load.setSavedBrief,
     setBriefSaved: load.setBriefSaved,
     setProposedFieldKeys,
+    setExtractSkillsRead,
     setCompileResult: load.setCompileResult,
     setEmptySetAcknowledged,
     setExtractInFlight,
@@ -148,6 +189,13 @@ export function useCampaign(campaignId: string | undefined): {
     });
   }, []);
 
+  const buildActiveStep =
+    build.runningStep ??
+    activeCampaignStep({
+      briefSaved: load.briefSaved,
+      compileDone: load.compileResult !== null,
+    });
+
   return {
     campaign: load.campaign,
     view: load.view,
@@ -156,6 +204,7 @@ export function useCampaign(campaignId: string | undefined): {
     freeText: load.freeText,
     brief: load.brief,
     proposedFieldKeys,
+    extractSkillsRead,
     compileResult: load.compileResult,
     emptySetAcknowledged,
     extractInFlight,
@@ -171,10 +220,12 @@ export function useCampaign(campaignId: string | undefined): {
     s3Dimmed: gate.s3Dimmed,
     briefDirty: gate.briefDirty,
     briefSaved: load.briefSaved,
-    activeStep: activeCampaignStep({
-      briefSaved: load.briefSaved,
-      compileDone: load.compileResult !== null,
-    }),
+    activeStep: buildActiveStep,
+    buildPhase: build.buildPhase,
+    buildInFlight: build.buildInFlight,
+    runningStep: build.runningStep,
+    narrations: build.narrations,
+    missingFields: build.missingFields,
     setFreeText: load.setFreeText,
     setBrief: load.setBrief,
     onFieldEdit,
@@ -183,6 +234,7 @@ export function useCampaign(campaignId: string | undefined): {
     save,
     compile,
     generate,
+    runBuild: build.runBuild,
     retryLoad: load.retryLoad,
   };
 }

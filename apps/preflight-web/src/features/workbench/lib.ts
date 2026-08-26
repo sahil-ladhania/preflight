@@ -1,59 +1,39 @@
 /**
  * lib — workbench-only helpers.
- * Why: catalog filter and message id generation.
+ * Why: catalog filter, handoff gating, and message id generation.
  */
 
+import {
+  isBriefComplete,
+  mergeDraftBrief,
+  parseCompleteBrief,
+} from "@preflight/schemas";
 import type { StructuredBriefInput, WorkbenchChatHistoryItem } from "@preflight/schemas";
 import type { RuleCatalogRowDTO } from "@preflight/schemas";
 
+import {
+  accumulatedBriefFromMessages,
+  draftBriefsFromMessages,
+  handoffReadyState,
+} from "@/features/workbench/useBriefReadiness";
 import type { WorkbenchMessage } from "@/features/workbench/types";
 
-export const WORKBENCH_INVITATION =
-  "Describe the campaign you want to build — or ask about a rule.";
+export const WORKBENCH_HEADLINE =
+  "Turn a campaign brief into copy you can defend.";
+
+export const WORKBENCH_SUBLINE =
+  "Describe your campaign in plain language. Preflight structures the brief, freezes the compliance rules that apply, then generates channel copy with a rule-by-rule audit trail.";
+
+export const WORKBENCH_INVITATION = WORKBENCH_HEADLINE;
+
+export const WORKBENCH_COMPOSER_PLACEHOLDER =
+  "Describe your campaign or ask about a rule…";
 
 export const WORKBENCH_PROMPT_CHIPS = [
   "LinkedIn and email for Bluepeak Flexi Cap, professional tone.",
   "HNI launch brief: Flexi Cap, India, highlight flexibility.",
   "What does Preflight check before generate?",
 ] as const;
-
-const CAMPAIGN_INTENT_KEYWORDS = [
-  "campaign",
-  "brief",
-  "linkedin",
-  "email",
-  "whatsapp",
-  "landing",
-  "display",
-  "audience",
-  "scheme",
-  "fund",
-  "bluepeak",
-  "generate copy",
-] as const;
-
-export function hasCampaignIntent(messages: WorkbenchMessage[]): boolean {
-  return messages.some((message) => {
-    if (message.role !== "user") {
-      return false;
-    }
-    const lower = message.text.toLowerCase();
-    return CAMPAIGN_INTENT_KEYWORDS.some((keyword) => lower.includes(keyword));
-  });
-}
-
-export function lastAssistantSuggestsHandoff(
-  messages: WorkbenchMessage[],
-): boolean {
-  const lastAssistant = [...messages]
-    .reverse()
-    .find((message) => message.role === "assistant");
-  return (
-    lastAssistant !== undefined &&
-    lastAssistant.role === "assistant" &&
-    lastAssistant.suggestedAction === "handoff_campaign"
-  );
-}
 
 export function nextMessageId(): string {
   return crypto.randomUUID();
@@ -88,28 +68,19 @@ export function toChatHistory(
 export function handoffBriefFromMessages(
   messages: WorkbenchMessage[],
 ): Partial<StructuredBriefInput> | null {
-  const lastAssistant = [...messages]
-    .reverse()
-    .find((message) => message.role === "assistant");
-  if (
-    lastAssistant === undefined ||
-    lastAssistant.role !== "assistant" ||
-    lastAssistant.suggestedAction !== "handoff_campaign" ||
-    lastAssistant.brief === undefined
-  ) {
+  const captured = accumulatedBriefFromMessages(messages);
+  if (!isBriefComplete(captured)) {
     return null;
   }
-  return lastAssistant.brief;
+  return parseCompleteBrief(captured) ?? captured;
 }
 
 export function handoffSuggested(messages: WorkbenchMessage[]): boolean {
-  return handoffBriefFromMessages(messages) !== null;
+  return handoffReadyState(messages).canStart;
 }
 
 export function handoffEnabled(messages: WorkbenchMessage[]): boolean {
-  return (
-    lastAssistantSuggestsHandoff(messages) || hasCampaignIntent(messages)
-  );
+  return handoffReadyState(messages).canStart;
 }
 
 export function buildHandoffFreeText(messages: WorkbenchMessage[]): string {
@@ -130,19 +101,7 @@ export function seedProposalFromExplainer(
     return extracted;
   }
 
-  const merged: Partial<StructuredBriefInput> = { ...explainerBrief, ...extracted };
-
-  if (extracted.channels === undefined) {
-    merged.channels = explainerBrief.channels;
-  }
-  if (extracted.performanceFigures === undefined) {
-    merged.performanceFigures = explainerBrief.performanceFigures;
-  }
-  if (extracted.claims === undefined) {
-    merged.claims = explainerBrief.claims;
-  }
-
-  return merged;
+  return mergeDraftBrief(explainerBrief, extracted);
 }
 
 export function rulesForIds(
@@ -172,3 +131,5 @@ export function searchRules(
     )
     .slice(0, limit);
 }
+
+export { accumulatedBriefFromMessages, draftBriefsFromMessages, handoffReadyState };

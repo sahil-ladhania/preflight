@@ -13,6 +13,7 @@ import type {
 } from "@preflight/schemas";
 
 import type { CampaignStepId } from "@/features/campaign/CampaignStepRail";
+import type { BuildPhase } from "@/features/campaign/types";
 
 export const CHANNEL_OPTIONS: Channel[] = [
   "email",
@@ -30,27 +31,27 @@ export const BRIEF_SCALAR_FIELDS: Array<{
   {
     key: "objective",
     label: "Objective",
-    placeholder: "Drive awareness among digital investors ahead of Q4",
+    placeholder: "e.g. Drive awareness among digital investors",
   },
   {
     key: "schemeName",
     label: "Scheme name",
-    placeholder: "Bluepeak Flexi Cap Fund",
+    placeholder: "e.g. Bluepeak Flexi Cap Fund",
   },
   {
     key: "schemeCategory",
     label: "Scheme category",
-    placeholder: "Flexi Cap",
+    placeholder: "e.g. Flexi Cap",
   },
   {
     key: "audience",
     label: "Audience",
-    placeholder: "Retail investors aged 25–45 in metro India",
+    placeholder: "e.g. Retail investors in metro India",
   },
   {
     key: "market",
     label: "Market",
-    placeholder: "India",
+    placeholder: "e.g. India",
   },
 ];
 
@@ -58,13 +59,19 @@ export const BRIEF_FREE_TEXT_PLACEHOLDER =
   "Paste the full marketing brief — scheme, audience, channels, performance figures, claims, and tone.";
 
 export const CAMPAIGN_INPUT_CLASS =
-  "h-auto rounded-xl border-transparent bg-canvas-subtle/50 px-4 py-3 text-body-airy shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0";
+  "h-auto rounded-xl border border-dashed border-border/70 bg-canvas px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-muted/60 shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0";
 
 export const CAMPAIGN_INPUT_PROPOSED_CLASS =
-  "h-auto rounded-xl border border-dashed border-border bg-canvas-subtle/50 px-4 py-3 text-body-airy shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0";
+  "h-auto rounded-xl border border-dashed border-primary/40 bg-canvas-subtle/50 px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-muted/60 shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0";
+
+export const CAMPAIGN_INPUT_FILLED_CLASS =
+  "h-auto rounded-xl border border-border bg-canvas-subtle/50 px-4 py-3 text-body-airy shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0";
+
+export const CAMPAIGN_INPUT_MISSING_CLASS =
+  "h-auto rounded-xl border border-fail/60 bg-canvas px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-muted/60 shadow-none focus-visible:border-fail focus-visible:ring-2 focus-visible:ring-fail/20 focus-visible:ring-offset-0";
 
 export const CAMPAIGN_TEXTAREA_CLASS =
-  "min-h-[160px] rounded-xl border-transparent bg-canvas-subtle/50 px-4 py-3 text-body-airy shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0";
+  "min-h-[160px] rounded-xl border border-dashed border-border/70 bg-canvas px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-muted/60 shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0";
 
 export function emptyBrief(): StructuredBriefInput {
   return {
@@ -127,6 +134,58 @@ export function normalizeBrief(
 
 export function briefIsValid(brief: StructuredBriefInput): boolean {
   return StructuredBriefSchema.safeParse(normalizeBrief(brief)).success;
+}
+
+export function briefHasDraftContent(
+  freeText: string,
+  brief: StructuredBriefInput,
+): boolean {
+  if (freeText.trim().length > 0) {
+    return true;
+  }
+  if (brief.objective.trim().length > 0) {
+    return true;
+  }
+  if (brief.schemeName.trim().length > 0) {
+    return true;
+  }
+  if (brief.schemeCategory.trim().length > 0) {
+    return true;
+  }
+  if (brief.audience.trim().length > 0) {
+    return true;
+  }
+  if (brief.market.trim().length > 0) {
+    return true;
+  }
+  if (brief.channels.length > 0) {
+    return true;
+  }
+  if (brief.performanceFigures.length > 0) {
+    return true;
+  }
+  if (brief.claims.length > 0) {
+    return true;
+  }
+  return false;
+}
+
+export function briefPhaseSubtitle(input: {
+  freeText: string;
+  brief: StructuredBriefInput;
+  briefSaved: boolean;
+  buildPhase: BuildPhase;
+}): string {
+  if (input.buildPhase === "needs_input") {
+    return "Fill in the highlighted fields below.";
+  }
+  if (input.briefSaved) {
+    return "Review your saved brief or edit fields manually.";
+  }
+  if (briefHasDraftContent(input.freeText, input.brief)) {
+    return "Click Build it to structure, freeze rules, and generate copy.";
+  }
+  return "Describe or paste your campaign brief to get started.";
 }
 
 export function saveDisabledCaption(input: {

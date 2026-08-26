@@ -2,6 +2,7 @@
  * useCampaignMutations — extract, save, compile, generate handlers.
  * Why: split from useCampaign to stay under file line limit.
  */
+// size: four handlers share the same setter bundle; splitting duplicates the input type.
 
 import { useCallback, useRef, type Dispatch, type SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
@@ -48,6 +49,7 @@ export function useCampaignMutations(input: {
   setSavedBrief: (brief: StructuredBriefInput) => void;
   setBriefSaved: (saved: boolean) => void;
   setProposedFieldKeys: Dispatch<SetStateAction<Set<BriefField>>>;
+  setExtractSkillsRead: (skillsRead: string[] | null) => void;
   setCompileResult: (result: CompileResponseDTO | null) => void;
   setEmptySetAcknowledged: (checked: boolean) => void;
   setExtractInFlight: (inFlight: boolean) => void;
@@ -76,6 +78,7 @@ export function useCampaignMutations(input: {
     setSavedBrief,
     setBriefSaved,
     setProposedFieldKeys,
+    setExtractSkillsRead,
     setCompileResult,
     setEmptySetAcknowledged,
     setExtractInFlight,
@@ -96,13 +99,14 @@ export function useCampaignMutations(input: {
     setExtractInFlight(true);
 
     try {
-      const proposal = await extractCampaignBriefService(
+      const response = await extractCampaignBriefService(
         campaignId,
         { freeText },
         controller.signal,
       );
-      setBrief((current) => mergeExtractProposal(current, proposal));
-      setProposedFieldKeys(proposedKeysFromPartial(proposal));
+      setBrief((current) => mergeExtractProposal(current, response.proposal));
+      setProposedFieldKeys(proposedKeysFromPartial(response.proposal));
+      setExtractSkillsRead(response.skillsRead);
     } catch (error: unknown) {
       toastApiError(error);
     } finally {
@@ -113,6 +117,7 @@ export function useCampaignMutations(input: {
     freeText,
     setBrief,
     setExtractInFlight,
+    setExtractSkillsRead,
     setProposedFieldKeys,
     toastApiError,
   ]);
@@ -138,6 +143,7 @@ export function useCampaignMutations(input: {
       setSavedBrief(hydrated.savedBrief);
       setBriefSaved(true);
       setProposedFieldKeys(new Set());
+      setExtractSkillsRead(null);
     } catch (error: unknown) {
       toastApiError(error);
     } finally {
@@ -151,6 +157,7 @@ export function useCampaignMutations(input: {
     setSavedBrief,
     setBriefSaved,
     setCampaign,
+    setExtractSkillsRead,
     setProposedFieldKeys,
     setSaveInFlight,
     toastApiError,
@@ -205,7 +212,9 @@ export function useCampaignMutations(input: {
       );
       const firstAsset = response.assets[0];
       if (response.assets.length === 1 && firstAsset !== undefined) {
-        void navigate(`/assets/${firstAsset.id}`);
+        void navigate(`/assets/${firstAsset.id}`, {
+          state: { generatorSkillsRead: response.skillsRead },
+        });
       } else {
         void navigate("/assets");
       }

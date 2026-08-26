@@ -6,9 +6,8 @@
 import type { ReactNode } from "react";
 
 import type {
-  CompileResponseDTO,
+  BriefField,
   ExplainerSuggestedAction,
-  GenerateResponseItem,
   RuleCatalogRowDTO,
   StructuredBriefInput,
 } from "@preflight/schemas";
@@ -25,38 +24,7 @@ export type WorkbenchMessage =
       brief?: Partial<StructuredBriefInput>;
       reveal?: boolean;
     }
-  | { id: string; role: "error"; text: string }
-  | {
-      id: string;
-      role: "journey_extract";
-      proposal: Partial<StructuredBriefInput>;
-    }
-  | { id: string; role: "journey_freeze"; compile: CompileResponseDTO }
-  | {
-      id: string;
-      role: "journey_generate";
-      assets: GenerateResponseItem[];
-      skillsRead: string[];
-    };
-
-export interface WorkbenchJourneyView {
-  active: boolean;
-  saveDisabled: boolean;
-  saveCaption: string | null;
-  freezeDisabled: boolean;
-  freezeCaption: string | null;
-  generateDisabled: boolean;
-  generateCaption: string | null;
-  emptySetVisible: boolean;
-  emptySetAcknowledged: boolean;
-  saveInFlight: boolean;
-  freezeInFlight: boolean;
-  generateInFlight: boolean;
-  onSave: () => void;
-  onFreeze: () => void;
-  onGenerate: () => void;
-  onEmptySetAckChange: (checked: boolean) => void;
-}
+  | { id: string; role: "error"; text: string };
 
 export interface WorkbenchProps {
   rules: RuleCatalogRowDTO[];
@@ -75,7 +43,12 @@ export interface WorkbenchProps {
   onStartCampaignFromConversation?: () => void;
   handoffInFlight?: boolean;
   handoffEnabled?: boolean;
-  journey?: WorkbenchJourneyView;
+  handoffDisabledCaption?: string | null;
+  briefReadiness?: {
+    capturedCount: number;
+    missing: BriefField[];
+    complete: boolean;
+  };
 }
 
 export interface CommentSheetProps {
@@ -101,7 +74,6 @@ export interface ThreadProps {
   showSearchFallback: boolean;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
-  journey?: WorkbenchJourneyView;
 }
 
 export interface ComposerProps {
@@ -110,24 +82,10 @@ export interface ComposerProps {
   sendInFlight: boolean;
   handoffInFlight?: boolean;
   handoffEnabled?: boolean;
+  handoffDisabledCaption?: string | null;
   showCampaignActions?: boolean;
   onChange: (value: string) => void;
   onSend: () => void;
   onGoToCampaign?: () => void;
   onStartCampaignFromConversation?: () => void;
 }
-
-export interface ExtractResultCardProps {
-  proposal: Partial<StructuredBriefInput>;
-}
-
-export interface FreezeResultCardProps {
-  compile: CompileResponseDTO;
-}
-
-export interface GenerateResultCardProps {
-  assets: GenerateResponseItem[];
-  skillsRead: string[];
-}
-
-export type JourneyActionsProps = WorkbenchJourneyView;

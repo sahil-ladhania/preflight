@@ -248,7 +248,9 @@ export function useAssetDetailMutations({
       }
       const nextId = response.assets[0]?.id;
       if (nextId !== undefined) {
-        navigate(`/assets/${nextId}`);
+        navigate(`/assets/${nextId}`, {
+          state: { generatorSkillsRead: response.skillsRead },
+        });
       }
     } catch (error: unknown) {
       toastApiError(error);

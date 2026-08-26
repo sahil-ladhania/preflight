@@ -2,7 +2,11 @@
  * extract.service — extractor agent call.
  * Why: returns proposal DTO; persists freeText only.
  */
-import { ExtractorOutputSchema, type ExtractorOutput } from "@preflight/schemas";
+import {
+  ExtractorOutputSchema,
+  type ExtractorOutput,
+  type ExtractResponseDTO,
+} from "@preflight/schemas";
 
 import { buildExtractorPrompt } from "../../../agents/extractor.prompt.js";
 import { env } from "../../config/env.js";
@@ -27,7 +31,7 @@ function parseExtractorOutput(content: string): ExtractorOutput {
 export async function extractBrief(
   campaignId: string,
   freeText: string,
-): Promise<ExtractorOutput> {
+): Promise<ExtractResponseDTO> {
   const campaign = await prisma.campaign.findUnique({ where: { id: campaignId } });
 
   if (!campaign) {
@@ -42,8 +46,8 @@ export async function extractBrief(
   try {
     const prompt = buildExtractorPrompt({ freeText });
     const { runAgent } = await import("../../lib/gitagent.js");
-    const { content } = await runAgent("extractor", prompt);
-    return parseExtractorOutput(content);
+    const { content, skillsRead } = await runAgent("extractor", prompt);
+    return { proposal: parseExtractorOutput(content), skillsRead };
   } catch (error) {
     if (error instanceof InternalError) {
       throw error;

@@ -16,6 +16,22 @@ import type { CampaignStepId } from "@/features/campaign/CampaignStepRail";
 
 export type CampaignView = "loaded" | "loading" | "error";
 
+export type BuildPhase =
+  | "idle"
+  | "extract"
+  | "save"
+  | "compile"
+  | "generate"
+  | "needs_input"
+  | "needs_ack"
+  | "failed";
+
+export type CampaignNarrations = {
+  brief: string | null;
+  freeze: string | null;
+  generate: string | null;
+};
+
 export interface CampaignLoadingStateProps {
   showSpinner: boolean;
 }
@@ -31,6 +47,7 @@ export interface CampaignProps {
   freeText?: string;
   brief?: StructuredBriefInput;
   proposedFieldKeys?: ReadonlySet<BriefField>;
+  extractSkillsRead?: string[] | null;
   compileResult?: CompileResponseDTO | null;
   emptySetAcknowledged?: boolean;
   extractInFlight?: boolean;
@@ -58,10 +75,17 @@ export interface CampaignProps {
   onCompile?: () => void;
   onGenerate?: () => void;
   onRetry?: () => void;
+  buildPhase?: BuildPhase;
+  buildInFlight?: boolean;
+  runningStep?: CampaignStepId;
+  narrations?: CampaignNarrations;
+  missingFields?: BriefField[];
+  onRunBuild?: () => void;
 }
 
 export interface CampaignStepProps {
   subtitle?: string;
+  narration?: string | null;
   children?: ReactNode;
 }
 
@@ -69,10 +93,14 @@ export interface BriefFormProps {
   freeText: string;
   brief: StructuredBriefInput;
   proposedFieldKeys: ReadonlySet<BriefField>;
+  extractSkillsRead: string[] | null;
   saveDisabled: boolean;
   saveDisabledCaption: string | null;
   saveInFlight: boolean;
   extractInFlight: boolean;
+  missingFields?: BriefField[];
+  showStructuredForm?: boolean;
+  showManualActions?: boolean;
   onFreeTextChange: (value: string) => void;
   onBriefChange: (brief: StructuredBriefInput) => void;
   onFieldEdit: (field: BriefField) => void;
@@ -83,6 +111,12 @@ export interface BriefFormProps {
 export interface BriefPhaseProps extends BriefFormProps {
   briefSaved: boolean;
   briefDirty: boolean;
+  buildPhase?: BuildPhase;
+  buildInFlight?: boolean;
+  missingFieldsBuild?: BriefField[];
+  emptySetAcknowledged?: boolean;
+  onRunBuild?: () => void;
+  onEmptySetAckChange?: (checked: boolean) => void;
 }
 
 export interface ConstraintCardsProps {

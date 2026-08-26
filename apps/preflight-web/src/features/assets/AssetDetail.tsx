@@ -13,10 +13,12 @@ import {
   LoadingState,
 } from "@/features/assets/AssetDetailStates";
 import { ExceptionsSummary } from "@/features/assets/ExceptionsSummary";
+import { GeneratorRunBanner } from "@/features/assets/GeneratorRunBanner";
 import { LedgerPane } from "@/features/assets/LedgerPane";
 import { LineageBanner } from "@/features/assets/LineageBanner";
 import { ReasonModal } from "@/features/assets/ReasonModal";
 import { RerunStrip } from "@/features/assets/RerunStrip";
+import { VerdictBanner } from "@/features/assets/VerdictBanner";
 import { scrollFindingTarget } from "@/features/assets/lib";
 import type { AssetDetailProps, ReasonModalState } from "@/features/assets/types";
 import { useToastContext } from "@/features/shell/ToastHost";
@@ -28,6 +30,9 @@ export function AssetDetail({
   asset,
   view = "loaded",
   rerunStrip: rerunStripProp = null,
+  generatorSkillsRead = null,
+  buildNarration = null,
+  showVerdictBanner = false,
   showLoadingSpinner = true,
   openFindingId: openFindingIdProp,
   reasonModal: reasonModalProp,
@@ -141,6 +146,25 @@ export function AssetDetail({
       {asset.lineage !== null ? (
         <LineageBanner lineage={asset.lineage} />
       ) : null}
+      {generatorSkillsRead !== null ? (
+        <GeneratorRunBanner
+          skillsRead={generatorSkillsRead}
+          narration={buildNarration}
+        />
+      ) : null}
+      {showVerdictBanner ? (
+        <VerdictBanner
+          status={asset.status}
+          findings={asset.findings}
+          onApprove={handleAccept}
+          onRegenerate={() => {
+            if (onRegenerate !== undefined) {
+              void onRegenerate();
+            }
+          }}
+          regenerateInFlight={regenerateInFlight}
+        />
+      ) : null}
       {asset.exceptions.length > 0 ? (
         <ExceptionsSummary exceptions={asset.exceptions} />
       ) : null}
@@ -157,6 +181,7 @@ export function AssetDetail({
               }
             }}
             regenerateInFlight={regenerateInFlight}
+            suppressHeaderActions={showVerdictBanner}
           />
         </div>
         <div className="min-h-0 w-[42%] shrink-0">

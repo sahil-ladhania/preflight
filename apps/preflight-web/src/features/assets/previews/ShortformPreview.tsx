@@ -7,6 +7,8 @@ import type { ReactElement } from "react";
 
 import type { ChannelPreviewContentProps } from "@/features/assets/previews/preview-types";
 import {
+  clientInitials,
+  logoMarkStyle,
   previewFrameStyle,
   truncateText,
 } from "@/features/assets/previews/preview-styles";
@@ -30,12 +32,20 @@ export function ShortformPreview({
       style={styles.frame}
     >
       {isLanding ? (
-        <p
-          className="mb-2 text-xs font-medium uppercase tracking-wide"
-          style={{ color: brandKit.colors.secondary }}
-        >
-          {brandKit.clientName}
-        </p>
+        <div className="mb-2 flex items-center gap-2">
+          <div
+            className="flex size-7 shrink-0 items-center justify-center rounded-md text-[10px] font-bold"
+            style={logoMarkStyle(brandKit)}
+          >
+            {clientInitials(brandKit.clientName)}
+          </div>
+          <p
+            className="text-xs font-medium uppercase tracking-wide"
+            style={{ color: brandKit.colors.secondary }}
+          >
+            {brandKit.clientName}
+          </p>
+        </div>
       ) : null}
       <h3
         className={isLanding ? "mb-2 text-xl font-bold" : "mb-2 text-sm font-semibold"}
@@ -50,7 +60,7 @@ export function ShortformPreview({
         {disclaimer}
       </p>
       <span
-        className="inline-block rounded-md px-3 py-1.5 text-xs font-medium"
+        className="inline-block rounded-md px-3 py-1.5 text-xs font-semibold shadow-sm"
         style={styles.cta}
       >
         {cta}

@@ -2,7 +2,7 @@
  * Campaign — Screen 3 three-step orchestrator.
  * Why: brief → compile → generate in a single active pane.
  */
-// size: controlled + fixture modes share one tree; fixture hook extracted
+// size: controlled + fixture modes share one tree; BriefPhase owns brief/build UI
 
 import type { ReactElement } from "react";
 
@@ -16,7 +16,7 @@ import {
 } from "@/features/campaign/CampaignStates";
 import { ConstraintCards } from "@/features/campaign/ConstraintCards";
 import { GenerateBlock } from "@/features/campaign/GenerateBlock";
-import { briefFromCampaign, campaignGateState } from "@/features/campaign/lib";
+import { briefFromCampaign, briefPhaseSubtitle, campaignGateState } from "@/features/campaign/lib";
 import type { CampaignProps } from "@/features/campaign/types";
 import { useCampaignFixture } from "@/features/campaign/useCampaignFixture";
 
@@ -27,6 +27,7 @@ export function Campaign({
   freeText: freeTextProp,
   brief: briefProp,
   proposedFieldKeys: proposedFieldKeysProp,
+  extractSkillsRead: extractSkillsReadProp,
   compileResult: compileResultProp,
   emptySetAcknowledged: emptySetAcknowledgedProp,
   extractInFlight: extractInFlightProp,
@@ -54,6 +55,12 @@ export function Campaign({
   onCompile,
   onGenerate,
   onRetry,
+  buildPhase = "idle",
+  buildInFlight = false,
+  runningStep,
+  narrations = { brief: null, freeze: null, generate: null },
+  missingFields = [],
+  onRunBuild,
 }: CampaignProps): ReactElement {
   const fixture = useCampaignFixture(
     campaign,
@@ -77,6 +84,9 @@ export function Campaign({
   const proposedFieldKeys = controlled
     ? (proposedFieldKeysProp ?? new Set())
     : fixture.proposedFieldKeys;
+  const extractSkillsRead = controlled
+    ? (extractSkillsReadProp ?? null)
+    : fixture.extractSkillsRead;
   const compileResult = controlled
     ? (compileResultProp ?? null)
     : fixture.compileResult;
@@ -170,23 +180,53 @@ export function Campaign({
   return (
     <CampaignPageShell
       activeStep={activeStep}
+      runningStep={runningStep}
       s2Dimmed={s2Dimmed}
       s3Dimmed={s3Dimmed}
+      briefAgentRan={extractSkillsRead !== null}
+      compileRan={compileResult !== null}
+      generateRan={narrations.generate !== null}
     >
       {(viewStep) => {
+        const narration =
+          viewStep === "campaign-brief"
+            ? narrations.brief
+            : viewStep === "campaign-constraints"
+              ? narrations.freeze
+              : narrations.generate;
+
         if (viewStep === "campaign-brief") {
           return (
-            <CampaignStep subtitle="Review and save your brief.">
+            <CampaignStep
+              subtitle={briefPhaseSubtitle({
+                freeText,
+                brief,
+                briefSaved,
+                buildPhase,
+              })}
+              narration={narration}
+            >
               <BriefPhase
                 freeText={freeText}
                 brief={brief}
                 proposedFieldKeys={proposedFieldKeys}
+                extractSkillsRead={extractSkillsRead}
                 saveDisabled={saveDisabled}
                 saveDisabledCaption={saveDisabledCaption}
                 saveInFlight={saveInFlight}
                 extractInFlight={extractInFlight}
                 briefSaved={briefSaved}
                 briefDirty={briefDirty}
+                buildPhase={buildPhase}
+                buildInFlight={buildInFlight}
+                missingFieldsBuild={missingFields}
+                emptySetAcknowledged={emptySetAcknowledged}
+                onRunBuild={
+                  controlled && onRunBuild !== undefined ? onRunBuild : undefined
+                }
+                onEmptySetAckChange={
+                  onEmptySetAckChange ?? fixture.setEmptySetAcknowledged
+                }
                 onFreeTextChange={onFreeTextChange ?? fixture.setFreeText}
                 onBriefChange={onBriefChange ?? fixture.setBrief}
                 onFieldEdit={onFieldEdit ?? fixture.handleFieldEdit}
@@ -199,7 +239,10 @@ export function Campaign({
 
         if (viewStep === "campaign-constraints") {
           return (
-            <CampaignStep subtitle="Compile your saved brief to see which compliance rules apply to this campaign.">
+            <CampaignStep
+              subtitle="Freeze your saved brief to see which compliance rules apply."
+              narration={narration}
+            >
               <ConstraintCards
                 compileResult={compileResult}
                 compileInFlight={compileInFlight}
@@ -216,7 +259,10 @@ export function Campaign({
         }
 
         return (
-          <CampaignStep subtitle="Generate marketing copy for your selected channels under those rules.">
+          <CampaignStep
+            subtitle="Generate marketing copy for your selected channels under those rules."
+            narration={narration}
+          >
             <GenerateBlock
               compileResult={compileResult}
               dimmed={s3Dimmed}

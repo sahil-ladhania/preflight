@@ -66,6 +66,9 @@ export interface AssetDetailProps {
   asset: AssetDetailFixture;
   view?: AssetDetailView;
   rerunStrip?: RerunStripDTO | null;
+  generatorSkillsRead?: string[] | null;
+  buildNarration?: string | null;
+  showVerdictBanner?: boolean;
   showLoadingSpinner?: boolean;
   openFindingId?: string | null;
   reasonModal?: ReasonModalState;
@@ -89,6 +92,11 @@ export interface LineageBannerProps {
   lineage: LineageDTO;
 }
 
+export interface GeneratorRunBannerProps {
+  skillsRead: string[];
+  narration?: string | null;
+}
+
 export interface ExceptionsSummaryProps {
   exceptions: ExceptionItemDTO[];
 }
@@ -100,6 +108,7 @@ export interface AssetPaneProps {
   onAccept: () => void;
   onRegenerate: () => void;
   regenerateInFlight?: boolean;
+  suppressHeaderActions?: boolean;
 }
 
 export interface LedgerPaneProps {

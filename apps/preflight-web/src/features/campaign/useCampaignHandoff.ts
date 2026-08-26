@@ -11,6 +11,7 @@ import type { StructuredBriefInput } from "@preflight/schemas";
 export interface CampaignHandoffPayload {
   proposal: Partial<StructuredBriefInput>;
   freeText?: string;
+  skillsRead?: string[];
 }
 
 type LocationState = {

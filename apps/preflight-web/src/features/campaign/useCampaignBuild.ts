@@ -1,0 +1,164 @@
+/**
+ * useCampaignBuild — client-side extract → save → compile → generate chain.
+ * Why: one Build it click; agents stay narrow, orchestration stays code (doc 06).
+ */
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import type {
+  CampaignDTO,
+  CompileResponseDTO,
+  StructuredBriefInput,
+} from "@preflight/schemas";
+import type { BriefField } from "@preflight/schemas";
+
+import type { CampaignStepId } from "@/features/campaign/CampaignStepRail";
+import {
+  runCampaignBuildChain,
+  runGenerateOnly,
+} from "@/features/campaign/runCampaignBuildChain";
+import type { BuildPhase, CampaignNarrations } from "@/features/campaign/types";
+
+export type { BuildPhase } from "@/features/campaign/types";
+
+function buildPhaseToStep(phase: BuildPhase): CampaignStepId | undefined {
+  if (phase === "extract" || phase === "save" || phase === "needs_input") {
+    return "campaign-brief";
+  }
+  if (phase === "compile" || phase === "needs_ack") {
+    return "campaign-constraints";
+  }
+  if (phase === "generate") {
+    return "campaign-generate";
+  }
+  return undefined;
+}
+
+export function useCampaignBuild(input: {
+  campaignId: string | undefined;
+  freeText: string;
+  brief: StructuredBriefInput;
+  compileResult: CompileResponseDTO | null;
+  emptySetAcknowledged: boolean;
+  setCampaign: (campaign: CampaignDTO) => void;
+  setBrief: (brief: StructuredBriefInput) => void;
+  setSavedBrief: (brief: StructuredBriefInput) => void;
+  setBriefSaved: (saved: boolean) => void;
+  setProposedFieldKeys: (keys: Set<BriefField>) => void;
+  setExtractSkillsRead: (skillsRead: string[] | null) => void;
+  setCompileResult: (result: CompileResponseDTO | null) => void;
+  setEmptySetAcknowledged: (checked: boolean) => void;
+  toastApiError: (error: unknown) => void;
+}): {
+  buildPhase: BuildPhase;
+  buildInFlight: boolean;
+  runningStep: CampaignStepId | undefined;
+  narrations: CampaignNarrations;
+  missingFields: BriefField[];
+  setBriefNarration: (text: string) => void;
+  runBuild: () => Promise<void>;
+} {
+  const navigate = useNavigate();
+  const abortRef = useRef<AbortController | null>(null);
+  const [buildPhase, setBuildPhase] = useState<BuildPhase>("idle");
+  const [buildInFlight, setBuildInFlight] = useState<boolean>(false);
+  const [narrations, setNarrations] = useState<CampaignNarrations>({
+    brief: null,
+    freeze: null,
+    generate: null,
+  });
+  const [missingFields, setMissingFields] = useState<BriefField[]>([]);
+
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
+
+  useEffect(() => {
+    setBuildPhase("idle");
+    setMissingFields([]);
+    setNarrations({ brief: null, freeze: null, generate: null });
+  }, [input.campaignId]);
+
+  const setBriefNarration = useCallback((text: string): void => {
+    setNarrations((current) => ({ ...current, brief: text }));
+  }, []);
+
+  const applyResult = useCallback(
+    (result: Awaited<ReturnType<typeof runCampaignBuildChain>>): void => {
+      setBuildPhase(result.phase);
+      setNarrations(result.narrations);
+      setMissingFields(result.missingFields);
+      if (result.navigate !== undefined) {
+        void navigate(result.navigate.path, { state: result.navigate.state });
+      }
+    },
+    [navigate],
+  );
+
+  const runBuild = useCallback(async (): Promise<void> => {
+    if (input.campaignId === undefined || buildInFlight) {
+      return;
+    }
+
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setBuildInFlight(true);
+
+    try {
+      if (
+        buildPhase === "needs_ack" &&
+        input.emptySetAcknowledged &&
+        input.compileResult !== null &&
+        input.compileResult.ruleIds.length === 0
+      ) {
+        const result = await runGenerateOnly({
+          campaignId: input.campaignId,
+          signal: controller.signal,
+          onPhase: setBuildPhase,
+        });
+        applyResult(result);
+        return;
+      }
+
+      setMissingFields([]);
+      const result = await runCampaignBuildChain({
+        campaignId: input.campaignId,
+        freeText: input.freeText,
+        brief: input.brief,
+        signal: controller.signal,
+        setCampaign: input.setCampaign,
+        setBrief: input.setBrief,
+        setSavedBrief: input.setSavedBrief,
+        setBriefSaved: input.setBriefSaved,
+        setProposedFieldKeys: input.setProposedFieldKeys,
+        setExtractSkillsRead: input.setExtractSkillsRead,
+        setCompileResult: input.setCompileResult,
+        setEmptySetAcknowledged: input.setEmptySetAcknowledged,
+        onPhase: setBuildPhase,
+      });
+      applyResult(result);
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === "AbortError") {
+        return;
+      }
+      setBuildPhase("failed");
+      input.toastApiError(error);
+    } finally {
+      setBuildInFlight(false);
+    }
+  }, [applyResult, buildInFlight, buildPhase, input]);
+
+  return {
+    buildPhase,
+    buildInFlight,
+    runningStep: buildInFlight ? buildPhaseToStep(buildPhase) : undefined,
+    narrations,
+    missingFields,
+    setBriefNarration,
+    runBuild,
+  };
+}

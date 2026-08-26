@@ -3,28 +3,37 @@
  * Why: single-pane navigation without duplicate header bars (09 Screen 3).
  */
 
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Loader2 } from "lucide-react";
 import type { ReactElement } from "react";
 
 import { cn } from "@/lib/utils";
 
-export const CAMPAIGN_STEPS = [
+const STEP_META = [
   {
     id: "campaign-brief",
     label: "Brief",
-    subtitle: "Structure your brief",
+    defaultSubtitle: "Describe your campaign",
+    ranSubtitle: "GitAgent extractor",
   },
   {
     id: "campaign-constraints",
     label: "Freeze",
-    subtitle: "See which rules apply",
+    defaultSubtitle: "Compliance rules",
+    ranSubtitle: "server compile",
   },
   {
     id: "campaign-generate",
     label: "Generate",
-    subtitle: "Create channel copy",
+    defaultSubtitle: "Channel copy",
+    ranSubtitle: "GitAgent generator",
   },
 ] as const;
+
+export const CAMPAIGN_STEPS = STEP_META.map(({ id, label, defaultSubtitle }) => ({
+  id,
+  label,
+  subtitle: defaultSubtitle,
+}));
 
 export type CampaignStepId = (typeof CAMPAIGN_STEPS)[number]["id"];
 
@@ -42,7 +51,24 @@ export function activeCampaignStep(input: {
 }
 
 function stepIndex(stepId: CampaignStepId): number {
-  return CAMPAIGN_STEPS.findIndex((step) => step.id === stepId);
+  return STEP_META.findIndex((step) => step.id === stepId);
+}
+
+function stepSubtitle(
+  stepId: CampaignStepId,
+  input: { briefAgentRan: boolean; compileRan: boolean; generateRan: boolean },
+): string {
+  const meta = STEP_META.find((step) => step.id === stepId);
+  if (meta === undefined) {
+    return "";
+  }
+  if (stepId === "campaign-brief") {
+    return input.briefAgentRan ? meta.ranSubtitle : meta.defaultSubtitle;
+  }
+  if (stepId === "campaign-constraints") {
+    return input.compileRan ? meta.ranSubtitle : meta.defaultSubtitle;
+  }
+  return input.generateRan ? meta.ranSubtitle : meta.defaultSubtitle;
 }
 
 function stepState(
@@ -64,11 +90,15 @@ function stepState(
 
 function StepButton({
   step,
+  subtitle,
   state,
+  running,
   onSelect,
 }: {
   step: (typeof CAMPAIGN_STEPS)[number];
+  subtitle: string;
   state: "active" | "complete" | "upcoming" | "locked";
+  running: boolean;
   onSelect: () => void;
 }): ReactElement {
   const locked = state === "locked";
@@ -89,21 +119,35 @@ function StepButton({
           "pointer-events-none border-transparent font-normal text-fg-muted opacity-40",
       )}
     >
-      <span>{step.label}</span>
-      <span className="text-caption font-normal">{step.subtitle}</span>
+      <span className="flex items-center gap-2">
+        {running ? (
+          <Loader2 className="size-3.5 shrink-0 animate-spin" aria-hidden />
+        ) : null}
+        {step.label}
+      </span>
+      <span className="text-caption font-normal">{subtitle}</span>
     </button>
   );
 }
 
 export function CampaignStepRail({
   viewStep,
+  runningStep,
+  briefAgentRan = false,
+  compileRan = false,
+  generateRan = false,
   isStepReachable,
   onViewStepChange,
 }: {
   viewStep: CampaignStepId;
+  runningStep?: CampaignStepId;
+  briefAgentRan?: boolean;
+  compileRan?: boolean;
+  generateRan?: boolean;
   isStepReachable: (stepId: CampaignStepId) => boolean;
   onViewStepChange: (stepId: CampaignStepId) => void;
 }): ReactElement {
+  const provenance = { briefAgentRan, compileRan, generateRan };
   const rail = (
     <nav
       aria-label="Campaign steps"
@@ -113,12 +157,15 @@ export function CampaignStepRail({
         {CAMPAIGN_STEPS.map((step, index) => {
           const reachable = isStepReachable(step.id);
           const state = stepState(step.id, viewStep, reachable);
+          const subtitle = stepSubtitle(step.id, provenance);
 
           return (
             <div key={step.id} className="flex flex-col">
               <StepButton
                 step={step}
+                subtitle={subtitle}
                 state={state}
+                running={runningStep === step.id}
                 onSelect={() => onViewStepChange(step.id)}
               />
               {index < CAMPAIGN_STEPS.length - 1 ? (
@@ -145,6 +192,7 @@ export function CampaignStepRail({
           {CAMPAIGN_STEPS.map((step) => {
             const reachable = isStepReachable(step.id);
             const state = stepState(step.id, viewStep, reachable);
+            const subtitle = stepSubtitle(step.id, provenance);
 
             return (
               <button
@@ -162,8 +210,13 @@ export function CampaignStepRail({
                   !reachable && "pointer-events-none text-fg-muted opacity-40",
                 )}
               >
-                <span>{step.label}</span>
-                <span className="text-caption font-normal">{step.subtitle}</span>
+                <span className="flex items-center gap-1.5">
+                  {runningStep === step.id ? (
+                    <Loader2 className="size-3 shrink-0 animate-spin" aria-hidden />
+                  ) : null}
+                  {step.label}
+                </span>
+                <span className="text-caption font-normal">{subtitle}</span>
               </button>
             );
           })}

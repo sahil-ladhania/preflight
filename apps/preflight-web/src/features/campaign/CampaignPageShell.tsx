@@ -13,8 +13,12 @@ import { isStepReachable } from "@/features/campaign/lib";
 
 export interface CampaignPageShellProps {
   activeStep: CampaignStepId;
+  runningStep?: CampaignStepId;
   s2Dimmed: boolean;
   s3Dimmed: boolean;
+  briefAgentRan?: boolean;
+  compileRan?: boolean;
+  generateRan?: boolean;
   children: (viewStep: CampaignStepId) => ReactNode;
 }
 
@@ -30,8 +34,12 @@ function stepIndex(stepId: CampaignStepId): number {
 
 export function CampaignPageShell({
   activeStep,
+  runningStep,
   s2Dimmed,
   s3Dimmed,
+  briefAgentRan = false,
+  compileRan = false,
+  generateRan = false,
   children,
 }: CampaignPageShellProps): ReactElement {
   const [viewStep, setViewStep] = useState<CampaignStepId>(activeStep);
@@ -59,13 +67,17 @@ export function CampaignPageShell({
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 md:flex-row md:gap-6">
         <CampaignStepRail
           viewStep={viewStep}
+          runningStep={runningStep}
+          briefAgentRan={briefAgentRan}
+          compileRan={compileRan}
+          generateRan={generateRan}
           isStepReachable={(stepId) => isStepReachable(stepId, reachability)}
           onViewStepChange={handleViewStepChange}
         />
         <main className="min-w-0 flex-1">
           <h1 className="text-title text-fg">Campaign</h1>
           <p className="text-caption text-fg-muted">
-            Paste a brief, structure it, compile rules, generate assets.
+            Describe a brief, click Build it, freeze rules, generate copy.
           </p>
           <div className="mt-6 rounded-2xl border border-border bg-canvas p-6">
             {children(viewStep)}

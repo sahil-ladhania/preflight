@@ -4,7 +4,7 @@
  */
 
 import { z } from "zod"
-import { ExplainerOutputSchema } from "./explainer-output.js"
+import { ExplainerBriefDraftSchema, ExplainerOutputSchema } from "./explainer-output.js"
 import { AGENT_INPUT_MAX_LENGTH } from "./primitives.js"
 
 export const WorkbenchChatHistoryItemSchema = z.object({
@@ -18,6 +18,7 @@ export type WorkbenchChatHistoryItem = z.infer<
 export const WorkbenchChatRequestSchema = z.object({
   message: z.string().trim().min(1).max(AGENT_INPUT_MAX_LENGTH),
   history: z.array(WorkbenchChatHistoryItemSchema).optional(),
+  capturedBrief: ExplainerBriefDraftSchema.optional(),
 })
 export type WorkbenchChatRequest = z.infer<typeof WorkbenchChatRequestSchema>
 

@@ -14,6 +14,7 @@ import {
   replaceMessageById,
   seedProposalFromExplainer,
 } from "@/features/workbench/lib";
+import { deriveBriefReadiness, handoffReadyState } from "@/features/workbench/useBriefReadiness";
 import type { WorkbenchMessage } from "@/features/workbench/types";
 import { CAMPAIGN_ID, EXTRACT_PROPOSAL } from "@/fixtures/campaign";
 import { resolveWorkbenchChat } from "@/fixtures/workbench";
@@ -29,6 +30,8 @@ export function useWorkbenchFixture(input: {
   sendInFlight: boolean;
   handoffInFlight: boolean;
   handoffEnabled: boolean;
+  handoffDisabledCaption: string | null;
+  briefReadiness: ReturnType<typeof deriveBriefReadiness>;
   showSearchFallback: boolean;
   searchQuery: string;
   setComposerText: (value: string) => void;
@@ -137,6 +140,8 @@ export function useWorkbenchFixture(input: {
     sendInFlight,
     handoffInFlight,
     handoffEnabled: computeHandoffEnabled(messages),
+    handoffDisabledCaption: handoffReadyState(messages).disabledCaption,
+    briefReadiness: deriveBriefReadiness(messages),
     showSearchFallback,
     searchQuery,
     setComposerText,

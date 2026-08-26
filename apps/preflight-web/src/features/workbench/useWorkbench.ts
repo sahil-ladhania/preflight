@@ -2,7 +2,7 @@
  * useWorkbench — Workbench chat state.
  * Why: POST /workbench/chat; prefetch GET /rules for cards.
  */
-// size: prefetch + chat + journey wiring share one hook; extract splits poorly.
+// size: prefetch + chat + campaign nav share one hook; extract splits poorly.
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,14 +14,18 @@ import { getRulesService } from "@/features/rulebook/rulebook.service";
 import { resolveWorkbenchCampaignHandoff } from "@/features/shell/campaign-nav.service";
 import { useToastContext } from "@/features/shell/ToastHost";
 import {
-  handoffEnabled,
+  accumulatedBriefFromMessages,
+  handoffReadyState,
+  useBriefReadiness,
+} from "@/features/workbench/useBriefReadiness";
+import {
   nextMessageId,
   replaceMessageById,
   toChatHistory,
 } from "@/features/workbench/lib";
 import { sendWorkbenchChatService } from "@/features/workbench/workbench.service";
-import type { WorkbenchJourneyView, WorkbenchMessage } from "@/features/workbench/types";
-import { useWorkbenchJourney } from "@/features/workbench/useWorkbenchJourney";
+import type { WorkbenchMessage } from "@/features/workbench/types";
+import { useWorkbenchHandoff } from "@/features/workbench/useWorkbenchHandoff";
 import { ApiClientError } from "@/lib/api";
 
 const PREFETCH_FAIL_TOAST = "Could not load rules catalog.";
@@ -34,6 +38,8 @@ export function useWorkbench(): {
   sendInFlight: boolean;
   handoffInFlight: boolean;
   handoffEnabled: boolean;
+  handoffDisabledCaption: string | null;
+  briefReadiness: ReturnType<typeof useBriefReadiness>;
   showSearchFallback: boolean;
   searchQuery: string;
   setComposerText: (value: string) => void;
@@ -41,7 +47,6 @@ export function useWorkbench(): {
   send: () => Promise<void>;
   goToCampaign: () => Promise<void>;
   startCampaignFromConversation: () => Promise<void>;
-  journey: WorkbenchJourneyView;
 } {
   const navigate = useNavigate();
   const { enqueue } = useToastContext();
@@ -71,11 +76,7 @@ export function useWorkbench(): {
     [enqueue],
   );
 
-  const journey = useWorkbenchJourney({
-    messages,
-    setMessages,
-    toastApiError,
-  });
+  const handoff = useWorkbenchHandoff({ messages, toastApiError });
 
   useEffect(() => {
     abortRef.current?.abort();
@@ -136,10 +137,13 @@ export function useWorkbench(): {
     setComposerText("");
 
     try {
+      const capturedBrief = accumulatedBriefFromMessages(priorMessages);
       const response = await sendWorkbenchChatService(
         {
           message: text,
           history: toChatHistory(priorMessages),
+          capturedBrief:
+            Object.keys(capturedBrief).length > 0 ? capturedBrief : undefined,
         },
         controller.signal,
       );
@@ -176,11 +180,6 @@ export function useWorkbench(): {
   }, [composerText, messages, sendInFlight, toastApiError]);
 
   const goToCampaign = useCallback(async (): Promise<void> => {
-    if (journey.journeyCampaignId !== null) {
-      void navigate(`/campaign/${journey.journeyCampaignId}`);
-      return;
-    }
-
     const controller = new AbortController();
 
     try {
@@ -189,7 +188,10 @@ export function useWorkbench(): {
     } catch (error: unknown) {
       toastApiError(error);
     }
-  }, [journey.journeyCampaignId, navigate, toastApiError]);
+  }, [navigate, toastApiError]);
+
+  const readiness = useBriefReadiness(messages);
+  const handoffState = handoffReadyState(messages);
 
   return {
     rules,
@@ -197,15 +199,16 @@ export function useWorkbench(): {
     messages,
     composerText,
     sendInFlight,
-    handoffInFlight: journey.handoffInFlight,
-    handoffEnabled: handoffEnabled(messages),
+    handoffInFlight: handoff.handoffInFlight,
+    handoffEnabled: handoffState.canStart,
+    handoffDisabledCaption: handoffState.disabledCaption,
+    briefReadiness: readiness,
     showSearchFallback,
     searchQuery,
     setComposerText,
     setSearchQuery,
     send,
     goToCampaign,
-    startCampaignFromConversation: journey.startCampaignFromConversation,
-    journey: journey.view,
+    startCampaignFromConversation: handoff.startCampaignFromConversation,
   };
 }

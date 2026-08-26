@@ -72,6 +72,7 @@ export {
   ExtractRequestSchema,
   CompileRequestSchema,
   GenerateRequestSchema,
+  ExtractResponseDTOSchema,
   CompileResponseDTOSchema,
   GenerateResponseItemSchema,
   GenerateResponseDTOSchema,
@@ -87,6 +88,7 @@ export type {
   ExtractRequest,
   CompileRequest,
   GenerateRequest,
+  ExtractResponseDTO,
   CompileResponseDTO,
   GenerateResponseItem,
   GenerateResponseDTO,
@@ -148,6 +150,16 @@ export type { DriftItemDTO, RerunStripDTO } from "./rerun-strip.js"
 export { foldStatus, FoldFindingSchema, StatusSchema as FoldStatusSchema } from "./fold-status.js"
 export type { FoldFinding } from "./fold-status.js"
 
+export {
+  BRIEF_FIELD_LABELS,
+  BRIEF_REQUIRED_SCALAR_FIELDS,
+  briefFieldLabel,
+  isBriefComplete,
+  mergeDraftBrief,
+  missingBriefFields,
+  parseCompleteBrief,
+} from "./brief-completeness.js"
+
 export { ExtractorOutputSchema } from "./extractor-output.js"
 export type { ExtractorOutput } from "./extractor-output.js"
 
@@ -162,6 +174,8 @@ export {
   ExplainerBriefDraftSchema,
   ExplainerSuggestedActionSchema,
   coerceExplainerOutput,
+  parseExplainerWireOutput,
+  sanitizeExplainerBriefWire,
 } from "./explainer-output.js"
 export type {
   ExplainerOutput,

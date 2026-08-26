@@ -102,6 +102,33 @@ export function countPending(findings: FindingDTO[]): number {
   return findings.filter((f) => f.evaluationStatus === "pending").length;
 }
 
+export function verdictCounts(findings: FindingDTO[]): {
+  passed: number;
+  needsYou: number;
+} {
+  let passed = 0;
+  let needsYou = 0;
+  for (const finding of findings) {
+    if (finding.humanVerdict !== null) {
+      passed++;
+      continue;
+    }
+    if (
+      finding.evaluationStatus === "pending" ||
+      finding.evaluationStatus === "unavailable"
+    ) {
+      needsYou++;
+      continue;
+    }
+    if (finding.machineVerdict === "pass") {
+      passed++;
+    } else {
+      needsYou++;
+    }
+  }
+  return { passed, needsYou };
+}
+
 export function findingById(
   findings: FindingDTO[],
   findingId: string,

@@ -16,10 +16,12 @@ import { cn } from "@/lib/utils";
 export function ChannelsField({
   channels,
   proposed,
+  missing = false,
   onChange,
 }: {
   channels: Channel[];
   proposed: boolean;
+  missing?: boolean;
   onChange: (channels: Channel[]) => void;
 }): ReactElement {
   const toggle = (channel: Channel): void => {
@@ -40,8 +42,14 @@ export function ChannelsField({
       </p>
       <div
         className={cn(
-          "flex flex-col gap-2 rounded-md border border-border px-4 py-3",
-          proposed && "border-dashed",
+          "flex flex-col gap-2 rounded-md border px-4 py-3",
+          missing
+            ? "border-fail/60"
+            : proposed
+              ? "border-dashed border-primary/40"
+              : channels.length > 0
+                ? "border-border bg-canvas-subtle/50"
+                : "border-dashed border-border/70 bg-canvas",
         )}
       >
         {CHANNEL_OPTIONS.map((channel) => (
@@ -57,7 +65,10 @@ export function ChannelsField({
           </label>
         ))}
       </div>
-      {proposed ? (
+      {missing ? (
+        <p className="text-caption text-fail">Required — select at least one channel.</p>
+      ) : null}
+      {proposed && !missing ? (
         <p className="text-caption text-fg-muted">Proposed by extract</p>
       ) : null}
     </div>

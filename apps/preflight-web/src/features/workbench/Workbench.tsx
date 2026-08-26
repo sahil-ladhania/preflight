@@ -5,6 +5,7 @@
 
 import { useEffect, type ReactElement } from "react";
 
+import { BriefReadiness } from "@/features/workbench/BriefReadiness";
 import { Composer } from "@/features/workbench/Composer";
 import { EmptyStage } from "@/features/workbench/EmptyStage";
 import { Thread } from "@/features/workbench/Thread";
@@ -26,6 +27,8 @@ export function Workbench({
   sendInFlight: sendInFlightProp,
   handoffInFlight: handoffInFlightProp,
   handoffEnabled: handoffEnabledProp,
+  handoffDisabledCaption: handoffDisabledCaptionProp,
+  briefReadiness: briefReadinessProp,
   showSearchFallback: showSearchFallbackProp,
   searchQuery: searchQueryProp,
   onComposerTextChange,
@@ -33,7 +36,6 @@ export function Workbench({
   onSend,
   onGoToCampaign,
   onStartCampaignFromConversation,
-  journey,
 }: WorkbenchProps): ReactElement {
   const { enqueue } = useToastContext();
   const fixture = useWorkbenchFixture({
@@ -61,6 +63,12 @@ export function Workbench({
   const handoffEnabled = controlled
     ? (handoffEnabledProp ?? false)
     : fixture.handoffEnabled;
+  const handoffDisabledCaption = controlled
+    ? (handoffDisabledCaptionProp ?? null)
+    : fixture.handoffDisabledCaption;
+  const briefReadiness = controlled
+    ? briefReadinessProp
+    : fixture.briefReadiness;
   const showSearchFallback = controlled
     ? (showSearchFallbackProp ?? false)
     : fixture.showSearchFallback;
@@ -100,6 +108,7 @@ export function Workbench({
       sendInFlight={sendInFlight}
       handoffInFlight={handoffInFlight}
       handoffEnabled={handoffEnabled}
+      handoffDisabledCaption={handoffDisabledCaption}
       showCampaignActions={!isEmpty}
       onChange={setComposerText}
       onSend={handleSend}
@@ -128,9 +137,17 @@ export function Workbench({
               onSearchQueryChange={
                 onSearchQueryChange ?? fixture.setSearchQuery
               }
-              journey={journey}
             />
             <div className="shrink-0 border-t border-border p-4 sm:px-6">
+              {briefReadiness !== undefined ? (
+                <div className="mb-2">
+                  <BriefReadiness
+                    capturedCount={briefReadiness.capturedCount}
+                    missing={briefReadiness.missing}
+                    complete={briefReadiness.complete}
+                  />
+                </div>
+              ) : null}
               {composer}
             </div>
           </>
@@ -152,6 +169,8 @@ export function WorkbenchRoute(): ReactElement {
       sendInFlight={hook.sendInFlight}
       handoffInFlight={hook.handoffInFlight}
       handoffEnabled={hook.handoffEnabled}
+      handoffDisabledCaption={hook.handoffDisabledCaption}
+      briefReadiness={hook.briefReadiness}
       showSearchFallback={hook.showSearchFallback}
       searchQuery={hook.searchQuery}
       onComposerTextChange={hook.setComposerText}
@@ -165,7 +184,6 @@ export function WorkbenchRoute(): ReactElement {
       onStartCampaignFromConversation={() => {
         void hook.startCampaignFromConversation();
       }}
-      journey={hook.journey}
     />
   );
 }
