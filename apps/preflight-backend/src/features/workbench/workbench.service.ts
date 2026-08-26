@@ -15,6 +15,7 @@ import { buildExplainerPrompt } from "../../../agents/explainer.prompt.js";
 import { env } from "../../config/env.js";
 import { AgentInvocationError, hashAgentText } from "../../lib/gitagent.js";
 import { getLiveCatalog } from "../../lib/catalog.js";
+import { detectInjectionSignals } from "../../lib/injection-guard.js";
 import { InternalError } from "../../lib/http-error.js";
 import { recordAgentRun } from "../agent-runs/agent-runs.service.js";
 
@@ -22,6 +23,14 @@ function stripJsonFence(content: string): string {
   const trimmed = content.trim();
   const match = trimmed.match(/^```(?:json)?\s*\n?([\s\S]*?)\n?```$/);
   return match?.[1]?.trim() ?? trimmed;
+}
+
+function untrustedExplainerText(
+  message: string,
+  history: WorkbenchChatHistoryItem[] | undefined,
+): string {
+  const parts = [...(history ?? []).map((turn) => turn.content), message];
+  return parts.join("\n");
 }
 
 function parseExplainerOutput(content: string): WorkbenchChatResponse {
@@ -54,6 +63,7 @@ export async function chat(
     kind: entry.kind,
     wording: entry.wording,
   }));
+  const injection = detectInjectionSignals(untrustedExplainerText(message, history));
 
   try {
     const prompt = buildExplainerPrompt({
@@ -67,7 +77,7 @@ export async function chat(
 
     try {
       const parsed = parseExplainerOutput(content);
-      void recordAgentRun(meta, { kind: "chat", id: null });
+      void recordAgentRun(meta, { kind: "chat", id: null }, injection);
       return parsed;
     } catch {
       void recordAgentRun(
@@ -79,12 +89,13 @@ export async function chat(
           outputHash: hashAgentText(content),
         },
         { kind: "chat", id: null },
+        injection,
       );
       throw new InternalError("Explainer failed.");
     }
   } catch (error) {
     if (error instanceof AgentInvocationError) {
-      void recordAgentRun(error.meta, { kind: "chat", id: null });
+      void recordAgentRun(error.meta, { kind: "chat", id: null }, injection);
     }
 
     if (error instanceof InternalError) {

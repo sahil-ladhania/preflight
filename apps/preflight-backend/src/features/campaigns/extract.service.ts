@@ -4,13 +4,14 @@
  */
 import {
   ExtractorOutputSchema,
-  type ExtractorOutput,
   type ExtractResponseDTO,
+  type ExtractorOutput,
 } from "@preflight/schemas";
 
 import { buildExtractorPrompt } from "../../../agents/extractor.prompt.js";
 import { env } from "../../config/env.js";
 import { AgentInvocationError, hashAgentText } from "../../lib/gitagent.js";
+import { detectInjectionSignals } from "../../lib/injection-guard.js";
 import { InternalError, NotFoundError } from "../../lib/http-error.js";
 import { prisma } from "../../lib/prisma.js";
 import { recordAgentRun } from "../agent-runs/agent-runs.service.js";
@@ -45,6 +46,8 @@ export async function extractBrief(
     data: { freeText },
   });
 
+  const injection = detectInjectionSignals(freeText);
+
   try {
     const prompt = buildExtractorPrompt({ freeText });
     const { runAgent } = await import("../../lib/gitagent.js");
@@ -52,8 +55,8 @@ export async function extractBrief(
 
     try {
       const proposal = parseExtractorOutput(content);
-      void recordAgentRun(meta, { kind: "campaign", id: campaignId });
-      return { proposal, skillsRead };
+      void recordAgentRun(meta, { kind: "campaign", id: campaignId }, injection);
+      return { proposal, skillsRead, injection };
     } catch {
       void recordAgentRun(
         {
@@ -64,12 +67,13 @@ export async function extractBrief(
           outputHash: hashAgentText(content),
         },
         { kind: "campaign", id: campaignId },
+        injection,
       );
       throw new InternalError("Extract failed.");
     }
   } catch (error) {
     if (error instanceof AgentInvocationError) {
-      void recordAgentRun(error.meta, { kind: "campaign", id: campaignId });
+      void recordAgentRun(error.meta, { kind: "campaign", id: campaignId }, injection);
       throw new InternalError("Extract failed.");
     }
 

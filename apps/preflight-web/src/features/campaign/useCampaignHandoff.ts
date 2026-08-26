@@ -6,12 +6,13 @@
 import { useCallback, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import type { StructuredBriefInput } from "@preflight/schemas";
+import type { InjectionDetection, StructuredBriefInput } from "@preflight/schemas";
 
 export interface CampaignHandoffPayload {
   proposal: Partial<StructuredBriefInput>;
   freeText?: string;
   skillsRead?: string[];
+  injection?: InjectionDetection;
 }
 
 type LocationState = {

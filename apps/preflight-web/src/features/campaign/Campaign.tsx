@@ -28,6 +28,7 @@ export function Campaign({
   brief: briefProp,
   proposedFieldKeys: proposedFieldKeysProp,
   extractSkillsRead: extractSkillsReadProp,
+  extractInjection: extractInjectionProp,
   compileResult: compileResultProp,
   emptySetAcknowledged: emptySetAcknowledgedProp,
   extractInFlight: extractInFlightProp,
@@ -87,6 +88,9 @@ export function Campaign({
   const extractSkillsRead = controlled
     ? (extractSkillsReadProp ?? null)
     : fixture.extractSkillsRead;
+  const extractInjection = controlled
+    ? (extractInjectionProp ?? null)
+    : null;
   const compileResult = controlled
     ? (compileResultProp ?? null)
     : fixture.compileResult;
@@ -211,6 +215,7 @@ export function Campaign({
                 brief={brief}
                 proposedFieldKeys={proposedFieldKeys}
                 extractSkillsRead={extractSkillsRead}
+                extractInjection={extractInjection}
                 saveDisabled={saveDisabled}
                 saveDisabledCaption={saveDisabledCaption}
                 saveInFlight={saveInFlight}

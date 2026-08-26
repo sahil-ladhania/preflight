@@ -8,6 +8,7 @@ import type { ReactNode } from "react";
 import type {
   CampaignDTO,
   CompileResponseDTO,
+  InjectionDetection,
   StructuredBriefInput,
 } from "@preflight/schemas";
 import type { BriefField } from "@preflight/schemas";
@@ -48,6 +49,7 @@ export interface CampaignProps {
   brief?: StructuredBriefInput;
   proposedFieldKeys?: ReadonlySet<BriefField>;
   extractSkillsRead?: string[] | null;
+  extractInjection?: InjectionDetection | null;
   compileResult?: CompileResponseDTO | null;
   emptySetAcknowledged?: boolean;
   extractInFlight?: boolean;
@@ -94,6 +96,7 @@ export interface BriefFormProps {
   brief: StructuredBriefInput;
   proposedFieldKeys: ReadonlySet<BriefField>;
   extractSkillsRead: string[] | null;
+  extractInjection: InjectionDetection | null;
   saveDisabled: boolean;
   saveDisabledCaption: string | null;
   saveInFlight: boolean;

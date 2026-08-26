@@ -313,3 +313,6 @@ export function campaignGateState(input: {
     generateDisabled,
   };
 }
+
+export const INJECTION_BANNER_COPY =
+  "Brief contained override language — logged.";

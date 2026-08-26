@@ -36,26 +36,52 @@ describe("GenerateResponseDTOSchema", () => {
 });
 
 describe("ExtractResponseDTOSchema", () => {
+  const injection = { signals: [] as string[], severity: "low" as const };
+
   it("wraps the proposal without flattening it", () => {
     const parsed = ExtractResponseDTOSchema.parse({
       proposal: { objective: "Launch awareness" },
       skillsRead: ["skills/brief-structure/SKILL.md"],
+      injection,
     });
     expect(parsed.proposal).toEqual({ objective: "Launch awareness" });
     expect(parsed.skillsRead).toEqual(["skills/brief-structure/SKILL.md"]);
+    expect(parsed.injection).toEqual(injection);
   });
 
   it("accepts empty skillsRead", () => {
     const parsed = ExtractResponseDTOSchema.parse({
       proposal: { schemeName: "Bluepeak Flexi Cap Fund" },
       skillsRead: [],
+      injection,
     });
     expect(parsed.skillsRead).toEqual([]);
   });
 
+  it("accepts high-severity injection", () => {
+    const parsed = ExtractResponseDTOSchema.parse({
+      proposal: { objective: "Test" },
+      skillsRead: [],
+      injection: {
+        signals: ["ignore_instructions", "drop_disclaimer"],
+        severity: "high",
+      },
+    });
+    expect(parsed.injection.severity).toBe("high");
+  });
+
   it("rejects a proposal with no fields", () => {
     expect(() =>
-      ExtractResponseDTOSchema.parse({ proposal: {}, skillsRead: [] }),
+      ExtractResponseDTOSchema.parse({ proposal: {}, skillsRead: [], injection }),
+    ).toThrow();
+  });
+
+  it("rejects missing injection", () => {
+    expect(() =>
+      ExtractResponseDTOSchema.parse({
+        proposal: { objective: "Test" },
+        skillsRead: [],
+      }),
     ).toThrow();
   });
 });

@@ -63,6 +63,12 @@ export { StructuredBriefSchema, PutBriefRequestSchema } from "./brief.js"
 export type { StructuredBriefInput, PutBriefRequest } from "./brief.js"
 
 export {
+  InjectionDetectionSchema,
+  InjectionSeveritySchema,
+} from "./injection.js"
+export type { InjectionDetection, InjectionSeverity } from "./injection.js"
+
+export {
   CompileRuleCardDTOSchema,
   LastCompileDTOSchema,
   CampaignDTOSchema,

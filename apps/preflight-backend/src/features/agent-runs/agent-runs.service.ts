@@ -4,6 +4,12 @@
  */
 import { randomUUID } from "node:crypto";
 
+import type { InjectionDetection } from "@preflight/schemas";
+
+import {
+  EMPTY_INJECTION,
+  type InjectionDetection as GuardInjectionDetection,
+} from "../../lib/injection-guard.js";
 import type { AgentRunMeta } from "../../lib/gitagent.js";
 import { prisma } from "../../lib/prisma.js";
 
@@ -26,7 +32,13 @@ export function buildAgentRunRowData(
   meta: AgentRunMeta,
   linkage: AgentRunLinkage,
   id: string,
+  injection: GuardInjectionDetection = EMPTY_INJECTION,
 ) {
+  const payload: InjectionDetection = {
+    signals: injection.signals,
+    severity: injection.severity,
+  };
+
   return {
     id,
     agentName: meta.agentName,
@@ -44,7 +56,7 @@ export function buildAgentRunRowData(
     costUsd: meta.costUsd,
     latencyMs: meta.latencyMs,
     skillsRead: meta.skillsRead,
-    injectionSignals: [] as string[],
+    injectionSignals: payload,
     chatFlags: [] as string[],
     ok: meta.ok,
     errorKind: meta.errorKind,
@@ -54,10 +66,11 @@ export function buildAgentRunRowData(
 export async function recordAgentRun(
   meta: AgentRunMeta,
   linkage: AgentRunLinkage,
+  injection: GuardInjectionDetection = EMPTY_INJECTION,
 ): Promise<string | null> {
   try {
     const row = await prisma.agentRun.create({
-      data: buildAgentRunRowData(meta, linkage, randomUUID()),
+      data: buildAgentRunRowData(meta, linkage, randomUUID(), injection),
       select: { id: true },
     });
 

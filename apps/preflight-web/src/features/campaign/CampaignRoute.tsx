@@ -44,6 +44,7 @@ export function CampaignRoute(): ReactElement {
       brief={hook.brief}
       proposedFieldKeys={hook.proposedFieldKeys}
       extractSkillsRead={hook.extractSkillsRead}
+      extractInjection={hook.extractInjection}
       compileResult={hook.compileResult}
       emptySetAcknowledged={hook.emptySetAcknowledged}
       extractInFlight={hook.extractInFlight}

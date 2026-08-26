@@ -6,6 +6,7 @@
 import type {
   CampaignDTO,
   CompileResponseDTO,
+  InjectionDetection,
   StructuredBriefInput,
 } from "@preflight/schemas";
 import type { BriefField } from "@preflight/schemas";
@@ -69,6 +70,7 @@ export async function runCampaignBuildChain(input: {
   setBriefSaved: (saved: boolean) => void;
   setProposedFieldKeys: (keys: Set<BriefField>) => void;
   setExtractSkillsRead: (skillsRead: string[] | null) => void;
+  setExtractInjection: (injection: InjectionDetection | null) => void;
   setCompileResult: (result: CompileResponseDTO | null) => void;
   setEmptySetAcknowledged: (checked: boolean) => void;
   onPhase: (phase: BuildPhase) => void;
@@ -109,6 +111,7 @@ export async function runCampaignBuildChain(input: {
     input.setBrief(workingBrief);
     input.setProposedFieldKeys(proposedKeysFromPartial(extracted.proposal));
     input.setExtractSkillsRead(extracted.skillsRead);
+    input.setExtractInjection(extracted.injection);
     narrations = narrationPatch(
       narrations,
       "brief",
@@ -140,6 +143,7 @@ export async function runCampaignBuildChain(input: {
   input.setBriefSaved(true);
   input.setProposedFieldKeys(new Set());
   input.setExtractSkillsRead(null);
+  input.setExtractInjection(null);
   narrations = narrationPatch(narrations, "brief", buildSaveNarration(normalized));
 
   input.onPhase("compile");

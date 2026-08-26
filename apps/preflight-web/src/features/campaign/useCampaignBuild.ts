@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import type {
   CampaignDTO,
   CompileResponseDTO,
+  InjectionDetection,
   StructuredBriefInput,
 } from "@preflight/schemas";
 import type { BriefField } from "@preflight/schemas";
@@ -47,6 +48,7 @@ export function useCampaignBuild(input: {
   setBriefSaved: (saved: boolean) => void;
   setProposedFieldKeys: (keys: Set<BriefField>) => void;
   setExtractSkillsRead: (skillsRead: string[] | null) => void;
+  setExtractInjection: (injection: InjectionDetection | null) => void;
   setCompileResult: (result: CompileResponseDTO | null) => void;
   setEmptySetAcknowledged: (checked: boolean) => void;
   toastApiError: (error: unknown) => void;
@@ -136,6 +138,7 @@ export function useCampaignBuild(input: {
         setBriefSaved: input.setBriefSaved,
         setProposedFieldKeys: input.setProposedFieldKeys,
         setExtractSkillsRead: input.setExtractSkillsRead,
+        setExtractInjection: input.setExtractInjection,
         setCompileResult: input.setCompileResult,
         setEmptySetAcknowledged: input.setEmptySetAcknowledged,
         onPhase: setBuildPhase,

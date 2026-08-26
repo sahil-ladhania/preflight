@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import type {
   CampaignDTO,
   CompileResponseDTO,
+  InjectionDetection,
   StructuredBriefInput,
 } from "@preflight/schemas";
 import type { BriefField } from "@preflight/schemas";
@@ -50,6 +51,7 @@ export function useCampaignMutations(input: {
   setBriefSaved: (saved: boolean) => void;
   setProposedFieldKeys: Dispatch<SetStateAction<Set<BriefField>>>;
   setExtractSkillsRead: (skillsRead: string[] | null) => void;
+  setExtractInjection: (injection: InjectionDetection | null) => void;
   setCompileResult: (result: CompileResponseDTO | null) => void;
   setEmptySetAcknowledged: (checked: boolean) => void;
   setExtractInFlight: (inFlight: boolean) => void;
@@ -79,6 +81,7 @@ export function useCampaignMutations(input: {
     setBriefSaved,
     setProposedFieldKeys,
     setExtractSkillsRead,
+    setExtractInjection,
     setCompileResult,
     setEmptySetAcknowledged,
     setExtractInFlight,
@@ -107,6 +110,7 @@ export function useCampaignMutations(input: {
       setBrief((current) => mergeExtractProposal(current, response.proposal));
       setProposedFieldKeys(proposedKeysFromPartial(response.proposal));
       setExtractSkillsRead(response.skillsRead);
+      setExtractInjection(response.injection);
     } catch (error: unknown) {
       toastApiError(error);
     } finally {
@@ -118,6 +122,7 @@ export function useCampaignMutations(input: {
     setBrief,
     setExtractInFlight,
     setExtractSkillsRead,
+    setExtractInjection,
     setProposedFieldKeys,
     toastApiError,
   ]);
@@ -144,6 +149,7 @@ export function useCampaignMutations(input: {
       setBriefSaved(true);
       setProposedFieldKeys(new Set());
       setExtractSkillsRead(null);
+      setExtractInjection(null);
     } catch (error: unknown) {
       toastApiError(error);
     } finally {
@@ -158,6 +164,7 @@ export function useCampaignMutations(input: {
     setBriefSaved,
     setCampaign,
     setExtractSkillsRead,
+    setExtractInjection,
     setProposedFieldKeys,
     setSaveInFlight,
     toastApiError,

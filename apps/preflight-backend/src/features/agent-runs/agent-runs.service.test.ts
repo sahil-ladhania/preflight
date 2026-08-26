@@ -54,7 +54,7 @@ test("buildAgentRunRowData maps meta fields", () => {
   assert.equal(row.errorKind, "parse_failed");
   assert.equal(row.linkageKind, "finding");
   assert.equal(row.linkageId, "f-1");
-  assert.deepEqual(row.injectionSignals, []);
+  assert.deepEqual(row.injectionSignals, { signals: [], severity: "low" });
   assert.deepEqual(row.chatFlags, []);
 });
 

@@ -3,7 +3,7 @@
  * Why: doc 19 §9.3 client handoff without new endpoints.
  */
 
-import type { StructuredBriefInput } from "@preflight/schemas";
+import type { InjectionDetection, StructuredBriefInput } from "@preflight/schemas";
 
 import {
   createCampaignService,
@@ -60,6 +60,7 @@ export interface WorkbenchExtractHandoffResult {
   freeText: string;
   proposal: Partial<StructuredBriefInput>;
   skillsRead: string[];
+  injection: InjectionDetection;
 }
 
 export async function runWorkbenchExtractHandoff(
@@ -82,5 +83,11 @@ export async function runWorkbenchExtractHandoff(
     handoffBriefFromMessages(messages),
   );
 
-  return { campaignId, freeText, proposal, skillsRead: extracted.skillsRead };
+  return {
+    campaignId,
+    freeText,
+    proposal,
+    skillsRead: extracted.skillsRead,
+    injection: extracted.injection,
+  };
 }

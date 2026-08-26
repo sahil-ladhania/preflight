@@ -8,6 +8,7 @@ import { RuleKindSchema, ChannelSchema } from "./enums.js"
 import { AGENT_INPUT_MAX_LENGTH, HashSchema, IsoDateTimeSchema } from "./primitives.js"
 import { StructuredBriefSchema } from "./brief.js"
 import { ExtractorOutputSchema } from "./extractor-output.js"
+import { InjectionDetectionSchema } from "./injection.js"
 
 export const CompileRuleCardDTOSchema = z.object({
   ruleId: z.string().min(1),
@@ -76,6 +77,7 @@ export type GenerateRequest = z.infer<typeof GenerateRequestSchema>
 export const ExtractResponseDTOSchema = z.object({
   proposal: ExtractorOutputSchema,
   skillsRead: z.array(z.string().min(1)),
+  injection: InjectionDetectionSchema,
 })
 export type ExtractResponseDTO = z.infer<typeof ExtractResponseDTOSchema>
 

@@ -7,7 +7,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { StructuredBriefInput } from "@preflight/schemas";
-import type { BriefField } from "@preflight/schemas";
+import type { BriefField, InjectionDetection } from "@preflight/schemas";
 
 import { activeCampaignStep } from "@/features/campaign/CampaignStepRail";
 import type { CampaignStepId } from "@/features/campaign/CampaignStepRail";
@@ -32,6 +32,7 @@ export function useCampaign(campaignId: string | undefined): {
   brief: StructuredBriefInput;
   proposedFieldKeys: ReadonlySet<BriefField>;
   extractSkillsRead: string[] | null;
+  extractInjection: InjectionDetection | null;
   compileResult: ReturnType<typeof useCampaignLoad>["compileResult"];
   emptySetAcknowledged: boolean;
   extractInFlight: boolean;
@@ -70,6 +71,8 @@ export function useCampaign(campaignId: string | undefined): {
   const [extractSkillsRead, setExtractSkillsRead] = useState<string[] | null>(
     null,
   );
+  const [extractInjection, setExtractInjection] =
+    useState<InjectionDetection | null>(null);
   const [emptySetAcknowledged, setEmptySetAcknowledged] =
     useState<boolean>(false);
   const [extractInFlight, setExtractInFlight] = useState<boolean>(false);
@@ -82,6 +85,7 @@ export function useCampaign(campaignId: string | undefined): {
   const onHydrated = useCallback((): void => {
     setProposedFieldKeys(new Set());
     setExtractSkillsRead(null);
+    setExtractInjection(null);
     setEmptySetAcknowledged(false);
     handoffAppliedRef.current = false;
   }, []);
@@ -100,6 +104,7 @@ export function useCampaign(campaignId: string | undefined): {
     setBriefSaved: load.setBriefSaved,
     setProposedFieldKeys,
     setExtractSkillsRead,
+    setExtractInjection,
     setCompileResult: load.setCompileResult,
     setEmptySetAcknowledged,
     toastApiError: load.toastApiError,
@@ -123,6 +128,7 @@ export function useCampaign(campaignId: string | undefined): {
     );
     setProposedFieldKeys(proposedKeysFromPartial(pendingHandoff.proposal));
     setExtractSkillsRead(pendingHandoff.skillsRead ?? null);
+    setExtractInjection(pendingHandoff.injection ?? null);
     build.setBriefNarration(
       buildExtractNarration(
         pendingHandoff.proposal,
@@ -169,6 +175,7 @@ export function useCampaign(campaignId: string | undefined): {
     setBriefSaved: load.setBriefSaved,
     setProposedFieldKeys,
     setExtractSkillsRead,
+    setExtractInjection,
     setCompileResult: load.setCompileResult,
     setEmptySetAcknowledged,
     setExtractInFlight,
@@ -205,6 +212,7 @@ export function useCampaign(campaignId: string | undefined): {
     brief: load.brief,
     proposedFieldKeys,
     extractSkillsRead,
+    extractInjection,
     compileResult: load.compileResult,
     emptySetAcknowledged,
     extractInFlight,

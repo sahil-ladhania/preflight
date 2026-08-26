@@ -24,6 +24,7 @@ import {
   CAMPAIGN_INPUT_MISSING_CLASS,
   CAMPAIGN_INPUT_PROPOSED_CLASS,
   CAMPAIGN_TEXTAREA_CLASS,
+  INJECTION_BANNER_COPY,
 } from "@/features/campaign/lib";
 import type { BriefFormProps } from "@/features/campaign/types";
 import { agentRunCaption } from "@/lib/agent-provenance";
@@ -88,6 +89,7 @@ export function BriefForm({
   brief,
   proposedFieldKeys,
   extractSkillsRead,
+  extractInjection,
   saveDisabled,
   saveDisabledCaption,
   saveInFlight,
@@ -141,6 +143,9 @@ export function BriefForm({
               </p>
             ) : null}
           </div>
+          {extractInjection?.severity === "high" ? (
+            <p className="text-caption text-fg-muted">{INJECTION_BANNER_COPY}</p>
+          ) : null}
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             {BRIEF_SCALAR_FIELDS.map(({ key, label, placeholder }) => (
               <ScalarField

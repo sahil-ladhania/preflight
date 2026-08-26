@@ -40,6 +40,7 @@ export function useWorkbenchHandoff(input: {
             proposal: extracted.proposal,
             freeText: extracted.freeText,
             skillsRead: extracted.skillsRead,
+            injection: extracted.injection,
           },
         },
       });
