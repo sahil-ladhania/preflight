@@ -8,6 +8,7 @@ import type { ReactElement } from "react";
 import type { FindingDTO } from "@preflight/schemas";
 
 import { Button } from "@/components/ui/button";
+import { DecisionHistory } from "@/features/assets/DecisionHistory";
 import {
   formatGeneratedAt,
   humanVerdictLabel,
@@ -114,6 +115,7 @@ export function LedgerExpanded(props: LedgerExpandedProps): ReactElement {
         <p className="text-body text-fg">{finding.frozenWording}</p>
       </div>
       <p className="text-caption text-fg-muted">{humanLine}</p>
+      <DecisionHistory decisions={finding.decisions} />
       <ActionRow {...props} />
     </div>
   );

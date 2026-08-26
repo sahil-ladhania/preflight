@@ -35,6 +35,7 @@ function failFinding(
     humanActor: null,
     humanAt: null,
     judgeRun: null,
+    decisions: [],
     ...overrides,
   };
 }

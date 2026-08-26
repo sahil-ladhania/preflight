@@ -17,6 +17,7 @@ import {
   ASSET_KIT_FIELDS,
   findingId,
   passFinding,
+  decisionRow,
 } from "./shared";
 
 const SEBI05_ID = findingId("d", "SEBI-05");
@@ -57,6 +58,26 @@ export const ASSET_D: AssetDetailFixture = {
       humanActor: DEMO_OPERATOR,
       humanAt: "2026-03-13T15:20:00.000Z",
       judgeRun: null,
+      decisions: [
+        decisionRow({
+          id: "dec-d-sebi05-1",
+          action: "waive",
+          previousVerdict: null,
+          verdict: "waived",
+          reason: "Internal demo — will revisit.",
+          actor: DEMO_OPERATOR,
+          at: "2026-03-13T15:05:00.000Z",
+        }),
+        decisionRow({
+          id: "dec-d-sebi05-2",
+          action: "waive",
+          previousVerdict: "waived",
+          verdict: "waived",
+          reason: "Approved exception for internal demo static.",
+          actor: DEMO_OPERATOR,
+          at: "2026-03-13T15:20:00.000Z",
+        }),
+      ],
     },
     passFinding("d", "SEBI-06", "judgement"),
   ],

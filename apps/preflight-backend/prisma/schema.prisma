@@ -105,10 +105,26 @@ model Finding {
   humanAt           DateTime?
   judgeRunId        String?
 
-  asset    Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
-  judgeRun AgentRun? @relation("FindingJudgeRun", fields: [judgeRunId], references: [id], onDelete: Restrict)
+  asset     Asset              @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  judgeRun  AgentRun?          @relation("FindingJudgeRun", fields: [judgeRunId], references: [id], onDelete: Restrict)
+  decisions FindingDecision[]
 
   @@unique([assetId, ruleId])
+}
+
+model FindingDecision {
+  id              String   @id @default(uuid())
+  findingId       String
+  action          String
+  previousVerdict String?
+  verdict         String?
+  reason          String?
+  actor           String
+  at              DateTime @default(now())
+
+  finding Finding @relation(fields: [findingId], references: [id], onDelete: Cascade)
+
+  @@index([findingId, at])
 }
 
 model AgentRun {

@@ -12,6 +12,7 @@ import { seedStory } from "./seed/story.js";
 const prisma = new PrismaClient();
 
 async function resetDatabase(): Promise<void> {
+  await prisma.findingDecision.deleteMany();
   await prisma.finding.deleteMany();
   await prisma.asset.deleteMany();
   await prisma.constraintSnapshot.deleteMany();

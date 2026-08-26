@@ -123,6 +123,12 @@ export type {
 } from "./asset.js"
 
 export {
+  DecisionActionSchema,
+  FindingDecisionDTOSchema,
+} from "./finding-decision.js"
+export type { DecisionAction, FindingDecisionDTO } from "./finding-decision.js"
+
+export {
   FindingDTOSchema,
   RetryRequestSchema,
   FindingMutationResponseDTOSchema,

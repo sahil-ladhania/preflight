@@ -15,6 +15,7 @@ import { ASSET_F_DEF, buildFindingsF, createStoryHelpers } from "./story-f.js";
 import { ASSET_G_DEF, buildFindingsG, buildSnapshots } from "./story-g.js";
 import { kitFingerprint } from "../../src/lib/brand-kit.js";
 import { computeRunHash } from "./story-findings.js";
+import { buildDecisionSeeds } from "./decision-seeds.js";
 import {
   buildCanonicalText,
   findingId,
@@ -163,5 +164,22 @@ export async function seedStory(prisma: PrismaClient): Promise<void> {
         },
       },
     });
+
+    const decisionSeeds = buildDecisionSeeds(module.def.letter, findings);
+
+    if (decisionSeeds.length > 0) {
+      await prisma.findingDecision.createMany({
+        data: decisionSeeds.map((row) => ({
+          id: row.id,
+          findingId: row.findingId,
+          action: row.action,
+          previousVerdict: row.previousVerdict,
+          verdict: row.verdict,
+          reason: row.reason,
+          actor: row.actor,
+          at: row.at,
+        })),
+      });
+    }
   }
 }

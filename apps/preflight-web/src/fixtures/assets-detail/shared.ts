@@ -3,7 +3,7 @@
  * Why: stable ids and hashes across A–H detail fixtures.
  */
 
-import type { BrandKitDTO, FieldOffsets, FindingDTO } from "@preflight/schemas";
+import type { BrandKitDTO, FieldOffsets, FindingDTO, FindingDecisionDTO } from "@preflight/schemas";
 
 export const CAMPAIGN_ID = "22222222-2222-4222-8222-222222222222";
 export const CONSTRAINT_SET_ID = "33333333-3333-4333-8333-333333333333";
@@ -124,5 +124,20 @@ export function passFinding(
     humanActor: null,
     humanAt: null,
     judgeRun: null,
+    decisions: [],
+  };
+}
+
+export function decisionRow(
+  input: Partial<FindingDecisionDTO> & Pick<FindingDecisionDTO, "action" | "actor" | "at">,
+): FindingDecisionDTO {
+  return {
+    id: input.id ?? "dec-00000000-0000-4000-8000-000000000001",
+    action: input.action,
+    previousVerdict: input.previousVerdict ?? null,
+    verdict: input.verdict ?? null,
+    reason: input.reason ?? null,
+    actor: input.actor,
+    at: input.at,
   };
 }

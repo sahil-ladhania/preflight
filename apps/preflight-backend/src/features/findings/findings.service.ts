@@ -2,16 +2,24 @@
  * findings.service — human verdict writes.
  * Why: 400 gates from 04-data-model.
  */
-import type { DecideRequest, FindingMutationResponseDTO } from "@preflight/schemas";
+import { randomUUID } from "node:crypto";
+
+import type { DecideRequest, FindingMutationResponseDTO, HumanVerdict } from "@preflight/schemas";
 
 import {
   refoldAssetStatus,
   toFindingDTO,
 } from "./finding-dto.js";
+import { buildDecisionRowData } from "../finding-decisions/finding-decisions.service.js";
 import { env } from "../../config/env.js";
 import { NotFoundError, ValidationError } from "../../lib/http-error.js";
 import { evaluateFinding } from "./judge.service.js";
 import { prisma } from "../../lib/prisma.js";
+
+const FINDING_DETAIL_INCLUDE = {
+  judgeRun: true,
+  decisions: { orderBy: { at: "asc" as const } },
+};
 
 function assertHumanActionAllowed(finding: {
   evaluationStatus: string;
@@ -45,6 +53,19 @@ async function loadFindingContext(findingId: string): Promise<{
   return { finding, asset };
 }
 
+function previousVerdict(finding: { humanVerdict: string | null }): HumanVerdict | null {
+  return finding.humanVerdict as HumanVerdict | null;
+}
+
+async function reloadFinding(findingId: string, constraintSetId: string) {
+  const updated = await prisma.finding.findUniqueOrThrow({
+    where: { id: findingId },
+    include: FINDING_DETAIL_INCLUDE,
+  });
+
+  return toFindingDTO(updated, constraintSetId);
+}
+
 export async function waiveFinding(
   findingId: string,
   reason: string,
@@ -54,21 +75,36 @@ export async function waiveFinding(
 
   const now = new Date();
 
-  await prisma.finding.update({
-    where: { id: findingId },
-    data: {
-      humanVerdict: "waived",
-      humanReason: reason,
-      humanActor: env.DEMO_OPERATOR_NAME,
-      humanAt: now,
-    },
-  });
+  await prisma.$transaction([
+    prisma.finding.update({
+      where: { id: findingId },
+      data: {
+        humanVerdict: "waived",
+        humanReason: reason,
+        humanActor: env.DEMO_OPERATOR_NAME,
+        humanAt: now,
+      },
+    }),
+    prisma.findingDecision.create({
+      data: buildDecisionRowData(
+        {
+          findingId,
+          action: "waive",
+          previousVerdict: previousVerdict(finding),
+          verdict: "waived",
+          reason,
+          actor: env.DEMO_OPERATOR_NAME,
+          at: now,
+        },
+        randomUUID(),
+      ),
+    }),
+  ]);
 
-  const updated = await prisma.finding.findUniqueOrThrow({ where: { id: findingId } });
   const status = await refoldAssetStatus(asset.id, asset.constraintSetId);
 
   return {
-    finding: await toFindingDTO(updated, asset.constraintSetId),
+    finding: await reloadFinding(findingId, asset.constraintSetId),
     status,
   };
 }
@@ -85,22 +121,38 @@ export async function decideFinding(
   }
 
   const now = new Date();
+  const action = body.verdict === "confirmed" ? "confirm" : "override";
 
-  await prisma.finding.update({
-    where: { id: findingId },
-    data: {
-      humanVerdict: body.verdict,
-      humanReason: body.verdict === "overridden" ? body.reason : null,
-      humanActor: env.DEMO_OPERATOR_NAME,
-      humanAt: now,
-    },
-  });
+  await prisma.$transaction([
+    prisma.finding.update({
+      where: { id: findingId },
+      data: {
+        humanVerdict: body.verdict,
+        humanReason: body.verdict === "overridden" ? body.reason : null,
+        humanActor: env.DEMO_OPERATOR_NAME,
+        humanAt: now,
+      },
+    }),
+    prisma.findingDecision.create({
+      data: buildDecisionRowData(
+        {
+          findingId,
+          action,
+          previousVerdict: previousVerdict(finding),
+          verdict: body.verdict,
+          reason: body.verdict === "overridden" ? body.reason : null,
+          actor: env.DEMO_OPERATOR_NAME,
+          at: now,
+        },
+        randomUUID(),
+      ),
+    }),
+  ]);
 
-  const updated = await prisma.finding.findUniqueOrThrow({ where: { id: findingId } });
   const status = await refoldAssetStatus(asset.id, asset.constraintSetId);
 
   return {
-    finding: await toFindingDTO(updated, asset.constraintSetId),
+    finding: await reloadFinding(findingId, asset.constraintSetId),
     status,
   };
 }
@@ -118,24 +170,41 @@ export async function retryFinding(
     throw new ValidationError("Retry applies to judgement evaluations only.");
   }
 
-  await prisma.finding.update({
-    where: { id: findingId },
-    data: {
-      evaluationStatus: "pending",
-      machineVerdict: null,
-      machineReason: null,
-      spans: [],
-      machineAt: null,
-    },
-  });
+  const now = new Date();
+
+  await prisma.$transaction([
+    prisma.finding.update({
+      where: { id: findingId },
+      data: {
+        evaluationStatus: "pending",
+        machineVerdict: null,
+        machineReason: null,
+        spans: [],
+        machineAt: null,
+      },
+    }),
+    prisma.findingDecision.create({
+      data: buildDecisionRowData(
+        {
+          findingId,
+          action: "retry",
+          previousVerdict: previousVerdict(finding),
+          verdict: null,
+          reason: null,
+          actor: env.DEMO_OPERATOR_NAME,
+          at: now,
+        },
+        randomUUID(),
+      ),
+    }),
+  ]);
 
   void evaluateFinding(findingId);
 
-  const updated = await prisma.finding.findUniqueOrThrow({ where: { id: findingId } });
   const status = await refoldAssetStatus(asset.id, asset.constraintSetId);
 
   return {
-    finding: await toFindingDTO(updated, asset.constraintSetId),
+    finding: await reloadFinding(findingId, asset.constraintSetId),
     status,
   };
 }

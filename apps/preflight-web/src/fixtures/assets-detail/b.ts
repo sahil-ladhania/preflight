@@ -56,6 +56,7 @@ export const ASSET_B: AssetDetailFixture = {
       humanActor: null,
       humanAt: null,
       judgeRun: null,
+      decisions: [],
     },
   ],
   exceptions: [],

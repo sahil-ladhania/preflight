@@ -141,7 +141,7 @@ export async function getAssetDetail(id: string): Promise<AssetDetailDTO> {
 
   const findingRows = await prisma.finding.findMany({
     where: { assetId: id },
-    include: { judgeRun: true },
+    include: { judgeRun: true, decisions: { orderBy: { at: "asc" } } },
   });
   const snapshotOrder = await loadSnapshotOrder(asset.constraintSetId);
   const findings = sortFindingsBySnapshotOrder(
@@ -162,7 +162,7 @@ export async function getAssetDetail(id: string): Promise<AssetDetailDTO> {
     if (parent) {
       const parentFindingRows = await prisma.finding.findMany({
         where: { assetId: parent.id },
-        include: { judgeRun: true },
+        include: { judgeRun: true, decisions: { orderBy: { at: "asc" } } },
       });
       const parentFindings = await Promise.all(
         parentFindingRows.map((row) => toFindingDTO(row, parent.constraintSetId)),
