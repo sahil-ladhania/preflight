@@ -28,6 +28,8 @@ export function AssetPane({
   onSpanClick,
   onAccept,
   onRegenerate,
+  onExport,
+  exportInFlight = false,
   regenerateInFlight = false,
   suppressHeaderActions = false,
 }: AssetPaneProps): ReactElement {
@@ -71,9 +73,9 @@ export function AssetPane({
         </div>
         <AgentRunBadge run={asset.generatorRun} />
         <div className="flex flex-col gap-1">
-          {!suppressHeaderActions ? (
-            <>
-              <div className="flex flex-wrap items-center justify-end gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {!suppressHeaderActions ? (
+              <>
                 <Button
                   type="button"
                   variant={acceptEnabled ? "default" : "outline"}
@@ -96,11 +98,24 @@ export function AssetPane({
                     "Regenerate"
                   )}
                 </Button>
-              </div>
-              {!acceptEnabled && disabledCaption !== null ? (
-                <p className="text-caption text-fg-muted">{disabledCaption}</p>
-              ) : null}
-            </>
+              </>
+            ) : null}
+            <Button
+              type="button"
+              variant="outline"
+              className="h-8 rounded-md px-4"
+              disabled={exportInFlight}
+              onClick={onExport}
+            >
+              {exportInFlight ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                "Export compliance report"
+              )}
+            </Button>
+          </div>
+          {!suppressHeaderActions && !acceptEnabled && disabledCaption !== null ? (
+            <p className="text-caption text-fg-muted">{disabledCaption}</p>
           ) : null}
         </div>
       </div>

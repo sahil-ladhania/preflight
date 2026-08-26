@@ -47,6 +47,22 @@ export function shortId(id: string): string {
   return id.slice(0, 8);
 }
 
+export function complianceReportFilename(assetId: string): string {
+  return `preflight-asset-${shortId(assetId)}-report.json`;
+}
+
+export function downloadJson(filename: string, payload: unknown): void {
+  const blob = new Blob([`${JSON.stringify(payload, null, 2)}\n`], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
 export function formatGeneratedAt(iso: string): string {
   return new Date(iso).toLocaleString(undefined, {
     year: "numeric",

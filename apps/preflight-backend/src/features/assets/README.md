@@ -6,6 +6,7 @@ List and detail for generated assets. Derives lineage, exceptions, and status fr
 |---|---|
 | `assets-derive.ts` | Derives statusDetail, exceptions summary, and lineage fields. |
 | `assets.controller.ts` | HTTP handlers for list, detail, and rerun routes. |
-| `assets.route.ts` | GET /assets, GET /assets/:id, POST /assets/:id/rerun. |
+| `assets.route.ts` | GET /assets, GET /assets/:id/report, GET /assets/:id, POST /assets/:id/rerun. |
+| `assets-report.service.ts` | Read-only compliance report DTO (detail + snapshot wordings). |
 | `assets.service.ts` | List and detail DTOs with foldStatus on every read. |
 | `rerun.service.ts` | Read-only re-run strip; diffRulesets; no database writes. |

@@ -4,7 +4,7 @@
  */
 
 import { z } from "zod"
-import { AssetStatusSchema, ChannelSchema } from "./enums.js"
+import { AssetStatusSchema, ChannelSchema, RuleKindSchema } from "./enums.js"
 import { HashSchema, IsoDateTimeSchema } from "./primitives.js"
 import { AgentRunSummaryDTOSchema } from "./agent-run.js"
 import { BrandKitDTOSchema } from "./brand-kit.js"
@@ -91,3 +91,16 @@ export const AssetDetailDTOSchema = AssetDTOSchema.extend({
   generatorRun: AgentRunSummaryDTOSchema.nullable(),
 })
 export type AssetDetailDTO = z.infer<typeof AssetDetailDTOSchema>
+
+export const SnapshotWordingDTOSchema = z.object({
+  ruleId: z.string().min(1),
+  kind: RuleKindSchema,
+  wording: z.string().min(1),
+})
+export type SnapshotWordingDTO = z.infer<typeof SnapshotWordingDTOSchema>
+
+export const ComplianceReportDTOSchema = AssetDetailDTOSchema.extend({
+  exportedAt: IsoDateTimeSchema,
+  snapshots: z.array(SnapshotWordingDTOSchema),
+})
+export type ComplianceReportDTO = z.infer<typeof ComplianceReportDTOSchema>

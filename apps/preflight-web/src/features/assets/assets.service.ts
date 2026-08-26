@@ -6,12 +6,14 @@
 import {
   AssetDetailDTOSchema,
   AssetsListResponseSchema,
+  ComplianceReportDTOSchema,
   FindingMutationResponseDTOSchema,
   RerunStripDTOSchema,
 } from "@preflight/schemas";
 import type {
   AssetDetailDTO,
   AssetsListResponse,
+  ComplianceReportDTO,
   DecideRequest,
   FindingMutationResponseDTO,
   RerunStripDTO,
@@ -54,6 +56,25 @@ export async function getAssetDetailService(
     const message =
       error instanceof Error ? error.message : "getAssetDetailService failed";
     throw new Error(`getAssetDetailService(${id}): ${message}`, { cause: error });
+  }
+}
+
+export async function getAssetReportService(
+  id: string,
+  signal: AbortSignal,
+): Promise<ComplianceReportDTO> {
+  try {
+    return await apiRequest("GET", `/assets/${id}/report`, {
+      signal,
+      dataSchema: ComplianceReportDTOSchema,
+    });
+  } catch (error: unknown) {
+    if (error instanceof ApiClientError) {
+      throw error;
+    }
+    const message =
+      error instanceof Error ? error.message : "getAssetReportService failed";
+    throw new Error(`getAssetReportService(${id}): ${message}`, { cause: error });
   }
 }
 

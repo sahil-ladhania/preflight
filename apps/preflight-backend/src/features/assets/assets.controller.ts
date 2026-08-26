@@ -6,6 +6,7 @@ import type { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 
 import { getAssetDetail, listAssets } from "./assets.service.js";
+import { getAssetReport } from "./assets-report.service.js";
 import { buildRerunStrip } from "./rerun.service.js";
 import { HttpError } from "../../lib/http-error.js";
 
@@ -50,6 +51,19 @@ export async function getAssetDetailHandler(
 ): Promise<void> {
   try {
     const data = await getAssetDetail(req.params.id);
+    res.status(200).json({ success: true, data });
+  } catch (err: unknown) {
+    handleError(err, res, next);
+  }
+}
+
+export async function getAssetReportHandler(
+  req: Request<{ id: string }>,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const data = await getAssetReport(req.params.id);
     res.status(200).json({ success: true, data });
   } catch (err: unknown) {
     handleError(err, res, next);

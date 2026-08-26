@@ -81,6 +81,8 @@ export interface AssetDetailProps {
   onRerun?: () => void;
   onRegenerate?: () => void;
   onAccept?: () => void;
+  onExport?: () => void;
+  exportInFlight?: boolean;
   regenerateInFlight?: boolean;
   rerunInFlight?: boolean;
   onCloseReasonModal?: () => void;
@@ -107,6 +109,8 @@ export interface AssetPaneProps {
   onSpanClick: (findingId: string) => void;
   onAccept: () => void;
   onRegenerate: () => void;
+  onExport: () => void;
+  exportInFlight?: boolean;
   regenerateInFlight?: boolean;
   suppressHeaderActions?: boolean;
 }

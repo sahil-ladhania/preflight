@@ -1,14 +1,17 @@
 /**
  * useAssetDetail — GET /assets/:id and mutations.
  * Why: span↔row selection state lives here.
+ * // size: export report handler co-located with load/mutations; split loses hook cohesion.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { AssetDetailDTO, RerunStripDTO } from "@preflight/schemas";
 
-import { getAssetDetailService } from "@/features/assets/assets.service";
+import { getAssetDetailService, getAssetReportService } from "@/features/assets/assets.service";
 import {
+  complianceReportFilename,
+  downloadJson,
   formatComplianceDeskHandoffToast,
   scrollFindingTarget,
 } from "@/features/assets/lib";
@@ -43,6 +46,8 @@ export function useAssetDetail(id: string | undefined): {
   rerun: () => Promise<void>;
   regenerate: () => Promise<void>;
   accept: () => void;
+  exportReport: () => Promise<void>;
+  exportInFlight: boolean;
   complianceDeskOpen: boolean;
   closeComplianceDesk: () => void;
   confirmComplianceDesk: () => void;
@@ -61,6 +66,7 @@ export function useAssetDetail(id: string | undefined): {
     findingId: null,
   });
   const [complianceDeskOpen, setComplianceDeskOpen] = useState<boolean>(false);
+  const [exportInFlight, setExportInFlight] = useState<boolean>(false);
   const { enqueue } = useToastContext();
   const abortRef = useRef<AbortController | null>(null);
   const showLoadingSpinner = useDelayedLoading(view === "loading");
@@ -201,6 +207,31 @@ export function useAssetDetail(id: string | undefined): {
     setComplianceDeskOpen(false);
   }, [assetDto?.brandKit.clientName, enqueue]);
 
+  const exportReport = useCallback(async (): Promise<void> => {
+    if (id === undefined) {
+      return;
+    }
+
+    setExportInFlight(true);
+    const controller = new AbortController();
+
+    try {
+      const report = await getAssetReportService(id, controller.signal);
+      downloadJson(complianceReportFilename(id), report);
+      enqueue("Compliance report downloaded.");
+    } catch (error: unknown) {
+      if (error instanceof ApiClientError) {
+        enqueue(error.apiError ?? error.message);
+        return;
+      }
+
+      const message = error instanceof Error ? error.message : "Export failed.";
+      enqueue(message);
+    } finally {
+      setExportInFlight(false);
+    }
+  }, [enqueue, id]);
+
   return {
     asset,
     view,
@@ -220,6 +251,8 @@ export function useAssetDetail(id: string | undefined): {
     rerun,
     regenerate,
     accept,
+    exportReport,
+    exportInFlight,
     complianceDeskOpen,
     closeComplianceDesk,
     confirmComplianceDesk,

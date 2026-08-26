@@ -116,6 +116,8 @@ export {
   ExceptionItemDTOSchema,
   LineageDTOSchema,
   AssetDetailDTOSchema,
+  SnapshotWordingDTOSchema,
+  ComplianceReportDTOSchema,
 } from "./asset.js"
 export type {
   FieldOffsetRange,
@@ -126,6 +128,8 @@ export type {
   ExceptionItemDTO,
   LineageDTO,
   AssetDetailDTO,
+  SnapshotWordingDTO,
+  ComplianceReportDTO,
 } from "./asset.js"
 
 export {

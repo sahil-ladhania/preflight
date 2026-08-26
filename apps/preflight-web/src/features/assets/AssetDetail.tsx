@@ -45,6 +45,8 @@ export function AssetDetail({
   onRerun,
   onRegenerate,
   onAccept,
+  onExport,
+  exportInFlight = false,
   regenerateInFlight = false,
   rerunInFlight = false,
   onCloseReasonModal,
@@ -180,6 +182,12 @@ export function AssetDetail({
                 void onRegenerate();
               }
             }}
+            onExport={() => {
+              if (onExport !== undefined) {
+                void onExport();
+              }
+            }}
+            exportInFlight={exportInFlight}
             regenerateInFlight={regenerateInFlight}
             suppressHeaderActions={showVerdictBanner}
           />
