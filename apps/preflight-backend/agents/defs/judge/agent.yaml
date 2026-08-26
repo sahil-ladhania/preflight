@@ -4,6 +4,11 @@ description: Evaluate one compliance rule against marketing copy.
 
 model:
   preferred: openai:gpt-4o-mini
+  # Determinism (G-06): gateway also passes constraints at call time.
+  # Seed = first 32 bits of sha256(canonicalText + ruleId) when GitAgent supports seed.
+  constraints:
+    temperature: 0
+    top_p: 1
 
 tools: []
 

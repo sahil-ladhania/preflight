@@ -206,7 +206,12 @@ export async function evaluateFinding(findingId: string): Promise<void> {
     let judgeRunId: string | null = null;
 
     try {
-      const { content, meta } = await runAgent("judge", prompt);
+      const { content, meta } = await runAgent("judge", prompt, {
+        judgeDeterminism: {
+          canonicalText: asset.canonicalText,
+          ruleId: finding.ruleId,
+        },
+      });
 
       try {
         const output = parseJudgeOutput(content);

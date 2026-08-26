@@ -1,6 +1,7 @@
 /**
  * gitagent — sole in-process query() gateway.
  * Why: locked defaults for all agents (13-agent-architecture.md §6, doc 19 §7.4).
+ * // size: judge determinism wiring stays inline; extract would split one call site.
  */
 import { createHash } from "node:crypto";
 import { join } from "node:path";
@@ -10,6 +11,7 @@ import { query } from "@open-gitagent/gitagent";
 import type { GCAssistantMessage, GCToolDefinition, Query } from "@open-gitagent/gitagent";
 
 import { env } from "../config/env.js";
+import { logJudgeDeterminismDev, resolveJudgeQueryConstraints } from "./agent-judge-sampling.js";
 import { buildAgentSkillSuffix, extractReadPath } from "./agent-skills.js";
 import { getAgentToolPolicy } from "./agent-tool-policy.js";
 import { createReadTool } from "./agent-tools.js";
@@ -49,6 +51,7 @@ export interface RunAgentOptions {
   timeoutMs?: number;
   skillNames?: string[];
   skillLoad?: "catalog" | "dump";
+  judgeDeterminism?: { canonicalText: string; ruleId: string };
 }
 
 export class AgentInvocationError extends Error {
@@ -212,6 +215,12 @@ export async function runAgent(
 
   process.env.OPENAI_API_KEY = env.OPENAI_API_KEY;
 
+  const judgeResolved =
+    name === "judge" ? resolveJudgeQueryConstraints(options.judgeDeterminism) : null;
+  if (judgeResolved !== null) {
+    logJudgeDeterminismDev(judgeResolved, env.NODE_ENV === "development");
+  }
+
   const stream = query({
     dir: agentDir,
     prompt,
@@ -221,6 +230,7 @@ export async function runAgent(
     replaceBuiltinTools: true,
     maxTurns: runtime.maxTurns,
     abortController: new AbortController(),
+    ...(judgeResolved ? { constraints: judgeResolved.constraints } : {}),
   });
 
   let timer: ReturnType<typeof setTimeout> | undefined;

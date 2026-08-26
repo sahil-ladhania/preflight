@@ -64,7 +64,13 @@ async function main(): Promise<void> {
         ruleWording: wording,
         ruleId: testCase.ruleId,
       });
-      const { content } = await runAgent("judge", prompt, { timeoutMs: 120_000 });
+      const { content } = await runAgent("judge", prompt, {
+        timeoutMs: 120_000,
+        judgeDeterminism: {
+          canonicalText: testCase.snippet,
+          ruleId: testCase.ruleId,
+        },
+      });
       const parsed = JudgeOutputSchema.parse(JSON.parse(stripJsonFence(content)));
       verdicts.push(parsed.verdict);
       totalRuns += 1;
@@ -87,9 +93,14 @@ async function main(): Promise<void> {
 
   const agreementRate =
     totalRuns === 0 ? 0 : Math.round((agreementCount / totalRuns) * 100);
+  const varianceRate =
+    cases.length === 0 ? 0 : Math.round((flippingCaseIds.length / cases.length) * 100);
 
   console.log("\n--- Summary ---");
   console.log(`Agreement: ${agreementCount}/${totalRuns} (${agreementRate}%)`);
+  console.log(
+    `Variance rate: ${flippingCaseIds.length}/${cases.length} cases (${varianceRate}%) — run-to-run flip within case`,
+  );
   if (flippingCaseIds.length > 0) {
     console.log("Flipping cases:");
     for (const caseId of flippingCaseIds) {
