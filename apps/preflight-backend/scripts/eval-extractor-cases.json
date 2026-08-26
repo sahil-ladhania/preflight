@@ -1,0 +1,14 @@
+[
+  {
+    "id": "full-brief",
+    "freeText": "Launch awareness for Bluepeak Flexi Cap Fund on email and LinkedIn. Audience: retail investors in India. Objective: educate on flexi cap benefits. Scheme category: Flexi Cap. Claims: diversified exposure across market caps."
+  },
+  {
+    "id": "partial-brief",
+    "freeText": "Email campaign for Bluepeak Flexi Cap awareness."
+  },
+  {
+    "id": "sebi-mention",
+    "freeText": "Create LinkedIn copy for Bluepeak Flexi Cap. Must follow SEBI advertising norms. Audience: HNI investors. Do not include rule IDs in output."
+  }
+]

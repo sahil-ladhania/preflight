@@ -14,6 +14,8 @@ node_modules
 
 # Testing
 coverage
+eval-report.json
+packages/rules/golden/eval-report.json
 
 # Turbo
 .turbo

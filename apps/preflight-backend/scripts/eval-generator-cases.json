@@ -1,0 +1,44 @@
+[
+  {
+    "id": "email-awareness",
+    "channel": "email",
+    "brief": {
+      "objective": "Drive awareness for Bluepeak Flexi Cap Fund among retail investors",
+      "schemeName": "Bluepeak Flexi Cap Fund",
+      "schemeCategory": "Flexi Cap",
+      "audience": "Retail investors seeking diversified equity exposure",
+      "channels": ["email"],
+      "market": "India",
+      "performanceFigures": [],
+      "claims": ["Diversified flexi cap exposure across market caps"]
+    }
+  },
+  {
+    "id": "linkedin-education",
+    "channel": "linkedin",
+    "brief": {
+      "objective": "Educate investors on flexi cap allocation benefits",
+      "schemeName": "Bluepeak Flexi Cap Fund",
+      "schemeCategory": "Flexi Cap",
+      "audience": "LinkedIn followers interested in mutual funds",
+      "channels": ["linkedin"],
+      "market": "India",
+      "performanceFigures": [],
+      "claims": ["Professional fund management with disciplined process"]
+    }
+  },
+  {
+    "id": "display-campaign",
+    "channel": "display",
+    "brief": {
+      "objective": "Promote Bluepeak Flexi Cap Fund on display banners",
+      "schemeName": "Bluepeak Flexi Cap Fund",
+      "schemeCategory": "Flexi Cap",
+      "audience": "Prospective investors browsing financial content",
+      "channels": ["display"],
+      "market": "India",
+      "performanceFigures": [],
+      "claims": ["Explore flexi cap investing with Bluepeak"]
+    }
+  }
+]

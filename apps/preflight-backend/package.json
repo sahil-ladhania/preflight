@@ -8,7 +8,8 @@
     "build": "tsc",
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
-    "judgement-golden": "tsx scripts/run-judgement-golden.ts"
+    "judgement-golden": "tsx scripts/run-judgement-golden.ts",
+    "evals": "tsx scripts/run-evals.ts"
   },
   "dependencies": {
     "@open-gitagent/gitagent": "2.2.0",

@@ -16,5 +16,47 @@
     "ruleId": "SEBI-06",
     "expected": "pass",
     "why": "seed asset E — no guaranteed-return implication"
+  },
+  {
+    "snippet": "Invest risk-free with assured profit from Bluepeak Flexi Cap Fund.",
+    "ruleId": "SEBI-06",
+    "expected": "fail",
+    "why": "assured profit and risk-free implication"
+  },
+  {
+    "snippet": "Bluepeak Flexi Cap Fund provides diversified flexi cap exposure for long-term investors.",
+    "ruleId": "BRAND-03",
+    "expected": "pass",
+    "why": "factual description without only/best superlatives"
+  },
+  {
+    "snippet": "🔥 YOLO into Bluepeak Flexi Cap — insane gains await, no cap fam!!!",
+    "ruleId": "BRAND-02",
+    "expected": "fail",
+    "why": "slang and emoji — unprofessional brand voice"
+  },
+  {
+    "snippet": "Bluepeak Flexi Cap Fund offers a disciplined approach to flexi cap investing for informed investors.",
+    "ruleId": "BRAND-02",
+    "expected": "pass",
+    "why": "restrained professional copy"
+  },
+  {
+    "snippet": "Grow your wealth with Bluepeak Flexi Cap. No disclaimer included in this short update.",
+    "ruleId": "SEBI-01",
+    "expected": "fail",
+    "why": "required risk disclaimer absent"
+  },
+  {
+    "snippet": "Bluepeak Flexi Cap Fund offers diversified exposure. Mutual fund investments are subject to market risks. Read all scheme related documents carefully.",
+    "ruleId": "SEBI-01",
+    "expected": "pass",
+    "why": "locked disclaimer phrase present"
+  },
+  {
+    "snippet": "Double your money fast — limited time offer with assured returns on Bluepeak Flexi Cap.",
+    "ruleId": "SEBI-04",
+    "expected": "fail",
+    "why": "banned promotional phrase and urgency language"
   }
 ]
