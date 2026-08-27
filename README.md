@@ -40,11 +40,22 @@ flowchart LR
 
 ## Demo
 
-[Watch the walkthrough](https://www.loom.com/share/2e1dccfde6b740f1a604ed5cb3e4b906)
+[Watch the walkthrough](https://www.loom.com/share/2e1dccfde6b740f1a604ed5cb3e4b906) — cold start to ledger, in one pass.
 
 Workbench → campaign → generate → ledger. Seeded assets show the review states.
 
 Why this shape, and what we cut: [product.md](product.md).
+
+## Where to look
+
+Four places carry the claims. Each one is checkable in a minute.
+
+| Path | What it shows |
+| ---- | ------------- |
+| `apps/preflight-backend/agents/defs/` | The four agents — SOUL, RULES, and the skill files a channel is made of |
+| `packages/rules/` | The deterministic engine. Zero dependencies, 52 tests |
+| `packages/schemas/src/fold-status.ts` | Status is computed here, and nowhere else |
+| Any seeded asset under **Assets** | The ledger — rule id, verdict, span, frozen wording |
 
 ## Run locally
 

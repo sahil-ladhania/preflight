@@ -8,6 +8,15 @@ This note is the product story. Locks live in `[documentation/](documentation/)`
 
 Enterprise marketing in a regulated category stalls on **proof**, not on writing copy.
 
+Four numbers behind that:
+
+- Assets go through **2.9 review rounds** on average. Around 74% need more than one approver.
+- **98%** of marketers put late launches down to internal bottlenecks and approvals.
+- High-risk regulated content sits **5–10 business days** per asset, per round.
+- Only **27%** of agencies say they get a good brief.
+
+Waiting and redoing beat creating. So we took the round out, not the writing.
+
 
 | Took                                   | Cut                                              |
 | -------------------------------------- | ------------------------------------------------ |
@@ -55,14 +64,24 @@ Channel **previews** are the same four fields in a kit frame. Proof is still `ca
 
 Models never pick compile `ruleIds`. Deterministic matchers never sit on the agent bus.
 
-## Three decisions
+## Skills, not workflows
+
+A channel is a file here, not a code path.
+
+Adding TikTok took one `SKILL.md` and one line in `agent.yaml`. No new route, no new branch in the generator.
+
+Skills are not pasted into the prompt. The agent gets a list of names and paths, then reads the ones it needs — so the LinkedIn call sees LinkedIn's 120-character cap and not the other four channels' conflicting caps. Every read is recorded, so you can see which skills produced a given asset.
+
+## Five decisions
 
 
-| Decision                                                                     | Trade-off                                                                         |
-| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| The product is the conformance ledger, not a copywriter.                     | Generation stays constrained. We prove the asset; we do not wow with a writer OS. |
-| Hard rules are hashed TypeScript. Soft rules are one isolated LLM call each. | More moving parts. The model alone cannot clear or block an asset.                |
-| Skills on talk and generate. Engine and judge stay code.                     | Not a skill-only agent OS. Workflows stay so proof does not leak across assets.   |
+| Decision                                                                          | Why                                                                                           | Trade-off                                                                    |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| The ledger is the product, not the copywriter.                                    | Review is where the calendar time goes. Proof is the work; copy is not.                       | Generation stays plain. Assets is the hero screen, not Campaign.             |
+| Two engines. Code checks the hard rules; one isolated model call checks each soft rule. | "Disclaimer missing" is a fact. "Tone is off" is a reading. One model doing both loses per-rule attribution. | More moving parts. The model alone can never clear or block an asset.        |
+| Evidence points at one frozen string. The model's span is a claim; the server finds it. | Trust the model's offsets and you will highlight a lie. Live fields shift; a frozen string does not. | Text only. No images, video, or layout.                                      |
+| Status is computed from findings, never stored.                                   | A stored status is a second source of truth, and it drifts from the ledger.                   | Recomputed on every read. Nothing to index or filter on.                     |
+| Compile freezes the rule's wording, and nothing travels on regenerate.            | A rule edited Wednesday must not rewrite Monday's proof. A waiver covers one asset, not every future one. | Wording is duplicated per compile. Reviewers decide again after each regenerate. |
 
 
 
@@ -87,10 +106,34 @@ The ledger is the proof. These are the records that sit around it:
 ## What did we leave out — and why?
 
 - Auth, tenants, or a compliance department.
+- Approval routing. One operator wears both hats. Naming the next desk is the shape; routing to it is the next surface.
 - Jasper's full surface (blogs, SEO, 40 templates).
 - Legal filing. Human `clear` is the audit *shape*.
 - SOC 2, a model-risk programme, or PII redaction. Shape of a trail, not a certification.
 - N locales as one feature. Each locale is another asset.
+
+## Stack
+
+
+| Layer        | Choice                                              |
+| ------------ | --------------------------------------------------- |
+| Repo         | Turborepo — two apps, two shared packages           |
+| Language     | TypeScript, end to end                              |
+| Frontend     | React + Vite                                        |
+| Backend      | Express                                             |
+| Database     | PostgreSQL + Prisma                                 |
+| Styling      | Tailwind + shadcn/ui                                |
+| Validation   | Zod, in a shared package                            |
+| Agents       | GitAgent (Lyzr OpenGAP), in-process `query()`       |
+| Model        | OpenAI `gpt-4o-mini`                                |
+| Rule engine  | Plain TypeScript                                    |
+| Tests        | Vitest in the packages, `node:test` in the backend  |
+
+
+Two of those are load-bearing:
+
+- **The rule engine has zero dependencies.** Nothing to install means nothing to drift. That is what makes the determinism claim checkable.
+- **Every agent reply is parsed by Zod before it becomes data.** Bad JSON means no asset and no finding — never a silent pass.
 
 ## Read next
 
