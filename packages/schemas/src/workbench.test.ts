@@ -216,6 +216,58 @@ describe("ExplainerOutputSchema", () => {
     ]);
   });
 
+  it("normalizes natural-language channel strings on wire", () => {
+    const parsed = ExplainerOutputSchema.parse({
+      message: "Captured your channels.",
+      ruleIds: [],
+      suggestedAction: "none",
+      brief: {
+        schemeName: "Bluepeak Flexi Cap Fund",
+        channels: ["LinkedIn", "email newsletter"],
+      },
+    });
+    expect(parsed.brief?.channels).toEqual(["linkedin", "email"]);
+  });
+
+  it("keeps already-normalized channels on wire", () => {
+    const parsed = ExplainerOutputSchema.parse({
+      message: "Captured your channels.",
+      ruleIds: [],
+      suggestedAction: "none",
+      brief: {
+        schemeName: "Bluepeak Flexi Cap Fund",
+        channels: ["linkedin", "email"],
+      },
+    });
+    expect(parsed.brief?.channels).toEqual(["linkedin", "email"]);
+  });
+
+  it("drops unknown channel strings instead of failing parse", () => {
+    const parsed = ExplainerOutputSchema.parse({
+      message: "Captured your brief.",
+      ruleIds: [],
+      suggestedAction: "none",
+      brief: {
+        schemeName: "Bluepeak Flexi Cap Fund",
+        channels: ["Instagram"],
+      },
+    });
+    expect(parsed.brief?.channels).toBeUndefined();
+  });
+
+  it("keeps valid channels and drops unknown values in mixed wire", () => {
+    const parsed = ExplainerOutputSchema.parse({
+      message: "Captured your channels.",
+      ruleIds: [],
+      suggestedAction: "none",
+      brief: {
+        schemeName: "Bluepeak Flexi Cap Fund",
+        channels: ["LinkedIn", "Instagram", "email newsletter"],
+      },
+    });
+    expect(parsed.brief?.channels).toEqual(["linkedin", "email"]);
+  });
+
   it("sanitizes empty string brief placeholders from wire JSON", () => {
     const parsed = ExplainerOutputSchema.parse({
       message: "Thank you for the details.",

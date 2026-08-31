@@ -2,11 +2,12 @@
  * explainer-output — workbench assistant prose + cited rule ids.
  * Why: untrusted GitAgent JSON parse (documentation/12 Area 7).
  */
+// size: wire sanitizer helpers for performance figures and channels stay with schema
 
 import { z } from "zod"
 
 import { StructuredBriefSchema } from "./brief.js"
-import { ChannelSchema } from "./enums.js"
+import { ChannelSchema, type Channel } from "./enums.js"
 import { PerformanceFigureSchema } from "./primitives.js"
 
 export const ExplainerSuggestedActionSchema = z.enum([
@@ -39,6 +40,43 @@ function isPerformanceFigureWire(
   )
 }
 
+function normalizeChannelWire(value: string): Channel | undefined {
+  const normalized = value.trim().toLowerCase()
+  const exact = ChannelSchema.safeParse(normalized)
+  if (exact.success) {
+    return exact.data
+  }
+  if (normalized.includes("linkedin")) {
+    return "linkedin"
+  }
+  if (normalized.includes("whatsapp")) {
+    return "whatsapp"
+  }
+  if (normalized.includes("display")) {
+    return "display"
+  }
+  if (normalized.includes("landing")) {
+    return "landing"
+  }
+  if (normalized.includes("email") || normalized.includes("newsletter")) {
+    return "email"
+  }
+  return undefined
+}
+
+function dedupeChannels(channels: Channel[]): Channel[] {
+  const seen = new Set<Channel>()
+  const result: Channel[] = []
+  for (const channel of channels) {
+    if (seen.has(channel)) {
+      continue
+    }
+    seen.add(channel)
+    result.push(channel)
+  }
+  return result
+}
+
 /** Drop empty strings and blank arrays from agent brief JSON before Zod min(1). */
 export function sanitizeExplainerBriefWire(brief: unknown): unknown {
   if (brief === null || brief === undefined) {
@@ -59,7 +97,15 @@ export function sanitizeExplainerBriefWire(brief: unknown): unknown {
   }
 
   if (Array.isArray(raw.channels) && raw.channels.length > 0) {
-    out.channels = raw.channels
+    const normalized = dedupeChannels(
+      raw.channels
+        .filter((item): item is string => typeof item === "string")
+        .map((item) => normalizeChannelWire(item))
+        .filter((item): item is Channel => item !== undefined),
+    )
+    if (normalized.length > 0) {
+      out.channels = normalized
+    }
   }
 
   if (Array.isArray(raw.performanceFigures)) {
