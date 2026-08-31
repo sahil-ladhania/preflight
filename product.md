@@ -64,6 +64,8 @@ Channel **previews** are the same four fields in a kit frame. Proof is still `ca
 
 Models never pick compile `ruleIds`. Deterministic matchers never sit on the agent bus.
 
+SEBI-01 has a code safety net: if the generator omits the required disclaimer phrase, the server prepends it before the deterministic engine runs, so that one matcher is not left to chance. The raw model output is still hashed into the agent run. Every other rule is unassisted.
+
 ## Skills, not workflows
 
 Each channel's format contract lives in a `SKILL.md` — no new Express route, no generator branch. Wiring it into the product still needs typed edits: add the channel to `ChannelSchema`, map it in `GENERATOR_CHANNEL_SKILL`, add a `channelHints` entry, and a preview component. We ship `channel-tiktok/SKILL.md` as a scale demo; TikTok is not selectable in a brief until those four are done.
