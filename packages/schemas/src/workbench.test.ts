@@ -2,6 +2,7 @@
  * workbench.test — chat request/response schema guards.
  * Why: doc 19 §9.2 history + suggestedAction.
  */
+// size: explainer wire + coerce cases in one file per rules-package.mdc
 import { describe, expect, it } from "vitest";
 
 import { ExplainerOutputSchema, coerceExplainerOutput } from "./explainer-output.js";
@@ -163,6 +164,56 @@ describe("ExplainerOutputSchema", () => {
         suggestedAction: "ship_now",
       }),
     ).toThrow();
+  });
+
+  it("accepts valid performanceFigures objects on wire", () => {
+    const parsed = ExplainerOutputSchema.parse({
+      message: "Captured your performance figure.",
+      ruleIds: [],
+      suggestedAction: "none",
+      brief: {
+        schemeName: "Bluepeak Flexi Cap Fund",
+        channels: ["email"],
+        performanceFigures: [{ value: "14.2% CAGR", period: "3 years" }],
+      },
+    });
+    expect(parsed.brief?.performanceFigures).toEqual([
+      { value: "14.2% CAGR", period: "3 years" },
+    ]);
+  });
+
+  it("drops string performanceFigures elements instead of failing parse", () => {
+    const parsed = ExplainerOutputSchema.parse({
+      message: "Captured your brief.",
+      ruleIds: [],
+      suggestedAction: "none",
+      brief: {
+        schemeName: "Bluepeak Flexi Cap Fund",
+        channels: ["email"],
+        performanceFigures: ["14.2% CAGR over 3 years"],
+      },
+    });
+    expect(parsed.brief?.performanceFigures).toEqual([]);
+  });
+
+  it("keeps valid performanceFigures and drops malformed elements in mixed wire", () => {
+    const parsed = ExplainerOutputSchema.parse({
+      message: "Captured your brief.",
+      ruleIds: [],
+      suggestedAction: "none",
+      brief: {
+        schemeName: "Bluepeak Flexi Cap Fund",
+        channels: ["email"],
+        performanceFigures: [
+          { value: "14.2% CAGR", period: "3 years" },
+          "14.2% CAGR over 3 years",
+          { value: "x" },
+        ],
+      },
+    });
+    expect(parsed.brief?.performanceFigures).toEqual([
+      { value: "14.2% CAGR", period: "3 years" },
+    ]);
   });
 
   it("sanitizes empty string brief placeholders from wire JSON", () => {

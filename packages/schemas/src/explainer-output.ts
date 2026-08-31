@@ -24,6 +24,21 @@ const BRIEF_STRING_KEYS = [
   "market",
 ] as const
 
+function isPerformanceFigureWire(
+  value: unknown,
+): value is { value: string; period: string } {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return false
+  }
+  const record = value as Record<string, unknown>
+  return (
+    typeof record.value === "string" &&
+    record.value.trim().length > 0 &&
+    typeof record.period === "string" &&
+    record.period.trim().length > 0
+  )
+}
+
 /** Drop empty strings and blank arrays from agent brief JSON before Zod min(1). */
 export function sanitizeExplainerBriefWire(brief: unknown): unknown {
   if (brief === null || brief === undefined) {
@@ -48,7 +63,7 @@ export function sanitizeExplainerBriefWire(brief: unknown): unknown {
   }
 
   if (Array.isArray(raw.performanceFigures)) {
-    out.performanceFigures = raw.performanceFigures
+    out.performanceFigures = raw.performanceFigures.filter(isPerformanceFigureWire)
   }
 
   if (Array.isArray(raw.claims)) {

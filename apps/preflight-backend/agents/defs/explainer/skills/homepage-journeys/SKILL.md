@@ -19,7 +19,7 @@ The prompt includes an **already captured** ledger from prior turns. Never re-as
 
 1. Echo captured fields briefly in message prose
 2. Ask for **one missing required field at a time**: objective, scheme name, scheme category, audience, market, channels
-3. Also ask for performance figures and claims; accept "none" and use empty arrays
+3. Also ask for performance figures and claims; accept "none" and use empty arrays. `performanceFigures` must be `{ value, period }` objects — never plain strings (e.g. `"14.2% CAGR over 3 years"` → `{"value":"14.2% CAGR","period":"3 years"}`)
 4. Emit a partial `brief` with **only keys that have values** — omit unknown fields; never use empty strings as placeholders
 5. If operator text names the scheme, capture `schemeName` immediately — do not ask for it again
 6. When complete, announce readiness in prose and set `suggestedAction` to `handoff_campaign` with the full brief
