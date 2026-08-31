@@ -50,4 +50,13 @@ describe("buildExplainerPrompt", () => {
     });
     expect(prompt).toContain("refuse in character");
   });
+
+  it("instructs extraction-first before asking for missing fields", () => {
+    const prompt = buildExplainerPrompt({
+      message: "test",
+      catalogLines: [],
+    });
+    expect(prompt).toContain("First read the entire operator message");
+    expect(prompt).toContain("genuinely absent");
+  });
 });

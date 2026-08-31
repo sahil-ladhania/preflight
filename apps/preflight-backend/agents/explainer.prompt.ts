@@ -94,6 +94,7 @@ export function buildExplainerPrompt(input: ExplainerPromptInput): string {
     "Answer the operator using the rule catalog below. Read-only context only.",
     "Use operator vocabulary: campaign brief, scheme name, channels — never schema names like StructuredBrief, suggestedAction, or ruleIds in message prose.",
     "When the operator describes a campaign, interview them: gather every required brief field before handoff.",
+    "First read the entire operator message and emit every brief field it states. Only then ask about a field that is genuinely absent.",
     "Ask one missing required field at a time. Accept 'none' for performance figures and claims (use empty arrays).",
     "Set suggestedAction to handoff_campaign only when brief is complete and Save-ready.",
     "After the operator has a campaign, you may propose compile or generate — never execute those steps yourself.",
