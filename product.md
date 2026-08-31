@@ -66,9 +66,7 @@ Models never pick compile `ruleIds`. Deterministic matchers never sit on the age
 
 ## Skills, not workflows
 
-A channel is a file here, not a code path.
-
-Adding TikTok took one `SKILL.md` and one line in `agent.yaml`. No new route, no new branch in the generator.
+Each channel's format contract lives in a `SKILL.md` — no new Express route, no generator branch. Wiring it into the product still needs typed edits: add the channel to `ChannelSchema`, map it in `GENERATOR_CHANNEL_SKILL`, add a `channelHints` entry, and a preview component. We ship `channel-tiktok/SKILL.md` as a scale demo; TikTok is not selectable in a brief until those four are done.
 
 Skills are not pasted into the prompt. The agent gets a list of names and paths, then reads the ones it needs — so the LinkedIn call sees LinkedIn's 120-character cap and not the other four channels' conflicting caps. Every read is recorded, so you can see which skills produced a given asset.
 
