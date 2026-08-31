@@ -2,14 +2,11 @@
  * workbench.service — explainer call.
  * Why: no mutations (14-backend-design.md Area 3).
  */
-import {
-  coerceExplainerOutput,
-  parseExplainerWireOutput,
-  type ExplainerBriefDraft,
-  type WorkbenchChatHistoryItem,
-  type WorkbenchChatResponse,
+import type {
+  ExplainerBriefDraft,
+  WorkbenchChatHistoryItem,
+  WorkbenchChatResponse,
 } from "@preflight/schemas";
-import { ZodError } from "zod";
 
 import { buildExplainerPrompt } from "../../../agents/explainer.prompt.js";
 import { env } from "../../config/env.js";
@@ -18,12 +15,7 @@ import { getLiveCatalog } from "../../lib/catalog.js";
 import { detectInjectionSignals } from "../../lib/injection-guard.js";
 import { InternalError } from "../../lib/http-error.js";
 import { recordAgentRun } from "../agent-runs/agent-runs.service.js";
-
-function stripJsonFence(content: string): string {
-  const trimmed = content.trim();
-  const match = trimmed.match(/^```(?:json)?\s*\n?([\s\S]*?)\n?```$/);
-  return match?.[1]?.trim() ?? trimmed;
-}
+import { parseExplainerOutput } from "./workbench-parse.js";
 
 function untrustedExplainerText(
   message: string,
@@ -31,25 +23,6 @@ function untrustedExplainerText(
 ): string {
   const parts = [...(history ?? []).map((turn) => turn.content), message];
   return parts.join("\n");
-}
-
-function parseExplainerOutput(content: string): WorkbenchChatResponse {
-  try {
-    const parsed: unknown = JSON.parse(stripJsonFence(content));
-    return coerceExplainerOutput(parseExplainerWireOutput(parsed));
-  } catch (error: unknown) {
-    if (env.NODE_ENV === "development") {
-      const preview = content.slice(0, 500);
-      if (error instanceof ZodError) {
-        console.error("parseExplainerOutput schema failure:", error.issues);
-      } else {
-        console.error("parseExplainerOutput failure:", error);
-      }
-      console.error("parseExplainerOutput raw content:", preview);
-    }
-
-    throw new InternalError("Explainer failed.");
-  }
 }
 
 export async function chat(
@@ -76,10 +49,31 @@ export async function chat(
     const { content, meta } = await runAgent("explainer", prompt);
 
     try {
-      const parsed = parseExplainerOutput(content);
+      const { response, droppedBrief } = parseExplainerOutput(content);
+
+      if (droppedBrief) {
+        void recordAgentRun(
+          {
+            ...meta,
+            ok: false,
+            errorKind: "parse_failed",
+            output: content,
+            outputHash: hashAgentText(content),
+          },
+          { kind: "chat", id: null },
+          injection,
+        );
+        return response;
+      }
+
       void recordAgentRun(meta, { kind: "chat", id: null }, injection);
-      return parsed;
-    } catch {
+      return response;
+    } catch (parseError: unknown) {
+      if (env.NODE_ENV === "development") {
+        console.error("parseExplainerOutput failure:", parseError);
+        console.error("parseExplainerOutput raw content:", content.slice(0, 500));
+      }
+
       void recordAgentRun(
         {
           ...meta,
