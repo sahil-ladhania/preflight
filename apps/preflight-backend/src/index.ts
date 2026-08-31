@@ -14,6 +14,7 @@ dotenv.config({
 });
 
 const { env } = await import("./config/env.js");
+console.log("preflight-backend env ok, loading app");
 const { createApp } = await import("./app.js");
 
 const app = createApp();

@@ -23,6 +23,7 @@ const JUDGEMENT_SPECS: Record<string, PredicateSpec> = {
     op: "in",
     value: ["differentiation", "market-leading"],
   },
+  "BRAND-05": { field: "channels", op: "equals", value: "whatsapp" },
 };
 
 function hashPredicateSpec(spec: PredicateSpec): string {

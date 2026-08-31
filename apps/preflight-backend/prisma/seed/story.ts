@@ -61,6 +61,7 @@ const FREEZE_RULE_IDS = [
   "SEBI-06",
   "BRAND-02",
   "BRAND-03",
+  "BRAND-05",
 ] as const;
 
 interface StoryAssetModule {

@@ -7,7 +7,6 @@ import { createHash } from "node:crypto";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { query } from "@open-gitagent/gitagent";
 import type { GCAssistantMessage, GCToolDefinition, Query } from "@open-gitagent/gitagent";
 
 import { env } from "../config/env.js";
@@ -221,7 +220,9 @@ export async function runAgent(
     logJudgeDeterminismDev(judgeResolved, env.NODE_ENV === "development");
   }
 
-  const stream = query({
+  const { query } = await import("@open-gitagent/gitagent");
+  const abortController = new AbortController();
+  const stream: Query = query({
     dir: agentDir,
     prompt,
     model,
@@ -229,7 +230,7 @@ export async function runAgent(
     tools: resolveTools(agentDir, policy.allowReadTool),
     replaceBuiltinTools: true,
     maxTurns: runtime.maxTurns,
-    abortController: new AbortController(),
+    abortController,
     ...(judgeResolved ? { constraints: judgeResolved.constraints } : {}),
   });
 
@@ -244,6 +245,7 @@ export async function runAgent(
       }),
       new Promise<never>((_, reject) => {
         timer = setTimeout(() => {
+          abortController.abort();
           stream.abort();
           void stream.return(undefined);
           reject(new Error("Agent call timed out."));
