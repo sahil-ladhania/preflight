@@ -1,163 +1,230 @@
 /**
- * useLogin — Screen 0 mock sign-in and persona landing.
- * Why: credentials match locally; Meera resolves campaign before persist.
+ * useLogin — email-first mock sign-in and persona landing.
+ * Why: domain resolution is client-side; credentials never enumerate users.
  */
+// size: three auth methods share one hook so abort, lockout, and landing stay one flow.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  useLocation,
-  useNavigate,
-  type Location,
-} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import {
+  formatLockoutMessage,
+  formatSsoError,
+  isParseableEmail,
   LOGIN_COPY,
-  LOGIN_SIGN_OUT_INTENT,
-  loginDestinationForPersona,
+  LOGIN_LOCKOUT_AFTER,
+  LOGIN_LOCKOUT_MINUTES,
+  LOGIN_REDIRECT_MS,
+  LOGIN_RESOLVE_MS,
+  loginNoticeFromLocation,
   matchMockCredentials,
+  resolveTenant,
+  ssoErrorFromSearch,
+  type LoginBusy,
+  type LoginNoticeKind,
+  type LoginStep,
 } from "@/features/login/lib";
-import { resolveWorkbenchCampaignHandoff } from "@/features/shell/campaign-nav.service";
-import { sessionActorFromPersonaId } from "@/features/shell/persona";
+import {
+  loginErrorMessage,
+  openPersonaLanding,
+  wait,
+} from "@/features/login/login-session";
+import { useLoginGate } from "@/features/login/useLoginGate";
 import { usePersona } from "@/features/shell/PersonaProvider";
-import type { PersonaId } from "@/features/shell/types";
 import { ApiClientError } from "@/lib/api";
 
-interface LoginLocationState {
-  from?: Location;
-  intent?: typeof LOGIN_SIGN_OUT_INTENT;
-}
-
 export interface UseLoginResult {
-  userId: string;
+  email: string;
   password: string;
-  error: string | null;
-  submitting: boolean;
-  setUserId: (value: string) => void;
+  step: LoginStep;
+  busy: LoginBusy;
+  notice: LoginNoticeKind | null;
+  message: string | null;
+  idpName: string | null;
+  emailReady: boolean;
+  locked: boolean;
+  setEmail: (value: string) => void;
   setPassword: (value: string) => void;
-  handleSubmit: () => Promise<void>;
-}
-
-function loginErrorMessage(error: unknown): string {
-  if (error instanceof ApiClientError) {
-    return error.apiError ?? error.message;
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return LOGIN_COPY.landingFailed;
+  handleIdentityContinue: () => Promise<void>;
+  handlePasswordSignIn: () => Promise<void>;
+  handleSsoContinue: () => Promise<void>;
+  handleChangeEmail: () => void;
+  handleTryAgain: () => void;
 }
 
 export function useLogin(): UseLoginResult {
   const navigate = useNavigate();
   const location = useLocation();
-  const { actor, hydrated, setActor, clearActor } = usePersona();
-  const [userId, setUserId] = useState<string>("");
+  const { setActor } = usePersona();
+  const locationState = useLoginGate();
+  const [email, setEmailState] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [step, setStep] = useState<LoginStep>("identity");
+  const [busy, setBusy] = useState<LoginBusy>("idle");
+  const [message, setMessage] = useState<string | null>(null);
+  const [idpName, setIdpName] = useState<string | null>(null);
+  const [failedAttempts, setFailedAttempts] = useState<number>(0);
   const guardRef = useRef<boolean>(false);
+  const abortRef = useRef<AbortController | null>(null);
 
-  const navigateToPersonaLanding = useCallback(
-    async (personaId: PersonaId): Promise<void> => {
-      const state = location.state as LoginLocationState | null;
-      const destination = loginDestinationForPersona(personaId, state?.from);
-
-      if (destination !== "resolve-campaign") {
-        void navigate(destination, { replace: true });
-        return;
-      }
-
-      const controller = new AbortController();
-      const campaignId = await resolveWorkbenchCampaignHandoff(controller.signal);
-      if (controller.signal.aborted) {
-        return;
-      }
-      void navigate(`/campaign/${campaignId}`, { replace: true });
-    },
-    [location.state, navigate],
-  );
+  const notice = loginNoticeFromLocation({
+    intent: locationState?.intent,
+    notice: locationState?.notice,
+    from: locationState?.from,
+  });
+  const locked = failedAttempts >= LOGIN_LOCKOUT_AFTER;
+  const emailReady = isParseableEmail(email);
 
   useEffect(() => {
-    const state = location.state as LoginLocationState | null;
-
-    if (state?.intent === LOGIN_SIGN_OUT_INTENT) {
-      clearActor();
-      void navigate("/login", { replace: true, state: {} });
+    const reason = ssoErrorFromSearch(location.search);
+    if (reason === null) {
       return;
     }
+    setMessage(formatSsoError(reason));
+  }, [location.search]);
 
-    if (!hydrated || actor === null) {
+  const abortPending = useCallback((): void => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    guardRef.current = false;
+    setBusy("idle");
+  }, []);
+
+  const setEmail = useCallback((value: string): void => {
+    setEmailState(value);
+    setMessage(null);
+  }, []);
+
+  const handleChangeEmail = useCallback((): void => {
+    abortPending();
+    setStep("identity");
+    setPassword("");
+    setIdpName(null);
+    if (failedAttempts < LOGIN_LOCKOUT_AFTER) {
+      setMessage(null);
+    }
+  }, [abortPending, failedAttempts]);
+
+  const handleTryAgain = useCallback((): void => {
+    abortPending();
+    setMessage(null);
+    if (location.search.length > 0) {
+      void navigate("/login", { replace: true, state: location.state });
+    }
+  }, [abortPending, location.search, location.state, navigate]);
+
+  const handleIdentityContinue = useCallback(async (): Promise<void> => {
+    if (!emailReady || busy !== "idle" || guardRef.current) {
       return;
     }
-
-    if (state?.from !== undefined) {
-      return;
-    }
-
-    void navigateToPersonaLanding(actor.id);
-  }, [
-    actor,
-    clearActor,
-    hydrated,
-    location.state,
-    navigate,
-    navigateToPersonaLanding,
-  ]);
-
-  const handleSubmit = useCallback(async (): Promise<void> => {
-    if (submitting || guardRef.current) {
-      return;
-    }
-
-    setError(null);
-    const personaId = matchMockCredentials(userId, password);
-    if (personaId === null) {
-      setError(LOGIN_COPY.invalidCredentials);
-      return;
-    }
-
-    guardRef.current = true;
-    setSubmitting(true);
-    const nextActor = sessionActorFromPersonaId(personaId);
+    abortRef.current?.abort();
     const controller = new AbortController();
-
+    abortRef.current = controller;
+    guardRef.current = true;
+    setBusy("resolving");
+    setMessage(null);
     try {
-      const state = location.state as LoginLocationState | null;
-      const destination = loginDestinationForPersona(personaId, state?.from);
-
-      if (destination !== "resolve-campaign") {
-        setActor(nextActor);
-        void navigate(destination, { replace: true });
+      await wait(LOGIN_RESOLVE_MS, controller.signal);
+      const tenant = resolveTenant(email);
+      if (tenant.method === "unknown") {
+        setMessage(LOGIN_COPY.unknownDomain);
         return;
       }
-
-      const campaignId = await resolveWorkbenchCampaignHandoff(controller.signal);
-      if (controller.signal.aborted) {
+      if (tenant.method === "sso") {
+        setIdpName(tenant.idpName);
+        setStep("sso");
         return;
       }
-      setActor(nextActor);
-      void navigate(`/campaign/${campaignId}`, { replace: true });
+      setIdpName(null);
+      setStep("password");
+    } catch (error: unknown) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+      setMessage(loginErrorMessage(error));
+    } finally {
+      guardRef.current = false;
+      setBusy("idle");
+    }
+  }, [busy, email, emailReady]);
+
+  const handlePasswordSignIn = useCallback(async (): Promise<void> => {
+    if (busy !== "idle" || guardRef.current) {
+      return;
+    }
+    if (failedAttempts >= LOGIN_LOCKOUT_AFTER) {
+      setMessage(formatLockoutMessage(LOGIN_LOCKOUT_MINUTES));
+      return;
+    }
+    guardRef.current = true;
+    setBusy("submitting");
+    setMessage(null);
+    const personaId = matchMockCredentials(email, password);
+    if (personaId === null) {
+      const next = failedAttempts + 1;
+      setFailedAttempts(next);
+      setMessage(
+        next >= LOGIN_LOCKOUT_AFTER
+          ? formatLockoutMessage(LOGIN_LOCKOUT_MINUTES)
+          : LOGIN_COPY.invalidCredentials,
+      );
+      guardRef.current = false;
+      setBusy("idle");
+      return;
+    }
+    try {
+      await openPersonaLanding(personaId, locationState?.from, navigate, setActor);
     } catch (submitError: unknown) {
-      if (controller.signal.aborted) {
-        return;
-      }
       if (submitError instanceof ApiClientError && submitError.kind === "abort") {
         return;
       }
-      setError(loginErrorMessage(submitError));
+      setMessage(loginErrorMessage(submitError));
     } finally {
       guardRef.current = false;
-      setSubmitting(false);
+      setBusy("idle");
     }
-  }, [location.state, navigate, password, setActor, submitting, userId]);
+  }, [busy, email, failedAttempts, locationState?.from, navigate, password, setActor]);
+
+  const handleSsoContinue = useCallback(async (): Promise<void> => {
+    if (busy !== "idle" || idpName === null || guardRef.current) {
+      return;
+    }
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    guardRef.current = true;
+    setBusy("redirecting");
+    setMessage(null);
+    try {
+      await wait(LOGIN_REDIRECT_MS, controller.signal);
+      setMessage(formatSsoError(LOGIN_COPY.defaultSsoError));
+    } catch (error: unknown) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+      setMessage(loginErrorMessage(error));
+    } finally {
+      guardRef.current = false;
+      setBusy("idle");
+    }
+  }, [busy, idpName]);
 
   return {
-    userId,
+    email,
     password,
-    error,
-    submitting,
-    setUserId,
+    step,
+    busy,
+    notice,
+    message,
+    idpName,
+    emailReady,
+    locked,
+    setEmail,
     setPassword,
-    handleSubmit,
+    handleIdentityContinue,
+    handlePasswordSignIn,
+    handleSsoContinue,
+    handleChangeEmail,
+    handleTryAgain,
   };
 }

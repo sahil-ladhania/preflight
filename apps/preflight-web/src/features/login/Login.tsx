@@ -1,139 +1,164 @@
 /**
- * Login — Screen 0 institutional sign-in.
- * Why: pre-app gate; mock credentials only, no backend auth.
+ * Login — Screen 0 production email-first sign-in.
+ * Why: a tenant's IdP is resolved from work email, not chosen from a list.
  */
 
 import type { FormEvent, ReactElement } from "react";
-import { Loader2 } from "lucide-react";
 
 import { LoginBrandPanel } from "@/features/login/LoginBrandPanel";
-import { LOGIN_COPY, SSO_PROVIDERS, type SsoProvider } from "@/features/login/lib";
+import {
+  LoginIdentityFields,
+  LoginPasswordFields,
+  LoginSsoFields,
+  loginSubmitLabel,
+  plainLinkClass,
+} from "@/features/login/LoginFields";
+import { LoginFooter } from "@/features/login/LoginFooter";
+import { LoginNotice } from "@/features/login/LoginNotice";
+import {
+  formatSsoRedirectingLine,
+  LOGIN_COPY,
+  loginAccountabilityLine,
+} from "@/features/login/lib";
 import { useLogin } from "@/features/login/useLogin";
-import { SsoIcon } from "@/features/login/SsoIcons";
 import { cn } from "@/lib/utils";
 
-const loginFieldClass = cn(
-  "box-border w-full border border-border bg-transparent px-3 py-2",
-  "text-ui text-primary outline-none placeholder:text-fg-faint",
-  "focus-visible:border-ring rounded-none",
+const filledButtonClass = cn(
+  "flex h-8 w-full cursor-pointer items-center justify-center gap-2 rounded-none",
+  "border border-solid border-fg bg-fg px-4 font-sans text-(length:--text-button) leading-none font-medium text-surface shadow-none",
+  "focus-visible:outline focus-visible:outline-1 focus-visible:outline-decision",
+  "disabled:cursor-not-allowed",
 );
 
-const loginButtonQuietClass = cn(
-  "flex h-8 w-full cursor-pointer items-center justify-center gap-2",
-  "border border-primary bg-transparent text-button text-primary rounded-none",
+const disabledButtonClass = cn(
+  "flex h-8 w-full cursor-not-allowed items-center justify-center gap-2 rounded-none",
+  "border border-solid border-hairline bg-surface px-4 font-sans text-(length:--text-button) leading-none font-medium text-fg-faint shadow-none",
 );
-
-function SsoProviderButton({ provider }: { provider: SsoProvider }): ReactElement {
-  return (
-    <button
-      type="button"
-      className={loginButtonQuietClass}
-      onClick={() => {
-        /* mock — SSO not wired */
-      }}
-    >
-      <SsoIcon id={provider.id} />
-      {provider.label}
-    </button>
-  );
-}
-
-function SsoDivider(): ReactElement {
-  return (
-    <div className="flex items-center gap-3">
-      <span className="h-px flex-1 bg-border" aria-hidden="true" />
-      <span className="text-caption text-fg-muted">{LOGIN_COPY.ssoDividerLabel}</span>
-      <span className="h-px flex-1 bg-border" aria-hidden="true" />
-    </div>
-  );
-}
 
 function LoginForm(): ReactElement {
+  const login = useLogin();
   const {
-    userId,
+    email,
     password,
-    error,
-    submitting,
-    setUserId,
-    setPassword,
-    handleSubmit,
-  } = useLogin();
+    step,
+    busy,
+    notice,
+    message,
+    idpName,
+    emailReady,
+    locked,
+  } = login;
+
+  const submitDisabled =
+    (step === "identity" && (!emailReady || busy === "resolving")) ||
+    (step === "password" && (busy === "submitting" || locked)) ||
+    (step === "sso" && busy === "redirecting");
+  const showFilled =
+    (step === "identity" && emailReady) ||
+    (step === "password" && !locked) ||
+    step === "sso";
+  const showTryAgain =
+    message !== null && message.startsWith("Sign-in didn't complete.");
+  const showRing =
+    busy === "resolving" || busy === "redirecting" || busy === "submitting";
+  const disabledReason =
+    step === "identity" && !emailReady && message === null
+      ? LOGIN_COPY.continueReason
+      : null;
+  let ssoStatusLine: string | null = null;
+  if (step === "sso" && busy === "redirecting" && idpName !== null) {
+    ssoStatusLine = formatSsoRedirectingLine(idpName);
+  } else if (step === "sso" && busy === "idle" && message === null) {
+    ssoStatusLine = LOGIN_COPY.ssoHint;
+  }
+  const liveLine = disabledReason ?? ssoStatusLine ?? message;
+  const hasLiveLine = liveLine !== null;
 
   function onSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
-    void handleSubmit();
+    if (step === "identity") {
+      void login.handleIdentityContinue();
+      return;
+    }
+    if (step === "password") {
+      void login.handlePasswordSignIn();
+      return;
+    }
+    void login.handleSsoContinue();
   }
 
   return (
     <form
-      className="flex w-full max-w-[360px] flex-col gap-3.5 border border-border bg-surface p-6"
+      className="flex w-full min-w-0 max-w-[360px] flex-col gap-4 rounded-none border border-fg-muted bg-surface p-7 shadow-none"
       onSubmit={onSubmit}
     >
-      <h2 className="text-label-strong text-primary uppercase">
-        {LOGIN_COPY.panelTitle}
-      </h2>
+      {notice !== null ? <LoginNotice kind={notice} /> : null}
 
-      <div className="flex flex-col gap-2">
-        {SSO_PROVIDERS.map((provider) => (
-          <SsoProviderButton key={provider.id} provider={provider} />
-        ))}
-      </div>
-
-      <SsoDivider />
-
-      <label className="flex flex-col gap-1.5">
-        <span className="text-label uppercase text-fg-muted">
-          {LOGIN_COPY.userIdLabel}
-        </span>
-        <input
-          type="text"
-          name="userId"
-          autoComplete="username"
-          placeholder={LOGIN_COPY.userIdPlaceholder}
-          value={userId}
-          disabled={submitting}
-          onChange={(event) => {
-            setUserId(event.target.value);
-          }}
-          className={loginFieldClass}
+      {step === "identity" ? (
+        <LoginIdentityFields
+          email={email}
+          disabled={busy === "resolving"}
+          onEmailChange={login.setEmail}
         />
-      </label>
-
-      <label className="flex flex-col gap-1.5">
-        <span className="text-label uppercase text-fg-muted">
-          {LOGIN_COPY.passwordLabel}
-        </span>
-        <input
-          type="password"
-          name="password"
-          autoComplete="current-password"
-          placeholder={LOGIN_COPY.passwordPlaceholder}
-          value={password}
-          disabled={submitting}
-          onChange={(event) => {
-            setPassword(event.target.value);
-          }}
-          className={loginFieldClass}
-        />
-      </label>
-
-      <button
-        type="submit"
-        disabled={submitting}
-        className="flex h-8 w-full cursor-pointer items-center justify-center border border-primary bg-primary text-button text-primary-foreground rounded-none disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        {submitting ? (
-          <Loader2 className="size-4 animate-spin" aria-hidden />
-        ) : (
-          LOGIN_COPY.submitLabel
-        )}
-      </button>
-
-      {error !== null ? (
-        <p className="text-caption text-fg-muted">{error}</p>
       ) : null}
 
-      <p className="text-caption text-fg-muted">{LOGIN_COPY.accountabilityLine}</p>
+      {step === "password" ? (
+        <LoginPasswordFields
+          email={email}
+          password={password}
+          disabled={busy === "submitting" || locked}
+          onChangeEmail={login.handleChangeEmail}
+          onPasswordChange={login.setPassword}
+        />
+      ) : null}
+
+      {step === "sso" ? (
+        <LoginSsoFields email={email} onChangeEmail={login.handleChangeEmail} />
+      ) : null}
+
+      <div className="flex flex-col">
+        <button
+          type="submit"
+          disabled={submitDisabled}
+          aria-busy={showRing}
+          className={showFilled ? filledButtonClass : disabledButtonClass}
+        >
+          {showRing ? (
+            <span className="pending-ring" aria-hidden="true" />
+          ) : null}
+          {loginSubmitLabel({ step, busy, idpName })}
+        </button>
+
+        <div aria-live="polite" className={hasLiveLine ? "mt-2" : "sr-only"}>
+          {hasLiveLine ? (
+            <p className="font-sans text-(length:--text-caption) leading-[18px] font-normal text-fg-muted">
+              {liveLine}
+            </p>
+          ) : null}
+        </div>
+
+        {step === "password" ? (
+          <a href="#login-help" className={cn(plainLinkClass, "mt-2 self-start")}>
+            {LOGIN_COPY.forgotPassword}
+          </a>
+        ) : null}
+
+        {showTryAgain ? (
+          <button
+            type="button"
+            className={cn(plainLinkClass, "mt-2 self-start")}
+            onClick={login.handleTryAgain}
+          >
+            {LOGIN_COPY.tryAgain}
+          </button>
+        ) : null}
+
+        <div className="mt-4 h-px w-full bg-hairline" aria-hidden="true" />
+
+        <p className="mt-3 font-sans text-(length:--text-caption) leading-[18px] font-normal text-fg-muted">
+          {loginAccountabilityLine(step)}
+        </p>
+      </div>
     </form>
   );
 }
@@ -143,8 +168,11 @@ export function LoginRoute(): ReactElement {
     <div className="flex min-h-screen flex-col md:flex-row">
       <LoginBrandPanel className="md:w-[55%]" />
 
-      <div className="flex flex-1 items-center justify-center border-border bg-ground px-4 py-10 md:w-[45%] md:border-l md:py-0">
-        <LoginForm />
+      <div className="flex min-w-0 flex-1 items-center justify-center border-hairline bg-ground px-4 py-10 md:w-[45%] md:border-l md:py-0">
+        <div className="-translate-y-[6vh] flex w-full min-w-0 max-w-[360px] flex-col items-center">
+          <LoginForm />
+          <LoginFooter />
+        </div>
       </div>
     </div>
   );
