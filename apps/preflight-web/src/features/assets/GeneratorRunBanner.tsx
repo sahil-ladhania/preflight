@@ -13,15 +13,17 @@ export function GeneratorRunBanner({
   narration = null,
 }: GeneratorRunBannerProps): ReactElement {
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-border bg-surface px-4 py-2">
-      <p className="text-caption text-fg-muted">
+    <div className="border-l-[3px] border-hairline py-1 pl-3">
+      <p className="font-sans text-caption text-fg-muted">
         Written by{" "}
-        <span className="text-mono">
+        <span className="font-mono text-mono-meta">
           {agentRunCaption("generator", skillsRead)}
         </span>
       </p>
       {narration !== null ? (
-        <p className="whitespace-pre-line text-body text-fg">{narration}</p>
+        <p className="mt-2 whitespace-pre-line font-serif text-copy text-fg">
+          {narration}
+        </p>
       ) : null}
     </div>
   );

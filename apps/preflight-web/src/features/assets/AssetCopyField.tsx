@@ -11,6 +11,10 @@ import type { SpanSegment } from "@/features/assets/types";
 import { findingById, isFailFinding } from "@/features/assets/lib";
 import { cn } from "@/lib/utils";
 
+function segmentText(segments: SpanSegment[]): string {
+  return segments.map((segment) => segment.text).join("");
+}
+
 function spanClassName(
   finding: FindingDTO | undefined,
   selected: boolean,
@@ -42,39 +46,49 @@ export function AssetCopyField({
   openFindingId: string | null;
   onSpanClick: (findingId: string) => void;
 }): ReactElement {
+  const text = segmentText(segments);
+  const isEmpty = text.trim().length === 0;
+
   return (
-    <div className="flex flex-col gap-1 px-4 py-2">
-      <p className="text-caption text-fg-muted">{label}</p>
-      <p className={contentClass}>
-        {segments.map((segment, index) => {
-          if (segment.findingId === null) {
-            return <span key={index}>{segment.text}</span>;
-          }
-          const finding = findingById(findings, segment.findingId);
-          const mark = spanClassName(finding, openFindingId === segment.findingId);
-          if (mark === null) {
-            return <span key={index}>{segment.text}</span>;
-          }
-          return (
-            <span
-              key={index}
-              role="button"
-              tabIndex={0}
-              data-finding-span={segment.findingId}
-              className={mark}
-              onClick={() => onSpanClick(segment.findingId as string)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  onSpanClick(segment.findingId as string);
-                }
-              }}
-            >
-              {segment.text}
-            </span>
-          );
-        })}
-      </p>
+    <div className="flex flex-col gap-1">
+      <p className="text-label uppercase text-fg-muted">{label}</p>
+      {isEmpty ? (
+        <p className="font-serif text-copy text-fg-faint">(empty)</p>
+      ) : (
+        <p className={contentClass}>
+          {segments.map((segment, index) => {
+            if (segment.findingId === null) {
+              return <span key={index}>{segment.text}</span>;
+            }
+            const finding = findingById(findings, segment.findingId);
+            const mark = spanClassName(
+              finding,
+              openFindingId === segment.findingId,
+            );
+            if (mark === null) {
+              return <span key={index}>{segment.text}</span>;
+            }
+            return (
+              <span
+                key={index}
+                role="button"
+                tabIndex={0}
+                data-finding-span={segment.findingId}
+                className={mark}
+                onClick={() => onSpanClick(segment.findingId as string)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onSpanClick(segment.findingId as string);
+                  }
+                }}
+              >
+                {segment.text}
+              </span>
+            );
+          })}
+        </p>
+      )}
     </div>
   );
 }

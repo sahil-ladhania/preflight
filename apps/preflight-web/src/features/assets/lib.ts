@@ -2,6 +2,7 @@
  * lib — assets-only helpers.
  * Why: shortId 8-char truncate and co-located helpers.
  */
+// size: register + detail helpers share one module until a third consumer appears
 
 import type {
   AssetStatus,
@@ -13,9 +14,6 @@ import type {
 
 export const ASSETS_LIST_SUBTITLE =
   "All generated copy and its compliance status — open a row to review.";
-
-export const LEDGER_ROW_GRID =
-  "grid grid-cols-[28px_72px_minmax(0,1fr)_40px_56px_auto] items-center gap-2";
 
 const CHANNEL_LABELS: Record<Channel, string> = {
   email: "Email",
@@ -29,12 +27,30 @@ export function channelLabel(channel: Channel): string {
   return CHANNEL_LABELS[channel];
 }
 
+export function formatRelativeAge(iso: string, now: Date = new Date()): string {
+  const then = new Date(iso).getTime();
+  const diffMs = Math.max(0, now.getTime() - then);
+  const minutes = Math.floor(diffMs / 60_000);
+
+  if (minutes < 60) {
+    return `${Math.max(1, minutes)}m`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    return `${hours}h`;
+  }
+
+  const days = Math.floor(hours / 24);
+  return `${days}d`;
+}
+
 export function formatAssetDetailSubtitle(
   channel: Channel,
   assetId: string,
   generatedAt: string,
 ): string {
-  return `${channelLabel(channel)} · ${shortId(assetId)} · ${formatGeneratedAt(generatedAt)}`;
+  return `${channelLabel(channel)} · ${shortId(assetId)} · ${formatRelativeAge(generatedAt)} ago`;
 }
 
 const ACCEPT_DISABLED: Partial<Record<AssetStatus, string>> = {

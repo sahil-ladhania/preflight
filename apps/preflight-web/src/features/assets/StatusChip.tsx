@@ -12,38 +12,47 @@ import { cn } from "@/lib/utils";
 
 interface MarkerConfig {
   className: string;
-  label: string;
+  registerLabel: string;
+  detailLabel: string;
 }
 
 const MARKER_CONFIG: Record<AssetStatus, MarkerConfig> = {
   blocked: {
     className: "status-blocked",
-    label: "Blocked",
+    registerLabel: "Blocked",
+    detailLabel: "Blocked",
   },
   needs_human: {
     className: "status-review",
-    label: "Review",
+    registerLabel: "Review",
+    detailLabel: "Needs review",
   },
   needs_regen: {
     className: "status-regen",
-    label: "Regen",
+    registerLabel: "Regen",
+    detailLabel: "Needs regen",
   },
   cleared_with_exception: {
     className: "status-exception",
-    label: "Exception",
+    registerLabel: "Exception",
+    detailLabel: "Exception",
   },
   clear: {
     className: "status-clear",
-    label: "Clear",
+    registerLabel: "Clear",
+    detailLabel: "Clear",
   },
 };
 
-export function StatusChip({ status }: StatusChipProps): ReactElement {
+export function StatusChip({
+  status,
+  surface = "register",
+}: StatusChipProps): ReactElement {
   const config = MARKER_CONFIG[status];
+  const label =
+    surface === "detail" ? config.detailLabel : config.registerLabel;
 
   return (
-    <span className={cn("status-marker", config.className)}>
-      {config.label}
-    </span>
+    <span className={cn("status-marker", config.className)}>{label}</span>
   );
 }

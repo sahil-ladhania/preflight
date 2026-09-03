@@ -1,26 +1,16 @@
 /**
- * AssetPane — R3 left copy pane with channel preview.
- * Why: preview frame above audit copy fields (doc 19 §8.4).
+ * AssetPane — R3 left evidence pane with preview and copy fields.
+ * Why: preview frame above audit copy fields (09 R3c–R3e).
  */
 
 import type { ReactElement } from "react";
-import { Loader2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { ChannelBadge } from "@/features/assets/ChannelBadge";
 import { AgentRunBadge } from "@/features/assets/AgentRunBadge";
+import { AssetActionRow } from "@/features/assets/AssetActionRow";
 import { AssetCopyField } from "@/features/assets/AssetCopyField";
-import { ChannelPreview } from "@/features/assets/previews/ChannelPreview";
-import {
-  acceptDisabledCaption,
-  acceptIsEnabled,
-  countPending,
-  formatGeneratedAt,
-  shortId,
-} from "@/features/assets/lib";
-import { PendingRing } from "@/features/assets/PendingRing";
+import { ChannelPreviewSection } from "@/features/assets/ChannelPreviewSection";
+import { RerunStrip } from "@/features/assets/RerunStrip";
 import type { AssetPaneProps, CopySegments } from "@/features/assets/types";
-import { StatusChip } from "@/features/assets/StatusChip";
 
 export function AssetPane({
   asset,
@@ -31,24 +21,18 @@ export function AssetPane({
   onExport,
   exportInFlight = false,
   regenerateInFlight = false,
-  suppressHeaderActions = false,
+  rerunStrip,
+  onRerun,
+  rerunInFlight = false,
 }: AssetPaneProps): ReactElement {
-  const acceptEnabled = acceptIsEnabled(asset.status);
-  const disabledCaption = acceptDisabledCaption(
-    asset.status,
-    asset.findings.length,
-  );
-  const pendingCount = countPending(asset.findings);
-
   const renderCopy = (
     segments: CopySegments[keyof CopySegments],
     label: string,
-    contentClass: string,
   ): ReactElement => (
     <AssetCopyField
       label={label}
       segments={segments}
-      contentClass={contentClass}
+      contentClass="font-serif text-copy text-fg"
       findings={asset.findings}
       openFindingId={openFindingId}
       onSpanClick={onSpanClick}
@@ -56,74 +40,19 @@ export function AssetPane({
   );
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto rounded-md border border-border bg-surface">
-      <div className="flex flex-col gap-2 border-b border-border px-4 py-2">
-        <div className="flex flex-wrap items-center gap-3">
-          <StatusChip status={asset.status} />
-          <PendingRing active={pendingCount > 0} />
-          {asset.generationIndex > 1 ? (
-            <span className="text-mono text-caption text-fg-muted">
-              v{asset.generationIndex}
-            </span>
-          ) : null}
-          <span className="text-caption text-fg-muted">
-            {formatGeneratedAt(asset.generatedAt)}
-          </span>
-          <span className="text-hash text-fg-muted">{shortId(asset.id)}</span>
-        </div>
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto px-8 pb-12 pt-6">
+      <div className="flex flex-col gap-6">
+        <AssetActionRow
+          status={asset.status}
+          findingsCount={asset.findings.length}
+          onAccept={onAccept}
+          onRegenerate={onRegenerate}
+          onExport={onExport}
+          exportInFlight={exportInFlight}
+          regenerateInFlight={regenerateInFlight}
+        />
         <AgentRunBadge run={asset.generatorRun} />
-        <div className="flex flex-col gap-1">
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            {!suppressHeaderActions ? (
-              <>
-                <Button
-                  type="button"
-                  variant={acceptEnabled ? "default" : "outline"}
-                  className="h-8 rounded-md px-4"
-                  disabled={!acceptEnabled}
-                  onClick={acceptEnabled ? onAccept : undefined}
-                >
-                  Ready for compliance desk
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="h-8 rounded-md px-4"
-                  disabled={regenerateInFlight}
-                  onClick={onRegenerate}
-                >
-                  {regenerateInFlight ? (
-                    <Loader2 className="size-4 animate-spin" aria-hidden />
-                  ) : (
-                    "Regenerate"
-                  )}
-                </Button>
-              </>
-            ) : null}
-            <Button
-              type="button"
-              variant="outline"
-              className="h-8 rounded-md px-4"
-              disabled={exportInFlight}
-              onClick={onExport}
-            >
-              {exportInFlight ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
-              ) : (
-                "Export compliance report"
-              )}
-            </Button>
-          </div>
-          {!suppressHeaderActions && !acceptEnabled && disabledCaption !== null ? (
-            <p className="text-caption text-fg-muted">{disabledCaption}</p>
-          ) : null}
-        </div>
-      </div>
-      <div className="border-b border-border px-4 py-3">
-        <div className="mb-2">
-          <ChannelBadge channel={asset.channel} showLabel />
-        </div>
-        <ChannelPreview
+        <ChannelPreviewSection
           channel={asset.channel}
           headline={asset.headline}
           body={asset.body}
@@ -131,11 +60,18 @@ export function AssetPane({
           cta={asset.cta}
           brandKit={asset.brandKit}
         />
+        <div className="flex flex-col gap-4">
+          {renderCopy(asset.copySegments.headline, "Headline")}
+          {renderCopy(asset.copySegments.body, "Body")}
+          {renderCopy(asset.copySegments.disclaimer, "Disclaimer")}
+          {renderCopy(asset.copySegments.cta, "CTA")}
+        </div>
+        <RerunStrip
+          strip={rerunStrip}
+          onRerun={onRerun}
+          rerunInFlight={rerunInFlight}
+        />
       </div>
-      {renderCopy(asset.copySegments.headline, "Headline", "text-title text-fg")}
-      {renderCopy(asset.copySegments.body, "Body", "font-serif text-body text-fg")}
-      {renderCopy(asset.copySegments.disclaimer, "Disclaimer", "font-serif text-body text-fg")}
-      {renderCopy(asset.copySegments.cta, "CTA", "font-serif text-body text-fg")}
     </div>
   );
 }

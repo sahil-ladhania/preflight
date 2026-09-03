@@ -17,9 +17,7 @@ import { GeneratorRunBanner } from "@/features/assets/GeneratorRunBanner";
 import { LedgerPane } from "@/features/assets/LedgerPane";
 import { LineageBanner } from "@/features/assets/LineageBanner";
 import { ReasonModal } from "@/features/assets/ReasonModal";
-import { RerunStrip } from "@/features/assets/RerunStrip";
-import { VerdictBanner } from "@/features/assets/VerdictBanner";
-import { scrollFindingTarget } from "@/features/assets/lib";
+import { findingById, scrollFindingTarget } from "@/features/assets/lib";
 import type { AssetDetailProps, ReasonModalState } from "@/features/assets/types";
 import { useToastContext } from "@/features/shell/ToastHost";
 import { RERUN_STRIPS } from "@/fixtures/assets-detail";
@@ -32,7 +30,6 @@ export function AssetDetail({
   rerunStrip: rerunStripProp = null,
   generatorSkillsRead = null,
   buildNarration = null,
-  showVerdictBanner = false,
   showLoadingSpinner = true,
   openFindingId: openFindingIdProp,
   reasonModal: reasonModalProp,
@@ -67,6 +64,10 @@ export function AssetDetail({
   const openFindingId = openFindingIdProp ?? localOpenFindingId;
   const reasonModal = reasonModalProp ?? localReasonModal;
   const rerunStrip = onRerun !== undefined ? rerunStripProp : localRerunStrip;
+  const modalFinding =
+    reasonModal.findingId !== null
+      ? findingById(asset.findings, reasonModal.findingId)
+      : undefined;
 
   const selectSpanFinding = (findingId: string): void => {
     if (onSpanClick !== undefined) {
@@ -144,34 +145,24 @@ export function AssetDetail({
       channel={asset.channel}
       assetId={asset.id}
       generatedAt={asset.generatedAt}
+      status={asset.status}
     >
-      {asset.lineage !== null ? (
-        <LineageBanner lineage={asset.lineage} />
-      ) : null}
-      {generatorSkillsRead !== null ? (
-        <GeneratorRunBanner
-          skillsRead={generatorSkillsRead}
-          narration={buildNarration}
-        />
-      ) : null}
-      {showVerdictBanner ? (
-        <VerdictBanner
-          status={asset.status}
-          findings={asset.findings}
-          onApprove={handleAccept}
-          onRegenerate={() => {
-            if (onRegenerate !== undefined) {
-              void onRegenerate();
-            }
-          }}
-          regenerateInFlight={regenerateInFlight}
-        />
-      ) : null}
-      {asset.exceptions.length > 0 ? (
-        <ExceptionsSummary exceptions={asset.exceptions} />
-      ) : null}
-      <div className="flex min-h-0 flex-1 gap-2">
-        <div className="min-h-0 w-pane-evidence shrink-0">
+      <div className="flex flex-col gap-4 px-8 pb-4">
+        {asset.lineage !== null ? (
+          <LineageBanner lineage={asset.lineage} />
+        ) : null}
+        {generatorSkillsRead !== null ? (
+          <GeneratorRunBanner
+            skillsRead={generatorSkillsRead}
+            narration={buildNarration}
+          />
+        ) : null}
+        {asset.exceptions.length > 0 ? (
+          <ExceptionsSummary exceptions={asset.exceptions} />
+        ) : null}
+      </div>
+      <div className="flex min-h-0 flex-1 border-t border-hairline">
+        <div className="min-h-0 w-pane-evidence shrink-0 bg-surface">
           <AssetPane
             asset={asset}
             openFindingId={openFindingId}
@@ -189,10 +180,12 @@ export function AssetDetail({
             }}
             exportInFlight={exportInFlight}
             regenerateInFlight={regenerateInFlight}
-            suppressHeaderActions={showVerdictBanner}
+            rerunStrip={rerunStrip}
+            onRerun={handleRerun}
+            rerunInFlight={rerunInFlight}
           />
         </div>
-        <div className="min-h-0 w-pane-ledger shrink-0">
+        <div className="min-h-0 w-pane-ledger shrink-0 border-l border-hairline bg-ground">
           <LedgerPane
             findings={asset.findings}
             openFindingId={openFindingId}
@@ -224,15 +217,13 @@ export function AssetDetail({
           />
         </div>
       </div>
-      <RerunStrip
-        strip={rerunStrip}
-        onRerun={handleRerun}
-        rerunInFlight={rerunInFlight}
-      />
       <ReasonModal
         mode={reasonModal.mode}
         onClose={closeModal}
         onSubmit={submitModal}
+        ruleId={modalFinding?.ruleId}
+        frozenWording={modalFinding?.frozenWording}
+        machineReason={modalFinding?.machineReason}
       />
     </AssetDetailShell>
   );

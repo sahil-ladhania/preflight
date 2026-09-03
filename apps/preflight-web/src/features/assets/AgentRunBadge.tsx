@@ -1,5 +1,5 @@
 /**
- * AgentRunBadge — one-line generator run summary on asset detail.
+ * AgentRunBadge — provenance line on asset detail.
  * Why: G-01 governance trace visible in demo (doc 21).
  */
 
@@ -47,7 +47,9 @@ function formatCost(costUsd: number | null): string | null {
 export function AgentRunBadge({ run }: AgentRunBadgeProps): ReactElement {
   if (run === null) {
     return (
-      <p className="text-caption text-fg-muted">Seeded — no live generator run</p>
+      <p className="font-mono text-mono-faint text-fg-faint">
+        Provenance: Seeded — no live generator run
+      </p>
     );
   }
 
@@ -63,6 +65,8 @@ export function AgentRunBadge({ run }: AgentRunBadgeProps): ReactElement {
   }
 
   return (
-    <p className="text-caption text-fg-muted">{parts.join(" · ")}</p>
+    <p className="font-mono text-mono-faint text-fg-faint">
+      Provenance: {parts.join(" · ")}
+    </p>
   );
 }

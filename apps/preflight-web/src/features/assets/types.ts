@@ -2,6 +2,7 @@
  * types — assets feature props and local view shapes.
  * Why: no inline type declarations in components.
  */
+// size: detail + register prop surfaces share one types module
 
 import type { ReactNode } from "react";
 
@@ -17,6 +18,7 @@ import type {
 } from "@preflight/schemas";
 
 import type { RegisterFilter } from "@/features/assets/register-lib";
+import type { LedgerFilter } from "@/features/assets/ledger-lib";
 
 export type AssetsListView = "loaded" | "loading" | "error";
 export type AssetDetailView = "loaded" | "loading" | "error";
@@ -70,6 +72,7 @@ export interface AssetListRowProps {
 
 export interface StatusChipProps {
   status: AssetStatus;
+  surface?: "register" | "detail";
 }
 
 export interface AssetDetailShellProps {
@@ -78,6 +81,38 @@ export interface AssetDetailShellProps {
   channel?: Channel;
   assetId?: string;
   generatedAt?: string;
+  status?: AssetStatus;
+}
+
+export interface AssetActionRowProps {
+  status: AssetStatus;
+  findingsCount: number;
+  onAccept: () => void;
+  onRegenerate: () => void;
+  onExport: () => void;
+  exportInFlight?: boolean;
+  regenerateInFlight?: boolean;
+}
+
+export interface ChannelPreviewSectionProps {
+  channel: Channel;
+  headline: string;
+  body: string;
+  disclaimer: string;
+  cta: string;
+  brandKit: AssetDetailDTO["brandKit"];
+}
+
+export interface LedgerHeaderProps {
+  countLine: string;
+  filter: LedgerFilter;
+  onFilterChange: (filter: LedgerFilter) => void;
+  stepperText: string;
+  showStepperChevrons: boolean;
+  canStepperPrev: boolean;
+  canStepperNext: boolean;
+  onStepperPrev: () => void;
+  onStepperNext: () => void;
 }
 
 export interface AssetDetailProps {
@@ -130,7 +165,9 @@ export interface AssetPaneProps {
   onExport: () => void;
   exportInFlight?: boolean;
   regenerateInFlight?: boolean;
-  suppressHeaderActions?: boolean;
+  rerunStrip: RerunStripDTO | null;
+  onRerun: () => void;
+  rerunInFlight?: boolean;
 }
 
 export interface LedgerPaneProps {
@@ -162,6 +199,9 @@ export interface ReasonModalProps {
   mode: ReasonModalMode;
   onClose: () => void;
   onSubmit: (reason: string) => void;
+  ruleId?: string;
+  frozenWording?: string;
+  machineReason?: string | null;
 }
 
 export interface ReasonModalState {

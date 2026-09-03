@@ -18,16 +18,16 @@ export function LineageBanner({ lineage }: LineageBannerProps): ReactElement {
         : "";
 
   return (
-    <div className="rounded-md border border-border bg-surface px-4 py-2">
-      <p className="text-caption text-fg-muted">
+    <div className="border-l-[3px] border-hairline py-1 pl-3">
+      <p className="font-sans text-caption text-fg-muted">
         Regenerated from{" "}
         <Link
           to={`/assets/${lineage.parentId}`}
-          className="text-mono text-primary underline"
+          className="font-mono text-mono-meta text-decision underline underline-offset-4"
         >
           {shortId(lineage.parentId)}
         </Link>{" "}
-        <span className="text-mono">v{lineage.parentGenerationIndex}</span>
+        <span className="font-mono text-mono-meta">v{lineage.parentGenerationIndex}</span>
         {suffix}
       </p>
     </div>

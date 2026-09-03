@@ -1,33 +1,22 @@
 /**
- * LedgerPane — R4 ledger header and checks list.
- * Why: right pane chrome and grid-aligned collapsed rows.
+ * LedgerPane — R4 ledger header and checklist rows.
+ * Why: right pane chrome and finding list per 09 R4.
  */
 
-import type { ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 
-import { countPending, LEDGER_ROW_GRID } from "@/features/assets/lib";
+import { LedgerHeader } from "@/features/assets/LedgerHeader";
 import { LedgerRow } from "@/features/assets/LedgerRow";
+import {
+  adjacentOpenId,
+  ledgerCountLine,
+  openFindings,
+  stepperIndexForId,
+  stepperLabel,
+  visibleFindings,
+  type LedgerFilter,
+} from "@/features/assets/ledger-lib";
 import type { LedgerPaneProps } from "@/features/assets/types";
-import { cn } from "@/lib/utils";
-
-function ColumnHeader(): ReactElement {
-  return (
-    <div
-      className={cn(
-        "sticky top-0 z-10",
-        LEDGER_ROW_GRID,
-        "border-b border-border bg-ground px-3 py-2",
-      )}
-    >
-      <span aria-hidden />
-      <span className="text-caption text-fg-muted">Rule</span>
-      <span className="text-caption text-fg-muted">Wording</span>
-      <span className="text-caption text-fg-muted">Kind</span>
-      <span className="text-caption text-fg-muted">Result</span>
-      <span aria-hidden />
-    </div>
-  );
-}
 
 export function LedgerPane({
   findings,
@@ -38,38 +27,48 @@ export function LedgerPane({
   onWaive,
   onRetry,
 }: LedgerPaneProps): ReactElement {
-  const pendingCount = countPending(findings);
+  const [filter, setFilter] = useState<LedgerFilter>("all");
+  const open = openFindings(findings);
+  const stepperIndex = stepperIndexForId(open, openFindingId);
+  const rows = visibleFindings(findings, filter);
+
+  const navigateStepper = (direction: "next" | "prev"): void => {
+    const nextId = adjacentOpenId(findings, openFindingId, direction);
+    if (nextId !== null) {
+      onRowClick(nextId);
+    }
+  };
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto rounded-md border border-border bg-ground">
-      <div className="border-b border-border px-4 py-2">
-        <p className="text-caption text-fg-muted">{findings.length} rules</p>
-        {pendingCount > 0 ? (
-          <p className="text-caption text-fg-muted">
-            Evaluating {pendingCount} rules…
-          </p>
-        ) : null}
-      </div>
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto bg-ground">
+      <LedgerHeader
+        countLine={ledgerCountLine(findings)}
+        filter={filter}
+        onFilterChange={setFilter}
+        stepperText={stepperLabel(open, stepperIndex)}
+        showStepperChevrons={open.length > 0}
+        canStepperPrev={stepperIndex > 0}
+        canStepperNext={stepperIndex < open.length - 1}
+        onStepperPrev={() => navigateStepper("prev")}
+        onStepperNext={() => navigateStepper("next")}
+      />
       {findings.length === 0 ? (
-        <p className="px-4 py-3 text-caption text-fg-muted">
+        <p className="px-5 py-3 font-sans text-caption text-fg-muted">
           No rules in the pinned set.
         </p>
       ) : (
-        <>
-          <ColumnHeader />
-          {findings.map((finding) => (
-            <LedgerRow
-              key={finding.id}
-              finding={finding}
-              openFindingId={openFindingId}
-              onRowClick={onRowClick}
-              onConfirm={onConfirm}
-              onOverride={onOverride}
-              onWaive={onWaive}
-              onRetry={onRetry}
-            />
-          ))}
-        </>
+        rows.map((finding) => (
+          <LedgerRow
+            key={finding.id}
+            finding={finding}
+            openFindingId={openFindingId}
+            onRowClick={onRowClick}
+            onConfirm={onConfirm}
+            onOverride={onOverride}
+            onWaive={onWaive}
+            onRetry={onRetry}
+          />
+        ))
       )}
     </div>
   );
