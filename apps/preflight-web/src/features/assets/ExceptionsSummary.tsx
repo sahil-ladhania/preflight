@@ -12,14 +12,14 @@ export function ExceptionsSummary({
   exceptions,
 }: ExceptionsSummaryProps): ReactElement {
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-border bg-canvas px-4 py-2">
+    <div className="flex flex-col gap-2 rounded-md border border-border bg-surface px-4 py-2">
       <p className="text-caption text-fg-muted">Exceptions</p>
       {exceptions.map((item) => (
         <div key={item.findingId} className="flex flex-col gap-1">
           <p className="text-caption text-fg-muted">
             <span className="text-mono">{item.ruleId}</span>
             {" · "}
-            <span className="inline-flex h-5 items-center rounded-full px-2 text-chip chip-waived">
+            <span className="inline-flex items-center px-[5px] py-px text-verdict-chip uppercase chip-waived">
               Waived
             </span>
             {" · "}

@@ -19,7 +19,7 @@ import { useRulebook } from "@/features/rulebook/useRulebook";
 
 function StageSpinner(): ReactElement {
   return (
-    <div className="flex min-h-48 items-center justify-center bg-canvas">
+    <div className="flex min-h-48 items-center justify-center bg-surface">
       <div
         className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
         aria-label="Loading"
@@ -34,7 +34,7 @@ function StageError({ onRetry }: { onRetry?: () => void }): ReactElement {
   };
 
   return (
-    <div className="flex min-h-48 flex-col items-center justify-center gap-4 bg-canvas">
+    <div className="flex min-h-48 flex-col items-center justify-center gap-4 bg-surface">
       <p className="text-caption text-fg-muted">Could not load rules.</p>
       <Button type="button" variant="outline" onClick={handleRetry}>
         Retry
@@ -47,7 +47,7 @@ function LoadingState({ showSpinner }: RulebookLoadingStateProps): ReactElement 
   if (!showSpinner) {
     return (
       <RulebookShell postSaveCaption={false} onAdd={() => {}}>
-        <div className="min-h-48 bg-canvas" />
+        <div className="min-h-48 bg-surface" />
       </RulebookShell>
     );
   }

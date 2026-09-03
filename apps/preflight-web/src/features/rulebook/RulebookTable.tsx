@@ -12,7 +12,7 @@ import type { RulebookTableProps } from "@/features/rulebook/types";
 function TableHeader(): ReactElement {
   return (
     <div
-      className={`sticky top-0 ${RULEBOOK_ROW_GRID} border-b border-border bg-canvas-subtle px-4 py-2`}
+      className={`sticky top-0 ${RULEBOOK_ROW_GRID} border-b border-border bg-ground px-4 py-2`}
     >
       <span className="text-caption text-fg-muted">id</span>
       <span className="text-caption text-fg-muted">kind</span>
@@ -25,7 +25,7 @@ function TableHeader(): ReactElement {
 
 function SectionDivider({ label }: { label: string }): ReactElement {
   return (
-    <div className="border-y border-border bg-canvas-subtle px-4 py-1.5">
+    <div className="border-y border-border bg-ground px-4 py-1.5">
       <span className="text-caption text-fg-muted">{label}</span>
     </div>
   );
@@ -37,7 +37,7 @@ export function RulebookTable({
   onDelete,
 }: RulebookTableProps): ReactElement {
   return (
-    <div className="flex flex-col bg-canvas">
+    <div className="flex flex-col bg-surface">
       <TableHeader />
       {rules.map((rule, index) => {
         const previous = index > 0 ? rules[index - 1] : null;

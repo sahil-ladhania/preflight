@@ -1,6 +1,8 @@
 /**
- * PageStage — frosted panel with optional full-viewport inset.
- * Why: shared Workbench + Assets list stage chrome (08 register).
+ * PageStage — bounded panel with optional full-viewport inset.
+ * Why: shared Workbench + Assets list chrome. 08 §10 forbids the ambient wash
+ * and the frosted backdrop this component used to carry; separation is border
+ * and ground only, never depth.
  */
 
 import type { ReactElement, ReactNode } from "react";
@@ -30,13 +32,9 @@ function StagePanel({
       )}
     >
       <div
-        className="pointer-events-none absolute top-1/3 left-1/2 size-96 -translate-x-1/2 rounded-full bg-primary/15 blur-3xl"
-        aria-hidden
-      />
-      <div
         className={cn(
           "relative flex flex-col overflow-hidden",
-          "rounded-2xl border border-border bg-canvas/80 backdrop-blur-md",
+          "border border-border bg-surface",
           fullHeight && "min-h-0 flex-1",
           className,
         )}
@@ -54,7 +52,7 @@ export function PageStage({
 }: PageStageProps): ReactElement {
   if (fullHeight) {
     return (
-      <div className="relative flex h-[calc(100vh-3rem)] w-full flex-col p-2 sm:p-3">
+      <div className="relative flex h-below-topbar w-full flex-col p-2 sm:p-3">
         <StagePanel className={className} fullHeight>
           {children}
         </StagePanel>

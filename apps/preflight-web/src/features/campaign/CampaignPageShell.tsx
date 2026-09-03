@@ -63,8 +63,8 @@ export function CampaignPageShell({
   };
 
   return (
-    <div className="min-h-[calc(100vh-3rem)] bg-canvas-subtle p-4 sm:p-6">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 md:flex-row md:gap-6">
+    <div className="min-h-below-topbar bg-ground p-4 sm:p-6">
+      <div className="mx-auto flex w-full max-w-campaign flex-col gap-4 md:flex-row md:gap-6">
         <CampaignStepRail
           viewStep={viewStep}
           runningStep={runningStep}
@@ -79,7 +79,7 @@ export function CampaignPageShell({
           <p className="text-caption text-fg-muted">
             Describe a brief, click Build it, freeze rules, generate copy.
           </p>
-          <div className="mt-6 rounded-2xl border border-border bg-canvas p-6">
+          <div className="mt-6 rounded-2xl border border-border bg-surface p-6">
             {children(viewStep)}
           </div>
         </main>

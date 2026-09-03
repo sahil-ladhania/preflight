@@ -13,7 +13,7 @@ export function GeneratorRunBanner({
   narration = null,
 }: GeneratorRunBannerProps): ReactElement {
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-border bg-canvas px-4 py-2">
+    <div className="flex flex-col gap-2 rounded-md border border-border bg-surface px-4 py-2">
       <p className="text-caption text-fg-muted">
         Written by{" "}
         <span className="text-mono">

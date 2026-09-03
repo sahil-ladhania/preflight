@@ -22,7 +22,7 @@ function KindBadge({ kind }: { kind: CompileRuleCardDTO["kind"] }): ReactElement
 
 function ConstraintCard({ rule }: { rule: CompileRuleCardDTO }): ReactElement {
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-border bg-canvas p-4">
+    <div className="flex flex-col gap-2 rounded-md border border-border bg-surface p-4">
       <div className="flex items-center gap-2">
         <span className="text-mono text-fg-muted">{rule.ruleId}</span>
         <KindBadge kind={rule.kind} />
@@ -73,7 +73,7 @@ export function ConstraintCards({
         </div>
       ) : null}
       {showZeroRules ? (
-        <div className="flex flex-col gap-3 rounded-md border border-border bg-canvas px-4 py-3">
+        <div className="flex flex-col gap-3 rounded-md border border-border bg-surface px-4 py-3">
           <p className="text-body text-fg">No rules apply to this brief.</p>
           <label className="flex cursor-pointer items-center gap-2 text-body text-fg">
             <Checkbox

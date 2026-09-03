@@ -16,7 +16,7 @@ function ColumnHeader(): ReactElement {
       className={cn(
         "sticky top-0 z-10",
         LEDGER_ROW_GRID,
-        "border-b border-border bg-canvas-subtle px-3 py-2",
+        "border-b border-border bg-ground px-3 py-2",
       )}
     >
       <span aria-hidden />
@@ -41,7 +41,7 @@ export function LedgerPane({
   const pendingCount = countPending(findings);
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto rounded-md border border-border bg-canvas-subtle">
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto rounded-md border border-border bg-ground">
       <div className="border-b border-border px-4 py-2">
         <p className="text-caption text-fg-muted">{findings.length} rules</p>
         {pendingCount > 0 ? (

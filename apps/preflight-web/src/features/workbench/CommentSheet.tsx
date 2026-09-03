@@ -23,9 +23,9 @@ export function CommentSheet({
       <div
         className={cn(
           "rounded-2xl px-4 py-3",
-          variant === "user" && "bg-canvas-subtle",
-          variant === "assistant" && "border border-border bg-canvas",
-          variant === "error" && "border border-border bg-canvas",
+          variant === "user" && "bg-ground",
+          variant === "assistant" && "border border-border bg-surface",
+          variant === "error" && "border border-border bg-surface",
         )}
       >
         {variant === "user" ? (

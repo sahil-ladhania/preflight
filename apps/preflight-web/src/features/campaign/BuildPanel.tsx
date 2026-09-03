@@ -57,7 +57,7 @@ export function BuildPanel({
     (buildPhase === "needs_ack" && !emptySetAcknowledged);
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-border bg-canvas-subtle/50 p-4">
+    <div className="flex flex-col gap-3 rounded-xl border border-border bg-ground p-4">
       <div className="flex flex-wrap items-center gap-3">
         <Button
           type="button"

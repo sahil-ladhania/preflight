@@ -59,7 +59,7 @@ export function TopBar(): ReactElement {
   const { navigating, navigateToCampaign } = useCampaignNavTarget();
 
   return (
-    <header className="sticky top-0 z-50 flex h-12 shrink-0 items-center justify-between border-b border-border bg-canvas-subtle/90 px-4 backdrop-blur-md backdrop-saturate-150">
+    <header className="sticky top-0 z-40 flex h-topbar shrink-0 items-center justify-between border-b border-border bg-ground px-4">
       <Link
         to="/workbench"
         className="flex items-center gap-2.5 no-underline transition-opacity hover:opacity-90"

@@ -18,7 +18,7 @@ function ListHeaderRow(): ReactElement {
     <div
       className={cn(
         "sticky top-0 grid grid-cols-[132px_minmax(0,1fr)_minmax(0,1fr)_168px_96px] items-center gap-4",
-        "border-b border-border bg-canvas-subtle px-4 py-2",
+        "border-b border-border bg-ground px-4 py-2",
       )}
     >
       <span className="text-caption text-fg-muted">Status</span>
@@ -32,7 +32,7 @@ function ListHeaderRow(): ReactElement {
 
 function EmptyState(): ReactElement {
   return (
-    <div className="flex flex-col items-center gap-2 bg-canvas py-16">
+    <div className="flex flex-col items-center gap-2 bg-surface py-16">
       <p className="text-caption text-fg-muted">No assets yet</p>
       <p className="text-caption text-fg-muted">
         Start a new campaign to generate your first asset.
@@ -43,7 +43,7 @@ function EmptyState(): ReactElement {
 
 function StageSpinner(): ReactElement {
   return (
-    <div className="flex min-h-48 items-center justify-center bg-canvas">
+    <div className="flex min-h-48 items-center justify-center bg-surface">
       <div
         className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
         aria-label="Loading"
@@ -58,7 +58,7 @@ function PollErrorBanner({ onRetry }: { onRetry?: () => void }): ReactElement {
   };
 
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-border bg-canvas-subtle px-4 py-2">
+    <div className="flex items-center justify-between gap-4 border-b border-border bg-ground px-4 py-2">
       <p className="text-caption text-fg-muted">
         Could not refresh assets. Showing last loaded rows.
       </p>
@@ -75,7 +75,7 @@ function StageError({ onRetry }: { onRetry?: () => void }): ReactElement {
   };
 
   return (
-    <div className="flex min-h-48 flex-col items-center justify-center gap-4 bg-canvas">
+    <div className="flex min-h-48 flex-col items-center justify-center gap-4 bg-surface">
       <p className="text-caption text-fg-muted">Could not load assets.</p>
       <Button type="button" variant="outline" onClick={handleRetry}>
         Retry
@@ -103,7 +103,7 @@ export function AssetsList({
   );
 
   if (view === "loading") {
-    return shell(showLoadingSpinner ? <StageSpinner /> : <div className="min-h-48 bg-canvas" />);
+    return shell(showLoadingSpinner ? <StageSpinner /> : <div className="min-h-48 bg-surface" />);
   }
 
   if (view === "error") {
@@ -115,7 +115,7 @@ export function AssetsList({
   }
 
   return shell(
-    <div className="bg-canvas">
+    <div className="bg-surface">
       {pollError ? <PollErrorBanner onRetry={onRetry} /> : null}
       <ListHeaderRow />
       {assets.map((asset) => (

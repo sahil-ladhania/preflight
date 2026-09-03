@@ -27,17 +27,17 @@ export function previewFrameStyle(brandKit: BrandKitDTO): PreviewFrameStyle {
     },
     body: {
       fontFamily: brandKit.typography.bodyRole,
-      color: "#1a1a1a",
+      color: "var(--color-preview-ink)",
     },
     disclaimer: {
       fontFamily: brandKit.typography.bodyRole,
-      color: "#4a5568",
+      color: "var(--color-preview-ink-muted)",
       fontSize: "0.75rem",
     },
     cta: {
       fontFamily: brandKit.typography.bodyRole,
       backgroundColor: brandKit.colors.secondary,
-      color: "#ffffff",
+      color: "var(--color-preview-on-brand)",
     },
   };
 }
@@ -65,7 +65,7 @@ export function logoMarkStyle(
 ): CSSProperties {
   return {
     backgroundColor: brandKit.colors.primary,
-    color: "#ffffff",
+    color: "var(--color-preview-on-brand)",
     fontFamily: brandKit.typography.headingRole,
   };
 }

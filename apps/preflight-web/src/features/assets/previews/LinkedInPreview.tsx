@@ -40,7 +40,7 @@ export function LinkedInPreview({
           <p className="text-sm font-semibold" style={styles.heading}>
             {brandKit.clientName}
           </p>
-          <p className="text-xs" style={{ color: "#64748b" }}>
+          <p className="text-xs" style={{ color: "var(--color-preview-ink-faint)" }}>
             Sponsored · Financial services
           </p>
         </div>
@@ -62,7 +62,7 @@ export function LinkedInPreview({
       </span>
       <div
         className="mt-3 flex gap-4 border-t pt-2 text-xs"
-        style={{ color: "#64748b" }}
+        style={{ color: "var(--color-preview-ink-faint)" }}
       >
         <span>Like</span>
         <span>Comment</span>

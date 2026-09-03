@@ -22,7 +22,7 @@ export function AssetDetailShell({
     channel !== undefined && assetId !== undefined && generatedAt !== undefined;
 
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] flex-col bg-canvas-subtle p-4 sm:p-6">
+    <div className="flex min-h-below-topbar flex-col bg-ground p-4 sm:p-6">
       <header className="mb-4 flex shrink-0 flex-col gap-1">
         <Link
           to="/assets"

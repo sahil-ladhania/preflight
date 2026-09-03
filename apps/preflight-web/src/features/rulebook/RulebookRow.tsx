@@ -47,7 +47,7 @@ export function RulebookRow({
     <div
       className={cn(
         RULEBOOK_ROW_GRID,
-        "border-b border-border bg-canvas px-4 py-2 hover:bg-canvas-subtle",
+        "border-b border-border bg-surface px-4 py-2 hover:bg-ground",
       )}
     >
       <span className="truncate text-mono text-fg-muted" title={rule.ruleId}>
@@ -91,7 +91,7 @@ export function RulebookRow({
               variant="ghost"
               size="icon-sm"
               aria-label="Delete rule"
-              className="text-fail hover:bg-fail-fill hover:text-fail"
+              className="text-fail hover:bg-fail-wash hover:text-fail"
               onClick={() => onDelete(rule.ruleId)}
             >
               <Trash2 aria-hidden />

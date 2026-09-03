@@ -26,7 +26,7 @@ export function RuleCard({
   rule: RuleCardsProps["rules"][number];
 }): ReactElement {
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-border bg-canvas px-4 py-3">
+    <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface px-4 py-3">
       <div className="flex items-center gap-2">
         <span className="text-mono text-fg-muted">{rule.ruleId}</span>
         <KindBadge kind={rule.kind} />

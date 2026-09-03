@@ -43,7 +43,7 @@ function SnippetBlock({ finding }: { finding: FindingDTO }): ReactElement {
   }
 
   return (
-    <div className="flex flex-col gap-1 rounded-md border border-border bg-canvas-subtle px-3 py-2">
+    <div className="flex flex-col gap-1 rounded-md border border-border bg-ground px-3 py-2">
       {finding.spans.map((span) => (
         <p key={`${span.start}-${span.end}`} className="text-mono text-fg">
           {span.text}

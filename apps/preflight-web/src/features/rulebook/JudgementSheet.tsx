@@ -28,7 +28,7 @@ const ADD_BANNER =
   "Judgement rules are LLM-evaluated and editable here. Deterministic rules are defined in code and read-only in the table.";
 
 const SELECT_TRIGGER =
-  "h-auto w-full rounded-md border-border bg-canvas px-4 py-3 text-body text-fg";
+  "h-auto w-full rounded-md border-border bg-surface px-4 py-3 text-body text-fg";
 
 export function JudgementSheet({
   mode,
@@ -49,7 +49,7 @@ export function JudgementSheet({
       <div className="flex min-h-0 flex-1 flex-col">
         <div className="flex-1 overflow-y-auto p-4">
           {isAdd ? (
-            <div className="mb-4 rounded-md border border-border bg-canvas px-4 py-3">
+            <div className="mb-4 rounded-md border border-border bg-surface px-4 py-3">
               <p className="text-body-airy text-fg">{ADD_BANNER}</p>
             </div>
           ) : null}

@@ -39,7 +39,7 @@ export class ErrorBoundary extends Component<
   render(): ReactNode {
     if (this.state.hasError) {
       return (
-        <div className="flex min-h-[calc(100vh-3rem)] flex-col items-center justify-center gap-4 px-4">
+        <div className="flex min-h-below-topbar flex-col items-center justify-center gap-4 px-4">
           <p className="text-caption text-fg-muted">
             Something went wrong rendering this page.
           </p>

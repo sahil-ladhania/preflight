@@ -171,7 +171,7 @@ export function AssetDetail({
         <ExceptionsSummary exceptions={asset.exceptions} />
       ) : null}
       <div className="flex min-h-0 flex-1 gap-2">
-        <div className="min-h-0 w-[58%] shrink-0">
+        <div className="min-h-0 w-pane-evidence shrink-0">
           <AssetPane
             asset={asset}
             openFindingId={openFindingId}
@@ -192,7 +192,7 @@ export function AssetDetail({
             suppressHeaderActions={showVerdictBanner}
           />
         </div>
-        <div className="min-h-0 w-[42%] shrink-0">
+        <div className="min-h-0 w-pane-ledger shrink-0">
           <LedgerPane
             findings={asset.findings}
             openFindingId={openFindingId}

@@ -75,7 +75,7 @@ export function AssetListRow({ asset }: AssetListRowProps): ReactElement {
       }}
       className={cn(
         "grid cursor-pointer grid-cols-[132px_minmax(0,1fr)_minmax(0,1fr)_168px_96px] items-center gap-4",
-        "border-b border-border bg-canvas px-4 py-2 hover:bg-canvas-subtle",
+        "border-b border-border bg-surface px-4 py-2 hover:bg-ground",
       )}
     >
       <div className="flex min-w-[132px] items-center gap-2">

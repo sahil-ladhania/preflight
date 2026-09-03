@@ -59,19 +59,19 @@ export const BRIEF_FREE_TEXT_PLACEHOLDER =
   "Paste the full marketing brief — scheme, audience, channels, performance figures, claims, and tone.";
 
 export const CAMPAIGN_INPUT_CLASS =
-  "h-auto rounded-xl border border-dashed border-border/70 bg-canvas px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-muted/60 shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0";
+  "h-auto rounded-xl border border-dashed border-border bg-surface px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-faint shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0";
 
 export const CAMPAIGN_INPUT_PROPOSED_CLASS =
-  "h-auto rounded-xl border border-dashed border-primary/40 bg-canvas-subtle/50 px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-muted/60 shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0";
+  "h-auto rounded-xl border border-dashed border-primary bg-ground px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-faint shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0";
 
 export const CAMPAIGN_INPUT_FILLED_CLASS =
-  "h-auto rounded-xl border border-border bg-canvas-subtle/50 px-4 py-3 text-body-airy shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0";
+  "h-auto rounded-xl border border-border bg-ground px-4 py-3 text-body-airy shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0";
 
 export const CAMPAIGN_INPUT_MISSING_CLASS =
-  "h-auto rounded-xl border border-fail/60 bg-canvas px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-muted/60 shadow-none focus-visible:border-fail focus-visible:ring-2 focus-visible:ring-fail/20 focus-visible:ring-offset-0";
+  "h-auto rounded-xl border border-fail bg-surface px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-faint shadow-none focus-visible:border-fail focus-visible:ring-2 focus-visible:ring-fail focus-visible:ring-offset-0";
 
 export const CAMPAIGN_TEXTAREA_CLASS =
-  "min-h-[160px] rounded-xl border border-dashed border-border/70 bg-canvas px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-muted/60 shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0";
+  "min-h-brief rounded-xl border border-dashed border-border bg-surface px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-faint shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0";
 
 export function emptyBrief(): StructuredBriefInput {
   return {

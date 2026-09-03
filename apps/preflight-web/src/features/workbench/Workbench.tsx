@@ -118,7 +118,7 @@ export function Workbench({
   );
 
   return (
-    <div className="bg-canvas-subtle">
+    <div className="bg-ground">
       <PageStage>
         {isEmpty ? (
           <EmptyStage

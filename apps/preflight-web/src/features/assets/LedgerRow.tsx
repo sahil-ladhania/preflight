@@ -85,14 +85,14 @@ export function LedgerRow({
     finding.evaluationStatus === "complete" && finding.machineVerdict === "fail";
 
   return (
-    <div className="border-b border-border bg-canvas">
+    <div className="border-b border-border bg-surface">
       <button
         type="button"
         data-finding-row={finding.id}
         onClick={() => onRowClick(finding.id)}
         className={cn(
           LEDGER_ROW_GRID,
-          "w-full px-3 py-2 text-left hover:bg-canvas-subtle",
+          "w-full px-3 py-2 text-left hover:bg-ground",
           isFailSelected && "ledger-row-selected-fail",
           isPassSelected && "ledger-row-selected-pass",
         )}

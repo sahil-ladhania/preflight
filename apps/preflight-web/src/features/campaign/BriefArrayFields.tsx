@@ -44,12 +44,12 @@ export function ChannelsField({
         className={cn(
           "flex flex-col gap-2 rounded-md border px-4 py-3",
           missing
-            ? "border-fail/60"
+            ? "border-fail"
             : proposed
-              ? "border-dashed border-primary/40"
+              ? "border-dashed border-primary"
               : channels.length > 0
-                ? "border-border bg-canvas-subtle/50"
-                : "border-dashed border-border/70 bg-canvas",
+                ? "border-border bg-ground"
+                : "border-dashed border-border bg-surface",
         )}
       >
         {CHANNEL_OPTIONS.map((channel) => (

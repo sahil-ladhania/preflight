@@ -1,94 +1,258 @@
+/* Fonts — self-hosted, latin fetched at runtime (08 §2.1).
+   Serif roman carries opsz because it spans 13→30px; serif italic is wght-only
+   because it only ever renders at 12px and 15px. Mono is 400 + 600 only. */
+@import "@fontsource-variable/source-serif-4/opsz.css";
+@import "@fontsource-variable/source-serif-4/wght-italic.css";
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/600.css";
+
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@theme inline {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", Menlo, monospace;
-  --color-canvas: var(--canvas);
-  --color-canvas-subtle: var(--canvas-subtle);
-  --color-fg: var(--fg);
-  --color-fg-muted: var(--fg-muted);
-  --color-border: var(--border);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary-hover: var(--primary-hover);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+/* ---------------------------------------------------------------------------
+   Token layer. Single source of truth: documentation/08-design-system.md.
+   Section references below are to that file. Every value is extracted from the
+   prototype except the line-height ratios marked DERIVED, which the document
+   does not state and which a font-size token must carry.
+   --------------------------------------------------------------------------- */
+
+/* `static` so every token is emitted even when no utility consumes it yet.
+   The token layer must be complete and inspectable in the browser, and
+   composite utilities below reference these by var(). */
+@theme static {
+  /* -- Faces (08 §2.1) ------------------------------------------------------
+     Serif = the thing being judged. Sans = the apparatus. Mono = the machine.
+     The face is an attribution, not a texture (08 §2.2). */
+  --font-serif: "Source Serif 4 Variable", "Source Serif 4", Georgia,
+    "Times New Roman", serif;
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", "Cascadia Mono", Menlo,
+    monospace;
+
+  /* -- Type scale (08 §2.3) -------------------------------------------------
+     26 steps. Sans is inherited from html, so sans steps need no face class;
+     serif and mono steps always carry font-serif / font-mono explicitly. */
+
+  --text-display: 30px;
+  --text-display--line-height: 1.2; /* DERIVED */
+  --text-display--font-weight: 600;
+  --text-display--letter-spacing: 0.01em;
+
+  --text-page-title: 26px;
+  --text-page-title--line-height: 1.2; /* DERIVED */
+  --text-page-title--font-weight: 600;
+
+  --text-subject-title: 22px;
+  --text-subject-title--line-height: 1.25; /* DERIVED */
+  --text-subject-title--font-weight: 600;
+
+  --text-wordmark: 18px;
+  --text-wordmark--line-height: 1.2; /* DERIVED */
+  --text-wordmark--font-weight: 600;
+
+  --text-name: 17px;
+  --text-name--line-height: 1.3; /* DERIVED */
+  --text-name--font-weight: 600;
+
+  --text-sheet-title: 16px;
+  --text-sheet-title--line-height: 1.3; /* DERIVED */
+  --text-sheet-title--font-weight: 600;
+
+  --text-menu-name: 15px;
+  --text-menu-name--line-height: 1.3; /* DERIVED */
+  --text-menu-name--font-weight: 600;
+
+  --text-tagline: 15px;
+  --text-tagline--line-height: 24px;
+  --text-tagline--font-weight: 400;
+
+  /* absorbs the former composer + modal-rule steps */
+  --text-copy: 14px;
+  --text-copy--line-height: 22px;
+  --text-copy--font-weight: 400;
+
+  --text-prose: 14px;
+  --text-prose--line-height: 24px;
+  --text-prose--font-weight: 400;
+
+  --text-count: 14px;
+  --text-count--line-height: 1.4; /* DERIVED */
+  --text-count--font-weight: 600;
+
+  --text-ui: 13px;
+  --text-ui--line-height: 1.4; /* DERIVED */
+  --text-ui--font-weight: 400;
+
+  --text-ui-strong: 13px;
+  --text-ui-strong--line-height: 1.4; /* DERIVED */
+  --text-ui-strong--font-weight: 600;
+
+  --text-button: 13px;
+  --text-button--line-height: 1; /* DERIVED */
+  --text-button--font-weight: 500;
+
+  --text-serif-row: 13px;
+  --text-serif-row--line-height: 1.4; /* DERIVED */
+  --text-serif-row--font-weight: 400;
+
+  /* absorbs the former caption-lh step */
+  --text-caption: 12px;
+  --text-caption--line-height: 18px;
+  --text-caption--font-weight: 400;
+
+  --text-button-sm: 12px;
+  --text-button-sm--line-height: 1; /* DERIVED */
+  --text-button-sm--font-weight: 500;
+
+  /* absorbs the former mono-quote step */
+  --text-mono-meta: 12px;
+  --text-mono-meta--line-height: 1.4; /* DERIVED */
+  --text-mono-meta--font-weight: 400;
+
+  --text-label: 11px;
+  --text-label--line-height: 1.4; /* DERIVED */
+  --text-label--font-weight: 400;
+  --text-label--letter-spacing: 0.04em;
+
+  --text-label-strong: 11px;
+  --text-label-strong--line-height: 1.4; /* DERIVED */
+  --text-label-strong--font-weight: 600;
+  --text-label-strong--letter-spacing: 0.06em;
+
+  --text-role: 11px;
+  --text-role--line-height: 1.4; /* DERIVED */
+  --text-role--font-weight: 400;
+  --text-role--letter-spacing: 0.06em;
+
+  --text-mono-status: 11px;
+  --text-mono-status--line-height: 1.4; /* DERIVED */
+  --text-mono-status--font-weight: 600;
+
+  /* absorbs the former mono-status-quiet step */
+  --text-mono-faint: 11px;
+  --text-mono-faint--line-height: 1.4; /* DERIVED */
+  --text-mono-faint--font-weight: 400;
+
+  --text-micro: 10px;
+  --text-micro--line-height: 1.4; /* DERIVED */
+  --text-micro--font-weight: 600;
+  --text-micro--letter-spacing: 0.06em;
+
+  --text-verdict-chip: 10px;
+  --text-verdict-chip--line-height: 1.4; /* DERIVED */
+  --text-verdict-chip--font-weight: 600;
+
+  --text-kind-badge: 10px;
+  --text-kind-badge--line-height: 1.4; /* DERIVED */
+  --text-kind-badge--font-weight: 400;
+
+  /* -- Colour: neutrals (08 §3.1) ------------------------------------------ */
+  --color-ground: #f6f4ee;
+  --color-surface: #fffdf9;
+  --color-hover: #efece2;
+  --color-hover-login: #f0eee5;
+  --color-fg: #1c1a17;
+  --color-fg-muted: #6b6558;
+  --color-fg-faint: #9b9483;
+  --color-hairline: #c7c0b0;
+  --color-scrim: rgb(28 26 23 / 0.5);
+
+  /* -- Colour: semantics (08 §3.2) ------------------------------------------
+     fail   = a rule failed, or is being shipped over  (5 permitted uses, §3.5)
+     attention = needs a human, or could not be evaluated
+     decision  = a person acted, or is being asked to
+     pass      = the checkmark stroke, and nothing else */
+  --color-fail: #9a2b1f;
+  --color-fail-wash: #f7e9e6;
+  --color-attention: #8a651a;
+  --color-decision: #2c4257;
+  --color-decision-wash: #eef1f4;
+  --color-pass: #3f5c46;
+
+  /* -- Colour: channel preview (08 §3.6) ------------------------------------
+     The one sanctioned foreign palette. Brand-kit values are injected at
+     runtime by preview-styles.ts; these are the neutrals around them and the
+     three containment layers. */
+  --color-preview-stage: #efece2;
+  --color-preview-card: #ffffff;
+  --color-preview-ink: #1a1a1a;
+  --color-preview-ink-muted: #4a5568;
+  --color-preview-ink-faint: #64748b;
+  --color-preview-on-brand: #ffffff;
+
+  /* -- shadcn compatibility aliases -----------------------------------------
+     NOT part of the design vocabulary. The seven vendored components in
+     components/ui/ hardcode these names; the aliases keep them working and
+     map them onto the roles above. Feature code must use the role names.
+     --color-primary is INK, not the decision hue: shadcn's bg-primary is the
+     filled-button ground and 08 §5.9 specifies filled = background fg. */
+  /* dialog.tsx uses `font-heading`, which has never resolved in this project.
+     Serif per 08 §5.10 — the waive modal renders its rule wording in serif, and
+     it is the most-seen modal in the product. Extraction, not a design call. */
+  --font-heading: var(--font-serif);
+
+  --color-background: var(--color-ground);
+  --color-foreground: var(--color-fg);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-fg);
+  --color-popover: var(--color-surface);
+  --color-popover-foreground: var(--color-fg);
+  --color-primary: var(--color-fg);
+  --color-primary-foreground: var(--color-surface);
+  --color-primary-hover: var(--color-fg);
+  --color-secondary: var(--color-surface);
+  --color-secondary-foreground: var(--color-fg);
+  --color-muted: var(--color-hover);
+  --color-muted-foreground: var(--color-fg-muted);
+  --color-accent: var(--color-hover);
+  --color-accent-foreground: var(--color-fg);
+  --color-destructive: var(--color-fail);
+  --color-border: var(--color-hairline);
+  --color-input: var(--color-hairline);
+  --color-ring: var(--color-decision);
+
+  /* -- Geometry (08 §4.1, §4.2) ---------------------------------------------
+     Radius is zero. Squared corners are the system's core stance (08 §1);
+     the only circles in the product are the two spinner rings, which are
+     circles because they rotate. */
+  --radius: 0;
+  --radius-none: 0;
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-4xl: 0;
+
+  /* -- Layout widths (08 §4.4) ---------------------------------------------- */
+  --container-register: 1280px;
+  --container-campaign: 1024px;
+  --container-workbench: 820px;
+  --container-modal: 480px;
+  --container-preview-card: 340px;
+
+  /* -- Motion (08 §6) -------------------------------------------------------
+     One animation exists. Nothing else moves. */
+  --animate-spin-pending: spin-pending 1s linear infinite;
 }
 
+/* Non-namespaced layout constants. These generate no utilities; they are
+   referenced by the composite utilities below and by layout code. */
 :root {
-  --canvas: #fffcf7;
-  --canvas-subtle: #f4f1ea;
-  --fg: #1c1917;
-  --fg-muted: #6b645c;
-  --background: #f4f1ea;
-  --foreground: #1c1917;
-  --card: #fffcf7;
-  --card-foreground: #1c1917;
-  --popover: #fffcf7;
-  --popover-foreground: #1c1917;
-  --primary: #0f5f5b;
-  --primary-foreground: #ffffff;
-  --primary-hover: #0a4a47;
-  --secondary: #f4f1ea;
-  --secondary-foreground: #1c1917;
-  --muted: #f4f1ea;
-  --muted-foreground: #6b645c;
-  --accent: #f4f1ea;
-  --accent-foreground: #1c1917;
-  --destructive: #cf222e;
-  --border: #ddd6cc;
-  --input: #ddd6cc;
-  --ring: #0f5f5b;
-  --radius: 6px;
-  --attention: #9a6700;
-  --attention-fill: #ffffff;
-  --severe: #bc4c00;
-  --severe-fill: #fff1e5;
-  --done: #8250df;
-  --done-fill: #fbefff;
-  --success: #1a7f37;
-  --success-fill: #dafbe1;
-  --fail: #cf222e;
-  --fail-fill: #ffebe9;
-  --fail-hover: #a40e26;
-  --ink-hover: #0a4a47;
-  --chip-blocked-ink: #cf222e;
-  --chip-blocked-fill: #ffebe9;
-  --chip-blocked-border: #cf222e;
-  --chip-needs-human-ink: #9a6700;
-  --chip-needs-human-fill: #ffffff;
-  --chip-needs-human-border: #d4a72c;
-  --chip-needs-regen-ink: #bc4c00;
-  --chip-needs-regen-fill: #fff1e5;
-  --chip-needs-regen-border: #bc4c00;
-  --chip-exception-ink: #8250df;
-  --chip-exception-fill: #fbefff;
-  --chip-exception-border: #8250df;
-  --chip-clear-ink: #1a7f37;
-  --chip-clear-fill: #dafbe1;
-  --chip-clear-border: #1a7f37;
+  --topbar-h: 52px;
+  --sheet-w: 400px;
+  --pane-evidence: 56%;
+  --pane-ledger: 44%;
+  --brief-textarea-min-h: 140px;
+  --border-status-rule: 3px;
+  --grid-register: 110px 1fr 140px minmax(260px, 1.6fr) 64px;
+  --grid-rulebook: 100px 60px 1fr 220px 40px;
+  --grid-freeze: 110px 50px 1fr;
 }
 
 @layer base {
@@ -106,18 +270,23 @@
 }
 
 @layer utilities {
+  /* -------------------------------------------------------------------------
+     DEPRECATED type bridges. Delete during the screen refactor.
+
+     These seven names have no equivalent in the 08 §2.3 scale and are still
+     referenced by ~107 call sites. Mapping each to a new step is a per-screen
+     design decision (`.text-title` alone covers four page titles that become
+     26px serif and nine other uses that do not), so the token pass leaves them
+     rendering as-is rather than guessing. `.text-caption`, `.text-ui` and
+     `.text-fail` were deleted here because the theme now generates those exact
+     names — keeping the hand-rolled copies would silently shadow the tokens.
+     ------------------------------------------------------------------------- */
   .text-hash {
     font-family: var(--font-mono);
     font-size: 11px;
     line-height: 16px;
     font-weight: 400;
     font-variant-numeric: tabular-nums;
-  }
-
-  .text-caption {
-    font-size: 12px;
-    line-height: 16px;
-    font-weight: 400;
   }
 
   .text-chip {
@@ -152,67 +321,103 @@
     font-weight: 400;
   }
 
-  .text-ui {
-    font-size: 14px;
-    line-height: 20px;
-    font-weight: 500;
-  }
-
   .text-title {
     font-size: 16px;
     line-height: 24px;
     font-weight: 600;
   }
 
-  .chip-blocked {
-    color: var(--chip-blocked-ink);
-    background-color: var(--chip-blocked-fill);
-    border: 1px solid var(--chip-blocked-border);
-    border-style: solid;
+  /* Viewport minus the top bar (08 §4.4). Single point of truth for the bar
+     height — these replace eleven hardcoded `calc(100vh-3rem)` sites that each
+     assumed 48px. */
+  .h-below-topbar {
+    height: calc(100vh - var(--topbar-h));
   }
 
-  .chip-needs-human {
-    color: var(--chip-needs-human-ink);
-    background-color: var(--chip-needs-human-fill);
-    border: 1px solid var(--chip-needs-human-border);
-    border-style: solid;
+  .min-h-below-topbar {
+    min-height: calc(100vh - var(--topbar-h));
   }
 
-  .chip-needs-regen {
-    color: var(--chip-needs-regen-ink);
-    background-color: var(--chip-needs-regen-fill);
-    border: 1px solid var(--chip-needs-regen-border);
-    border-style: solid;
+  .h-topbar {
+    height: var(--topbar-h);
   }
 
-  .chip-exception {
-    color: var(--chip-exception-ink);
-    background-color: var(--chip-exception-fill);
-    border: 1px solid var(--chip-exception-border);
-    border-style: solid;
+  /* Asset-detail split and side sheet (08 §4.4). */
+  .w-pane-evidence {
+    width: var(--pane-evidence);
   }
 
-  .chip-clear {
-    color: var(--chip-clear-ink);
-    background-color: var(--chip-clear-fill);
-    border: 1px solid var(--chip-clear-border);
-    border-style: solid;
+  .w-pane-ledger {
+    width: var(--pane-ledger);
   }
 
+  .w-sheet {
+    width: var(--sheet-w);
+  }
+
+  .min-h-brief {
+    min-height: var(--brief-textarea-min-h);
+  }
+
+  /* -------------------------------------------------------------------------
+     Status marker (08 §3.3). A 3px left rule plus a mono uppercase label.
+     Never a pill: no radius, no fill, no border box, no icon. `clear` is the
+     only status whose rule is a hairline and whose label is not bold, because
+     a clear asset is the absence of a problem and should not read as an event.
+     ------------------------------------------------------------------------- */
+  .status-marker {
+    display: inline-block;
+    border-left: var(--border-status-rule) solid currentColor;
+    padding-left: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.4;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .status-blocked {
+    color: var(--color-fail);
+  }
+
+  .status-review {
+    color: var(--color-attention);
+  }
+
+  .status-regen {
+    color: var(--color-decision);
+  }
+
+  .status-exception {
+    color: var(--color-decision);
+  }
+
+  /* The rule is a hairline while the label stays muted, so the two colours
+     differ — hence an explicit border-left-color rather than currentColor. */
+  .status-clear {
+    color: var(--color-fg-muted);
+    border-left-color: var(--color-hairline);
+    font-weight: 400;
+  }
+
+  /* Waived verdict badge (08 §5.6) — the only bordered verdict chip, because it
+     is the only verdict that ships an asset over a rule that failed. */
   .chip-waived {
-    color: var(--done);
-    background-color: var(--done-fill);
-    border: 1px solid var(--done);
-    border-style: solid;
+    color: var(--color-decision);
+    border: 1px solid var(--color-decision);
   }
 
+  /* Pending indicator (08 §6). The only animation in the product, and one of
+     only two circles — a circle because it rotates. 10px, hairline track,
+     ink top. */
   .pending-ring {
-    height: 8px;
-    width: 8px;
+    height: 10px;
+    width: 10px;
     flex-shrink: 0;
     border-radius: 9999px;
-    border: 1px solid var(--fg-muted);
-    animation: spin-pending 1s linear infinite;
+    border: 2px solid var(--color-hairline);
+    border-top-color: var(--color-fg);
+    animation: var(--animate-spin-pending);
   }
 
   .pending-ring-slot {
@@ -220,68 +425,41 @@
     animation: none;
   }
 
-  .human-confirmed {
-    color: var(--fail);
-  }
-
-  .human-overridden {
-    color: var(--success);
-  }
-
+  /* Human verdicts (08 §9). All three are the decision hue — confirmed is not
+     fail-red and overridden is not success-green. `waived` additionally takes
+     a border, because it is the only verdict that ships over a live failure
+     (08 §5.6); that border arrives with the badge in the screen refactor. */
+  .human-confirmed,
+  .human-overridden,
   .human-waived {
-    color: var(--done);
+    color: var(--color-decision);
   }
 
-  .text-fail {
-    color: var(--fail);
-  }
+  /* Span highlight (08 §3.4). Two states, no more: a 2px underline at rest,
+     plus a wash when selected. No padding, no outline, no transition — 08 §6
+     permits no motion outside the pending spinner. The paired ledger row gets
+     no marker of its own; pairing is expressed by expansion and the wash.
 
-  .span-fail {
-    border-bottom: 2px solid var(--fail);
+     A human verdict never removes the mark: the machine still failed, and both
+     readings stay on the record (08 §5.7). So overridden and waived spans carry
+     the same underline as an open one — the three names remain only because
+     AssetCopyField still branches on them, and collapse in the refactor. */
+  .span-fail,
+  .span-overridden,
+  .span-waived-fail {
+    border-bottom: 2px solid var(--color-fail);
     border-radius: 0;
-    padding: 0 1px;
     box-decoration-break: clone;
     cursor: pointer;
-  }
-
-  .span-fail:hover {
-    border-bottom-color: var(--fail-hover);
   }
 
   .span-fail-selected {
-    background-color: var(--fail-fill);
-    outline: 1px solid var(--fail);
-    transition: background-color 150ms ease;
-  }
-
-  .span-overridden {
-    border-bottom: 1px dotted var(--fg-muted);
-    cursor: pointer;
-  }
-
-  .span-waived-fail {
-    border-bottom: 2px solid var(--fail);
-    border-radius: 0;
-    padding: 0 1px;
-    box-decoration-break: clone;
-    cursor: pointer;
-  }
-
-  .ledger-row-selected-fail {
-    box-shadow: inset 2px 0 0 var(--fail);
-  }
-
-  .ledger-row-selected-pass {
-    box-shadow: inset 2px 0 0 var(--fg);
+    background-color: var(--color-fail-wash);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .pending-ring {
       animation: none;
-    }
-
-    .span-fail-selected {
-      transition: none;
     }
   }
 }

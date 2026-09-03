@@ -40,7 +40,7 @@ export function EmailPreview({
           <p className="text-sm font-semibold" style={styles.heading}>
             {brandKit.clientName}
           </p>
-          <p className="text-xs" style={{ color: "#64748b" }}>
+          <p className="text-xs" style={{ color: "var(--color-preview-ink-faint)" }}>
             marketing@{brandKit.clientName.toLowerCase().replace(/\s+/g, "")}.com
           </p>
         </div>

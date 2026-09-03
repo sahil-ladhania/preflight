@@ -22,7 +22,7 @@ export function CampaignHandoffLink({
       onClick={onClick}
       className="group flex cursor-pointer items-center gap-1.5 text-caption text-primary disabled:pointer-events-none disabled:opacity-50"
     >
-      <span className="underline decoration-primary/50 decoration-dotted underline-offset-4 transition-colors group-hover:decoration-primary">
+      <span className="underline decoration-primary decoration-dotted underline-offset-4 transition-colors group-hover:decoration-primary">
         Go to Campaign
       </span>
       <ArrowRight

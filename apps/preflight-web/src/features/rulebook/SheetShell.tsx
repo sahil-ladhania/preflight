@@ -21,10 +21,10 @@ export function SheetShell({
       <button
         type="button"
         aria-label="Close sheet"
-        className="absolute inset-0 top-12 bg-canvas-subtle/50"
+        className="absolute inset-0 top-12 bg-ground"
         onClick={onClose}
       />
-      <aside className="absolute top-12 right-0 bottom-0 flex w-[480px] flex-col border-l border-border bg-canvas">
+      <aside className="absolute top-12 right-0 bottom-0 flex w-sheet flex-col border-l border-border bg-surface">
         {children}
       </aside>
     </div>

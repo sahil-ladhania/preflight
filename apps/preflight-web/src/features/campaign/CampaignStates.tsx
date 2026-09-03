@@ -15,11 +15,11 @@ export function CampaignLoadingState({
   showSpinner,
 }: CampaignLoadingStateProps): ReactElement {
   if (!showSpinner) {
-    return <div className="min-h-[calc(100vh-3rem)] bg-canvas-subtle" />;
+    return <div className="min-h-below-topbar bg-ground" />;
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center">
+    <div className="flex min-h-below-topbar items-center justify-center">
       <div
         className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
         aria-label="Loading"
@@ -36,7 +36,7 @@ export function CampaignErrorState({
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] flex-col items-center justify-center gap-4">
+    <div className="flex min-h-below-topbar flex-col items-center justify-center gap-4">
       <p className="text-caption text-fg-muted">Could not load campaign.</p>
       <Button type="button" variant="outline" onClick={handleRetry}>
         Retry
@@ -47,7 +47,7 @@ export function CampaignErrorState({
 
 export function CampaignNotFoundState(): ReactElement {
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center">
+    <div className="flex min-h-below-topbar items-center justify-center">
       <p className="text-caption text-fg-muted">Campaign not found</p>
     </div>
   );

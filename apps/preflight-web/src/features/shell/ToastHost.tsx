@@ -43,7 +43,7 @@ function ToastStack({
           key={toast.id}
           type="button"
           onClick={() => onDismiss(toast.id)}
-          className="cursor-pointer rounded-md border border-border bg-canvas px-4 py-3 text-left text-body text-fg"
+          className="cursor-pointer rounded-md border border-border bg-surface px-4 py-3 text-left text-body text-fg"
         >
           {toast.message}
         </button>

@@ -20,7 +20,7 @@ export const RULEBOOK_SUBTITLE =
   "Compliance rules that Preflight checks — deterministic rules are fixed in code; judgement rules you can edit here.";
 
 export const RULEBOOK_ROW_GRID =
-  "grid grid-cols-[180px_56px_minmax(0,1fr)_200px_80px] items-center gap-4";
+  "grid grid-cols-[100px_60px_minmax(0,1fr)_220px_40px] items-center gap-4";
 
 export const PREDICATE_FIELD_OPTIONS: BriefField[] = [
   "objective",

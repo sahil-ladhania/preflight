@@ -56,7 +56,7 @@ export function AssetPane({
   );
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto rounded-md border border-border bg-canvas">
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto rounded-md border border-border bg-surface">
       <div className="flex flex-col gap-2 border-b border-border px-4 py-2">
         <div className="flex flex-wrap items-center gap-3">
           <StatusChip status={asset.status} />

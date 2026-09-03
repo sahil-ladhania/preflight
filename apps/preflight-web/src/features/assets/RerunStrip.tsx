@@ -35,8 +35,8 @@ function VerdictCard({
       className={cn(
         "flex flex-col gap-1 rounded-md border px-3 py-2",
         tone === "warn"
-          ? "border-fail/40 bg-canvas"
-          : "border-border bg-canvas",
+          ? "border-fail bg-surface"
+          : "border-border bg-surface",
       )}
     >
       <p className="text-caption font-medium text-fg">{title}</p>
@@ -79,7 +79,7 @@ function HashDisclosure({ strip }: { strip: RerunStripDTO }): ReactElement {
 
 function StripBody({ strip }: { strip: RerunStripDTO }): ReactElement {
   return (
-    <div className="flex flex-col gap-3 border-t border-border bg-canvas-subtle px-4 py-3">
+    <div className="flex flex-col gap-3 border-t border-border bg-ground px-4 py-3">
       <VerdictCard
         title="Copy checks"
         body={rerunEngineVerdict(strip)}
@@ -110,7 +110,7 @@ export function RerunStrip({
   rerunInFlight = false,
 }: RerunStripProps): ReactElement {
   return (
-    <div className="shrink-0 rounded-md border border-border bg-canvas-subtle">
+    <div className="shrink-0 rounded-md border border-border bg-ground">
       <div className="flex flex-col gap-2 px-4 py-3">
         <div className="flex flex-wrap items-center gap-3">
           <Button

@@ -151,7 +151,7 @@ export function CampaignStepRail({
   const rail = (
     <nav
       aria-label="Campaign steps"
-      className="rounded-2xl border border-border bg-canvas p-4"
+      className="rounded-2xl border border-border bg-surface p-4"
     >
       <div className="flex flex-col">
         {CAMPAIGN_STEPS.map((step, index) => {
@@ -187,7 +187,7 @@ export function CampaignStepRail({
       <div className="md:hidden">
         <nav
           aria-label="Campaign steps"
-          className="flex gap-2 overflow-x-auto rounded-2xl border border-border bg-canvas p-3"
+          className="flex gap-2 overflow-x-auto rounded-2xl border border-border bg-surface p-3"
         >
           {CAMPAIGN_STEPS.map((step) => {
             const reachable = isStepReachable(step.id);
@@ -202,11 +202,11 @@ export function CampaignStepRail({
                 onClick={() => onViewStepChange(step.id)}
                 className={cn(
                   "flex shrink-0 flex-col items-start gap-0.5 rounded-md px-3 py-2 text-left text-ui no-underline",
-                  state === "active" && "bg-canvas-subtle font-semibold text-primary",
+                  state === "active" && "bg-ground font-semibold text-primary",
                   state === "complete" &&
-                    "font-normal text-fg hover:bg-canvas-subtle hover:text-primary",
+                    "font-normal text-fg hover:bg-ground hover:text-primary",
                   state === "upcoming" &&
-                    "font-normal text-fg-muted hover:bg-canvas-subtle hover:text-primary",
+                    "font-normal text-fg-muted hover:bg-ground hover:text-primary",
                   !reachable && "pointer-events-none text-fg-muted opacity-40",
                 )}
               >

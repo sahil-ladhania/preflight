@@ -50,10 +50,10 @@ export function RerunDriftItem({ item }: { item: DriftItemDTO }): ReactElement {
           ))}
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-md border border-border bg-canvas p-3 text-body text-fg">
+          <div className="rounded-md border border-border bg-surface p-3 text-body text-fg">
             {item.frozenWording}
           </div>
-          <div className="rounded-md border border-border bg-canvas p-3 text-body text-fg">
+          <div className="rounded-md border border-border bg-surface p-3 text-body text-fg">
             {item.liveWording}
           </div>
         </div>
@@ -79,7 +79,7 @@ export function RerunDriftItem({ item }: { item: DriftItemDTO }): ReactElement {
           <p className="text-caption text-fg-muted">
             This asset was not checked against this rule at generate time.
           </p>
-          <div className="rounded-md border border-border bg-canvas p-3 text-body text-fg">
+          <div className="rounded-md border border-border bg-surface p-3 text-body text-fg">
             {item.liveWording}
           </div>
         </div>
@@ -96,7 +96,7 @@ export function RerunDriftItem({ item }: { item: DriftItemDTO }): ReactElement {
         </span>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <div className="rounded-md border border-border bg-canvas p-3 text-body text-fg">
+        <div className="rounded-md border border-border bg-surface p-3 text-body text-fg">
           {item.frozenWording}
         </div>
         <p className="text-caption text-fg-muted">No longer in live catalog.</p>

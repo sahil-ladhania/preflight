@@ -34,7 +34,7 @@ function PromptSuggestion({
       type="button"
       disabled={disabled}
       onClick={onSelect}
-      className="max-w-lg cursor-pointer text-center text-body-airy text-fg-muted underline decoration-primary/50 decoration-dotted underline-offset-4 transition-colors hover:text-primary hover:decoration-primary disabled:pointer-events-none disabled:opacity-50"
+      className="max-w-workbench cursor-pointer text-center text-body-airy text-fg-muted underline decoration-primary decoration-dotted underline-offset-4 transition-colors hover:text-primary hover:decoration-primary disabled:pointer-events-none disabled:opacity-50"
     >
       {text}
     </button>
@@ -51,7 +51,7 @@ export function EmptyStage({
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-8 sm:px-10">
         <WorkbenchLogoMark />
-        <div className="flex max-w-lg flex-col gap-2 text-center">
+        <div className="flex max-w-workbench flex-col gap-2 text-center">
           <h2 className="text-title text-fg">{WORKBENCH_HEADLINE}</h2>
           <p className="text-body-airy text-fg-muted">{WORKBENCH_SUBLINE}</p>
         </div>

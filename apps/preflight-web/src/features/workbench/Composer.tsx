@@ -54,7 +54,7 @@ export function Composer({
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={WORKBENCH_COMPOSER_PLACEHOLDER}
-          className="min-h-16 max-h-28 resize-none rounded-xl border-transparent bg-canvas-subtle/50 py-3 pr-12 pl-4 text-body-airy shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+          className="min-h-16 max-h-28 resize-none rounded-xl border-transparent bg-ground py-3 pr-12 pl-4 text-body-airy shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring"
         />
         <button
           type="button"
@@ -64,7 +64,7 @@ export function Composer({
           className={cn(
             "absolute right-3 bottom-3 flex size-8 items-center justify-center rounded-md transition-colors",
             canSend
-              ? "cursor-pointer text-primary hover:bg-primary/10"
+              ? "cursor-pointer text-primary hover:bg-hover"
               : "cursor-not-allowed text-fg-muted opacity-40",
           )}
         >

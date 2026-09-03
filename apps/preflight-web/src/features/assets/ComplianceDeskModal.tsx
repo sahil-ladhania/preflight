@@ -47,7 +47,7 @@ export function ComplianceDeskModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-modal">
         <DialogHeader>
           <DialogTitle>Ready for compliance desk</DialogTitle>
         </DialogHeader>
