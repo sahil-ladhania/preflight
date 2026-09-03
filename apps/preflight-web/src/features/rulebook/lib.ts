@@ -16,11 +16,8 @@ import type { JudgementFormState } from "@/features/rulebook/types";
 export const POST_SAVE_CAPTION =
   "Live catalog updated. Existing assets keep their frozen snapshots — recompile on Campaign or re-run on Assets to compare.";
 
-export const RULEBOOK_SUBTITLE =
-  "Compliance rules that Preflight checks — deterministic rules are fixed in code; judgement rules you can edit here.";
-
 export const RULEBOOK_ROW_GRID =
-  "grid grid-cols-[100px_60px_minmax(0,1fr)_220px_40px] items-center gap-4";
+  "grid grid-cols-[100px_60px_minmax(0,1fr)_220px_40px] items-center gap-3";
 
 export const PREDICATE_FIELD_OPTIONS: BriefField[] = [
   "objective",
@@ -61,6 +58,16 @@ export function updateRequestFromForm(
   form: JudgementFormState,
 ): UpdateJudgementRuleRequest | null {
   return createRequestFromForm(form);
+}
+
+export function catalogCounts(rules: RuleCatalogRowDTO[]): {
+  binding: number;
+  advisory: number;
+  total: number;
+} {
+  const binding = rules.filter((rule) => rule.kind === "deterministic").length;
+  const advisory = rules.filter((rule) => rule.kind === "judgement").length;
+  return { binding, advisory, total: rules.length };
 }
 
 export function sortCatalogRules(

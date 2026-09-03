@@ -18,21 +18,31 @@ import {
 } from "@/features/workbench/useBriefReadiness";
 import type { WorkbenchMessage } from "@/features/workbench/types";
 
-export const WORKBENCH_HEADLINE =
-  "Turn a campaign brief into copy you can defend.";
+export const WORKBENCH_HEADLINE = "Query the Rulebook";
 
 export const WORKBENCH_SUBLINE =
-  "Describe your campaign in plain language. Preflight structures the brief, freezes the compliance rules that apply, then generates channel copy with a rule-by-rule audit trail.";
+  "Ask about a rule, or describe a campaign to start a brief.";
 
 export const WORKBENCH_INVITATION = WORKBENCH_HEADLINE;
 
 export const WORKBENCH_COMPOSER_PLACEHOLDER =
-  "Describe your campaign or ask about a rule…";
+  "Ask about a rule, or describe a campaign";
 
-export const WORKBENCH_PROMPT_CHIPS = [
-  "LinkedIn and email for Bluepeak Flexi Cap, professional tone.",
-  "HNI launch brief: Flexi Cap, India, highlight flexibility.",
-  "What does Preflight check before generate?",
+export const WORKBENCH_PROMPT_GROUPS = [
+  {
+    label: "ASK ABOUT THE RULES",
+    chips: [
+      "What does Preflight check before generate?",
+      "When is a performance claim allowed?",
+    ],
+  },
+  {
+    label: "START A CAMPAIGN",
+    chips: [
+      "LinkedIn and email for Bluepeak Flexi Cap, professional tone",
+      "HNI launch brief: Flexi Cap, India, highlight flexibility",
+    ],
+  },
 ] as const;
 
 export function nextMessageId(): string {

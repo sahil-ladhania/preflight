@@ -84,6 +84,7 @@ export interface ComposerProps {
   handoffEnabled?: boolean;
   handoffDisabledCaption?: string | null;
   showCampaignActions?: boolean;
+  appearance?: "empty" | "thread";
   onChange: (value: string) => void;
   onSend: () => void;
   onGoToCampaign?: () => void;

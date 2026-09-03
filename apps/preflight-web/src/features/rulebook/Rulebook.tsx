@@ -8,7 +8,7 @@ import type { ReactElement } from "react";
 import { Button } from "@/components/ui/button";
 import { DeleteRuleModal } from "@/features/rulebook/DeleteRuleModal";
 import { JudgementSheet } from "@/features/rulebook/JudgementSheet";
-import { emptyJudgementForm } from "@/features/rulebook/lib";
+import { catalogCounts, emptyJudgementForm } from "@/features/rulebook/lib";
 import { RulebookShell } from "@/features/rulebook/RulebookShell";
 import { RulebookTable } from "@/features/rulebook/RulebookTable";
 import type {
@@ -19,7 +19,7 @@ import { useRulebook } from "@/features/rulebook/useRulebook";
 
 function StageSpinner(): ReactElement {
   return (
-    <div className="flex min-h-48 items-center justify-center bg-surface">
+    <div className="flex min-h-48 items-center justify-center">
       <div
         className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
         aria-label="Loading"
@@ -34,7 +34,7 @@ function StageError({ onRetry }: { onRetry?: () => void }): ReactElement {
   };
 
   return (
-    <div className="flex min-h-48 flex-col items-center justify-center gap-4 bg-surface">
+    <div className="flex min-h-48 flex-col items-center justify-center gap-4">
       <p className="text-caption text-fg-muted">Could not load rules.</p>
       <Button type="button" variant="outline" onClick={handleRetry}>
         Retry
@@ -47,7 +47,7 @@ function LoadingState({ showSpinner }: RulebookLoadingStateProps): ReactElement 
   if (!showSpinner) {
     return (
       <RulebookShell postSaveCaption={false} onAdd={() => {}}>
-        <div className="min-h-48 bg-surface" />
+        <div className="min-h-48" />
       </RulebookShell>
     );
   }
@@ -71,7 +71,6 @@ export function Rulebook({
   saveInFlight = false,
   onAdd,
   onEdit,
-  onDeleteRequest,
   onFormChange,
   onSave,
   onCancel,
@@ -102,6 +101,8 @@ export function Rulebook({
       ? null
       : (rules.find((rule) => rule.ruleId === editingRuleId) ?? null);
 
+  const counts = catalogCounts(rules);
+
   const handleSave = (): void => {
     if (onSave !== undefined) {
       void onSave();
@@ -120,14 +121,18 @@ export function Rulebook({
 
   return (
     <>
-      <RulebookShell postSaveCaption={postSaveCaption} onAdd={handleAdd}>
+      <RulebookShell
+        postSaveCaption={postSaveCaption}
+        bindingCount={counts.binding}
+        advisoryCount={counts.advisory}
+        totalCount={counts.total}
+        showEndLine
+        onAdd={handleAdd}
+      >
         <RulebookTable
           rules={rules}
           onEdit={(ruleId) => {
             onEdit?.(ruleId);
-          }}
-          onDelete={(ruleId) => {
-            onDeleteRequest?.(ruleId);
           }}
         />
       </RulebookShell>
@@ -180,7 +185,6 @@ export function RulebookRoute(): ReactElement {
       saveInFlight={hook.saveInFlight}
       onAdd={hook.onAdd}
       onEdit={hook.onEdit}
-      onDeleteRequest={hook.onDeleteRequest}
       onFormChange={hook.onFormChange}
       onSave={hook.onSave}
       onCancel={hook.onCancel}

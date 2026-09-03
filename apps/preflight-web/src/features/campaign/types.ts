@@ -102,6 +102,7 @@ export interface BriefFormProps {
   saveInFlight: boolean;
   extractInFlight: boolean;
   missingFields?: BriefField[];
+  showFreeText?: boolean;
   showStructuredForm?: boolean;
   showManualActions?: boolean;
   onFreeTextChange: (value: string) => void;

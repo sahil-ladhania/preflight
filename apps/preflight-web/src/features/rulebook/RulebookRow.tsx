@@ -1,13 +1,11 @@
 /**
  * RulebookRow — one catalog table row.
- * Why: det lock vs jdg icon Edit/Delete actions.
+ * Why: det lock vs jdg Edit link per 09 R2.
  */
 
 import type { ReactElement } from "react";
-import { Lock, Pencil, Trash2 } from "lucide-react";
+import { Lock } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { formatGeneratedAt } from "@/features/assets/lib";
 import { appliesLabel, RULEBOOK_ROW_GRID } from "@/features/rulebook/lib";
 import type { RulebookRowProps } from "@/features/rulebook/types";
 import { cn } from "@/lib/utils";
@@ -18,85 +16,50 @@ function KindBadge({
   kind: RulebookRowProps["rule"]["kind"];
 }): ReactElement {
   return (
-    <span className="rounded-md border border-border px-1.5 py-0 text-kind text-fg-muted">
-      {kind === "deterministic" ? "det" : "jdg"}
+    <span className="font-mono text-kind-badge uppercase text-fg-muted">
+      {kind === "deterministic" ? "DET" : "JDG"}
     </span>
   );
 }
 
-function lastChangeCaption(
-  rule: RulebookRowProps["rule"],
-): string | null {
-  if (rule.lastChange === null) {
-    return null;
-  }
-
-  const prefix =
-    rule.lastChange.action === "create" ? "Created by" : "Last changed by";
-  return `${prefix} ${rule.lastChange.actor} · ${formatGeneratedAt(rule.lastChange.at)}`;
-}
-
-export function RulebookRow({
-  rule,
-  onEdit,
-  onDelete,
-}: RulebookRowProps): ReactElement {
-  const changeCaption = lastChangeCaption(rule);
-
+export function RulebookRow({ rule, onEdit }: RulebookRowProps): ReactElement {
   return (
-    <div
-      className={cn(
-        RULEBOOK_ROW_GRID,
-        "border-b border-border bg-surface px-4 py-2 hover:bg-ground",
-      )}
-    >
-      <span className="truncate text-mono text-fg-muted" title={rule.ruleId}>
+    <div className={cn(RULEBOOK_ROW_GRID, "border-b border-border py-1.5")}>
+      <span
+        className="truncate font-mono text-mono-meta text-fg"
+        title={rule.ruleId}
+      >
         {rule.ruleId}
       </span>
       <KindBadge kind={rule.kind} />
-      <div className="min-w-0">
-        <span className="block truncate font-serif text-body text-fg" title={rule.wording}>
-          {rule.wording}
-        </span>
-        {changeCaption !== null ? (
-          <span className="block truncate text-caption text-fg-muted">
-            {changeCaption}
-          </span>
-        ) : null}
-      </div>
-      <span className="truncate text-caption text-fg-muted" title={appliesLabel(rule)}>
+      <span
+        className="truncate font-serif text-serif-row text-fg"
+        title={rule.wording}
+      >
+        {rule.wording}
+      </span>
+      <span
+        className="truncate text-ui text-fg-muted"
+        title={appliesLabel(rule)}
+      >
         {appliesLabel(rule)}
       </span>
-      <div className="flex min-w-[80px] items-center justify-end gap-1">
+      <div className="flex items-center justify-end">
         {rule.kind === "deterministic" ? (
           <span
-            className="inline-flex size-7 items-center justify-center text-fg-muted"
+            className="inline-flex items-center justify-center text-fg-faint"
             title="Defined in code"
           >
-            <Lock className="size-3.5 shrink-0" aria-label="Defined in code" />
+            <Lock className="size-[13px] shrink-0" aria-label="Defined in code" />
           </span>
         ) : (
-          <>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              aria-label="Edit rule"
-              onClick={() => onEdit(rule.ruleId)}
-            >
-              <Pencil aria-hidden />
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              aria-label="Delete rule"
-              className="text-fail hover:bg-fail-wash hover:text-fail"
-              onClick={() => onDelete(rule.ruleId)}
-            >
-              <Trash2 aria-hidden />
-            </Button>
-          </>
+          <button
+            type="button"
+            className="cursor-pointer border-0 bg-transparent p-0 text-caption text-decision underline"
+            onClick={() => onEdit(rule.ruleId)}
+          >
+            Edit
+          </button>
         )}
       </div>
     </div>

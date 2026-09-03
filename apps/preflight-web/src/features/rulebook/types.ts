@@ -35,7 +35,6 @@ export interface RulebookProps {
   saveInFlight?: boolean;
   onAdd?: () => void;
   onEdit?: (ruleId: string) => void;
-  onDeleteRequest?: (ruleId: string) => void;
   onFormChange?: (form: JudgementFormState) => void;
   onSave?: () => Promise<void>;
   onCancel?: () => void;
@@ -48,13 +47,11 @@ export interface RulebookProps {
 export interface RulebookTableProps {
   rules: RuleCatalogRowDTO[];
   onEdit: (ruleId: string) => void;
-  onDelete: (ruleId: string) => void;
 }
 
 export interface RulebookRowProps {
   rule: RuleCatalogRowDTO;
   onEdit: (ruleId: string) => void;
-  onDelete: (ruleId: string) => void;
 }
 
 export interface JudgementSheetProps {

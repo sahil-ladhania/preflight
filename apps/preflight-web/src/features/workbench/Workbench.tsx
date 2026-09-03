@@ -110,6 +110,7 @@ export function Workbench({
       handoffEnabled={handoffEnabled}
       handoffDisabledCaption={handoffDisabledCaption}
       showCampaignActions={!isEmpty}
+      appearance={isEmpty ? "empty" : "thread"}
       onChange={setComposerText}
       onSend={handleSend}
       onGoToCampaign={handleGoToCampaign}
@@ -117,41 +118,40 @@ export function Workbench({
     />
   );
 
+  if (isEmpty) {
+    return (
+      <EmptyStage
+        composer={composer}
+        handoffInFlight={handoffInFlight}
+        onPromptSelect={setComposerText}
+      />
+    );
+  }
+
   return (
     <div className="bg-ground">
       <PageStage>
-        {isEmpty ? (
-          <EmptyStage
-            composer={composer}
-            handoffInFlight={handoffInFlight}
-            onPromptSelect={setComposerText}
-            onGoToCampaign={handleGoToCampaign}
+          <Thread
+            messages={messages}
+            rules={rules}
+            showSearchFallback={showSearchFallback}
+            searchQuery={searchQuery}
+            onSearchQueryChange={
+              onSearchQueryChange ?? fixture.setSearchQuery
+            }
           />
-        ) : (
-          <>
-            <Thread
-              messages={messages}
-              rules={rules}
-              showSearchFallback={showSearchFallback}
-              searchQuery={searchQuery}
-              onSearchQueryChange={
-                onSearchQueryChange ?? fixture.setSearchQuery
-              }
-            />
-            <div className="shrink-0 border-t border-border p-4 sm:px-6">
-              {briefReadiness !== undefined ? (
-                <div className="mb-2">
-                  <BriefReadiness
-                    capturedCount={briefReadiness.capturedCount}
-                    missing={briefReadiness.missing}
-                    complete={briefReadiness.complete}
-                  />
-                </div>
-              ) : null}
-              {composer}
-            </div>
-          </>
-        )}
+          <div className="shrink-0 border-t border-border p-4 sm:px-6">
+            {briefReadiness !== undefined ? (
+              <div className="mb-2">
+                <BriefReadiness
+                  capturedCount={briefReadiness.capturedCount}
+                  missing={briefReadiness.missing}
+                  complete={briefReadiness.complete}
+                />
+              </div>
+            ) : null}
+            {composer}
+          </div>
       </PageStage>
     </div>
   );

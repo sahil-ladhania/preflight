@@ -13,7 +13,6 @@ import type {
 } from "@preflight/schemas";
 
 import type { CampaignStepId } from "@/features/campaign/CampaignStepRail";
-import type { BuildPhase } from "@/features/campaign/types";
 
 export const CHANNEL_OPTIONS: Channel[] = [
   "email",
@@ -56,7 +55,7 @@ export const BRIEF_SCALAR_FIELDS: Array<{
 ];
 
 export const BRIEF_FREE_TEXT_PLACEHOLDER =
-  "Paste the full marketing brief — scheme, audience, channels, performance figures, claims, and tone.";
+  "Describe your campaign in plain language…";
 
 export const CAMPAIGN_INPUT_CLASS =
   "h-auto rounded-xl border border-dashed border-border bg-surface px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-faint shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0";
@@ -71,7 +70,7 @@ export const CAMPAIGN_INPUT_MISSING_CLASS =
   "h-auto rounded-xl border border-fail bg-surface px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-faint shadow-none focus-visible:border-fail focus-visible:ring-2 focus-visible:ring-fail focus-visible:ring-offset-0";
 
 export const CAMPAIGN_TEXTAREA_CLASS =
-  "min-h-brief rounded-xl border border-dashed border-border bg-surface px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-faint shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0";
+  "min-h-brief w-full resize-none rounded-none border border-border bg-transparent px-4 py-3.5 font-serif text-copy text-fg not-italic placeholder:not-italic placeholder:text-fg-faint shadow-none focus-visible:border-decision focus-visible:outline-none focus-visible:ring-0";
 
 export function emptyBrief(): StructuredBriefInput {
   return {
@@ -168,24 +167,6 @@ export function briefHasDraftContent(
     return true;
   }
   return false;
-}
-
-export function briefPhaseSubtitle(input: {
-  freeText: string;
-  brief: StructuredBriefInput;
-  briefSaved: boolean;
-  buildPhase: BuildPhase;
-}): string {
-  if (input.buildPhase === "needs_input") {
-    return "Fill in the highlighted fields below.";
-  }
-  if (input.briefSaved) {
-    return "Review your saved brief or edit fields manually.";
-  }
-  if (briefHasDraftContent(input.freeText, input.brief)) {
-    return "Click Build it to structure, freeze rules, and generate copy.";
-  }
-  return "Describe or paste your campaign brief to get started.";
 }
 
 export function saveDisabledCaption(input: {

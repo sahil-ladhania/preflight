@@ -95,6 +95,7 @@ export function BriefForm({
   saveInFlight,
   extractInFlight,
   missingFields = [],
+  showFreeText = true,
   showStructuredForm = true,
   showManualActions = true,
   onFreeTextChange,
@@ -124,15 +125,14 @@ export function BriefForm({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <p className="text-caption text-fg-muted">Campaign brief</p>
+      {showFreeText ? (
         <Textarea
           value={freeText}
           placeholder={BRIEF_FREE_TEXT_PLACEHOLDER}
           onChange={(event) => onFreeTextChange(event.target.value)}
           className={CAMPAIGN_TEXTAREA_CLASS}
         />
-      </div>
+      ) : null}
       {showStructuredForm ? (
         <div className="flex flex-col gap-4 border-t border-border pt-4">
           <div className="flex flex-wrap items-baseline justify-between gap-2">

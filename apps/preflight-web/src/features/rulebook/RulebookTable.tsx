@@ -1,58 +1,89 @@
 /**
- * RulebookTable — R2 merged catalog table.
- * Why: sticky header + dense row grid with det/jdg grouping.
+ * RulebookTable — R2a binding + R2b advisory catalog tables.
+ * Why: named sections with own column headers per 09 Screen 4.
  */
 
 import type { ReactElement } from "react";
+
+import type { RuleCatalogRowDTO } from "@preflight/schemas";
 
 import { RULEBOOK_ROW_GRID } from "@/features/rulebook/lib";
 import { RulebookRow } from "@/features/rulebook/RulebookRow";
 import type { RulebookTableProps } from "@/features/rulebook/types";
 
-function TableHeader(): ReactElement {
+function SectionHeader({ label }: { label: string }): ReactElement {
+  return (
+    <p className="text-label-strong uppercase text-fg-muted">{label}</p>
+  );
+}
+
+function ColumnHeader({ showEdit }: { showEdit: boolean }): ReactElement {
   return (
     <div
-      className={`sticky top-0 ${RULEBOOK_ROW_GRID} border-b border-border bg-ground px-4 py-2`}
+      className={`${RULEBOOK_ROW_GRID} border-b border-fg py-1.5`}
     >
-      <span className="text-caption text-fg-muted">id</span>
-      <span className="text-caption text-fg-muted">kind</span>
-      <span className="text-caption text-fg-muted">Wording</span>
-      <span className="text-caption text-fg-muted">Applies</span>
-      <span className="text-right text-caption text-fg-muted">Act</span>
+      <span className="text-label uppercase text-fg-muted">Rule</span>
+      <span className="text-label uppercase text-fg-muted">Kind</span>
+      <span className="text-label uppercase text-fg-muted">Wording</span>
+      <span className="text-label uppercase text-fg-muted">Applies to</span>
+      {showEdit ? (
+        <span className="text-right text-label uppercase text-fg-muted">
+          Edit
+        </span>
+      ) : (
+        <span aria-hidden />
+      )}
     </div>
   );
 }
 
-function SectionDivider({ label }: { label: string }): ReactElement {
+function RuleSection({
+  header,
+  rules,
+  showEditColumn,
+  onEdit,
+}: {
+  header: string;
+  rules: RuleCatalogRowDTO[];
+  showEditColumn: boolean;
+  onEdit: (ruleId: string) => void;
+}): ReactElement {
+  if (rules.length === 0) {
+    return <></>;
+  }
+
   return (
-    <div className="border-y border-border bg-ground px-4 py-1.5">
-      <span className="text-caption text-fg-muted">{label}</span>
-    </div>
+    <section className="flex flex-col gap-2">
+      <SectionHeader label={header} />
+      <ColumnHeader showEdit={showEditColumn} />
+      {rules.map((rule) => (
+        <RulebookRow key={rule.ruleId} rule={rule} onEdit={onEdit} />
+      ))}
+    </section>
   );
 }
 
 export function RulebookTable({
   rules,
   onEdit,
-  onDelete,
 }: RulebookTableProps): ReactElement {
-  return (
-    <div className="flex flex-col bg-surface">
-      <TableHeader />
-      {rules.map((rule, index) => {
-        const previous = index > 0 ? rules[index - 1] : null;
-        const showJudgementDivider =
-          previous?.kind === "deterministic" && rule.kind === "judgement";
+  const binding = rules.filter((rule) => rule.kind === "deterministic");
+  const advisory = rules.filter((rule) => rule.kind === "judgement");
 
-        return (
-          <div key={rule.ruleId}>
-            {showJudgementDivider ? (
-              <SectionDivider label="Judgement rules" />
-            ) : null}
-            <RulebookRow rule={rule} onEdit={onEdit} onDelete={onDelete} />
-          </div>
-        );
-      })}
+  return (
+    <div className="flex flex-col gap-6">
+      <RuleSection
+        header={`Binding — checked in code, cannot be edited (${binding.length})`}
+        rules={binding}
+        showEditColumn={false}
+        onEdit={onEdit}
+      />
+      <RuleSection
+        header={`Advisory — LLM-evaluated, editable here (${advisory.length})`}
+        rules={advisory}
+        showEditColumn
+        onEdit={onEdit}
+      />
     </div>
   );
 }

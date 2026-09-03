@@ -4,9 +4,11 @@
  */
 
 import type { FormEvent, ReactElement } from "react";
+import { Loader2 } from "lucide-react";
 
 import { LoginBrandPanel } from "@/features/login/LoginBrandPanel";
 import { LOGIN_COPY, SSO_PROVIDERS, type SsoProvider } from "@/features/login/lib";
+import { useLogin } from "@/features/login/useLogin";
 import { SsoIcon } from "@/features/login/SsoIcons";
 import { cn } from "@/lib/utils";
 
@@ -47,15 +49,25 @@ function SsoDivider(): ReactElement {
 }
 
 function LoginForm(): ReactElement {
-  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
+  const {
+    userId,
+    password,
+    error,
+    submitting,
+    setUserId,
+    setPassword,
+    handleSubmit,
+  } = useLogin();
+
+  function onSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
-    /* mock — credential routing deferred */
+    void handleSubmit();
   }
 
   return (
     <form
       className="flex w-full max-w-[360px] flex-col gap-3.5 border border-border bg-surface p-6"
-      onSubmit={handleSubmit}
+      onSubmit={onSubmit}
     >
       <h2 className="text-label-strong text-primary uppercase">
         {LOGIN_COPY.panelTitle}
@@ -78,6 +90,11 @@ function LoginForm(): ReactElement {
           name="userId"
           autoComplete="username"
           placeholder={LOGIN_COPY.userIdPlaceholder}
+          value={userId}
+          disabled={submitting}
+          onChange={(event) => {
+            setUserId(event.target.value);
+          }}
           className={loginFieldClass}
         />
       </label>
@@ -91,16 +108,30 @@ function LoginForm(): ReactElement {
           name="password"
           autoComplete="current-password"
           placeholder={LOGIN_COPY.passwordPlaceholder}
+          value={password}
+          disabled={submitting}
+          onChange={(event) => {
+            setPassword(event.target.value);
+          }}
           className={loginFieldClass}
         />
       </label>
 
       <button
         type="submit"
-        className="h-8 w-full cursor-pointer border border-primary bg-primary text-button text-primary-foreground rounded-none"
+        disabled={submitting}
+        className="flex h-8 w-full cursor-pointer items-center justify-center border border-primary bg-primary text-button text-primary-foreground rounded-none disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {LOGIN_COPY.submitLabel}
+        {submitting ? (
+          <Loader2 className="size-4 animate-spin" aria-hidden />
+        ) : (
+          LOGIN_COPY.submitLabel
+        )}
       </button>
+
+      {error !== null ? (
+        <p className="text-caption text-fg-muted">{error}</p>
+      ) : null}
 
       <p className="text-caption text-fg-muted">{LOGIN_COPY.accountabilityLine}</p>
     </form>

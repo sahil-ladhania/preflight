@@ -1,49 +1,75 @@
 /**
- * RulebookShell — outer heading + frosted stage for Screen 4 table.
- * Why: matches Assets inset pattern; table lives inside PageStage (09 R2).
+ * RulebookShell — Screen 4 register column, header, and page end-line.
+ * Why: centered 1280px column per 09 R1; no PageStage card.
  */
 
 import type { ReactElement, ReactNode } from "react";
 
-import { Button } from "@/components/ui/button";
-import {
-  POST_SAVE_CAPTION,
-  RULEBOOK_SUBTITLE,
-} from "@/features/rulebook/lib";
-import { PageStage } from "@/features/shell/PageStage";
+import { POST_SAVE_CAPTION } from "@/features/rulebook/lib";
 
 export interface RulebookShellProps {
   children: ReactNode;
   postSaveCaption: boolean;
+  bindingCount?: number;
+  advisoryCount?: number;
+  totalCount?: number;
+  showEndLine?: boolean;
   onAdd: () => void;
+}
+
+function catalogSummary(
+  bindingCount: number | undefined,
+  advisoryCount: number | undefined,
+): string | null {
+  if (bindingCount === undefined || advisoryCount === undefined) {
+    return null;
+  }
+  return `${bindingCount} binding · ${advisoryCount} advisory`;
 }
 
 export function RulebookShell({
   children,
   postSaveCaption,
+  bindingCount,
+  advisoryCount,
+  totalCount,
+  showEndLine = false,
   onAdd,
 }: RulebookShellProps): ReactElement {
+  const summary = catalogSummary(bindingCount, advisoryCount);
+
   return (
-    <div className="min-h-below-topbar bg-ground p-4 sm:p-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-title text-fg">Rulebook</h1>
-          <p className="text-caption text-fg-muted">{RULEBOOK_SUBTITLE}</p>
-          {postSaveCaption ? (
-            <p className="text-caption text-fg-muted">{POST_SAVE_CAPTION}</p>
-          ) : null}
+    <div className="flex min-h-below-topbar flex-col bg-ground px-12 pt-8 pb-12 lg:px-20 xl:px-32">
+      <div className="mx-auto flex w-full max-w-register flex-1 flex-col">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <h1 className="font-serif text-page-title text-fg">Rulebook</h1>
+            {summary !== null ? (
+              <p className="text-ui text-fg-muted">{summary}</p>
+            ) : null}
+            {postSaveCaption ? (
+              <p className="text-caption text-fg-muted">{POST_SAVE_CAPTION}</p>
+            ) : null}
+          </div>
+          <button
+            type="button"
+            className="inline-flex h-8 shrink-0 cursor-pointer items-center justify-center border border-fg bg-ground px-4 font-sans text-button font-medium text-fg"
+            onClick={onAdd}
+          >
+            Add judgement rule
+          </button>
         </div>
-        <Button
-          type="button"
-          className="h-8 shrink-0 rounded-md px-4"
-          onClick={onAdd}
-        >
-          Add judgement rule
-        </Button>
+        <div className="mt-6 flex flex-1 flex-col">{children}</div>
+        {showEndLine && totalCount !== undefined ? (
+          <div className="mt-auto pt-8">
+            <div className="border-t border-fg pt-3">
+              <p className="text-center text-label-strong uppercase text-fg-muted">
+                End of rulebook — {totalCount} rules total
+              </p>
+            </div>
+          </div>
+        ) : null}
       </div>
-      <PageStage fullHeight={false} className="mt-4 overflow-hidden">
-        {children}
-      </PageStage>
     </div>
   );
 }

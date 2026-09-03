@@ -26,3 +26,20 @@ export interface CampaignNavLinkProps {
   isActive: boolean;
   onNavigate: () => void;
 }
+
+export type PersonaId = "meera" | "arjun";
+
+export interface SessionActor {
+  id: PersonaId;
+  name: string;
+  role: "CAMPAIGN OWNER" | "COMPLIANCE REVIEWER";
+}
+
+export interface PersonaControlProps {
+  actor: SessionActor;
+}
+
+export interface PersonaHomeNavigation {
+  navigatingHome: boolean;
+  goHome: () => Promise<void>;
+}

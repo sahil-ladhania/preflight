@@ -11,6 +11,9 @@ import { BuildPanel } from "@/features/campaign/BuildPanel";
 import { briefHasDraftContent } from "@/features/campaign/lib";
 import type { BriefPhaseProps } from "@/features/campaign/types";
 
+const EXAMPLE_BRIEF =
+  "Bluepeak Flexi Cap — digital campaign for retail investors. Highlight flexibility and performance with professional tone.";
+
 export function BriefPhase({
   briefSaved,
   briefDirty,
@@ -23,15 +26,14 @@ export function BriefPhase({
   missingFields = [],
   freeText,
   brief,
+  onFreeTextChange,
   ...formProps
 }: BriefPhaseProps): ReactElement {
   const [editing, setEditing] = useState<boolean>(!briefSaved);
   const [manualOpen, setManualOpen] = useState<boolean>(false);
 
   const hasContent = briefHasDraftContent(freeText, brief);
-  const showBuildPanel =
-    onRunBuild !== undefined &&
-    (hasContent || briefSaved || buildPhase !== "idle");
+  const showBuildPanel = onRunBuild !== undefined;
   const showStructuredForm =
     manualOpen || briefSaved || hasContent || buildPhase === "needs_input";
   const highlightMissing =
@@ -57,8 +59,22 @@ export function BriefPhase({
     );
   }
 
+  const handleTryExample = (): void => {
+    onFreeTextChange(EXAMPLE_BRIEF);
+  };
+
   return (
     <div className="flex flex-col gap-4">
+      <BriefForm
+        {...formProps}
+        freeText={freeText}
+        brief={brief}
+        missingFields={highlightMissing}
+        showFreeText
+        showStructuredForm={false}
+        showManualActions={false}
+        onFreeTextChange={onFreeTextChange}
+      />
       {showBuildPanel ? (
         <BuildPanel
           buildPhase={buildPhase}
@@ -68,24 +84,27 @@ export function BriefPhase({
           emptySetAcknowledged={emptySetAcknowledged}
           onRunBuild={onRunBuild}
           onEmptySetAckChange={onEmptySetAckChange ?? (() => undefined)}
+          onTryExample={handleTryExample}
         />
       ) : null}
-      <BriefForm
-        {...formProps}
-        freeText={freeText}
-        brief={brief}
-        missingFields={highlightMissing}
-        showStructuredForm={showStructuredForm}
-        showManualActions={manualOpen || briefSaved}
-      />
-      {!showStructuredForm ? (
-        <button
-          type="button"
-          className="w-fit cursor-pointer text-caption text-primary underline underline-offset-4"
-          onClick={() => setManualOpen(true)}
-        >
-          Edit fields manually
-        </button>
+      <button
+        type="button"
+        className="w-fit cursor-pointer text-caption text-fg-muted underline underline-offset-4"
+        onClick={() => setManualOpen((open) => !open)}
+      >
+        {manualOpen ? "▾" : "▸"} Review extracted fields
+      </button>
+      {showStructuredForm ? (
+        <BriefForm
+          {...formProps}
+          freeText={freeText}
+          brief={brief}
+          missingFields={highlightMissing}
+          showFreeText={false}
+          showStructuredForm
+          showManualActions={manualOpen || briefSaved}
+          onFreeTextChange={onFreeTextChange}
+        />
       ) : null}
     </div>
   );

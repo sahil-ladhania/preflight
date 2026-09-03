@@ -16,7 +16,7 @@ import {
 } from "@/features/campaign/CampaignStates";
 import { ConstraintCards } from "@/features/campaign/ConstraintCards";
 import { GenerateBlock } from "@/features/campaign/GenerateBlock";
-import { briefFromCampaign, briefPhaseSubtitle, campaignGateState } from "@/features/campaign/lib";
+import { briefFromCampaign, campaignGateState } from "@/features/campaign/lib";
 import type { CampaignProps } from "@/features/campaign/types";
 import { useCampaignFixture } from "@/features/campaign/useCampaignFixture";
 
@@ -185,11 +185,9 @@ export function Campaign({
     <CampaignPageShell
       activeStep={activeStep}
       runningStep={runningStep}
+      identity={brief.schemeName.trim()}
       s2Dimmed={s2Dimmed}
       s3Dimmed={s3Dimmed}
-      briefAgentRan={extractSkillsRead !== null}
-      compileRan={compileResult !== null}
-      generateRan={narrations.generate !== null}
     >
       {(viewStep) => {
         const narration =
@@ -201,15 +199,7 @@ export function Campaign({
 
         if (viewStep === "campaign-brief") {
           return (
-            <CampaignStep
-              subtitle={briefPhaseSubtitle({
-                freeText,
-                brief,
-                briefSaved,
-                buildPhase,
-              })}
-              narration={narration}
-            >
+            <CampaignStep narration={narration}>
               <BriefPhase
                 freeText={freeText}
                 brief={brief}

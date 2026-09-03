@@ -6,10 +6,10 @@
 import { Loader2 } from "lucide-react";
 import type { ReactElement } from "react";
 
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { BuildPhase } from "@/features/campaign/types";
 import type { BriefField } from "@preflight/schemas";
+import { cn } from "@/lib/utils";
 
 function phaseLine(phase: BuildPhase, inFlight: boolean): string | null {
   if (!inFlight && phase === "idle") {
@@ -35,6 +35,7 @@ export function BuildPanel({
   emptySetAcknowledged,
   onRunBuild,
   onEmptySetAckChange,
+  onTryExample,
 }: {
   buildPhase: BuildPhase;
   buildInFlight: boolean;
@@ -43,6 +44,7 @@ export function BuildPanel({
   emptySetAcknowledged: boolean;
   onRunBuild: () => void;
   onEmptySetAckChange: (checked: boolean) => void;
+  onTryExample?: () => void;
 }): ReactElement {
   const line = phaseLine(buildPhase, buildInFlight);
   const canResumeAck =
@@ -55,14 +57,20 @@ export function BuildPanel({
     buildInFlight ||
     !canBuild ||
     (buildPhase === "needs_ack" && !emptySetAcknowledged);
+  const showEmptyReason = !canBuild && !buildInFlight && line === null;
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-border bg-ground p-4">
+    <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-3">
-        <Button
+        <button
           type="button"
-          className="h-9 rounded-md px-5"
           disabled={buildDisabled}
+          className={cn(
+            "inline-flex h-8 shrink-0 cursor-pointer items-center justify-center gap-2 px-4 font-sans text-button font-medium disabled:cursor-not-allowed",
+            canBuild && !buildDisabled
+              ? "border border-fg bg-fg text-surface"
+              : "border border-border bg-transparent text-fg-faint",
+          )}
           onClick={() => {
             void onRunBuild();
           }}
@@ -72,14 +80,23 @@ export function BuildPanel({
           ) : (
             buildLabel
           )}
-        </Button>
+        </button>
         {line !== null ? (
           <p className="text-caption text-fg-muted">{line}</p>
         ) : null}
-        {!canBuild && !buildInFlight ? (
+        {showEmptyReason ? (
           <p className="text-caption text-fg-muted">
-            Describe or paste your brief below first.
+            Describe or paste your brief to start.
           </p>
+        ) : null}
+        {onTryExample !== undefined && !buildInFlight ? (
+          <button
+            type="button"
+            className="cursor-pointer text-caption text-fg-muted underline underline-offset-4"
+            onClick={onTryExample}
+          >
+            Try an example
+          </button>
         ) : null}
       </div>
       {buildPhase === "needs_ack" ? (

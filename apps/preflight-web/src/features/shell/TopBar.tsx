@@ -1,48 +1,29 @@
 /**
- * TopBar — R0 logo and four nav links.
- * Why: app shell top bar with active route weight.
+ * TopBar — R0 wordmark, nav links, and persona control.
+ * Why: app shell chrome per 08 §5.1 and 09 Screen 6.
  */
 
 import type { ReactElement } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
-import { useCampaignNavTarget } from "@/features/shell/useCampaignNavTarget";
+import { PersonaControl } from "@/features/shell/PersonaControl";
+import { navLinkClass } from "@/features/shell/lib";
+import { usePersona } from "@/features/shell/PersonaProvider";
 import type { CampaignNavLinkProps } from "@/features/shell/types";
+import { useCampaignNavTarget } from "@/features/shell/useCampaignNavTarget";
+import { usePersonaHomeNavigation } from "@/features/shell/usePersonaHomeNavigation";
+import { useQueueCount } from "@/features/shell/useQueueCount";
 import { cn } from "@/lib/utils";
-
-function LogoMark(): ReactElement {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      role="img"
-      aria-hidden="true"
-      className="size-8 shrink-0 text-primary"
-    >
-      <rect x="6" y="4" width="2" height="16" fill="currentColor" />
-      <rect x="6" y="14" width="12" height="2" fill="currentColor" />
-    </svg>
-  );
-}
-
-function navLinkClass(isActive: boolean): string {
-  return cn(
-    "text-ui no-underline transition-colors",
-    isActive ? "font-semibold text-primary" : "font-medium text-fg hover:text-primary",
-  );
-}
 
 function CampaignNavLink({
   navigating,
   isActive,
   onNavigate,
 }: CampaignNavLinkProps): ReactElement {
-  const className = navLinkClass(isActive);
-
   return (
     <button
       type="button"
-      className={cn(className, "cursor-pointer border-0 bg-transparent p-0")}
+      className={cn(navLinkClass(isActive), "cursor-pointer border-0 bg-transparent p-0")}
       disabled={navigating}
       onClick={() => {
         void onNavigate();
@@ -55,49 +36,71 @@ function CampaignNavLink({
 
 export function TopBar(): ReactElement {
   const location = useLocation();
+  const { actor } = usePersona();
   const campaignActive = location.pathname.startsWith("/campaign/");
   const { navigating, navigateToCampaign } = useCampaignNavTarget();
+  const { navigatingHome, goHome } = usePersonaHomeNavigation();
+  const queueCountValue = useQueueCount();
+
+  if (actor === null) {
+    return (
+      <header className="sticky top-0 z-40 flex h-topbar shrink-0 items-center border-b border-border bg-ground px-8" />
+    );
+  }
 
   return (
-    <header className="sticky top-0 z-40 flex h-topbar shrink-0 items-center justify-between border-b border-border bg-ground px-4">
-      <Link
-        to="/workbench"
-        className="flex items-center gap-2.5 no-underline transition-opacity hover:opacity-90"
-        aria-label="Preflight home"
-      >
-        <LogoMark />
-        <span className="text-title font-semibold tracking-tight text-primary">
-          Preflight
-        </span>
-      </Link>
-      <nav className="flex items-center gap-8">
-        <NavLink
-          to="/workbench"
-          end
-          className={({ isActive }) => navLinkClass(isActive)}
+    <header className="sticky top-0 z-40 flex h-topbar shrink-0 items-center justify-between border-b border-border bg-ground px-8">
+      <div className="flex items-center gap-10">
+        <button
+          type="button"
+          className="cursor-pointer border-0 bg-transparent p-0 no-underline"
+          aria-label="Preflight home"
+          disabled={navigatingHome}
+          onClick={() => {
+            void goHome();
+          }}
         >
-          Workbench
-        </NavLink>
-        <CampaignNavLink
-          navigating={navigating}
-          isActive={campaignActive}
-          onNavigate={navigateToCampaign}
-        />
-        <NavLink
-          to="/assets"
-          end={false}
-          className={({ isActive }) => navLinkClass(isActive)}
-        >
-          Assets
-        </NavLink>
-        <NavLink
-          to="/rulebook"
-          end
-          className={({ isActive }) => navLinkClass(isActive)}
-        >
-          Rulebook
-        </NavLink>
-      </nav>
+          <span className="font-serif text-wordmark text-fg">Preflight</span>
+        </button>
+        <nav className="flex items-center gap-7">
+          <NavLink
+            to="/assets"
+            end={false}
+            className={({ isActive }) => navLinkClass(isActive)}
+          >
+            <span className="inline-flex items-baseline gap-1.5">
+              Assets
+              {queueCountValue !== null && queueCountValue > 0 ? (
+                <span className="font-mono text-(length:--text-caption) leading-[1.4] text-fg-muted">
+                  [{queueCountValue}]
+                </span>
+              ) : null}
+            </span>
+          </NavLink>
+          <CampaignNavLink
+            navigating={navigating}
+            isActive={campaignActive}
+            onNavigate={navigateToCampaign}
+          />
+          <NavLink
+            to="/rulebook"
+            end
+            className={({ isActive }) => navLinkClass(isActive)}
+          >
+            Rulebook
+          </NavLink>
+          <NavLink
+            to="/workbench"
+            end
+            className={({ isActive }) => navLinkClass(isActive)}
+          >
+            Workbench
+          </NavLink>
+        </nav>
+      </div>
+      <div className="flex items-center">
+        <PersonaControl actor={actor} />
+      </div>
     </header>
   );
 }

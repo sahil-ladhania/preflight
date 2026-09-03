@@ -1,6 +1,6 @@
 /**
- * Composer — in-field send icon + optional campaign handoff row.
- * Why: stage-docked input; Enter sends, Shift+Enter newline.
+ * Composer — empty Ask → bar or thread send icon + handoff row.
+ * Why: 08 §5.16 empty box; Enter sends, Shift+Enter newline.
  */
 
 import type { KeyboardEvent, ReactElement } from "react";
@@ -21,6 +21,7 @@ export function Composer({
   handoffEnabled = false,
   handoffDisabledCaption = null,
   showCampaignActions = false,
+  appearance = "thread",
   onChange,
   onSend,
   onGoToCampaign,
@@ -44,6 +45,75 @@ export function Composer({
       }
     }
   };
+
+  const campaignActions =
+    showCampaignActions ? (
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-col gap-1">
+          {showHandoffButton ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="h-8 w-fit rounded-md px-4"
+              disabled={!canHandoff}
+              onClick={onStartCampaignFromConversation}
+            >
+              {handoffInFlight ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                "Start campaign from this conversation"
+              )}
+            </Button>
+          ) : null}
+          {showHandoffButton && !canHandoff && handoffDisabledCaption !== null ? (
+            <span className="text-caption text-fg-muted">
+              {handoffDisabledCaption}
+            </span>
+          ) : null}
+        </div>
+        {onGoToCampaign !== undefined ? (
+          <CampaignHandoffLink
+            onClick={onGoToCampaign}
+            disabled={handoffInFlight}
+          />
+        ) : null}
+      </div>
+    ) : null;
+
+  if (appearance === "empty") {
+    return (
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2.5 border border-border px-4 py-3.5 focus-within:border-decision">
+          <textarea
+            rows={1}
+            value={value}
+            disabled={inputDisabled}
+            onChange={(event) => onChange(event.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={WORKBENCH_COMPOSER_PLACEHOLDER}
+            className="min-h-0 max-h-28 flex-1 resize-none border-0 bg-transparent p-0 font-serif text-copy text-fg shadow-none outline-none placeholder:text-fg-faint focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
+          />
+          <button
+            type="button"
+            aria-label="Send message"
+            disabled={!canSend}
+            onClick={onSend}
+            className={cn(
+              "shrink-0 border-0 bg-transparent p-0 font-sans text-micro font-medium text-decision tracking-normal",
+              canSend ? "cursor-pointer" : "cursor-not-allowed",
+            )}
+          >
+            {sendInFlight ? (
+              <Loader2 className="size-3 animate-spin" aria-hidden />
+            ) : (
+              "Ask →"
+            )}
+          </button>
+        </div>
+        {campaignActions}
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-2">
@@ -75,38 +145,7 @@ export function Composer({
           )}
         </button>
       </div>
-      {showCampaignActions ? (
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex flex-col gap-1">
-            {showHandoffButton ? (
-              <Button
-                type="button"
-                variant="outline"
-                className="h-8 w-fit rounded-md px-4"
-                disabled={!canHandoff}
-                onClick={onStartCampaignFromConversation}
-              >
-                {handoffInFlight ? (
-                  <Loader2 className="size-4 animate-spin" aria-hidden />
-                ) : (
-                  "Start campaign from this conversation"
-                )}
-              </Button>
-            ) : null}
-            {showHandoffButton && !canHandoff && handoffDisabledCaption !== null ? (
-              <span className="text-caption text-fg-muted">
-                {handoffDisabledCaption}
-              </span>
-            ) : null}
-          </div>
-          {onGoToCampaign !== undefined ? (
-            <CampaignHandoffLink
-              onClick={onGoToCampaign}
-              disabled={handoffInFlight}
-            />
-          ) : null}
-        </div>
-      ) : null}
+      {campaignActions}
     </div>
   );
 }
