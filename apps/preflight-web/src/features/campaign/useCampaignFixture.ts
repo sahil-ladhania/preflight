@@ -19,7 +19,6 @@ import {
   COMPILE_ZERO_RULES,
   EXTRACT_PROPOSAL,
   EXTRACT_SKILLS_READ,
-  GENERATE_ASSET_ID,
   GENERATE_SKILLS_READ,
 } from "@/fixtures/campaign";
 
@@ -115,7 +114,7 @@ export function useCampaignFixture(
   const handleGenerate = (): void => {
     setGenerateInFlight(true);
     setGenerateInFlight(false);
-    void navigate(`/assets/${GENERATE_ASSET_ID}`, {
+    void navigate("/assets", {
       state: { generatorSkillsRead: GENERATE_SKILLS_READ },
     });
   };

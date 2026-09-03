@@ -217,14 +217,9 @@ export function useCampaignMutations(input: {
         {},
         controller.signal,
       );
-      const firstAsset = response.assets[0];
-      if (response.assets.length === 1 && firstAsset !== undefined) {
-        void navigate(`/assets/${firstAsset.id}`, {
-          state: { generatorSkillsRead: response.skillsRead },
-        });
-      } else {
-        void navigate("/assets");
-      }
+      void navigate("/assets", {
+        state: { generatorSkillsRead: response.skillsRead },
+      });
     } catch (error: unknown) {
       toastApiError(error);
     } finally {

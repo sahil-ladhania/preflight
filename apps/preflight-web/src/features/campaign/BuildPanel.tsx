@@ -1,36 +1,18 @@
 /**
- * BuildPanel — one-click autonomous campaign run with gate stops.
- * Why: operator talks, clicks Build it, watches phases, decides at the end.
+ * BuildPanel — one filled Build it control with adjacent outcome lines.
+ * Why: 09 Screen 3 single primary action; reasons never in tooltips.
  */
 
-import { Loader2 } from "lucide-react";
 import type { ReactElement } from "react";
 
 import { Checkbox } from "@/components/ui/checkbox";
+import { buildPhaseLine } from "@/features/campaign/campaign-pane";
 import type { BuildPhase } from "@/features/campaign/types";
-import type { BriefField } from "@preflight/schemas";
 import { cn } from "@/lib/utils";
-
-function phaseLine(phase: BuildPhase, inFlight: boolean): string | null {
-  if (!inFlight && phase === "idle") {
-    return null;
-  }
-  const labels: Partial<Record<BuildPhase, string>> = {
-    extract: "Structuring your brief…",
-    save: "Saving brief…",
-    compile: "Freezing compliance rules…",
-    generate: "Generating channel copy…",
-    needs_input: "Add the highlighted fields below, then click Build it again.",
-    needs_ack: "No rules apply — acknowledge to continue.",
-    failed: "Build failed — fix the issue and try again.",
-  };
-  return labels[phase] ?? null;
-}
 
 export function BuildPanel({
   buildPhase,
   buildInFlight,
-  missingFields,
   canBuild,
   emptySetAcknowledged,
   onRunBuild,
@@ -39,25 +21,19 @@ export function BuildPanel({
 }: {
   buildPhase: BuildPhase;
   buildInFlight: boolean;
-  missingFields: BriefField[];
   canBuild: boolean;
   emptySetAcknowledged: boolean;
   onRunBuild: () => void;
   onEmptySetAckChange: (checked: boolean) => void;
   onTryExample?: () => void;
 }): ReactElement {
-  const line = phaseLine(buildPhase, buildInFlight);
-  const canResumeAck =
-    buildPhase === "needs_ack" && emptySetAcknowledged && !buildInFlight;
-  const buildLabel =
-    buildPhase === "needs_ack" && emptySetAcknowledged
-      ? "Continue generate"
-      : "Build it";
+  const line = buildPhaseLine(buildPhase, buildInFlight);
+  const showEmptyReason = !canBuild && !buildInFlight && line === null;
   const buildDisabled =
     buildInFlight ||
     !canBuild ||
     (buildPhase === "needs_ack" && !emptySetAcknowledged);
-  const showEmptyReason = !canBuild && !buildInFlight && line === null;
+  const filled = canBuild && !buildDisabled;
 
   return (
     <div className="flex flex-col gap-3">
@@ -67,21 +43,27 @@ export function BuildPanel({
           disabled={buildDisabled}
           className={cn(
             "inline-flex h-8 shrink-0 cursor-pointer items-center justify-center gap-2 px-4 font-sans text-button font-medium disabled:cursor-not-allowed",
-            canBuild && !buildDisabled
+            filled
               ? "border border-fg bg-fg text-surface"
-              : "border border-border bg-transparent text-fg-faint",
+              : "border border-hairline bg-transparent text-fg-faint",
           )}
           onClick={() => {
             void onRunBuild();
           }}
         >
           {buildInFlight ? (
-            <Loader2 className="size-4 animate-spin" aria-hidden />
+            <>
+              <span
+                className="size-[11px] animate-spin rounded-full border-2 border-surface/40 border-t-surface"
+                aria-hidden
+              />
+              Compiling
+            </>
           ) : (
-            buildLabel
+            "Build it"
           )}
         </button>
-        {line !== null ? (
+        {!buildInFlight && line !== null ? (
           <p className="text-caption text-fg-muted">{line}</p>
         ) : null}
         {showEmptyReason ? (
@@ -99,8 +81,13 @@ export function BuildPanel({
           </button>
         ) : null}
       </div>
+      {buildInFlight && line !== null ? (
+        <p className="text-ui font-medium text-fg" aria-live="polite">
+          {line}
+        </p>
+      ) : null}
       {buildPhase === "needs_ack" ? (
-        <label className="flex cursor-pointer items-start gap-2 text-body text-fg">
+        <label className="flex cursor-pointer items-start gap-2 text-ui text-fg">
           <Checkbox
             checked={emptySetAcknowledged}
             onCheckedChange={(checked) => {
@@ -112,16 +99,6 @@ export function BuildPanel({
             with an empty constraint set.
           </span>
         </label>
-      ) : null}
-      {canResumeAck ? (
-        <p className="text-caption text-fg-muted">
-          Empty set acknowledged — click Continue generate to finish.
-        </p>
-      ) : null}
-      {buildPhase === "needs_input" && missingFields.length > 0 ? (
-        <p className="sr-only">
-          Missing fields highlighted in the form below.
-        </p>
       ) : null}
     </div>
   );

@@ -5,7 +5,6 @@
 
 import type { ReactElement } from "react";
 
-import { Button } from "@/components/ui/button";
 import type {
   CampaignErrorStateProps,
   CampaignLoadingStateProps,
@@ -38,9 +37,13 @@ export function CampaignErrorState({
   return (
     <div className="flex min-h-below-topbar flex-col items-center justify-center gap-4">
       <p className="text-caption text-fg-muted">Could not load campaign.</p>
-      <Button type="button" variant="outline" onClick={handleRetry}>
+      <button
+        type="button"
+        className="inline-flex h-8 cursor-pointer items-center justify-center border border-fg px-4 font-sans text-button font-medium text-fg"
+        onClick={handleRetry}
+      >
         Retry
-      </Button>
+      </button>
     </div>
   );
 }

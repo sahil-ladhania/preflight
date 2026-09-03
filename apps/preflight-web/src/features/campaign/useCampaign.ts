@@ -19,6 +19,7 @@ import {
 import { buildExtractNarration } from "@/features/campaign/narration";
 import type { BuildPhase, CampaignNarrations } from "@/features/campaign/types";
 import { useCampaignBuild } from "@/features/campaign/useCampaignBuild";
+import { useCampaignAssets } from "@/features/campaign/useCampaignAssets";
 import { useCampaignHandoff } from "@/features/campaign/useCampaignHandoff";
 import { useCampaignLoad } from "@/features/campaign/useCampaignLoad";
 import { useCampaignMutations } from "@/features/campaign/useCampaignMutations";
@@ -54,6 +55,7 @@ export function useCampaign(campaignId: string | undefined): {
   runningStep: CampaignStepId | undefined;
   narrations: CampaignNarrations;
   missingFields: BriefField[];
+  campaignAssets: ReturnType<typeof useCampaignAssets>["assets"];
   setFreeText: (value: string) => void;
   setBrief: (brief: StructuredBriefInput) => void;
   onFieldEdit: (field: BriefField) => void;
@@ -91,6 +93,9 @@ export function useCampaign(campaignId: string | undefined): {
   }, []);
 
   const load = useCampaignLoad(campaignId, onHydrated);
+  const assetsHook = useCampaignAssets(
+    load.view === "loaded" ? campaignId : undefined,
+  );
 
   const build = useCampaignBuild({
     campaignId,
@@ -234,6 +239,7 @@ export function useCampaign(campaignId: string | undefined): {
     runningStep: build.runningStep,
     narrations: build.narrations,
     missingFields: build.missingFields,
+    campaignAssets: assetsHook.assets,
     setFreeText: load.setFreeText,
     setBrief: load.setBrief,
     onFieldEdit,

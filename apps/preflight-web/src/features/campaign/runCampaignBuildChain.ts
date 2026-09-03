@@ -178,17 +178,13 @@ export async function runCampaignBuildChain(input: {
   );
   narrations = narrationPatch(narrations, "generate", generateNarration);
 
-  const firstAsset = response.assets[0];
-  const navigate =
-    response.assets.length === 1 && firstAsset !== undefined
-      ? {
-          path: `/assets/${firstAsset.id}`,
-          state: {
-            generatorSkillsRead: response.skillsRead,
-            buildNarration: generateNarration,
-          },
-        }
-      : { path: "/assets", state: { generatorSkillsRead: response.skillsRead, buildNarration: generateNarration } };
+  const navigate = {
+    path: "/assets",
+    state: {
+      generatorSkillsRead: response.skillsRead,
+      buildNarration: generateNarration,
+    },
+  };
 
   return { phase: "idle", narrations, missingFields: [], navigate };
 }
@@ -214,17 +210,13 @@ export async function runGenerateOnly(input: {
     freeze: null,
     generate: generateNarration,
   };
-  const firstAsset = response.assets[0];
-  const navigate =
-    response.assets.length === 1 && firstAsset !== undefined
-      ? {
-          path: `/assets/${firstAsset.id}`,
-          state: {
-            generatorSkillsRead: response.skillsRead,
-            buildNarration: generateNarration,
-          },
-        }
-      : { path: "/assets", state: { generatorSkillsRead: response.skillsRead, buildNarration: generateNarration } };
+  const navigate = {
+    path: "/assets",
+    state: {
+      generatorSkillsRead: response.skillsRead,
+      buildNarration: generateNarration,
+    },
+  };
 
   return { phase: "idle", narrations, missingFields: [], navigate };
 }

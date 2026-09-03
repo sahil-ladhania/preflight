@@ -1,74 +1,205 @@
 /**
- * Campaign — Screen 3 three-step orchestrator.
- * Why: brief → compile → generate in a single active pane.
+ * Campaign — Screen 3 four-pane orchestrator.
+ * Why: brief → building → freeze → built per 09; logic stays in hooks.
  */
-// size: controlled + fixture modes share one tree; BriefPhase owns brief/build UI
+// size: pane switch + controlled/fixture modes share one tree; bodies are sibling components
 
-import type { ReactElement } from "react";
+import { useEffect, useMemo, useState, type ReactElement } from "react";
 
+import { BuiltSummary } from "@/features/campaign/BuiltSummary";
 import { BriefPhase } from "@/features/campaign/BriefPhase";
+import {
+  activeCampaignPane,
+  campaignEndLine,
+  railStepForPane,
+  type PaneOverride,
+} from "@/features/campaign/campaign-pane";
 import { CampaignPageShell } from "@/features/campaign/CampaignPageShell";
-import { CampaignStep } from "@/features/campaign/CampaignStep";
-import { activeCampaignStep } from "@/features/campaign/CampaignStepRail";
+import { type CampaignStepId } from "@/features/campaign/CampaignStepRail";
 import {
   CampaignErrorState,
   CampaignLoadingState,
 } from "@/features/campaign/CampaignStates";
-import { ConstraintCards } from "@/features/campaign/ConstraintCards";
-import { GenerateBlock } from "@/features/campaign/GenerateBlock";
+import { FreezeTable } from "@/features/campaign/FreezeTable";
 import { briefFromCampaign, campaignGateState } from "@/features/campaign/lib";
 import type { CampaignProps } from "@/features/campaign/types";
 import { useCampaignFixture } from "@/features/campaign/useCampaignFixture";
 
-export function Campaign({
-  campaign,
-  view = "loaded",
-  showLoadingSpinner = true,
-  freeText: freeTextProp,
-  brief: briefProp,
-  proposedFieldKeys: proposedFieldKeysProp,
-  extractSkillsRead: extractSkillsReadProp,
-  extractInjection: extractInjectionProp,
-  compileResult: compileResultProp,
-  emptySetAcknowledged: emptySetAcknowledgedProp,
-  extractInFlight: extractInFlightProp,
-  saveInFlight: saveInFlightProp,
-  compileInFlight: compileInFlightProp,
-  generateInFlight: generateInFlightProp,
-  saveDisabled: saveDisabledProp,
-  saveDisabledCaption: saveDisabledCaptionProp,
-  generateDisabled: generateDisabledProp,
-  generateCaption: generateCaptionProp,
-  staleBanner: staleBannerProp,
-  s2Dimmed: s2DimmedProp,
-  s3Dimmed: s3DimmedProp,
-  briefDirty: briefDirtyProp,
-  briefSaved: briefSavedProp,
-  activeStep: activeStepProp,
-  initialCompileResult = null,
-  zeroRulesCompile = false,
-  onFreeTextChange,
-  onBriefChange,
-  onFieldEdit,
-  onEmptySetAckChange,
-  onExtract,
-  onSave,
-  onCompile,
-  onGenerate,
-  onRetry,
-  buildPhase = "idle",
-  buildInFlight = false,
-  runningStep,
-  narrations = { brief: null, freeze: null, generate: null },
-  missingFields = [],
-  onRunBuild,
-}: CampaignProps): ReactElement {
+function CampaignLoaded(props: CampaignProps): ReactElement {
+  const {
+    campaign,
+    freeText: freeTextProp,
+    brief: briefProp,
+    compileResult: compileResultProp,
+    emptySetAcknowledged: emptySetAcknowledgedProp,
+    buildPhase = "idle",
+    buildInFlight = false,
+    missingFields = [],
+    campaignAssets = [],
+    staleBanner: staleBannerProp,
+    s2Dimmed: s2DimmedProp,
+    s3Dimmed: s3DimmedProp,
+    runningStep: runningStepProp,
+    initialCompileResult = null,
+    zeroRulesCompile = false,
+    onFreeTextChange,
+    onBriefChange,
+    onFieldEdit,
+    onEmptySetAckChange,
+    onCompile,
+    onGenerate,
+    onRunBuild,
+  } = props;
+
   const fixture = useCampaignFixture(
     campaign,
     initialCompileResult,
     zeroRulesCompile,
   );
-  const controlled = onSave !== undefined;
+  const controlled = onRunBuild !== undefined;
+
+  const [railView, setRailView] = useState<CampaignStepId>("campaign-brief");
+  const [paneOverride, setPaneOverride] = useState<PaneOverride>(null);
+
+  const freeText = controlled ? (freeTextProp ?? "") : fixture.freeText;
+  const brief = controlled
+    ? (briefProp ?? briefFromCampaign(null))
+    : fixture.brief;
+  const compileResult = controlled
+    ? (compileResultProp ?? null)
+    : fixture.compileResult;
+  const emptySetAcknowledged = controlled
+    ? (emptySetAcknowledgedProp ?? false)
+    : fixture.emptySetAcknowledged;
+
+  const fixtureGate = campaignGateState({
+    brief: fixture.brief,
+    savedBrief: fixture.savedBrief,
+    briefSaved: fixture.briefSaved,
+    compileResult: fixture.compileResult,
+    emptySetAcknowledged: fixture.emptySetAcknowledged,
+    generateInFlight: false,
+  });
+
+  const staleBanner = controlled
+    ? (staleBannerProp ?? false)
+    : fixtureGate.staleBanner;
+  const s2Dimmed = controlled ? (s2DimmedProp ?? true) : fixtureGate.s2Dimmed;
+  const s3Dimmed = controlled ? (s3DimmedProp ?? true) : fixtureGate.s3Dimmed;
+
+  const hasAssets = campaignAssets.length > 0;
+  const compiling = buildInFlight && buildPhase === "compile";
+
+  const pane = useMemo(
+    () =>
+      activeCampaignPane({
+        hasAssets,
+        buildInFlight,
+        buildPhase,
+        paneOverride,
+        railView,
+      }),
+    [hasAssets, buildInFlight, buildPhase, paneOverride, railView],
+  );
+
+  const activeStep = runningStepProp ?? railStepForPane(pane);
+  const showBack =
+    paneOverride !== null && (pane === "brief" || pane === "freeze");
+
+  useEffect(() => {
+    if (hasAssets && paneOverride === null && !buildInFlight) {
+      setRailView("campaign-generate");
+    }
+  }, [hasAssets, paneOverride, buildInFlight]);
+
+  const sharedBriefProps = {
+    freeText,
+    brief,
+    onFreeTextChange: onFreeTextChange ?? fixture.setFreeText,
+    onBriefChange: onBriefChange ?? fixture.setBrief,
+    onFieldEdit: onFieldEdit ?? fixture.handleFieldEdit,
+    buildPhase,
+    buildInFlight,
+    missingFieldsBuild: missingFields,
+    emptySetAcknowledged,
+    onRunBuild: controlled ? onRunBuild : undefined,
+    onEmptySetAckChange:
+      onEmptySetAckChange ?? fixture.setEmptySetAcknowledged,
+    missingFields,
+  };
+
+  let paneContent: ReactElement;
+  if (pane === "building") {
+    paneContent = <BriefPhase {...sharedBriefProps} building />;
+  } else if (pane === "freeze") {
+    paneContent = (
+      <FreezeTable
+        compileResult={compileResult}
+        emptySetAcknowledged={emptySetAcknowledged}
+        staleBanner={staleBanner}
+        showAcknowledgement={
+          compileResult !== null && compileResult.ruleIds.length === 0
+        }
+        onEmptySetAckChange={
+          onEmptySetAckChange ?? fixture.setEmptySetAcknowledged
+        }
+      />
+    );
+  } else if (pane === "built") {
+    paneContent = (
+      <BuiltSummary
+        brief={brief}
+        compileResult={compileResult}
+        assets={campaignAssets}
+        onEditBrief={() => setPaneOverride("brief-edit")}
+        onViewFreeze={() => setPaneOverride("freeze")}
+      />
+    );
+  } else {
+    paneContent = <BriefPhase {...sharedBriefProps} building={false} />;
+  }
+
+  return (
+    <CampaignPageShell
+      activeStep={activeStep}
+      compiling={compiling}
+      identity={brief.schemeName.trim()}
+      s2Dimmed={s2Dimmed}
+      s3Dimmed={s3Dimmed}
+      backToSummary={showBack}
+      endLine={campaignEndLine(campaignAssets)}
+      onBackToSummary={() => {
+        setPaneOverride(null);
+        setRailView("campaign-generate");
+      }}
+      onRailStepChange={(stepId) => {
+        setPaneOverride(null);
+        setRailView(stepId);
+        if (
+          stepId === "campaign-constraints" &&
+          !s2Dimmed &&
+          compileResult === null &&
+          onCompile !== undefined
+        ) {
+          onCompile();
+        }
+        if (
+          stepId === "campaign-generate" &&
+          !s3Dimmed &&
+          !hasAssets &&
+          onGenerate !== undefined
+        ) {
+          onGenerate();
+        }
+      }}
+    >
+      {paneContent}
+    </CampaignPageShell>
+  );
+}
+
+export function Campaign(props: CampaignProps): ReactElement {
+  const { view = "loaded", showLoadingSpinner = true, onRetry } = props;
 
   if (view === "loading") {
     return <CampaignLoadingState showSpinner={showLoadingSpinner} />;
@@ -78,197 +209,5 @@ export function Campaign({
     return <CampaignErrorState onRetry={onRetry} />;
   }
 
-  const freeText = controlled ? (freeTextProp ?? "") : fixture.freeText;
-  const brief = controlled
-    ? (briefProp ?? briefFromCampaign(null))
-    : fixture.brief;
-  const proposedFieldKeys = controlled
-    ? (proposedFieldKeysProp ?? new Set())
-    : fixture.proposedFieldKeys;
-  const extractSkillsRead = controlled
-    ? (extractSkillsReadProp ?? null)
-    : fixture.extractSkillsRead;
-  const extractInjection = controlled
-    ? (extractInjectionProp ?? null)
-    : null;
-  const compileResult = controlled
-    ? (compileResultProp ?? null)
-    : fixture.compileResult;
-  const emptySetAcknowledged = controlled
-    ? (emptySetAcknowledgedProp ?? false)
-    : fixture.emptySetAcknowledged;
-  const extractInFlight = controlled
-    ? (extractInFlightProp ?? false)
-    : fixture.extractInFlight;
-  const saveInFlight = controlled
-    ? (saveInFlightProp ?? false)
-    : fixture.saveInFlight;
-  const compileInFlight = controlled
-    ? (compileInFlightProp ?? false)
-    : fixture.compileInFlight;
-  const generateInFlight = controlled
-    ? (generateInFlightProp ?? false)
-    : fixture.generateInFlight;
-
-  const fixtureGate = campaignGateState({
-    brief: fixture.brief,
-    savedBrief: fixture.savedBrief,
-    briefSaved: fixture.briefSaved,
-    compileResult: fixture.compileResult,
-    emptySetAcknowledged: fixture.emptySetAcknowledged,
-    generateInFlight: fixture.generateInFlight,
-  });
-
-  const saveDisabled = controlled
-    ? (saveDisabledProp ?? true)
-    : fixtureGate.saveDisabled;
-  const saveDisabledCaption = controlled
-    ? (saveDisabledCaptionProp ?? null)
-    : fixtureGate.saveDisabledCaption;
-  const generateCaption = controlled
-    ? (generateCaptionProp ?? null)
-    : fixtureGate.generateCaption;
-  const generateDisabled = controlled
-    ? (generateDisabledProp ?? true)
-    : fixtureGate.generateDisabled;
-  const staleBanner = controlled
-    ? (staleBannerProp ?? false)
-    : fixtureGate.staleBanner;
-  const s2Dimmed = controlled ? (s2DimmedProp ?? true) : fixtureGate.s2Dimmed;
-  const s3Dimmed = controlled ? (s3DimmedProp ?? true) : fixtureGate.s3Dimmed;
-  const briefDirty = controlled
-    ? (briefDirtyProp ?? false)
-    : fixtureGate.briefDirty;
-  const briefSaved = controlled
-    ? (briefSavedProp ?? false)
-    : fixture.briefSaved;
-  const activeStep =
-    activeStepProp ??
-    activeCampaignStep({
-      briefSaved: controlled ? !s2Dimmed : fixture.briefSaved,
-      compileDone: compileResult !== null,
-    });
-
-  const handleExtract = (): void => {
-    if (onExtract !== undefined) {
-      void onExtract();
-      return;
-    }
-    fixture.handleExtract();
-  };
-
-  const handleSave = (): void => {
-    if (onSave !== undefined) {
-      void onSave();
-      return;
-    }
-    fixture.handleSave();
-  };
-
-  const handleCompile = (): void => {
-    if (onCompile !== undefined) {
-      void onCompile();
-      return;
-    }
-    fixture.handleCompile();
-  };
-
-  const handleGenerate = (): void => {
-    if (onGenerate !== undefined) {
-      void onGenerate();
-      return;
-    }
-    fixture.handleGenerate();
-  };
-
-  return (
-    <CampaignPageShell
-      activeStep={activeStep}
-      runningStep={runningStep}
-      identity={brief.schemeName.trim()}
-      s2Dimmed={s2Dimmed}
-      s3Dimmed={s3Dimmed}
-    >
-      {(viewStep) => {
-        const narration =
-          viewStep === "campaign-brief"
-            ? narrations.brief
-            : viewStep === "campaign-constraints"
-              ? narrations.freeze
-              : narrations.generate;
-
-        if (viewStep === "campaign-brief") {
-          return (
-            <CampaignStep narration={narration}>
-              <BriefPhase
-                freeText={freeText}
-                brief={brief}
-                proposedFieldKeys={proposedFieldKeys}
-                extractSkillsRead={extractSkillsRead}
-                extractInjection={extractInjection}
-                saveDisabled={saveDisabled}
-                saveDisabledCaption={saveDisabledCaption}
-                saveInFlight={saveInFlight}
-                extractInFlight={extractInFlight}
-                briefSaved={briefSaved}
-                briefDirty={briefDirty}
-                buildPhase={buildPhase}
-                buildInFlight={buildInFlight}
-                missingFieldsBuild={missingFields}
-                emptySetAcknowledged={emptySetAcknowledged}
-                onRunBuild={
-                  controlled && onRunBuild !== undefined ? onRunBuild : undefined
-                }
-                onEmptySetAckChange={
-                  onEmptySetAckChange ?? fixture.setEmptySetAcknowledged
-                }
-                onFreeTextChange={onFreeTextChange ?? fixture.setFreeText}
-                onBriefChange={onBriefChange ?? fixture.setBrief}
-                onFieldEdit={onFieldEdit ?? fixture.handleFieldEdit}
-                onExtract={handleExtract}
-                onSave={handleSave}
-              />
-            </CampaignStep>
-          );
-        }
-
-        if (viewStep === "campaign-constraints") {
-          return (
-            <CampaignStep
-              subtitle="Freeze your saved brief to see which compliance rules apply."
-              narration={narration}
-            >
-              <ConstraintCards
-                compileResult={compileResult}
-                compileInFlight={compileInFlight}
-                compileDisabled={s2Dimmed || briefDirty}
-                emptySetAcknowledged={emptySetAcknowledged}
-                staleBanner={staleBanner}
-                onCompile={handleCompile}
-                onEmptySetAckChange={
-                  onEmptySetAckChange ?? fixture.setEmptySetAcknowledged
-                }
-              />
-            </CampaignStep>
-          );
-        }
-
-        return (
-          <CampaignStep
-            subtitle="Generate marketing copy for your selected channels under those rules."
-            narration={narration}
-          >
-            <GenerateBlock
-              compileResult={compileResult}
-              dimmed={s3Dimmed}
-              disabled={generateDisabled}
-              disabledCaption={generateCaption}
-              generateInFlight={generateInFlight}
-              onGenerate={handleGenerate}
-            />
-          </CampaignStep>
-        );
-      }}
-    </CampaignPageShell>
-  );
+  return <CampaignLoaded {...props} />;
 }

@@ -22,7 +22,18 @@ import {
   getLatestCampaign,
   updateBrief,
 } from "./campaigns.service.js";
+import { env } from "../../config/env.js";
 import { HttpError } from "../../lib/http-error.js";
+
+function logBuildStep(
+  step: string,
+  campaignId: string,
+  phase: "start" | "done",
+): void {
+  if (env.NODE_ENV === "development") {
+    console.info(`[campaign build] ${step} ${phase} campaignId=${campaignId}`);
+  }
+}
 
 function handleError(
   err: unknown,
@@ -92,7 +103,9 @@ export async function updateBriefHandler(
 ): Promise<void> {
   try {
     const body = PutBriefRequestSchema.parse(req.body);
+    logBuildStep("save", req.params.id, "start");
     const data = await updateBrief(req.params.id, body.structuredBrief);
+    logBuildStep("save", req.params.id, "done");
     res.status(200).json({ success: true, data });
   } catch (err: unknown) {
     handleError(err, res, next);
@@ -106,7 +119,9 @@ export async function compileCampaignHandler(
 ): Promise<void> {
   try {
     CompileRequestSchema.parse(req.body ?? {});
+    logBuildStep("compile", req.params.id, "start");
     const data = await compileCampaign(req.params.id);
+    logBuildStep("compile", req.params.id, "done");
     res.status(200).json({ success: true, data });
   } catch (err: unknown) {
     handleError(err, res, next);
@@ -120,7 +135,9 @@ export async function extractBriefHandler(
 ): Promise<void> {
   try {
     const body = ExtractRequestSchema.parse(req.body);
+    logBuildStep("extract", req.params.id, "start");
     const data = await extractBrief(req.params.id, body.freeText);
+    logBuildStep("extract", req.params.id, "done");
     res.status(200).json({ success: true, data });
   } catch (err: unknown) {
     handleError(err, res, next);
@@ -134,7 +151,9 @@ export async function generateAssetsHandler(
 ): Promise<void> {
   try {
     const body = GenerateRequestSchema.parse(req.body ?? {});
+    logBuildStep("generate", req.params.id, "start");
     const data = await generateAssets(req.params.id, body.regeneratedFromId);
+    logBuildStep("generate", req.params.id, "done");
     res.status(200).json({ success: true, data });
   } catch (err: unknown) {
     handleError(err, res, next);

@@ -1,6 +1,6 @@
 /**
- * campaign-nav.service — Campaign nav create + Workbench handoff.
- * Why: top nav always starts fresh; Workbench resumes latest (09 Screen 5).
+ * campaign-nav.service — Campaign nav resolve latest + Workbench handoff.
+ * Why: top nav resolves latest; Workbench handoff creates only on 404.
  */
 
 import { ApiClientError } from "@/lib/api";

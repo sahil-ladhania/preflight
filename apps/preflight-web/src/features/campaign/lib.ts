@@ -58,16 +58,16 @@ export const BRIEF_FREE_TEXT_PLACEHOLDER =
   "Describe your campaign in plain language…";
 
 export const CAMPAIGN_INPUT_CLASS =
-  "h-auto rounded-xl border border-dashed border-border bg-surface px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-faint shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0";
+  "h-auto border border-hairline bg-transparent px-3 py-2 font-serif text-copy text-fg not-italic placeholder:not-italic placeholder:text-fg-faint shadow-none focus-visible:border-decision focus-visible:outline-none focus-visible:ring-0";
 
 export const CAMPAIGN_INPUT_PROPOSED_CLASS =
-  "h-auto rounded-xl border border-dashed border-primary bg-ground px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-faint shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0";
+  "h-auto border border-dashed border-hairline bg-transparent px-3 py-2 font-serif text-copy text-fg not-italic placeholder:not-italic placeholder:text-fg-faint shadow-none focus-visible:border-decision focus-visible:outline-none focus-visible:ring-0";
 
 export const CAMPAIGN_INPUT_FILLED_CLASS =
-  "h-auto rounded-xl border border-border bg-ground px-4 py-3 text-body-airy shadow-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0";
+  "h-auto border border-hairline bg-transparent px-3 py-2 font-serif text-copy text-fg shadow-none focus-visible:border-decision focus-visible:outline-none focus-visible:ring-0";
 
 export const CAMPAIGN_INPUT_MISSING_CLASS =
-  "h-auto rounded-xl border border-fail bg-surface px-4 py-3 text-body-airy placeholder:italic placeholder:text-fg-faint shadow-none focus-visible:border-fail focus-visible:ring-2 focus-visible:ring-fail focus-visible:ring-offset-0";
+  "h-auto border border-dashed border-hairline bg-transparent px-3 py-2 font-serif text-copy text-fg not-italic placeholder:not-italic placeholder:text-fg-faint shadow-none focus-visible:border-decision focus-visible:outline-none focus-visible:ring-0";
 
 export const CAMPAIGN_TEXTAREA_CLASS =
   "min-h-brief w-full resize-none rounded-none border border-border bg-transparent px-4 py-3.5 font-serif text-copy text-fg not-italic placeholder:not-italic placeholder:text-fg-faint shadow-none focus-visible:border-decision focus-visible:outline-none focus-visible:ring-0";

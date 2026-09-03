@@ -11,14 +11,13 @@ import {
   CAMPAIGN_ID_FRESH,
   CAMPAIGN_FRESH,
   CAMPAIGN_SEED,
+  COMPILE_RESULT,
+  SEED_BRIEF,
 } from "@/fixtures/campaign";
+import { ASSETS_LIST_FIXTURE } from "@/fixtures/assets-list";
 import { WORKBENCH_HANDOFF_BRIEF } from "@/fixtures/workbench";
 import { Campaign } from "@/features/campaign/Campaign";
-import {
-  mergeExtractProposal,
-  proposedKeysFromPartial,
-  briefFromCampaign,
-} from "@/features/campaign/lib";
+import { mergeExtractProposal, briefFromCampaign } from "@/features/campaign/lib";
 
 export function CampaignZeroRulesDemo(): ReactElement {
   return (
@@ -35,7 +34,18 @@ export function CampaignHandoffDemo(): ReactElement {
     <Campaign
       campaign={CAMPAIGN_FRESH}
       brief={brief}
-      proposedFieldKeys={proposedKeysFromPartial(WORKBENCH_HANDOFF_BRIEF)}
+    />
+  );
+}
+
+export function CampaignBuiltDemo(): ReactElement {
+  return (
+    <Campaign
+      campaign={CAMPAIGN_SEED}
+      brief={SEED_BRIEF}
+      briefSaved
+      compileResult={COMPILE_RESULT}
+      campaignAssets={ASSETS_LIST_FIXTURE}
     />
   );
 }
@@ -49,7 +59,7 @@ export function CampaignStates(): ReactElement {
         <Link to={`/campaign/${CAMPAIGN_ID}`} className="text-primary underline">
           /campaign/:campaignId
         </Link>
-        . Phase rail: Brief · Freeze · Generate.
+        . Four panes: Brief · Building · Freeze · Built.
       </p>
       <nav className="flex flex-col gap-2">
         <Link
@@ -59,10 +69,16 @@ export function CampaignStates(): ReactElement {
           Fresh campaign
         </Link>
         <Link
+          to="/design-proof/campaign/built"
+          className="text-ui text-primary underline"
+        >
+          Built summary (return visit)
+        </Link>
+        <Link
           to="/design-proof/campaign/handoff"
           className="text-ui text-primary underline"
         >
-          Workbench handoff (dashed fields)
+          Workbench handoff
         </Link>
         <Link
           to="/design-proof/campaign/loading"

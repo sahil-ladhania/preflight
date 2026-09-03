@@ -66,6 +66,7 @@ async function loadSnapshotOrder(constraintSetId: string): Promise<string[]> {
 function mapAssetListItem(
   asset: {
     id: string;
+    campaignId: string;
     channel: string;
     headline: string;
     generationIndex: number;
@@ -79,6 +80,7 @@ function mapAssetListItem(
 
   return {
     id: asset.id,
+    campaignId: asset.campaignId,
     channel: asset.channel as AssetListItemDTO["channel"],
     headline: asset.headline,
     status,
@@ -99,6 +101,7 @@ export async function listAssets(): Promise<AssetsListResponse> {
     orderBy: { generatedAt: "desc" },
     select: {
       id: true,
+      campaignId: true,
       channel: true,
       headline: true,
       generationIndex: true,

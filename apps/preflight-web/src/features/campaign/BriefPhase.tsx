@@ -1,22 +1,19 @@
 /**
- * BriefPhase — progressive disclosure for brief entry and autonomous build.
- * Why: empty campaign shows describe-only; form and Build it unlock with content.
+ * BriefPhase — S1 brief pane and S2 building state.
+ * Why: one textarea, Build it, Try an example, and field review disclosure.
  */
 
 import { useEffect, useState, type ReactElement } from "react";
 
-import { BriefDocument } from "@/features/campaign/BriefDocument";
-import { BriefForm } from "@/features/campaign/BriefForm";
 import { BuildPanel } from "@/features/campaign/BuildPanel";
-import { briefHasDraftContent } from "@/features/campaign/lib";
+import { FieldReview } from "@/features/campaign/FieldReview";
+import { briefHasDraftContent, CAMPAIGN_TEXTAREA_CLASS } from "@/features/campaign/lib";
 import type { BriefPhaseProps } from "@/features/campaign/types";
-
-const EXAMPLE_BRIEF =
-  "Bluepeak Flexi Cap — digital campaign for retail investors. Highlight flexibility and performance with professional tone.";
+import { EXAMPLE_BRIEF_FREE_TEXT } from "@/fixtures/campaign";
+import { cn } from "@/lib/utils";
 
 export function BriefPhase({
-  briefSaved,
-  briefDirty,
+  building,
   buildPhase = "idle",
   buildInFlight = false,
   missingFieldsBuild = [],
@@ -27,85 +24,59 @@ export function BriefPhase({
   freeText,
   brief,
   onFreeTextChange,
-  ...formProps
+  onBriefChange,
+  onFieldEdit,
 }: BriefPhaseProps): ReactElement {
-  const [editing, setEditing] = useState<boolean>(!briefSaved);
-  const [manualOpen, setManualOpen] = useState<boolean>(false);
+  const [fieldsOpen, setFieldsOpen] = useState<boolean>(false);
 
   const hasContent = briefHasDraftContent(freeText, brief);
-  const showBuildPanel = onRunBuild !== undefined;
-  const showStructuredForm =
-    manualOpen || briefSaved || hasContent || buildPhase === "needs_input";
   const highlightMissing =
     buildPhase === "needs_input" ? missingFieldsBuild : missingFields;
-
-  useEffect(() => {
-    if (briefSaved && !briefDirty) {
-      setEditing(false);
-    }
-  }, [briefSaved, briefDirty]);
+  const fieldsEditable =
+    buildPhase === "needs_input" || fieldsOpen || highlightMissing.length > 0;
 
   useEffect(() => {
     if (buildPhase === "needs_input") {
-      setManualOpen(true);
+      setFieldsOpen(true);
     }
   }, [buildPhase]);
 
-  const showDocument = briefSaved && !briefDirty && !editing;
-
-  if (showDocument) {
-    return (
-      <BriefDocument brief={brief} onEdit={() => setEditing(true)} />
-    );
-  }
-
   const handleTryExample = (): void => {
-    onFreeTextChange(EXAMPLE_BRIEF);
+    onFreeTextChange(EXAMPLE_BRIEF_FREE_TEXT);
   };
 
   return (
     <div className="flex flex-col gap-4">
-      <BriefForm
-        {...formProps}
-        freeText={freeText}
-        brief={brief}
-        missingFields={highlightMissing}
-        showFreeText
-        showStructuredForm={false}
-        showManualActions={false}
-        onFreeTextChange={onFreeTextChange}
+      <textarea
+        value={freeText}
+        disabled={building}
+        placeholder="Describe your campaign in plain language…"
+        onChange={(event) => onFreeTextChange(event.target.value)}
+        className={cn(
+          CAMPAIGN_TEXTAREA_CLASS,
+          building && "pointer-events-none opacity-40",
+        )}
       />
-      {showBuildPanel ? (
+      {onRunBuild !== undefined ? (
         <BuildPanel
           buildPhase={buildPhase}
           buildInFlight={buildInFlight}
-          missingFields={missingFieldsBuild}
-          canBuild={hasContent || briefSaved}
+          canBuild={hasContent}
           emptySetAcknowledged={emptySetAcknowledged}
           onRunBuild={onRunBuild}
           onEmptySetAckChange={onEmptySetAckChange ?? (() => undefined)}
-          onTryExample={handleTryExample}
+          onTryExample={building ? undefined : handleTryExample}
         />
       ) : null}
-      <button
-        type="button"
-        className="w-fit cursor-pointer text-caption text-fg-muted underline underline-offset-4"
-        onClick={() => setManualOpen((open) => !open)}
-      >
-        {manualOpen ? "▾" : "▸"} Review extracted fields
-      </button>
-      {showStructuredForm ? (
-        <BriefForm
-          {...formProps}
-          freeText={freeText}
-          brief={brief}
-          missingFields={highlightMissing}
-          showFreeText={false}
-          showStructuredForm
-          showManualActions={manualOpen || briefSaved}
-          onFreeTextChange={onFreeTextChange}
-        />
-      ) : null}
+      <FieldReview
+        brief={brief}
+        open={fieldsOpen}
+        editable={fieldsEditable && !building}
+        missingFields={highlightMissing}
+        onToggle={() => setFieldsOpen((open) => !open)}
+        onBriefChange={onBriefChange}
+        onFieldEdit={onFieldEdit}
+      />
     </div>
   );
 }

@@ -25,6 +25,7 @@ import {
 import { ASSET_A } from "@/fixtures/assets-detail/a";
 import { CampaignRoute } from "@/features/campaign/CampaignRoute";
 import {
+  CampaignBuiltDemo,
   CampaignErrorDemo,
   CampaignHandoffDemo,
   CampaignLoadingDemo,
@@ -144,6 +145,10 @@ export default function App(): ReactElement {
               <Route
                 path="design-proof/campaign/not-found"
                 element={<CampaignRoute />}
+              />
+              <Route
+                path="design-proof/campaign/built"
+                element={<CampaignBuiltDemo />}
               />
               <Route
                 path="design-proof/campaign/zero-rules"

@@ -42,35 +42,18 @@ export function CampaignRoute(): ReactElement {
       view={hook.view}
       freeText={hook.freeText}
       brief={hook.brief}
-      proposedFieldKeys={hook.proposedFieldKeys}
-      extractSkillsRead={hook.extractSkillsRead}
-      extractInjection={hook.extractInjection}
       compileResult={hook.compileResult}
       emptySetAcknowledged={hook.emptySetAcknowledged}
-      extractInFlight={hook.extractInFlight}
-      saveInFlight={hook.saveInFlight}
-      compileInFlight={hook.compileInFlight}
-      generateInFlight={hook.generateInFlight}
-      saveDisabled={hook.saveDisabled}
-      saveDisabledCaption={hook.saveDisabledCaption}
-      generateDisabled={hook.generateDisabled}
-      generateCaption={hook.generateCaption}
       staleBanner={hook.staleBanner}
       s2Dimmed={hook.s2Dimmed}
       s3Dimmed={hook.s3Dimmed}
       briefDirty={hook.briefDirty}
       briefSaved={hook.briefSaved}
-      activeStep={hook.activeStep}
+      campaignAssets={hook.campaignAssets}
       onFreeTextChange={hook.setFreeText}
       onBriefChange={hook.setBrief}
       onFieldEdit={hook.onFieldEdit}
       onEmptySetAckChange={hook.onEmptySetAckChange}
-      onExtract={() => {
-        void hook.extract();
-      }}
-      onSave={() => {
-        void hook.save();
-      }}
       onCompile={() => {
         void hook.compile();
       }}
@@ -80,7 +63,6 @@ export function CampaignRoute(): ReactElement {
       buildPhase={hook.buildPhase}
       buildInFlight={hook.buildInFlight}
       runningStep={hook.runningStep}
-      narrations={hook.narrations}
       missingFields={hook.missingFields}
       onRunBuild={() => {
         void hook.runBuild();

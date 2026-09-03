@@ -20,8 +20,26 @@ import {
   runGenerateOnly,
 } from "@/features/campaign/runCampaignBuildChain";
 import type { BuildPhase, CampaignNarrations } from "@/features/campaign/types";
+import { ApiClientError } from "@/lib/api";
 
 export type { BuildPhase } from "@/features/campaign/types";
+
+function buildStepFailureLabel(phase: BuildPhase): string | null {
+  const labels: Partial<Record<BuildPhase, string>> = {
+    extract: "Brief extraction",
+    save: "Saving brief",
+    compile: "Rule freeze",
+    generate: "Copy generation",
+  };
+  return labels[phase] ?? null;
+}
+
+function isBuildAbortError(error: unknown): boolean {
+  if (error instanceof Error && error.name === "AbortError") {
+    return true;
+  }
+  return error instanceof ApiClientError && error.kind === "abort";
+}
 
 function buildPhaseToStep(phase: BuildPhase): CampaignStepId | undefined {
   if (phase === "extract" || phase === "save" || phase === "needs_input") {
@@ -63,6 +81,7 @@ export function useCampaignBuild(input: {
 } {
   const navigate = useNavigate();
   const abortRef = useRef<AbortController | null>(null);
+  const phaseRef = useRef<BuildPhase>("idle");
   const [buildPhase, setBuildPhase] = useState<BuildPhase>("idle");
   const [buildInFlight, setBuildInFlight] = useState<boolean>(false);
   const [narrations, setNarrations] = useState<CampaignNarrations>({
@@ -71,6 +90,10 @@ export function useCampaignBuild(input: {
     generate: null,
   });
   const [missingFields, setMissingFields] = useState<BriefField[]>([]);
+
+  useEffect(() => {
+    phaseRef.current = buildPhase;
+  }, [buildPhase]);
 
   useEffect(() => {
     return () => {
@@ -109,6 +132,7 @@ export function useCampaignBuild(input: {
     const controller = new AbortController();
     abortRef.current = controller;
     setBuildInFlight(true);
+    setBuildPhase("idle");
 
     try {
       if (
@@ -145,11 +169,23 @@ export function useCampaignBuild(input: {
       });
       applyResult(result);
     } catch (error: unknown) {
-      if (error instanceof Error && error.name === "AbortError") {
+      if (isBuildAbortError(error)) {
         return;
       }
       setBuildPhase("failed");
-      input.toastApiError(error);
+      const stepLabel = buildStepFailureLabel(phaseRef.current);
+      if (error instanceof ApiClientError && stepLabel !== null) {
+        input.toastApiError(
+          new ApiClientError(
+            `${stepLabel} failed — ${error.apiError ?? error.message}`,
+            error.kind,
+            error.status,
+            error.apiError,
+          ),
+        );
+      } else {
+        input.toastApiError(error);
+      }
     } finally {
       setBuildInFlight(false);
     }
