@@ -169,6 +169,20 @@ export function countPending(findings: FindingDTO[]): number {
   return findings.filter((finding) => finding.evaluationStatus === "pending").length;
 }
 
+export function campaignNameFromBrief(structuredBrief: unknown): string {
+  if (structuredBrief === null || structuredBrief === undefined) {
+    return "";
+  }
+  if (typeof structuredBrief !== "object") {
+    return "";
+  }
+  const schemeName = (structuredBrief as { schemeName?: unknown }).schemeName;
+  if (typeof schemeName !== "string") {
+    return "";
+  }
+  return schemeName.trim();
+}
+
 export function sortFindingsBySnapshotOrder(
   findings: FindingDTO[],
   snapshotOrder: string[],

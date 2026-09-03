@@ -1,14 +1,14 @@
 /**
- * AssetListRow — Screen 2 R2b data row.
- * Why: one list row with chip, lineage, and navigation.
+ * AssetListRow — Screen 2 R2 data row.
+ * Why: one register row with status marker and navigation.
  */
 
 import type { MouseEvent, ReactElement } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { ChannelBadge } from "@/features/assets/ChannelBadge";
 import { formatGeneratedAt, shortId } from "@/features/assets/lib";
 import { PendingRing } from "@/features/assets/PendingRing";
+import { REGISTER_ROW_GRID } from "@/features/assets/register-lib";
 import { StatusChip } from "@/features/assets/StatusChip";
 import type { AssetListRowProps } from "@/features/assets/types";
 import { cn } from "@/lib/utils";
@@ -30,9 +30,9 @@ function VersionCell({
   }
 
   return (
-    <span className="text-caption text-fg-muted">
+    <span className="text-[11px] leading-[1.4] text-fg-muted">
       {generationIndex > 1 ? (
-        <span className="text-mono">v{generationIndex}</span>
+        <span className="font-mono text-[11px] leading-[1.4]">v{generationIndex}</span>
       ) : null}
       {generationIndex > 1 && regeneratedFromId !== null ? " · " : null}
       {regeneratedFromId !== null ? (
@@ -40,7 +40,7 @@ function VersionCell({
           from{" "}
           <Link
             to={`/assets/${regeneratedFromId}`}
-            className="text-primary underline hover:underline"
+            className="text-decision underline underline-offset-4"
             onClick={onParentClick}
           >
             {shortId(regeneratedFromId)}
@@ -74,22 +74,28 @@ export function AssetListRow({ asset }: AssetListRowProps): ReactElement {
         }
       }}
       className={cn(
-        "grid cursor-pointer grid-cols-[132px_minmax(0,1fr)_minmax(0,1fr)_168px_96px] items-center gap-4",
-        "border-b border-border bg-surface px-4 py-2 hover:bg-ground",
+        REGISTER_ROW_GRID,
+        "cursor-pointer border-b border-hairline py-2.5 hover:bg-hover [&_.status-marker]:text-[10px]",
       )}
     >
-      <div className="flex min-w-[132px] items-center gap-2">
+      <div className="flex min-w-[110px] items-center gap-2">
         <PendingRing active={asset.pendingCount > 0} />
         <StatusChip status={asset.status} />
       </div>
-      <span className="flex min-w-0 items-center gap-2 truncate text-body text-fg">
-        <ChannelBadge channel={asset.channel} showLabel={false} className="shrink-0" />
-        <span className="truncate">{asset.headline}</span>
+      <span
+        className="truncate font-serif text-caption text-fg"
+        title={asset.headline}
+      >
+        {asset.headline}
       </span>
-      <span className="truncate text-caption text-fg-muted">
-        {asset.statusDetail}
+      <span
+        className="truncate text-caption text-fg-muted"
+        title={asset.campaignName}
+      >
+        {asset.campaignName}
       </span>
-      <span className="text-caption text-fg-muted">
+      <span className="text-caption text-fg">{asset.statusDetail}</span>
+      <span className="text-[11px] leading-[1.4] text-fg-muted">
         {formatGeneratedAt(asset.generatedAt)}
       </span>
       <VersionCell

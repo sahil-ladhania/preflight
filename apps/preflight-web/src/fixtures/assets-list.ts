@@ -17,11 +17,15 @@ export const ASSET_ID_F = "11111111-1111-4111-8111-111111111106";
 export const ASSET_ID_G = "11111111-1111-4111-8111-111111111107";
 export const ASSET_ID_H = "11111111-1111-4111-8111-111111111108";
 
+/** Seed campaign name — keep in sync with fixtures/campaign brief schemeName. */
+const CAMPAIGN_NAME = "Bluepeak Flexi Cap Fund";
+
 /** Newest first — matches fixed generatedAt desc sort. */
 export const ASSETS_LIST_FIXTURE: AssetListItemDTO[] = [
   {
     id: ASSET_ID_H,
     campaignId: CAMPAIGN_ID,
+    campaignName: CAMPAIGN_NAME,
     channel: "email",
     headline: "Bluepeak Flexi Cap — email fan-out in progress",
     status: "needs_human",
@@ -34,6 +38,7 @@ export const ASSETS_LIST_FIXTURE: AssetListItemDTO[] = [
   {
     id: ASSET_ID_B,
     campaignId: CAMPAIGN_ID,
+    campaignName: CAMPAIGN_NAME,
     channel: "linkedin",
     headline: "Bluepeak Flexi Cap — LinkedIn post (regenerated)",
     status: "needs_human",
@@ -46,6 +51,7 @@ export const ASSETS_LIST_FIXTURE: AssetListItemDTO[] = [
   {
     id: ASSET_ID_A,
     campaignId: CAMPAIGN_ID,
+    campaignName: CAMPAIGN_NAME,
     channel: "display",
     headline: "Bluepeak Flexi Cap — display banner",
     status: "needs_regen",
@@ -58,6 +64,7 @@ export const ASSETS_LIST_FIXTURE: AssetListItemDTO[] = [
   {
     id: ASSET_ID_G,
     campaignId: CAMPAIGN_ID,
+    campaignName: CAMPAIGN_NAME,
     channel: "whatsapp",
     headline: "Bluepeak Flexi Cap — WhatsApp broadcast",
     status: "needs_human",
@@ -70,6 +77,7 @@ export const ASSETS_LIST_FIXTURE: AssetListItemDTO[] = [
   {
     id: ASSET_ID_F,
     campaignId: CAMPAIGN_ID,
+    campaignName: CAMPAIGN_NAME,
     channel: "landing",
     headline: "Bluepeak Flexi Cap — landing page hero",
     status: "needs_human",
@@ -82,6 +90,7 @@ export const ASSETS_LIST_FIXTURE: AssetListItemDTO[] = [
   {
     id: ASSET_ID_E,
     campaignId: CAMPAIGN_ID,
+    campaignName: CAMPAIGN_NAME,
     channel: "email",
     headline: "Bluepeak Flexi Cap — email newsletter",
     status: "clear",
@@ -94,6 +103,7 @@ export const ASSETS_LIST_FIXTURE: AssetListItemDTO[] = [
   {
     id: ASSET_ID_D,
     campaignId: CAMPAIGN_ID,
+    campaignName: CAMPAIGN_NAME,
     channel: "display",
     headline: "Bluepeak Flexi Cap — display static",
     status: "cleared_with_exception",
@@ -106,6 +116,7 @@ export const ASSETS_LIST_FIXTURE: AssetListItemDTO[] = [
   {
     id: ASSET_ID_C,
     campaignId: CAMPAIGN_ID,
+    campaignName: CAMPAIGN_NAME,
     channel: "whatsapp",
     headline: "Bluepeak Flexi Cap — WhatsApp status",
     status: "blocked",

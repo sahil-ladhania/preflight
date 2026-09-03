@@ -16,6 +16,8 @@ import type {
   RerunStripDTO,
 } from "@preflight/schemas";
 
+import type { RegisterFilter } from "@/features/assets/register-lib";
+
 export type AssetsListView = "loaded" | "loading" | "error";
 export type AssetDetailView = "loaded" | "loading" | "error";
 export type ReasonModalMode = "closed" | "override" | "waive";
@@ -44,6 +46,22 @@ export interface AssetsListProps {
   showLoadingSpinner?: boolean;
   createInFlight?: boolean;
   onNewCampaign?: () => void;
+}
+
+export interface AssetsListShellProps {
+  children: ReactNode;
+  createInFlight: boolean;
+  onNewCampaign: () => void;
+  workSummary: string | null;
+  filter: RegisterFilter;
+  onFilterChange: (filter: RegisterFilter) => void;
+  showFilter: boolean;
+  endLine: string | null;
+}
+
+export interface AssetsRegisterTableProps {
+  assets: AssetListItemDTO[];
+  filter: RegisterFilter;
 }
 
 export interface AssetListRowProps {

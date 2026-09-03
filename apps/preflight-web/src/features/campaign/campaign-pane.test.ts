@@ -33,6 +33,7 @@ function asset(status: AssetListItemDTO["status"]): AssetListItemDTO {
   return {
     id: "a1",
     campaignId: "c1",
+    campaignName: "Bluepeak Flexi Cap Fund",
     channel: "email",
     headline: "Test",
     status,

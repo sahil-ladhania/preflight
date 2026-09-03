@@ -49,6 +49,7 @@ export type AssetDTO = z.infer<typeof AssetDTOSchema>
 export const AssetListItemDTOSchema = z.object({
   id: z.string().min(1),
   campaignId: z.string().min(1),
+  campaignName: z.string(),
   channel: ChannelSchema,
   headline: z.string(),
   status: AssetStatusSchema,

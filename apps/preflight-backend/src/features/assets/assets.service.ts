@@ -2,6 +2,7 @@
  * assets.service — Assets list and detail DTOs.
  * Why: foldStatus; lineage + exceptions derivation.
  */
+// size: list+detail share Prisma load helpers; split would duplicate finding joins.
 import type { Finding } from "@prisma/client";
 
 import type {
@@ -16,6 +17,7 @@ import {
   buildExceptions,
   buildLineage,
   buildStatusDetail,
+  campaignNameFromBrief,
   sortFindingsBySnapshotOrder,
 } from "./assets-derive.js";
 import { toAgentRunSummary } from "../agent-runs/agent-run-dto.js";
@@ -72,6 +74,7 @@ function mapAssetListItem(
     generationIndex: number;
     regeneratedFromId: string | null;
     generatedAt: Date;
+    campaign: { structuredBrief: unknown };
   },
   findingRows: Finding[],
 ): AssetListItemDTO {
@@ -81,6 +84,7 @@ function mapAssetListItem(
   return {
     id: asset.id,
     campaignId: asset.campaignId,
+    campaignName: campaignNameFromBrief(asset.campaign.structuredBrief),
     channel: asset.channel as AssetListItemDTO["channel"],
     headline: asset.headline,
     status,
@@ -107,6 +111,9 @@ export async function listAssets(): Promise<AssetsListResponse> {
       generationIndex: true,
       regeneratedFromId: true,
       generatedAt: true,
+      campaign: {
+        select: { structuredBrief: true },
+      },
     },
   });
 

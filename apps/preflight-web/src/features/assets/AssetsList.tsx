@@ -1,38 +1,26 @@
 /**
  * AssetsList — Screen 2 list page body.
- * Why: assets ledger entry list inside PageStage shell.
+ * Why: register table inside paper-ground shell (09 R2).
  */
 
-import type { ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 
-import { Button } from "@/components/ui/button";
-import { AssetListRow } from "@/features/assets/AssetListRow";
 import { AssetsListShell } from "@/features/assets/AssetsListShell";
+import { AssetsRegisterTable } from "@/features/assets/AssetsRegisterTable";
+import {
+  defaultRegisterFilter,
+  endOfRegisterLine,
+  type RegisterFilter,
+  workSummaryLine,
+} from "@/features/assets/register-lib";
 import type { AssetsListProps } from "@/features/assets/types";
 import { useCreateCampaign } from "@/features/campaign/useCreateCampaign";
 import { useAssetsList } from "@/features/assets/useAssetsList";
-import { cn } from "@/lib/utils";
-
-function ListHeaderRow(): ReactElement {
-  return (
-    <div
-      className={cn(
-        "sticky top-0 grid grid-cols-[132px_minmax(0,1fr)_minmax(0,1fr)_168px_96px] items-center gap-4",
-        "border-b border-border bg-ground px-4 py-2",
-      )}
-    >
-      <span className="text-caption text-fg-muted">Status</span>
-      <span className="text-caption text-fg-muted">Headline</span>
-      <span className="text-caption text-fg-muted">Why</span>
-      <span className="text-caption text-fg-muted">Generated</span>
-      <span className="text-caption text-fg-muted">Version</span>
-    </div>
-  );
-}
+import { usePersona } from "@/features/shell/PersonaProvider";
 
 function EmptyState(): ReactElement {
   return (
-    <div className="flex flex-col items-center gap-2 bg-surface py-16">
+    <div className="flex flex-col items-center gap-2 py-16">
       <p className="text-caption text-fg-muted">No assets yet</p>
       <p className="text-caption text-fg-muted">
         Start a new campaign to generate your first asset.
@@ -43,7 +31,7 @@ function EmptyState(): ReactElement {
 
 function StageSpinner(): ReactElement {
   return (
-    <div className="flex min-h-48 items-center justify-center bg-surface">
+    <div className="flex min-h-48 items-center justify-center">
       <div
         className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
         aria-label="Loading"
@@ -58,13 +46,17 @@ function PollErrorBanner({ onRetry }: { onRetry?: () => void }): ReactElement {
   };
 
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-border bg-ground px-4 py-2">
+    <div className="mb-4 flex items-center justify-between gap-4 border-b border-hairline pb-3">
       <p className="text-caption text-fg-muted">
         Could not refresh assets. Showing last loaded rows.
       </p>
-      <Button type="button" variant="outline" size="sm" onClick={handleRetry}>
+      <button
+        type="button"
+        className="inline-flex h-7 cursor-pointer items-center justify-center border border-fg bg-ground px-3 text-button-sm font-medium text-fg"
+        onClick={handleRetry}
+      >
         Retry
-      </Button>
+      </button>
     </div>
   );
 }
@@ -75,11 +67,15 @@ function StageError({ onRetry }: { onRetry?: () => void }): ReactElement {
   };
 
   return (
-    <div className="flex min-h-48 flex-col items-center justify-center gap-4 bg-surface">
+    <div className="flex min-h-48 flex-col items-center justify-center gap-4">
       <p className="text-caption text-fg-muted">Could not load assets.</p>
-      <Button type="button" variant="outline" onClick={handleRetry}>
+      <button
+        type="button"
+        className="inline-flex h-8 cursor-pointer items-center justify-center border border-fg bg-ground px-4 text-button font-medium text-fg hover:bg-fg hover:text-surface"
+        onClick={handleRetry}
+      >
         Retry
-      </Button>
+      </button>
     </div>
   );
 }
@@ -93,17 +89,34 @@ export function AssetsList({
   createInFlight = false,
   onNewCampaign = (): void => {},
 }: AssetsListProps): ReactElement {
+  const { actor } = usePersona();
+  const personaId = actor?.id ?? "arjun";
+  const [filter, setFilter] = useState<RegisterFilter>(() =>
+    defaultRegisterFilter(personaId),
+  );
+
+  const loaded = view === "loaded" && assets.length > 0;
+  const workSummary = loaded ? workSummaryLine(assets) : null;
+  const endLine = loaded ? endOfRegisterLine(assets) : null;
+
   const shell = (content: ReactElement): ReactElement => (
     <AssetsListShell
       createInFlight={createInFlight}
       onNewCampaign={onNewCampaign}
+      workSummary={workSummary}
+      filter={filter}
+      onFilterChange={setFilter}
+      showFilter={loaded}
+      endLine={endLine}
     >
       {content}
     </AssetsListShell>
   );
 
   if (view === "loading") {
-    return shell(showLoadingSpinner ? <StageSpinner /> : <div className="min-h-48 bg-surface" />);
+    return shell(
+      showLoadingSpinner ? <StageSpinner /> : <div className="min-h-48" />,
+    );
   }
 
   if (view === "error") {
@@ -115,13 +128,10 @@ export function AssetsList({
   }
 
   return shell(
-    <div className="bg-surface">
+    <>
       {pollError ? <PollErrorBanner onRetry={onRetry} /> : null}
-      <ListHeaderRow />
-      {assets.map((asset) => (
-        <AssetListRow key={asset.id} asset={asset} />
-      ))}
-    </div>,
+      <AssetsRegisterTable assets={assets} filter={filter} />
+    </>,
   );
 }
 

@@ -98,7 +98,7 @@ export function TopBar(): ReactElement {
           </NavLink>
         </nav>
       </div>
-      <div className="flex items-center">
+      <div className="flex shrink-0 items-center">
         <PersonaControl actor={actor} />
       </div>
     </header>

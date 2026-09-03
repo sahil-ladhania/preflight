@@ -76,31 +76,32 @@ export function PersonaControl({ actor }: PersonaControlProps): ReactElement {
   }
 
   return (
-    <div ref={rootRef} className="relative flex items-center">
-      <button
-        type="button"
-        className="flex cursor-pointer items-center gap-2 border-0 bg-transparent p-0"
-        aria-expanded={open}
-        aria-haspopup="menu"
-        onClick={() => {
-          setOpen((current) => !current);
-        }}
-      >
-        <span className="text-caption text-fg-muted">
-          {PERSONA_MENU_COPY.signedInPrefix}
-        </span>
-        <span className="text-ui-strong text-fg">{actor.name}</span>
-        <ChevronDownIcon />
-      </button>
-
-      {open ? (
-        <div
-          role="menu"
-          className={cn(
-            "absolute top-full right-0 z-10 mt-2 flex w-60 flex-col gap-2.5",
-            "border border-fg bg-surface p-4",
-          )}
+    <div className="inline-flex shrink-0 items-center">
+      <span className="text-caption text-fg-muted">
+        {PERSONA_MENU_COPY.signedInPrefix}
+      </span>
+      <div ref={rootRef} className="relative inline-flex shrink-0 items-center">
+        <button
+          type="button"
+          className="inline-flex cursor-pointer items-center gap-2 border-0 bg-transparent p-0"
+          aria-expanded={open}
+          aria-haspopup="menu"
+          onClick={() => {
+            setOpen((current) => !current);
+          }}
         >
+          <span className="text-ui-strong text-fg">{actor.name}</span>
+          <ChevronDownIcon />
+        </button>
+
+        {open ? (
+          <div
+            role="menu"
+            className={cn(
+              "absolute top-full right-0 z-10 mt-2 flex w-60 flex-col gap-2.5",
+              "border border-fg bg-surface p-4",
+            )}
+          >
           <p className="font-serif text-menu-name text-fg">{actor.name}</p>
           <p className="text-role uppercase text-fg-muted">{actor.role}</p>
           <div className="h-px bg-border" aria-hidden="true" />
@@ -116,8 +117,9 @@ export function PersonaControl({ actor }: PersonaControlProps): ReactElement {
           >
             {PERSONA_MENU_COPY.signOutLabel}
           </button>
-        </div>
-      ) : null}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

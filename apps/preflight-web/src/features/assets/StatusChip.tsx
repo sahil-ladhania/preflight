@@ -22,11 +22,11 @@ const MARKER_CONFIG: Record<AssetStatus, MarkerConfig> = {
   },
   needs_human: {
     className: "status-review",
-    label: "Needs review",
+    label: "Review",
   },
   needs_regen: {
     className: "status-regen",
-    label: "Needs regen",
+    label: "Regen",
   },
   cleared_with_exception: {
     className: "status-exception",
