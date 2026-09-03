@@ -316,12 +316,14 @@
   }
 
   .text-body-airy {
+    font-family: var(--font-serif);
     font-size: 14px;
     line-height: 24px;
     font-weight: 400;
   }
 
   .text-title {
+    font-family: var(--font-serif);
     font-size: 16px;
     line-height: 24px;
     font-weight: 600;

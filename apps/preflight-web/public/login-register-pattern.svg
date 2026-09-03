@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600" viewBox="0 0 1200 1600" fill="none">
+  <rect width="1200" height="1600" fill="#f6f4ee"/>
+  <rect width="1200" height="1600" fill="#eef1f4" fill-opacity="0.45"/>
+  <g stroke="#c7c0b0" stroke-opacity="0.26">
+    <path d="M0 64H1200M0 104H1200M0 144H1200M0 184H1200M0 224H1200M0 264H1200M0 304H1200M0 344H1200M0 384H1200M0 424H1200M0 464H1200M0 504H1200M0 544H1200"/>
+    <path d="M110 0V560M280 0V560M450 0V560M620 0V560M790 0V560M960 0V560" stroke-opacity="0.14"/>
+  </g>
+  <g fill="#2c4257" fill-opacity="0.05">
+    <rect x="277" y="120" width="3" height="280"/>
+    <rect x="617" y="200" width="3" height="240"/>
+  </g>
+  <g stroke="#c7c0b0" stroke-opacity="0.35">
+    <path d="M0 592H1200M0 624H1200M0 656H1200M0 688H1200M0 720H1200M0 752H1200M0 784H1200M0 816H1200M0 848H1200M0 880H1200M0 912H1200M0 944H1200M0 976H1200M0 1008H1200M0 1040H1200M0 1072H1200M0 1104H1200M0 1136H1200M0 1168H1200M0 1200H1200M0 1232H1200M0 1264H1200M0 1296H1200M0 1328H1200M0 1360H1200M0 1392H1200M0 1424H1200M0 1456H1200M0 1488H1200M0 1520H1200M0 1552H1200"/>
+    <path d="M110 0V1600M280 0V1600M450 0V1600M620 0V1600M790 0V1600M960 0V1600" stroke-opacity="0.18"/>
+  </g>
+  <g fill="#2c4257" fill-opacity="0.08">
+    <rect x="107" y="640" width="3" height="960"/>
+    <rect x="277" y="720" width="3" height="880"/>
+    <rect x="447" y="600" width="3" height="1000"/>
+    <rect x="617" y="800" width="3" height="800"/>
+    <rect x="787" y="680" width="3" height="920"/>
+    <rect x="957" y="760" width="3" height="840"/>
+  </g>
+</svg>

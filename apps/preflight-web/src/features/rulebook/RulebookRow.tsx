@@ -55,7 +55,7 @@ export function RulebookRow({
       </span>
       <KindBadge kind={rule.kind} />
       <div className="min-w-0">
-        <span className="block truncate text-body text-fg" title={rule.wording}>
+        <span className="block truncate font-serif text-body text-fg" title={rule.wording}>
           {rule.wording}
         </span>
         {changeCaption !== null ? (

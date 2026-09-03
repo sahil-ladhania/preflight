@@ -27,7 +27,7 @@ function ConstraintCard({ rule }: { rule: CompileRuleCardDTO }): ReactElement {
         <span className="text-mono text-fg-muted">{rule.ruleId}</span>
         <KindBadge kind={rule.kind} />
       </div>
-      <p className="text-body text-fg">{rule.wording}</p>
+      <p className="font-serif text-body text-fg">{rule.wording}</p>
       <p className="text-caption text-fg-muted">{rule.applicabilityReason}</p>
     </div>
   );

@@ -5,16 +5,26 @@
 
 import type { ReactElement } from "react";
 
-export function WorkbenchLogoMark(): ReactElement {
+import { cn } from "@/lib/utils";
+
+export interface WorkbenchLogoMarkProps {
+  size?: number;
+  className?: string;
+}
+
+export function WorkbenchLogoMark({
+  size = 40,
+  className,
+}: WorkbenchLogoMarkProps): ReactElement {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      width="40"
-      height="40"
+      width={size}
+      height={size}
       role="img"
       aria-hidden="true"
-      className="shrink-0 text-primary"
+      className={cn("shrink-0 text-primary", className)}
     >
       <rect x="6" y="4" width="2" height="16" fill="currentColor" />
       <rect x="6" y="14" width="12" height="2" fill="currentColor" />

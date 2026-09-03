@@ -44,6 +44,7 @@ import {
   WorkbenchStates,
 } from "@/design-proof/WorkbenchStates";
 import { WorkbenchRoute } from "@/features/workbench/Workbench";
+import { LoginRoute } from "@/features/login/Login";
 import { ErrorBoundary } from "@/features/shell/ErrorBoundary";
 import { NotFound } from "@/features/shell/NotFound";
 import { ToastHost } from "@/features/shell/ToastHost";
@@ -67,6 +68,7 @@ export default function App(): ReactElement {
     <BrowserRouter>
       <ToastHost>
         <Routes>
+          <Route path="login" element={<LoginRoute />} />
           <Route element={<ShellFrame />}>
             <Route index element={<Navigate to="/workbench" replace />} />
             <Route path="assets" element={<AssetsListRoute />} />

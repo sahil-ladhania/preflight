@@ -101,7 +101,7 @@ export function LedgerRow({
           <MachineIcon finding={finding} />
         </span>
         <span className="truncate text-mono text-fg-muted">{finding.ruleId}</span>
-        <span className="min-w-0 truncate text-body text-fg" title={finding.frozenWording}>
+        <span className="min-w-0 truncate font-serif text-body text-fg" title={finding.frozenWording}>
           {finding.frozenWording}
         </span>
         <KindBadge kind={finding.kind} />

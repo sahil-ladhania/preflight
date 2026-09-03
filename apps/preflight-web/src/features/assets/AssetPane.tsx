@@ -133,9 +133,9 @@ export function AssetPane({
         />
       </div>
       {renderCopy(asset.copySegments.headline, "Headline", "text-title text-fg")}
-      {renderCopy(asset.copySegments.body, "Body", "text-body text-fg")}
-      {renderCopy(asset.copySegments.disclaimer, "Disclaimer", "text-body text-fg")}
-      {renderCopy(asset.copySegments.cta, "CTA", "text-body text-fg")}
+      {renderCopy(asset.copySegments.body, "Body", "font-serif text-body text-fg")}
+      {renderCopy(asset.copySegments.disclaimer, "Disclaimer", "font-serif text-body text-fg")}
+      {renderCopy(asset.copySegments.cta, "CTA", "font-serif text-body text-fg")}
     </div>
   );
 }
