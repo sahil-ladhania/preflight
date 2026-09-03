@@ -187,7 +187,7 @@ export function LedgerExpanded(props: LedgerExpandedProps): ReactElement {
         ) : null}
       </div>
       <HumanDecisionBlock finding={finding} actions={actions} />
-      <DecisionHistory decisions={finding.decisions} />
+      <DecisionHistory finding={finding} />
     </div>
   );
 }

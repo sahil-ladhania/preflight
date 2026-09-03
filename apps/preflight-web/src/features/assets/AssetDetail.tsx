@@ -18,6 +18,7 @@ import { LedgerPane } from "@/features/assets/LedgerPane";
 import { LineageBanner } from "@/features/assets/LineageBanner";
 import { ReasonModal } from "@/features/assets/ReasonModal";
 import { findingById, scrollFindingTarget } from "@/features/assets/lib";
+import { firstOpenFindingId } from "@/features/assets/ledger-lib";
 import type { AssetDetailProps, ReasonModalState } from "@/features/assets/types";
 import { useToastContext } from "@/features/shell/ToastHost";
 import { RERUN_STRIPS } from "@/fixtures/assets-detail";
@@ -52,14 +53,22 @@ export function AssetDetail({
 }: AssetDetailProps): ReactElement {
   const { enqueue } = useToastContext();
   const [localOpenFindingId, setLocalOpenFindingId] = useState<string | null>(
-    null,
+    () =>
+      openFindingIdProp !== undefined
+        ? null
+        : firstOpenFindingId(asset.findings),
   );
   const [localReasonModal, setLocalReasonModal] = useState<ReasonModalState>({
     mode: "closed",
     findingId: null,
   });
   const [localRerunStrip, setLocalRerunStrip] = useState(rerunStripProp);
-  const scrollTargetRef = useRef<"span" | "row" | null>(null);
+  const scrollTargetRef = useRef<"span" | "row" | null>(
+    openFindingIdProp === undefined &&
+      firstOpenFindingId(asset.findings) !== null
+      ? "span"
+      : null,
+  );
 
   const openFindingId = openFindingIdProp ?? localOpenFindingId;
   const reasonModal = reasonModalProp ?? localReasonModal;
@@ -147,9 +156,12 @@ export function AssetDetail({
       generatedAt={asset.generatedAt}
       status={asset.status}
     >
-      <div className="flex flex-col gap-4 px-8 pb-4">
+      <div className="flex shrink-0 flex-col gap-4 px-8 pb-4">
         {asset.lineage !== null ? (
-          <LineageBanner lineage={asset.lineage} />
+          <LineageBanner
+            lineage={asset.lineage}
+            generationIndex={asset.generationIndex}
+          />
         ) : null}
         {generatorSkillsRead !== null ? (
           <GeneratorRunBanner
@@ -161,12 +173,23 @@ export function AssetDetail({
           <ExceptionsSummary exceptions={asset.exceptions} />
         ) : null}
       </div>
-      <div className="flex min-h-0 flex-1 border-t border-hairline">
-        <div className="min-h-0 w-pane-evidence shrink-0 bg-surface">
+      <div className="flex min-h-0 flex-1 overflow-hidden border-t border-hairline">
+        <div className="h-full min-h-0 w-pane-evidence shrink-0 overflow-hidden bg-surface">
           <AssetPane
             asset={asset}
             openFindingId={openFindingId}
             onSpanClick={selectSpanFinding}
+            rerunStrip={rerunStrip}
+            onRerun={handleRerun}
+            rerunInFlight={rerunInFlight}
+          />
+        </div>
+        <div className="h-full min-h-0 w-pane-ledger shrink-0 overflow-hidden border-l border-hairline bg-ground">
+          <LedgerPane
+            findings={asset.findings}
+            status={asset.status}
+            openFindingId={openFindingId}
+            onRowClick={selectRowFinding}
             onAccept={handleAccept}
             onRegenerate={() => {
               if (onRegenerate !== undefined) {
@@ -180,16 +203,6 @@ export function AssetDetail({
             }}
             exportInFlight={exportInFlight}
             regenerateInFlight={regenerateInFlight}
-            rerunStrip={rerunStrip}
-            onRerun={handleRerun}
-            rerunInFlight={rerunInFlight}
-          />
-        </div>
-        <div className="min-h-0 w-pane-ledger shrink-0 border-l border-hairline bg-ground">
-          <LedgerPane
-            findings={asset.findings}
-            openFindingId={openFindingId}
-            onRowClick={selectRowFinding}
             onConfirm={(findingId) => {
               if (onConfirm !== undefined) {
                 void onConfirm(findingId);

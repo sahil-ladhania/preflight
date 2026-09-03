@@ -8,11 +8,15 @@ import type { FindingDTO } from "@preflight/schemas";
 
 import {
   adjacentOpenId,
+  firstOpenFindingId,
+  initialLedgerFilter,
   isOpenFinding,
   ledgerCountLine,
+  lineageVersionLabel,
   openFindings,
   stepperLabel,
   visibleFindings,
+  wordingTone,
 } from "@/features/assets/ledger-lib";
 
 function finding(overrides: Partial<FindingDTO>): FindingDTO {
@@ -140,6 +144,84 @@ describe("adjacentOpenId", () => {
   it("returns null at range ends", () => {
     expect(adjacentOpenId(findings, "a", "prev")).toBeNull();
     expect(adjacentOpenId(findings, "b", "next")).toBeNull();
+  });
+});
+
+describe("firstOpenFindingId", () => {
+  it("returns the first open finding id", () => {
+    const findings = [
+      finding({ id: "a", machineVerdict: "pass" }),
+      finding({ id: "b", machineVerdict: "fail" }),
+    ];
+    expect(firstOpenFindingId(findings)).toBe("b");
+  });
+
+  it("returns null when nothing is open", () => {
+    const findings = [finding({ id: "a", machineVerdict: "pass" })];
+    expect(firstOpenFindingId(findings)).toBeNull();
+  });
+});
+
+describe("initialLedgerFilter", () => {
+  it("defaults to open when open findings exist", () => {
+    const findings = [
+      finding({ id: "a", machineVerdict: "pass" }),
+      finding({ id: "b", machineVerdict: "fail" }),
+    ];
+    expect(initialLedgerFilter(findings)).toBe("open");
+  });
+
+  it("defaults to all when nothing is open", () => {
+    const findings = [finding({ id: "a", machineVerdict: "pass" })];
+    expect(initialLedgerFilter(findings)).toBe("all");
+  });
+});
+
+describe("wordingTone", () => {
+  it("mutes pass wording", () => {
+    expect(wordingTone(finding({ machineVerdict: "pass" }))).toBe("muted");
+  });
+
+  it("keeps fail, unavailable, and pending at full ink", () => {
+    expect(wordingTone(finding({ machineVerdict: "fail" }))).toBe("ink");
+    expect(
+      wordingTone(
+        finding({
+          evaluationStatus: "unavailable",
+          machineVerdict: null,
+        }),
+      ),
+    ).toBe("ink");
+    expect(
+      wordingTone(
+        finding({
+          evaluationStatus: "pending",
+          machineVerdict: null,
+        }),
+      ),
+    ).toBe("ink");
+  });
+
+  it("keeps decided fail wording at ink", () => {
+    expect(
+      wordingTone(
+        finding({
+          machineVerdict: "fail",
+          humanVerdict: "waived",
+        }),
+      ),
+    ).toBe("ink");
+  });
+});
+
+describe("lineageVersionLabel", () => {
+  it("formats generation index as v{n}", () => {
+    expect(lineageVersionLabel(2)).toBe("v2");
+  });
+
+  it("returns null when generation index is absent", () => {
+    expect(lineageVersionLabel(null)).toBeNull();
+    expect(lineageVersionLabel(undefined)).toBeNull();
   });
 });
 

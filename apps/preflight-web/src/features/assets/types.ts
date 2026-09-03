@@ -86,7 +86,7 @@ export interface AssetDetailShellProps {
 
 export interface AssetActionRowProps {
   status: AssetStatus;
-  findingsCount: number;
+  findings: FindingDTO[];
   onAccept: () => void;
   onRegenerate: () => void;
   onExport: () => void;
@@ -145,6 +145,7 @@ export interface AssetDetailProps {
 
 export interface LineageBannerProps {
   lineage: LineageDTO;
+  generationIndex: number;
 }
 
 export interface GeneratorRunBannerProps {
@@ -160,11 +161,6 @@ export interface AssetPaneProps {
   asset: AssetDetailFixture;
   openFindingId: string | null;
   onSpanClick: (findingId: string) => void;
-  onAccept: () => void;
-  onRegenerate: () => void;
-  onExport: () => void;
-  exportInFlight?: boolean;
-  regenerateInFlight?: boolean;
   rerunStrip: RerunStripDTO | null;
   onRerun: () => void;
   rerunInFlight?: boolean;
@@ -172,12 +168,18 @@ export interface AssetPaneProps {
 
 export interface LedgerPaneProps {
   findings: FindingDTO[];
+  status: AssetStatus;
   openFindingId: string | null;
   onRowClick: (findingId: string) => void;
   onConfirm: (findingId: string) => void;
   onOverride: (findingId: string) => void;
   onWaive: (findingId: string) => void;
   onRetry: (findingId: string) => void;
+  onAccept: () => void;
+  onRegenerate: () => void;
+  onExport: () => void;
+  exportInFlight?: boolean;
+  regenerateInFlight?: boolean;
 }
 
 export interface LedgerExpandedProps {
@@ -207,4 +209,10 @@ export interface ReasonModalProps {
 export interface ReasonModalState {
   mode: ReasonModalMode;
   findingId: string | null;
+}
+
+export interface DecisionHistoryModalProps {
+  finding: FindingDTO;
+  open: boolean;
+  onClose: () => void;
 }

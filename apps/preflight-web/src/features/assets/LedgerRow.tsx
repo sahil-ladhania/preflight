@@ -9,13 +9,43 @@ import { Check, MinusCircle, X } from "lucide-react";
 import type { FindingDTO } from "@preflight/schemas";
 
 import { LedgerExpanded } from "@/features/assets/LedgerExpanded";
+import { humanVerdictLabel } from "@/features/assets/lib";
+import { wordingTone } from "@/features/assets/ledger-lib";
 import { PendingRing } from "@/features/assets/PendingRing";
 import { cn } from "@/lib/utils";
 
 function KindBadge({ kind }: { kind: FindingDTO["kind"] }): ReactElement {
   return (
-    <span className="border border-hairline px-[5px] py-0 font-mono text-kind-badge uppercase text-fg-muted">
+    <span className="shrink-0 border border-hairline px-[5px] py-0 font-mono text-kind-badge uppercase text-fg-muted">
       {kind === "deterministic" ? "DET" : "JDG"}
+    </span>
+  );
+}
+
+function VerdictChip({ finding }: { finding: FindingDTO }): ReactElement | null {
+  if (finding.humanVerdict === null) {
+    return null;
+  }
+
+  if (finding.humanVerdict === "waived") {
+    return (
+      <span className="shrink-0 font-sans font-semibold text-verdict-chip uppercase chip-waived">
+        Waived
+      </span>
+    );
+  }
+
+  const chipClass =
+    finding.humanVerdict === "confirmed" ? "human-confirmed" : "human-overridden";
+
+  return (
+    <span
+      className={cn(
+        "shrink-0 font-sans font-semibold text-verdict-chip uppercase",
+        chipClass,
+      )}
+    >
+      {humanVerdictLabel(finding.humanVerdict)}
     </span>
   );
 }
@@ -71,26 +101,29 @@ export function LedgerRow({
         data-finding-row={finding.id}
         onClick={() => onRowClick(finding.id)}
         className={cn(
-          "flex w-full items-center gap-2.5 px-5 py-2.5 text-left hover:bg-hover",
+          "flex w-full items-center px-5 py-2.5 text-left font-sans font-normal hover:bg-hover",
           isOpen && "bg-surface",
         )}
       >
-        <span className="inline-flex size-3 shrink-0 items-center justify-center">
-          <MachineIcon finding={finding} />
+        <span className="flex min-w-0 max-w-[640px] items-center gap-2.5">
+          <span className="inline-flex size-3 shrink-0 items-center justify-center">
+            <MachineIcon finding={finding} />
+          </span>
+          <span className="min-w-[66px] shrink-0 font-mono text-mono-meta text-fg-muted">
+            {finding.ruleId}
+          </span>
+          <span
+            className={cn(
+              "min-w-0 truncate font-sans text-ui",
+              wordingTone(finding) === "muted" ? "text-fg-muted" : "text-fg",
+            )}
+            title={finding.frozenWording}
+          >
+            {finding.frozenWording}
+          </span>
+          <KindBadge kind={finding.kind} />
+          <VerdictChip finding={finding} />
         </span>
-        <span className="min-w-[66px] shrink-0 font-mono text-mono-meta text-fg-muted">
-          {finding.ruleId}
-        </span>
-        <span
-          className="min-w-0 flex-1 truncate font-sans text-ui text-fg"
-          title={finding.frozenWording}
-        >
-          {finding.frozenWording}
-        </span>
-        <KindBadge kind={finding.kind} />
-        {finding.humanVerdict === "waived" ? (
-          <span className="text-verdict-chip uppercase chip-waived">Waived</span>
-        ) : null}
       </button>
       {isOpen ? (
         <LedgerExpanded

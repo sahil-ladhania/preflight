@@ -6,7 +6,7 @@ import type { AssetSeedDef, FindingSeed, StoryHelpers } from "./story-h.js";
 
 export const ASSET_C_DEF: AssetSeedDef = {
   letter: "c",
-  id: "11111111-1111-4111-8111-111111111103",
+  id: "c3d5e607-7f03-4111-8111-0000000000c3",
   channel: "whatsapp",
   copy: {
     headline: "Bluepeak Flexi Cap — WhatsApp status",

@@ -6,7 +6,6 @@
 import type { ReactElement } from "react";
 
 import { AgentRunBadge } from "@/features/assets/AgentRunBadge";
-import { AssetActionRow } from "@/features/assets/AssetActionRow";
 import { AssetCopyField } from "@/features/assets/AssetCopyField";
 import { ChannelPreviewSection } from "@/features/assets/ChannelPreviewSection";
 import { RerunStrip } from "@/features/assets/RerunStrip";
@@ -16,11 +15,6 @@ export function AssetPane({
   asset,
   openFindingId,
   onSpanClick,
-  onAccept,
-  onRegenerate,
-  onExport,
-  exportInFlight = false,
-  regenerateInFlight = false,
   rerunStrip,
   onRerun,
   rerunInFlight = false,
@@ -42,15 +36,6 @@ export function AssetPane({
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto px-8 pb-12 pt-6">
       <div className="flex flex-col gap-6">
-        <AssetActionRow
-          status={asset.status}
-          findingsCount={asset.findings.length}
-          onAccept={onAccept}
-          onRegenerate={onRegenerate}
-          onExport={onExport}
-          exportInFlight={exportInFlight}
-          regenerateInFlight={regenerateInFlight}
-        />
         <AgentRunBadge run={asset.generatorRun} />
         <ChannelPreviewSection
           channel={asset.channel}

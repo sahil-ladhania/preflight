@@ -8,14 +8,14 @@ import type { AssetListItemDTO } from "@preflight/schemas";
 /** Seed campaign id — keep in sync with fixtures/campaign.ts CAMPAIGN_ID. */
 const CAMPAIGN_ID = "22222222-2222-4222-8222-222222222222";
 
-export const ASSET_ID_A = "11111111-1111-4111-8111-111111111101";
-export const ASSET_ID_B = "11111111-1111-4111-8111-111111111102";
-export const ASSET_ID_C = "11111111-1111-4111-8111-111111111103";
-export const ASSET_ID_D = "11111111-1111-4111-8111-111111111104";
-export const ASSET_ID_E = "11111111-1111-4111-8111-111111111105";
-export const ASSET_ID_F = "11111111-1111-4111-8111-111111111106";
-export const ASSET_ID_G = "11111111-1111-4111-8111-111111111107";
-export const ASSET_ID_H = "11111111-1111-4111-8111-111111111108";
+export const ASSET_ID_A = "a1b2c3d4-7f01-4111-8111-0000000000a1";
+export const ASSET_ID_B = "b7e4a210-7f02-4111-8111-0000000000b2";
+export const ASSET_ID_C = "c3d5e607-7f03-4111-8111-0000000000c3";
+export const ASSET_ID_D = "d4e60819-7f04-4111-8111-0000000000d4";
+export const ASSET_ID_E = "e5f7192a-7f05-4111-8111-0000000000e5";
+export const ASSET_ID_F = "f6082a3b-7f06-4111-8111-0000000000f6";
+export const ASSET_ID_G = "07193b4c-7f07-4111-8111-0000000000a7";
+export const ASSET_ID_H = "182a4c5d-7f08-4111-8111-0000000000b8";
 
 /** Seed campaign name — keep in sync with fixtures/campaign brief schemeName. */
 const CAMPAIGN_NAME = "Bluepeak Flexi Cap Fund";

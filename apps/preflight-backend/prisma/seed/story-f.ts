@@ -148,7 +148,7 @@ export function createStoryHelpers(): StoryHelpers {
 
 export const ASSET_F_DEF = {
   letter: "f",
-  id: "11111111-1111-4111-8111-111111111106",
+  id: "f6082a3b-7f06-4111-8111-0000000000f6",
   channel: "landing",
   copy: {
     headline: "Bluepeak Flexi Cap — landing page hero",

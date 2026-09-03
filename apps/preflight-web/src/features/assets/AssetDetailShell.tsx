@@ -26,7 +26,7 @@ export function AssetDetailShell({
     status !== undefined;
 
   return (
-    <div className="flex min-h-below-topbar flex-col bg-ground pt-7 pb-0">
+    <div className="flex h-below-topbar flex-col overflow-hidden bg-ground pt-7 pb-0">
       <header className="flex shrink-0 flex-col gap-2 px-8">
         <Link
           to="/assets"

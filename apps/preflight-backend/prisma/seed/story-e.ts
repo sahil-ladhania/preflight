@@ -6,7 +6,7 @@ import type { AssetSeedDef, FindingSeed, StoryHelpers } from "./story-h.js";
 
 export const ASSET_E_DEF: AssetSeedDef = {
   letter: "e",
-  id: "11111111-1111-4111-8111-111111111105",
+  id: "e5f7192a-7f05-4111-8111-0000000000e5",
   channel: "email",
   copy: {
     headline: "Bluepeak Flexi Cap — email newsletter",

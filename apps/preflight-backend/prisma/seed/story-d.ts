@@ -6,7 +6,7 @@ import type { AssetSeedDef, FindingSeed, StoryHelpers } from "./story-h.js";
 
 export const ASSET_D_DEF: AssetSeedDef = {
   letter: "d",
-  id: "11111111-1111-4111-8111-111111111104",
+  id: "d4e60819-7f04-4111-8111-0000000000d4",
   channel: "display",
   copy: {
     headline: "Bluepeak Flexi Cap — display static",

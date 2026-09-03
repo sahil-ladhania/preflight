@@ -67,7 +67,7 @@ export function buildSnapshots(freezeRuleIds: readonly string[]): HashableRule[]
 
 export const ASSET_G_DEF: AssetSeedDef = {
   letter: "g",
-  id: "11111111-1111-4111-8111-111111111107",
+  id: "07193b4c-7f07-4111-8111-0000000000a7",
   channel: "whatsapp",
   copy: {
     headline: "Bluepeak Flexi Cap — WhatsApp broadcast",

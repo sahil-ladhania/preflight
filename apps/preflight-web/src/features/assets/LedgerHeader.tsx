@@ -9,8 +9,7 @@ import type { ReactElement } from "react";
 import type { LedgerHeaderProps } from "@/features/assets/types";
 import { cn } from "@/lib/utils";
 
-const headerLineClass =
-  "font-sans text-label-strong font-semibold normal-case tracking-normal text-fg";
+const headerLineClass = "font-sans text-count text-fg";
 
 const filterTabClass =
   "cursor-pointer pb-1 font-sans text-[9px] leading-[1.4] font-normal tracking-normal";
@@ -52,7 +51,7 @@ export function LedgerHeader({
   onStepperNext,
 }: LedgerHeaderProps): ReactElement {
   return (
-    <div className="sticky top-0 z-10 flex flex-col gap-1 border-b border-hairline bg-ground px-5 py-3">
+    <div className="flex shrink-0 flex-col gap-1 border-b border-hairline bg-ground px-5 py-3">
       <p className="text-label-strong uppercase text-fg-muted">
         Evidence &amp; decisions
       </p>

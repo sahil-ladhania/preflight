@@ -8,6 +8,7 @@
     "build": "tsc",
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
+    "seed": "prisma db seed",
     "judgement-golden": "tsx scripts/run-judgement-golden.ts",
     "evals": "tsx scripts/run-evals.ts"
   },

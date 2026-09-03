@@ -5,10 +5,12 @@
 
 import { useState, type ReactElement } from "react";
 
+import { AssetActionRow } from "@/features/assets/AssetActionRow";
 import { LedgerHeader } from "@/features/assets/LedgerHeader";
 import { LedgerRow } from "@/features/assets/LedgerRow";
 import {
   adjacentOpenId,
+  initialLedgerFilter,
   ledgerCountLine,
   openFindings,
   stepperIndexForId,
@@ -20,14 +22,22 @@ import type { LedgerPaneProps } from "@/features/assets/types";
 
 export function LedgerPane({
   findings,
+  status,
   openFindingId,
   onRowClick,
   onConfirm,
   onOverride,
   onWaive,
   onRetry,
+  onAccept,
+  onRegenerate,
+  onExport,
+  exportInFlight = false,
+  regenerateInFlight = false,
 }: LedgerPaneProps): ReactElement {
-  const [filter, setFilter] = useState<LedgerFilter>("all");
+  const [filter, setFilter] = useState<LedgerFilter>(() =>
+    initialLedgerFilter(findings),
+  );
   const open = openFindings(findings);
   const stepperIndex = stepperIndexForId(open, openFindingId);
   const rows = visibleFindings(findings, filter);
@@ -40,7 +50,7 @@ export function LedgerPane({
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto bg-ground">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-ground">
       <LedgerHeader
         countLine={ledgerCountLine(findings)}
         filter={filter}
@@ -52,24 +62,39 @@ export function LedgerPane({
         onStepperPrev={() => navigateStepper("prev")}
         onStepperNext={() => navigateStepper("next")}
       />
-      {findings.length === 0 ? (
-        <p className="px-5 py-3 font-sans text-caption text-fg-muted">
-          No rules in the pinned set.
-        </p>
-      ) : (
-        rows.map((finding) => (
-          <LedgerRow
-            key={finding.id}
-            finding={finding}
-            openFindingId={openFindingId}
-            onRowClick={onRowClick}
-            onConfirm={onConfirm}
-            onOverride={onOverride}
-            onWaive={onWaive}
-            onRetry={onRetry}
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        {findings.length === 0 ? (
+          <p className="px-5 py-3 font-sans text-caption text-fg-muted">
+            No rules in the pinned set.
+          </p>
+        ) : (
+          rows.map((finding) => (
+            <LedgerRow
+              key={finding.id}
+              finding={finding}
+              openFindingId={openFindingId}
+              onRowClick={onRowClick}
+              onConfirm={onConfirm}
+              onOverride={onOverride}
+              onWaive={onWaive}
+              onRetry={onRetry}
+            />
+          ))
+        )}
+      </div>
+      <footer className="shrink-0 border-t border-fg bg-ground px-5 py-4">
+        <div className="max-w-[640px]">
+          <AssetActionRow
+            status={status}
+            findings={findings}
+            onAccept={onAccept}
+            onRegenerate={onRegenerate}
+            onExport={onExport}
+            exportInFlight={exportInFlight}
+            regenerateInFlight={regenerateInFlight}
           />
-        ))
-      )}
+        </div>
+      </footer>
     </div>
   );
 }

@@ -16,6 +16,7 @@ import {
   scrollFindingTarget,
 } from "@/features/assets/lib";
 import { buildCopySegments } from "@/features/assets/span-highlight";
+import { firstOpenFindingId } from "@/features/assets/ledger-lib";
 import type {
   AssetDetailFixture,
   AssetDetailView,
@@ -61,6 +62,7 @@ export function useAssetDetail(id: string | undefined): {
   const [rerunStrip, setRerunStrip] = useState<RerunStripDTO | null>(null);
   const [openFindingId, setOpenFindingId] = useState<string | null>(null);
   const scrollTargetRef = useRef<"span" | "row" | null>(null);
+  const openedForIdRef = useRef<string | null>(null);
   const [reasonModal, setReasonModal] = useState<ReasonModalState>({
     mode: "closed",
     findingId: null,
@@ -101,6 +103,14 @@ export function useAssetDetail(id: string | undefined): {
       setAssetDto(detail);
       setNotFound(false);
       setView("loaded");
+      if (openedForIdRef.current !== detail.id) {
+        openedForIdRef.current = detail.id;
+        const firstId = firstOpenFindingId(detail.findings);
+        if (firstId !== null) {
+          setOpenFindingId(firstId);
+          scrollTargetRef.current = "span";
+        }
+      }
     } catch (error: unknown) {
       if (controller.signal.aborted) {
         return;
@@ -123,6 +133,7 @@ export function useAssetDetail(id: string | undefined): {
     setView("loading");
     setNotFound(false);
     setRerunStrip(null);
+    openedForIdRef.current = null;
     setOpenFindingId(null);
     setReasonModal({ mode: "closed", findingId: null });
     void load();

@@ -1,72 +1,39 @@
 /**
- * DecisionHistory — collapsible human decision audit trail.
- * Why: G-02 governance on expanded ledger row (doc 21).
+ * DecisionHistory — link to read-only decision audit trail modal.
+ * Why: ledger row shows link only when n > 1 (09 R4).
  */
 
 import { useState, type ReactElement } from "react";
 
-import type { DecisionAction, FindingDecisionDTO, HumanVerdict } from "@preflight/schemas";
-
-import { formatGeneratedAt, humanVerdictLabel } from "@/features/assets/lib";
+import { DecisionHistoryModal } from "@/features/assets/DecisionHistoryModal";
+import { showDecisionHistoryLink } from "@/features/assets/decision-history-lib";
+import type { FindingDTO } from "@preflight/schemas";
 
 interface DecisionHistoryProps {
-  decisions: FindingDecisionDTO[];
+  finding: FindingDTO;
 }
 
-const ACTION_LABELS: Record<DecisionAction, string> = {
-  waive: "Waived",
-  confirm: "Confirmed",
-  override: "Overridden",
-  retry: "Retry requested",
-};
-
-function previousLabel(verdict: HumanVerdict): string {
-  return humanVerdictLabel(verdict).toLowerCase();
-}
-
-function formatDecisionLine(row: FindingDecisionDTO): string {
-  const parts = [
-    ACTION_LABELS[row.action],
-    row.actor,
-    formatGeneratedAt(row.at),
-  ];
-
-  if (row.reason !== null && row.reason.length > 0) {
-    parts.push(`"${row.reason}"`);
-  }
-
-  if (row.previousVerdict !== null) {
-    parts.push(`(was: ${previousLabel(row.previousVerdict)})`);
-  }
-
-  return parts.join(" · ");
-}
-
-export function DecisionHistory({ decisions }: DecisionHistoryProps): ReactElement | null {
+export function DecisionHistory({ finding }: DecisionHistoryProps): ReactElement | null {
   const [open, setOpen] = useState<boolean>(false);
 
-  if (decisions.length === 0) {
+  if (!showDecisionHistoryLink(finding.decisions)) {
     return null;
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <>
       <button
         type="button"
-        className="w-fit text-caption text-fg-muted underline-offset-2 hover:underline"
-        onClick={() => setOpen((value) => !value)}
+        className="mt-3.5 font-sans text-caption font-normal text-fg-muted underline underline-offset-4"
+        onClick={() => setOpen(true)}
       >
-        Decision history ({decisions.length})
+        Decision history ({finding.decisions.length})
       </button>
-      {open ? (
-        <ul className="flex flex-col gap-1">
-          {decisions.map((row) => (
-            <li key={row.id} className="text-caption text-fg-muted">
-              {formatDecisionLine(row)}
-            </li>
-          ))}
-        </ul>
-      ) : null}
-    </div>
+      <DecisionHistoryModal
+        finding={finding}
+        open={open}
+        onClose={() => setOpen(false)}
+      />
+    </>
   );
 }

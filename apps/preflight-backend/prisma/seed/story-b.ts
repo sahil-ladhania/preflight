@@ -6,7 +6,7 @@ import type { AssetSeedDef, FindingSeed, StoryHelpers } from "./story-h.js";
 
 export const ASSET_B_DEF: AssetSeedDef = {
   letter: "b",
-  id: "11111111-1111-4111-8111-111111111102",
+  id: "b7e4a210-7f02-4111-8111-0000000000b2",
   channel: "linkedin",
   copy: {
     headline: "Bluepeak Flexi Cap — LinkedIn post (regenerated)",
@@ -16,7 +16,7 @@ export const ASSET_B_DEF: AssetSeedDef = {
     cta: "Learn more",
   },
   generatedAt: "2026-03-15T12:30:00.000Z",
-  regeneratedFromId: "11111111-1111-4111-8111-111111111101",
+  regeneratedFromId: "a1b2c3d4-7f01-4111-8111-0000000000a1",
   generationIndex: 2,
 };
 

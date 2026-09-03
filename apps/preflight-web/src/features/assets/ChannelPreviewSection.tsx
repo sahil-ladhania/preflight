@@ -17,7 +17,7 @@ export function ChannelPreviewSection({
   cta,
   brandKit,
 }: ChannelPreviewSectionProps): ReactElement {
-  const [open, setOpen] = useState<boolean>(true);
+  const [open, setOpen] = useState<boolean>(false);
 
   return (
     <div className="border border-hairline">
@@ -37,7 +37,7 @@ export function ChannelPreviewSection({
         </span>
       </button>
       {open ? (
-        <div className="bg-preview-stage p-6 hover:bg-hover">
+        <div className="max-h-[360px] overflow-y-auto bg-preview-stage p-6 hover:bg-hover">
           <div className="mx-auto max-w-[340px] bg-preview-card p-4">
             <ChannelPreview
               channel={channel}

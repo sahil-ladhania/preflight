@@ -10,13 +10,15 @@ import type {
   StructuredBriefInput,
 } from "@preflight/schemas";
 
+import { ASSET_ID_G } from "@/fixtures/assets-list";
+
 export const CAMPAIGN_ID = "22222222-2222-4222-8222-222222222222";
 export const CAMPAIGN_ID_FRESH = "33333333-3333-4333-8333-333333333301";
 export const CONSTRAINT_SET_ID = "44444444-4444-4444-8444-444444444401";
 export const RULESET_HASH = "b".repeat(64);
 
 /** Demo generate navigates here — seeded asset G (needs_human). */
-export const GENERATE_ASSET_ID = "11111111-1111-4111-8111-111111111107";
+export const GENERATE_ASSET_ID = ASSET_ID_G;
 
 export const SEED_BRIEF: StructuredBriefInput = {
   objective: "Drive awareness for Bluepeak Flexi Cap among digital investors.",

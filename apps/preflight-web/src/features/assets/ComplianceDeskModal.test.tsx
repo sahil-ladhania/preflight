@@ -4,6 +4,8 @@
  */
 import { describe, expect, it } from "vitest";
 
+import type { FindingDTO } from "@preflight/schemas";
+
 import {
   acceptDisabledCaption,
   acceptIsEnabled,
@@ -20,6 +22,27 @@ const SAMPLE_EXCEPTION = {
   humanActor: "Demo Operator",
   humanAt: "2026-03-13T15:20:00.000Z",
 } as const;
+
+function finding(overrides: Partial<FindingDTO>): FindingDTO {
+  return {
+    id: "f-1",
+    ruleId: "SEBI-01",
+    kind: "deterministic",
+    frozenWording: "Rule wording",
+    evaluationStatus: "complete",
+    machineVerdict: "fail",
+    machineReason: "Missing disclaimer",
+    spans: [],
+    machineAt: "2026-03-15T11:05:00.000Z",
+    humanVerdict: null,
+    humanReason: null,
+    humanActor: null,
+    humanAt: null,
+    judgeRun: null,
+    decisions: [],
+    ...overrides,
+  };
+}
 
 describe("complianceDeskName", () => {
   it("appends Compliance to client name", () => {
@@ -77,14 +100,62 @@ describe("accept gating", () => {
     expect(acceptIsEnabled("needs_regen")).toBe(false);
   });
 
-  it("returns disabled captions for non-shippable statuses", () => {
-    expect(acceptDisabledCaption("blocked", 4)).toBe(
-      "Deterministic blocker still open.",
+  it("returns null caption for shippable statuses", () => {
+    const findings = [finding({ machineVerdict: "pass" })];
+    expect(acceptDisabledCaption("clear", findings)).toBeNull();
+    expect(acceptDisabledCaption("cleared_with_exception", findings)).toBeNull();
+  });
+
+  it("names open deterministic blockers", () => {
+    const findings = [finding({ ruleId: "SEBI-01", machineVerdict: "fail" })];
+    expect(acceptDisabledCaption("blocked", findings)).toBe("Blocked by SEBI-01.");
+  });
+
+  it("counts open judgement findings", () => {
+    const findings = [
+      finding({ kind: "judgement", ruleId: "SEBI-06", machineVerdict: "fail" }),
+    ];
+    expect(acceptDisabledCaption("needs_human", findings)).toBe(
+      "1 finding still open.",
     );
-    expect(acceptDisabledCaption("needs_human", 4)).toBe("Review not finished.");
-    expect(acceptDisabledCaption("needs_regen", 4)).toBe(
-      "Regenerate this asset to ship.",
+  });
+
+  it("reports pending evaluation for needs_human", () => {
+    const findings = [
+      finding({
+        kind: "judgement",
+        evaluationStatus: "pending",
+        machineVerdict: null,
+      }),
+    ];
+    expect(acceptDisabledCaption("needs_human", findings)).toBe(
+      "Still evaluating 1 rules.",
     );
-    expect(acceptDisabledCaption("clear", 4)).toBeNull();
+  });
+
+  it("states confirmed judgement fail for needs_regen", () => {
+    const findings = [
+      finding({
+        kind: "judgement",
+        ruleId: "SEBI-06",
+        machineVerdict: "fail",
+        humanVerdict: "confirmed",
+      }),
+    ];
+    expect(acceptDisabledCaption("needs_regen", findings)).toBe(
+      "Confirmed — the copy must change.",
+    );
+  });
+
+  it("prefers blocked copy when deterministic fail is open", () => {
+    const findings = [
+      finding({ ruleId: "SEBI-01", machineVerdict: "fail" }),
+      finding({
+        kind: "judgement",
+        evaluationStatus: "pending",
+        machineVerdict: null,
+      }),
+    ];
+    expect(acceptDisabledCaption("blocked", findings)).toBe("Blocked by SEBI-01.");
   });
 });

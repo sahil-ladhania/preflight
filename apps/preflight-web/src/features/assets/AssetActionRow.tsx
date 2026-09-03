@@ -1,9 +1,8 @@
 /**
  * AssetActionRow — R3a terminal action, regenerate, and export link.
- * Why: one action row with inline disabled reason (09 R3a).
+ * Why: primary/secondary footer tiers with inline disabled reason (09 R3a).
  */
 
-import { Loader2 } from "lucide-react";
 import type { ReactElement } from "react";
 
 import {
@@ -13,18 +12,102 @@ import {
 import type { AssetActionRowProps } from "@/features/assets/types";
 import { cn } from "@/lib/utils";
 
-const filledButtonClass =
-  "inline-flex h-8 shrink-0 cursor-pointer items-center justify-center border border-fg bg-fg px-4 font-sans text-button font-medium text-surface disabled:cursor-not-allowed";
+const buttonTypeClass =
+  "font-sans text-(length:--text-button) leading-none font-medium";
 
-const disabledButtonClass =
-  "inline-flex h-8 shrink-0 cursor-not-allowed items-center justify-center border border-hairline bg-surface px-4 font-sans text-button font-medium text-fg-faint";
+const filledButtonClass = cn(
+  "inline-flex h-8 shrink-0 cursor-pointer items-center justify-center rounded-none border border-fg bg-fg px-4 text-surface disabled:cursor-not-allowed",
+  buttonTypeClass,
+);
 
-const regenerateClass =
-  "inline-flex h-8 shrink-0 cursor-pointer items-center justify-center border border-fg bg-surface px-3 font-sans text-button-sm font-medium text-fg disabled:cursor-not-allowed disabled:opacity-50";
+const disabledButtonClass = cn(
+  "inline-flex h-8 shrink-0 cursor-not-allowed items-center justify-center rounded-none border border-hairline bg-surface px-4 text-fg-faint",
+  buttonTypeClass,
+);
+
+const quietButtonClass = cn(
+  "inline-flex h-8 shrink-0 cursor-pointer items-center justify-center rounded-none border border-hairline bg-surface px-4 text-fg disabled:cursor-not-allowed disabled:opacity-50",
+  buttonTypeClass,
+);
+
+const captionClass = "font-sans text-caption font-normal text-fg-muted";
+
+const exportLinkClass = cn(
+  "shrink-0 cursor-pointer underline underline-offset-4",
+  captionClass,
+);
+
+const supportingLineClass = cn("mt-2", captionClass);
+
+const SUPPORTING_COPY =
+  "Marks this asset ready for the compliance desk. Preflight does not publish.";
+
+function ReadyButton({
+  enabled,
+  onAccept,
+}: {
+  enabled: boolean;
+  onAccept: () => void;
+}): ReactElement {
+  return (
+    <button
+      type="button"
+      className={enabled ? filledButtonClass : disabledButtonClass}
+      disabled={!enabled}
+      onClick={enabled ? onAccept : undefined}
+    >
+      Ready for compliance desk
+    </button>
+  );
+}
+
+function RegenerateButton({
+  primary,
+  inFlight,
+  onRegenerate,
+}: {
+  primary: boolean;
+  inFlight: boolean;
+  onRegenerate: () => void;
+}): ReactElement {
+  return (
+    <button
+      type="button"
+      className={primary ? filledButtonClass : quietButtonClass}
+      disabled={inFlight}
+      onClick={onRegenerate}
+    >
+      {inFlight ? "Regenerating…" : "Regenerate"}
+    </button>
+  );
+}
+
+function ExportLink({
+  inFlight,
+  onExport,
+}: {
+  inFlight: boolean;
+  onExport: () => void;
+}): ReactElement {
+  return (
+    <button
+      type="button"
+      className={cn(
+        exportLinkClass,
+        "rounded-none",
+        inFlight && "cursor-wait opacity-70",
+      )}
+      disabled={inFlight}
+      onClick={onExport}
+    >
+      {inFlight ? "Exporting…" : "Export report"}
+    </button>
+  );
+}
 
 export function AssetActionRow({
   status,
-  findingsCount,
+  findings,
   onAccept,
   onRegenerate,
   onExport,
@@ -32,46 +115,48 @@ export function AssetActionRow({
   regenerateInFlight = false,
 }: AssetActionRowProps): ReactElement {
   const acceptEnabled = acceptIsEnabled(status);
-  const disabledCaption = acceptDisabledCaption(status, findingsCount);
+  const disabledCaption = acceptDisabledCaption(status, findings);
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <button
-          type="button"
-          className={acceptEnabled ? filledButtonClass : disabledButtonClass}
-          disabled={!acceptEnabled}
-          onClick={acceptEnabled ? onAccept : undefined}
-        >
-          Ready for compliance desk
-        </button>
-        {!acceptEnabled && disabledCaption !== null ? (
-          <span className="text-caption text-fg-muted">{disabledCaption}</span>
-        ) : null}
-        <button
-          type="button"
-          className={regenerateClass}
-          disabled={regenerateInFlight}
-          onClick={onRegenerate}
-        >
-          {regenerateInFlight ? (
-            <Loader2 className="size-4 animate-spin" aria-hidden />
+    <div className="flex w-full flex-col items-start gap-3">
+      {acceptEnabled ? (
+        <div>
+          <ReadyButton enabled onAccept={onAccept} />
+          <p className={supportingLineClass}>{SUPPORTING_COPY}</p>
+        </div>
+      ) : (
+        <RegenerateButton
+          primary
+          inFlight={regenerateInFlight}
+          onRegenerate={onRegenerate}
+        />
+      )}
+
+      <div className="w-full border-t border-hairline" aria-hidden />
+
+      <div className="flex w-full items-start justify-between gap-3">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
+          {acceptEnabled ? (
+            <RegenerateButton
+              primary={false}
+              inFlight={regenerateInFlight}
+              onRegenerate={onRegenerate}
+            />
           ) : (
-            "Regenerate"
+            <>
+              <ReadyButton enabled={false} onAccept={onAccept} />
+              {disabledCaption !== null ? (
+                <span className={captionClass}>{disabledCaption}</span>
+              ) : null}
+            </>
           )}
-        </button>
-        <button
-          type="button"
-          className={cn(
-            "cursor-pointer font-sans text-caption text-fg-muted underline underline-offset-4",
-            exportInFlight && "cursor-wait opacity-70",
-          )}
-          disabled={exportInFlight}
-          onClick={onExport}
-        >
-          {exportInFlight ? "Exporting…" : "Export compliance report"}
-        </button>
+        </div>
+        <ExportLink inFlight={exportInFlight} onExport={onExport} />
       </div>
+
+      {!acceptEnabled ? (
+        <p className={supportingLineClass}>{SUPPORTING_COPY}</p>
+      ) : null}
     </div>
   );
 }

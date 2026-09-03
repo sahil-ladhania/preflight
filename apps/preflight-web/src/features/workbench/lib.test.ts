@@ -11,6 +11,7 @@ import {
   buildHandoffFreeText,
   handoffBriefFromMessages,
   handoffEnabled,
+  promptGroupsForPersona,
   seedProposalFromExplainer,
   toChatHistory,
 } from "@/features/workbench/lib";
@@ -38,6 +39,22 @@ function assistantMessage(
     ...overrides,
   };
 }
+
+describe("promptGroupsForPersona", () => {
+  it("puts the campaign group first for Meera", () => {
+    expect(promptGroupsForPersona("meera").map((group) => group.label)).toEqual([
+      "START A CAMPAIGN",
+      "ASK ABOUT THE RULES",
+    ]);
+  });
+
+  it("puts the rules group first for Arjun", () => {
+    expect(promptGroupsForPersona("arjun").map((group) => group.label)).toEqual([
+      "ASK ABOUT THE RULES",
+      "START A CAMPAIGN",
+    ]);
+  });
+});
 
 describe("handoffEnabled", () => {
   it("is false for campaign intent alone without a complete brief", () => {

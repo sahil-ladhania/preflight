@@ -2,7 +2,7 @@
  * lib — assets-only helpers.
  * Why: shortId 8-char truncate and co-located helpers.
  */
-// size: register + detail helpers share one module until a third consumer appears
+// size: caption predicates co-located with accept helpers until extracted on third use
 
 import type {
   AssetStatus,
@@ -53,12 +53,6 @@ export function formatAssetDetailSubtitle(
   return `${channelLabel(channel)} · ${shortId(assetId)} · ${formatRelativeAge(generatedAt)} ago`;
 }
 
-const ACCEPT_DISABLED: Partial<Record<AssetStatus, string>> = {
-  blocked: "Deterministic blocker still open.",
-  needs_human: "Review not finished.",
-  needs_regen: "Regenerate this asset to ship.",
-};
-
 export function shortId(id: string): string {
   return id.slice(0, 8);
 }
@@ -89,17 +83,54 @@ export function formatGeneratedAt(iso: string): string {
   });
 }
 
+function blockedDetRuleIds(findings: FindingDTO[]): string[] {
+  return findings
+    .filter(
+      (finding) =>
+        finding.kind === "deterministic" &&
+        finding.machineVerdict === "fail" &&
+        finding.humanVerdict !== "waived",
+    )
+    .map((finding) => finding.ruleId);
+}
+
+function openJudgementCount(findings: FindingDTO[]): number {
+  return findings.filter(
+    (finding) =>
+      finding.kind === "judgement" &&
+      (finding.evaluationStatus !== "complete" ||
+        (finding.machineVerdict === "fail" && finding.humanVerdict === null)),
+  ).length;
+}
+
 export function acceptDisabledCaption(
   status: AssetStatus,
-  findingsCount: number,
+  findings: FindingDTO[],
 ): string | null {
-  if (findingsCount === 0) {
+  if (findings.length === 0) {
     return "Empty constraint set — not a proof.";
   }
-  if (status === "clear" || status === "cleared_with_exception") {
+  if (acceptIsEnabled(status)) {
     return null;
   }
-  return ACCEPT_DISABLED[status] ?? null;
+  if (status === "blocked") {
+    const ruleIds = blockedDetRuleIds(findings);
+    return ruleIds.length > 0 ? `Blocked by ${ruleIds.join(", ")}.` : null;
+  }
+  if (status === "needs_regen") {
+    return "Confirmed — the copy must change.";
+  }
+  if (status === "needs_human") {
+    const pending = countPending(findings);
+    if (pending > 0) {
+      return `Still evaluating ${pending} rules.`;
+    }
+    const openCount = openJudgementCount(findings);
+    return openCount === 1
+      ? "1 finding still open."
+      : `${openCount} findings still open.`;
+  }
+  return null;
 }
 
 export function acceptIsEnabled(status: AssetStatus): boolean {

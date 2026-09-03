@@ -28,6 +28,34 @@ export function openFindings(findings: FindingDTO[]): FindingDTO[] {
   return findings.filter(isOpenFinding);
 }
 
+export function firstOpenFindingId(findings: FindingDTO[]): string | null {
+  return openFindings(findings)[0]?.id ?? null;
+}
+
+export function initialLedgerFilter(findings: FindingDTO[]): LedgerFilter {
+  return openFindings(findings).length > 0 ? "open" : "all";
+}
+
+export function wordingTone(finding: FindingDTO): "muted" | "ink" {
+  if (
+    finding.evaluationStatus === "pending" ||
+    finding.evaluationStatus === "unavailable" ||
+    finding.machineVerdict === "fail"
+  ) {
+    return "ink";
+  }
+  return "muted";
+}
+
+export function lineageVersionLabel(
+  generationIndex: number | null | undefined,
+): string | null {
+  if (generationIndex === null || generationIndex === undefined) {
+    return null;
+  }
+  return `v${generationIndex}`;
+}
+
 export function ledgerCountLine(findings: FindingDTO[]): string {
   const { passed, needsYou } = verdictCounts(findings);
   const pending = countPending(findings);

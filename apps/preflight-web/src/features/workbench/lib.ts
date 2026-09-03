@@ -11,6 +11,7 @@ import {
 import type { StructuredBriefInput, WorkbenchChatHistoryItem } from "@preflight/schemas";
 import type { RuleCatalogRowDTO } from "@preflight/schemas";
 
+import type { PersonaId } from "@/features/shell/types";
 import {
   accumulatedBriefFromMessages,
   draftBriefsFromMessages,
@@ -18,7 +19,7 @@ import {
 } from "@/features/workbench/useBriefReadiness";
 import type { WorkbenchMessage } from "@/features/workbench/types";
 
-export const WORKBENCH_HEADLINE = "Query the Rulebook";
+export const WORKBENCH_HEADLINE = "Workbench";
 
 export const WORKBENCH_SUBLINE =
   "Ask about a rule, or describe a campaign to start a brief.";
@@ -44,6 +45,20 @@ export const WORKBENCH_PROMPT_GROUPS = [
     ],
   },
 ] as const;
+
+export type WorkbenchPromptGroup = (typeof WORKBENCH_PROMPT_GROUPS)[number];
+
+/** Meera's job is the campaign; Arjun's is the rulebook. Both groups stay. */
+export function promptGroupsForPersona(
+  personaId: PersonaId,
+): readonly [WorkbenchPromptGroup, WorkbenchPromptGroup] {
+  const rulesGroup = WORKBENCH_PROMPT_GROUPS[0];
+  const campaignGroup = WORKBENCH_PROMPT_GROUPS[1];
+  if (personaId === "meera") {
+    return [campaignGroup, rulesGroup];
+  }
+  return [rulesGroup, campaignGroup];
+}
 
 export function nextMessageId(): string {
   return crypto.randomUUID();
