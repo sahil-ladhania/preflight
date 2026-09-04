@@ -1,10 +1,7 @@
-/**
- * BuildPanel — one filled Build it control with adjacent outcome lines.
- * Why: 09 Screen 3 single primary action; reasons never in tooltips.
- */
-
+import { Loader2 } from "lucide-react";
 import type { ReactElement } from "react";
 
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { buildPhaseLine } from "@/features/campaign/campaign-pane";
 import type { BuildPhase } from "@/features/campaign/types";
@@ -38,14 +35,15 @@ export function BuildPanel({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-3">
-        <button
+        <Button
           type="button"
           disabled={buildDisabled}
           className={cn(
-            "inline-flex h-8 shrink-0 cursor-pointer items-center justify-center gap-2 px-4 font-sans text-button font-medium disabled:cursor-not-allowed",
+            "h-8 rounded-none px-4 font-sans text-button font-medium shadow-none cursor-pointer transition-colors",
             filled
-              ? "border border-fg bg-fg text-surface"
-              : "border border-hairline bg-transparent text-fg-faint",
+              ? "border border-fg bg-fg text-surface hover:bg-fg/90"
+              : "border border-hairline bg-transparent text-fg-faint hover:bg-transparent",
+            buildDisabled && "cursor-not-allowed opacity-50"
           )}
           onClick={() => {
             void onRunBuild();
@@ -53,16 +51,13 @@ export function BuildPanel({
         >
           {buildInFlight ? (
             <>
-              <span
-                className="size-[11px] animate-spin rounded-full border-2 border-surface/40 border-t-surface"
-                aria-hidden
-              />
-              Compiling
+              <Loader2 className="size-3.5 animate-spin" aria-hidden />
+              <span>Compiling</span>
             </>
           ) : (
             "Build it"
           )}
-        </button>
+        </Button>
         {!buildInFlight && line !== null ? (
           <p className="text-caption text-fg-muted">{line}</p>
         ) : null}
@@ -74,7 +69,7 @@ export function BuildPanel({
         {onTryExample !== undefined && !buildInFlight ? (
           <button
             type="button"
-            className="cursor-pointer text-caption text-fg-muted underline underline-offset-4"
+            className="cursor-pointer text-caption text-fg-muted underline underline-offset-4 hover:text-fg"
             onClick={onTryExample}
           >
             Try an example
@@ -87,14 +82,15 @@ export function BuildPanel({
         </p>
       ) : null}
       {buildPhase === "needs_ack" ? (
-        <label className="flex cursor-pointer items-start gap-2 text-ui text-fg">
+        <label className="flex cursor-pointer items-start gap-2.5 border border-attention bg-surface p-3 text-ui text-fg">
           <Checkbox
             checked={emptySetAcknowledged}
             onCheckedChange={(checked) => {
               onEmptySetAckChange(checked === true);
             }}
+            className="rounded-none cursor-pointer mt-0.5"
           />
-          <span>
+          <span className="leading-snug">
             No compliance rules apply to this brief — I acknowledge generating
             with an empty constraint set.
           </span>

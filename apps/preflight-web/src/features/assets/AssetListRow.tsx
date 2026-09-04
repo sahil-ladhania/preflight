@@ -6,12 +6,12 @@
 import type { MouseEvent, ReactElement } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import { Badge } from "@/components/ui/badge";
+import { TableCell, TableRow } from "@/components/ui/table";
 import { formatGeneratedAt, shortId } from "@/features/assets/lib";
 import { PendingRing } from "@/features/assets/PendingRing";
-import { REGISTER_ROW_GRID } from "@/features/assets/register-lib";
 import { StatusChip } from "@/features/assets/StatusChip";
 import type { AssetListRowProps } from "@/features/assets/types";
-import { cn } from "@/lib/utils";
 
 function VersionCell({
   generationIndex,
@@ -30,24 +30,28 @@ function VersionCell({
   }
 
   return (
-    <span className="text-[11px] leading-[1.4] text-fg-muted">
+    <div className="flex items-center gap-1.5 text-[11px] text-fg-muted">
       {generationIndex > 1 ? (
-        <span className="font-mono text-[11px] leading-[1.4]">v{generationIndex}</span>
+        <Badge
+          variant="outline"
+          className="rounded-none border-border bg-ground/60 px-1 py-0 font-mono text-[10px] text-fg"
+        >
+          v{generationIndex}
+        </Badge>
       ) : null}
-      {generationIndex > 1 && regeneratedFromId !== null ? " · " : null}
       {regeneratedFromId !== null ? (
-        <>
+        <span className="text-[11px]">
           from{" "}
           <Link
             to={`/assets/${regeneratedFromId}`}
-            className="text-decision underline underline-offset-4"
+            className="font-mono text-decision underline underline-offset-4 hover:text-decision/80"
             onClick={onParentClick}
           >
             {shortId(regeneratedFromId)}
           </Link>
-        </>
+        </span>
       ) : null}
-    </span>
+    </div>
   );
 }
 
@@ -63,7 +67,7 @@ export function AssetListRow({ asset }: AssetListRowProps): ReactElement {
   };
 
   return (
-    <div
+    <TableRow
       role="button"
       tabIndex={0}
       onClick={handleRowClick}
@@ -73,36 +77,37 @@ export function AssetListRow({ asset }: AssetListRowProps): ReactElement {
           handleRowClick();
         }
       }}
-      className={cn(
-        REGISTER_ROW_GRID,
-        "cursor-pointer border-b border-hairline py-2.5 hover:bg-hover [&_.status-marker]:text-[10px]",
-      )}
+      className="cursor-pointer border-b border-border/80 transition-colors hover:bg-hover"
     >
-      <div className="flex min-w-[110px] items-center gap-2">
-        <PendingRing active={asset.pendingCount > 0} />
-        <StatusChip status={asset.status} />
-      </div>
-      <span
-        className="truncate font-serif text-caption text-fg"
-        title={asset.headline}
-      >
-        {asset.headline}
-      </span>
-      <span
-        className="truncate text-caption text-fg-muted"
-        title={asset.campaignName}
-      >
-        {asset.campaignName}
-      </span>
-      <span className="text-caption text-fg">{asset.statusDetail}</span>
-      <span className="text-[11px] leading-[1.4] text-fg-muted">
+      <TableCell className="w-[120px] px-3 py-3 align-middle">
+        <div className="flex items-center gap-2">
+          <PendingRing active={asset.pendingCount > 0} />
+          <StatusChip status={asset.status} />
+        </div>
+      </TableCell>
+      <TableCell className="min-w-[180px] px-3 py-3 align-middle font-serif text-sm text-fg">
+        <span className="line-clamp-2" title={asset.headline}>
+          {asset.headline}
+        </span>
+      </TableCell>
+      <TableCell className="w-[140px] px-3 py-3 align-middle text-xs text-fg-muted">
+        <span className="block truncate" title={asset.campaignName}>
+          {asset.campaignName}
+        </span>
+      </TableCell>
+      <TableCell className="min-w-[200px] px-3 py-3 align-middle text-xs text-fg">
+        <span className="line-clamp-2">{asset.statusDetail}</span>
+      </TableCell>
+      <TableCell className="w-[150px] whitespace-nowrap px-3 py-3 align-middle font-mono text-[11px] text-fg-muted">
         {formatGeneratedAt(asset.generatedAt)}
-      </span>
-      <VersionCell
-        generationIndex={asset.generationIndex}
-        regeneratedFromId={asset.regeneratedFromId}
-        onParentClick={handleParentClick}
-      />
-    </div>
+      </TableCell>
+      <TableCell className="w-[110px] px-3 py-3 align-middle">
+        <VersionCell
+          generationIndex={asset.generationIndex}
+          regeneratedFromId={asset.regeneratedFromId}
+          onParentClick={handleParentClick}
+        />
+      </TableCell>
+    </TableRow>
   );
 }

@@ -6,6 +6,8 @@
 import { Loader2 } from "lucide-react";
 import type { ReactElement } from "react";
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import type { RegisterFilter } from "@/features/assets/register-lib";
 import type { AssetsListShellProps } from "@/features/assets/types";
 import { cn } from "@/lib/utils";
@@ -19,28 +21,53 @@ const FILTER_TABS: { id: RegisterFilter; label: string }[] = [
 function RegisterFilterRail({
   filter,
   onFilterChange,
+  counts,
 }: {
   filter: RegisterFilter;
   onFilterChange: (next: RegisterFilter) => void;
+  counts?: { needYou: number; all: number; resolved: number };
 }): ReactElement {
   return (
     <div className="mt-5 border-b border-hairline">
       <div className="flex gap-6">
         {FILTER_TABS.map((tab) => {
           const active = filter === tab.id;
+          const count = counts
+            ? counts[
+                tab.id === "needs_you"
+                  ? "needYou"
+                  : tab.id === "all"
+                    ? "all"
+                    : "resolved"
+              ]
+            : undefined;
+
           return (
             <button
               key={tab.id}
               type="button"
               className={cn(
-                "cursor-pointer border-0 bg-transparent pb-2 text-[11px] leading-[1.4]",
+                "flex cursor-pointer items-center gap-2 border-0 bg-transparent pb-2 text-xs transition-colors",
                 active
-                  ? "border-b-2 border-fg pb-[9px] font-semibold text-fg"
-                  : "text-fg-muted",
+                  ? "border-b-2 border-fg pb-[7px] font-semibold text-fg"
+                  : "text-fg-muted hover:text-fg",
               )}
               onClick={() => onFilterChange(tab.id)}
             >
-              {tab.label}
+              <span>{tab.label}</span>
+              {count !== undefined ? (
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    "rounded-none px-1.5 py-0 font-mono text-[10px] font-normal transition-colors",
+                    active
+                      ? "border-fg bg-fg text-surface"
+                      : "border-border text-fg-muted",
+                  )}
+                >
+                  {count}
+                </Badge>
+              ) : null}
             </button>
           );
         })}
@@ -57,7 +84,7 @@ export function AssetsListShell({
   filter,
   onFilterChange,
   showFilter,
-  endLine,
+  counts,
 }: AssetsListShellProps): ReactElement {
   const handleNewCampaign = (): void => {
     void onNewCampaign();
@@ -73,10 +100,11 @@ export function AssetsListShell({
               <p className="text-ui text-fg-muted">{workSummary}</p>
             ) : null}
           </div>
-          <button
+          <Button
             type="button"
-            className="inline-flex h-8 shrink-0 cursor-pointer items-center justify-center border border-fg bg-ground px-4 font-sans text-button font-medium text-fg hover:bg-fg hover:text-surface disabled:cursor-not-allowed disabled:opacity-50"
+            variant="outline"
             disabled={createInFlight}
+            className="h-8 rounded-none border border-fg bg-ground px-4 font-sans text-button font-medium text-fg shadow-none hover:bg-fg hover:text-surface disabled:cursor-not-allowed disabled:opacity-50"
             onClick={handleNewCampaign}
           >
             {createInFlight ? (
@@ -84,24 +112,18 @@ export function AssetsListShell({
             ) : (
               "+ New campaign"
             )}
-          </button>
+          </Button>
         </div>
 
         {showFilter ? (
-          <RegisterFilterRail filter={filter} onFilterChange={onFilterChange} />
+          <RegisterFilterRail
+            filter={filter}
+            onFilterChange={onFilterChange}
+            counts={counts}
+          />
         ) : null}
 
         <div className="mt-6 flex flex-1 flex-col">{children}</div>
-
-        {endLine !== null ? (
-          <div className="mt-auto pt-8">
-            <div className="border-t border-fg pt-3">
-              <p className="text-label-strong uppercase text-fg-muted">
-                {endLine}
-              </p>
-            </div>
-          </div>
-        ) : null}
       </div>
     </div>
   );

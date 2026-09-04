@@ -59,6 +59,11 @@ export interface AssetsListShellProps {
   onFilterChange: (filter: RegisterFilter) => void;
   showFilter: boolean;
   endLine: string | null;
+  counts?: {
+    needYou: number;
+    all: number;
+    resolved: number;
+  };
 }
 
 export interface AssetsRegisterTableProps {

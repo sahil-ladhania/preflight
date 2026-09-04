@@ -10,7 +10,6 @@ import { BuiltSummary } from "@/features/campaign/BuiltSummary";
 import { BriefPhase } from "@/features/campaign/BriefPhase";
 import {
   activeCampaignPane,
-  campaignEndLine,
   railStepForPane,
   type PaneOverride,
 } from "@/features/campaign/campaign-pane";
@@ -181,7 +180,6 @@ function CampaignLoaded(props: CampaignProps): ReactElement {
       s2Dimmed={s2Dimmed}
       s3Dimmed={s3Dimmed}
       backToSummary={showBack}
-      endLine={campaignEndLine(campaignAssets)}
       onBackToSummary={() => {
         setPaneOverride(null);
         setRailView("campaign-generate");

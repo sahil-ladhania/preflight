@@ -120,7 +120,7 @@ export function AppSidebar(): ReactElement {
                       : "Assets"
                   }
                   className={cn(
-                    "h-9 rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
+                    "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
                     isAssetsActive &&
                       "border-border bg-surface font-medium text-fg shadow-none",
                   )}
@@ -156,7 +156,7 @@ export function AppSidebar(): ReactElement {
                   tooltip="Campaign"
                   disabled={navigatingCampaign}
                   className={cn(
-                    "h-9 rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
+                    "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
                     isCampaignActive &&
                       "border-border bg-surface font-medium text-fg shadow-none",
                   )}
@@ -175,7 +175,7 @@ export function AppSidebar(): ReactElement {
                   isActive={isRulebookActive}
                   tooltip="Rulebook"
                   className={cn(
-                    "h-9 rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
+                    "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
                     isRulebookActive &&
                       "border-border bg-surface font-medium text-fg shadow-none",
                   )}
@@ -194,7 +194,7 @@ export function AppSidebar(): ReactElement {
                   isActive={isWorkbenchActive}
                   tooltip="Workbench"
                   className={cn(
-                    "h-9 rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
+                    "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
                     isWorkbenchActive &&
                       "border-border bg-surface font-medium text-fg shadow-none",
                   )}

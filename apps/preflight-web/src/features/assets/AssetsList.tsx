@@ -10,6 +10,7 @@ import { AssetsRegisterTable } from "@/features/assets/AssetsRegisterTable";
 import {
   defaultRegisterFilter,
   endOfRegisterLine,
+  registerCounts,
   type RegisterFilter,
   workSummaryLine,
 } from "@/features/assets/register-lib";
@@ -98,6 +99,13 @@ export function AssetsList({
   const loaded = view === "loaded" && assets.length > 0;
   const workSummary = loaded ? workSummaryLine(assets) : null;
   const endLine = loaded ? endOfRegisterLine(assets) : null;
+  const counts = loaded
+    ? {
+        needYou: registerCounts(assets).needYou,
+        all: assets.length,
+        resolved: registerCounts(assets).resolved,
+      }
+    : undefined;
 
   const shell = (content: ReactElement): ReactElement => (
     <AssetsListShell
@@ -108,6 +116,7 @@ export function AssetsList({
       onFilterChange={setFilter}
       showFilter={loaded}
       endLine={endLine}
+      counts={counts}
     >
       {content}
     </AssetsListShell>

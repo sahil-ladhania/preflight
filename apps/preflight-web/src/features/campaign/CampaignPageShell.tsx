@@ -6,6 +6,7 @@
 import { Loader2 } from "lucide-react";
 import type { ReactElement, ReactNode } from "react";
 
+import { Button } from "@/components/ui/button";
 import {
   CampaignStepRail,
   type CampaignStepId,
@@ -33,7 +34,6 @@ export function CampaignPageShell({
   s2Dimmed,
   s3Dimmed,
   backToSummary = false,
-  endLine,
   onBackToSummary,
   onRailStepChange,
   children,
@@ -52,10 +52,11 @@ export function CampaignPageShell({
               <p className="text-ui text-fg-muted">{identityLine}</p>
             ) : null}
           </div>
-          <button
+          <Button
             type="button"
-            className="inline-flex h-8 shrink-0 cursor-pointer items-center justify-center border border-fg bg-ground px-4 font-sans text-button font-medium text-fg hover:bg-fg hover:text-surface disabled:cursor-not-allowed disabled:opacity-50"
+            variant="outline"
             disabled={createInFlight}
+            className="h-8 rounded-none border border-fg bg-ground px-4 font-sans text-button font-medium text-fg shadow-none hover:bg-fg hover:text-surface disabled:cursor-not-allowed disabled:opacity-50"
             onClick={() => {
               void createCampaignAndGo();
             }}
@@ -65,13 +66,13 @@ export function CampaignPageShell({
             ) : (
               "+ New campaign"
             )}
-          </button>
+          </Button>
         </div>
 
         {backToSummary && onBackToSummary !== undefined ? (
           <button
             type="button"
-            className="mt-4 w-fit cursor-pointer text-caption text-fg-muted"
+            className="mt-4 w-fit cursor-pointer text-caption text-fg-muted hover:text-fg"
             onClick={onBackToSummary}
           >
             ← Back to summary
@@ -87,14 +88,6 @@ export function CampaignPageShell({
           />
           <main className="min-w-0 flex-1">{children}</main>
         </div>
-
-        {endLine !== undefined && endLine.length > 0 ? (
-          <div className="mt-auto pt-8">
-            <div className="border-t border-fg pt-3">
-              <p className="text-label-strong text-fg-muted uppercase">{endLine}</p>
-            </div>
-          </div>
-        ) : null}
       </div>
     </div>
   );
