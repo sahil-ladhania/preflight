@@ -1,7 +1,5 @@
 import type { ReactElement } from "react";
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -16,22 +14,22 @@ import type { AssetsRegisterTableProps } from "@/features/assets/types";
 function ColumnHeaderRow(): ReactElement {
   return (
     <TableRow className="border-b border-fg hover:bg-transparent">
-      <TableHead className="w-[120px] font-mono text-[10px] font-medium uppercase tracking-wider text-fg-muted">
+      <TableHead className="w-[120px] font-sans text-label font-normal uppercase tracking-wider text-fg-muted">
         Status
       </TableHead>
-      <TableHead className="min-w-[180px] font-mono text-[10px] font-medium uppercase tracking-wider text-fg-muted">
+      <TableHead className="min-w-[180px] font-sans text-label font-normal uppercase tracking-wider text-fg-muted">
         Asset
       </TableHead>
-      <TableHead className="w-[140px] font-mono text-[10px] font-medium uppercase tracking-wider text-fg-muted">
+      <TableHead className="w-[140px] font-sans text-label font-normal uppercase tracking-wider text-fg-muted">
         Campaign
       </TableHead>
-      <TableHead className="min-w-[200px] font-mono text-[10px] font-medium uppercase tracking-wider text-fg-muted">
+      <TableHead className="min-w-[200px] font-sans text-label font-normal uppercase tracking-wider text-fg-muted">
         Reason
       </TableHead>
-      <TableHead className="w-[150px] font-mono text-[10px] font-medium uppercase tracking-wider text-fg-muted">
+      <TableHead className="w-[150px] font-sans text-label font-normal uppercase tracking-wider text-fg-muted">
         Generated
       </TableHead>
-      <TableHead className="w-[110px] font-mono text-[10px] font-medium uppercase tracking-wider text-fg-muted">
+      <TableHead className="w-[110px] font-sans text-label font-normal uppercase tracking-wider text-fg-muted">
         Version
       </TableHead>
     </TableRow>
@@ -39,7 +37,6 @@ function ColumnHeaderRow(): ReactElement {
 }
 
 function RegisterSection({
-  type,
   label,
   count,
   assets,
@@ -53,36 +50,27 @@ function RegisterSection({
     return <></>;
   }
 
-  const isUrgent = type === "needs_you";
-
   return (
-    <Card className="rounded-none border border-border bg-surface shadow-none overflow-hidden">
-      <CardHeader className="border-b border-border/80 px-4 py-3 flex flex-row items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <CardTitle className="font-serif text-sm font-semibold tracking-tight text-fg">
-            {label}
-          </CardTitle>
-          <Badge
-            variant={isUrgent ? "destructive" : "outline"}
-            className="rounded-none font-mono text-[10px] uppercase font-medium"
-          >
-            {count} {isUrgent ? "pending" : "cleared"}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="p-0">
-        <Table>
-          <TableHeader>
-            <ColumnHeaderRow />
-          </TableHeader>
-          <TableBody>
-            {assets.map((asset) => (
-              <AssetListRow key={asset.id} asset={asset} />
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+    <section className="flex flex-col gap-3">
+      <div className="flex items-baseline gap-2.5 pb-1">
+        <h2 className="font-serif text-wordmark font-semibold tracking-tight text-fg">
+          {label}
+        </h2>
+        <span className="font-mono text-[11px] text-fg-muted">
+          [{count}]
+        </span>
+      </div>
+      <Table>
+        <TableHeader>
+          <ColumnHeaderRow />
+        </TableHeader>
+        <TableBody>
+          {assets.map((asset) => (
+            <AssetListRow key={asset.id} asset={asset} />
+          ))}
+        </TableBody>
+      </Table>
+    </section>
   );
 }
 
@@ -93,7 +81,7 @@ export function AssetsRegisterTable({
   const { needsYou, resolved } = splitRegisterSections(assets, filter);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-12">
       <RegisterSection
         type="needs_you"
         label="Needs you"

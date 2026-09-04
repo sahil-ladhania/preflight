@@ -25,7 +25,7 @@ function FilterTab({
       className={cn(
         "cursor-pointer pb-1.5 font-sans text-xs",
         active
-          ? "border-b-2 border-fg pb-[5px] font-semibold text-fg"
+          ? "border-b-2 border-primary pb-[5px] font-semibold text-primary"
           : "text-fg-muted hover:text-fg",
       )}
       onClick={onClick}
@@ -51,10 +51,10 @@ export function LedgerHeader({
       <p className="font-mono text-[10px] font-medium uppercase tracking-wider text-fg-muted">
         Evidence &amp; decisions
       </p>
-      <p className="font-sans text-sm font-semibold tracking-tight text-fg">
+      <p className="font-serif text-subject-title font-semibold tracking-tight text-fg">
         {countLine}
       </p>
-      <div className="mt-2.5 flex flex-wrap items-center justify-between gap-3 border-b border-hairline/80 pb-1.5">
+      <div className="mt-2.5 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--color-chrome-bottom)]/15 pb-1.5">
         <div className="flex gap-5">
           <FilterTab
             label="All"

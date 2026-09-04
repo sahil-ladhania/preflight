@@ -6,7 +6,6 @@
 import { Loader2 } from "lucide-react";
 import type { ReactElement } from "react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { RegisterFilter } from "@/features/assets/register-lib";
 import type { AssetsListShellProps } from "@/features/assets/types";
@@ -28,7 +27,7 @@ function RegisterFilterRail({
   counts?: { needYou: number; all: number; resolved: number };
 }): ReactElement {
   return (
-    <div className="mt-5 border-b border-hairline">
+    <div className="mt-5 border-b border-[var(--color-chrome-bottom)]/15">
       <div className="flex gap-6">
         {FILTER_TABS.map((tab) => {
           const active = filter === tab.id;
@@ -56,17 +55,16 @@ function RegisterFilterRail({
             >
               <span>{tab.label}</span>
               {count !== undefined ? (
-                <Badge
-                  variant="outline"
+                <span
                   className={cn(
-                    "rounded-none px-1.5 py-0 font-mono text-[10px] font-normal transition-colors",
+                    "font-mono text-[11px] transition-colors",
                     active
-                      ? "border-primary bg-primary text-primary-foreground font-medium"
-                      : "border-border text-fg-muted",
+                      ? "text-primary font-medium"
+                      : "text-fg-muted",
                   )}
                 >
-                  {count}
-                </Badge>
+                  [{count}]
+                </span>
               ) : null}
             </button>
           );
@@ -94,10 +92,10 @@ export function AssetsListShell({
     <div className="flex min-h-below-topbar flex-col bg-ground px-12 pt-8 pb-12 lg:px-20 xl:px-32">
       <div className="mx-auto flex w-full max-w-register flex-1 flex-col">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-2">
             <h1 className="font-serif text-page-title text-fg">Asset Register</h1>
             {workSummary !== null ? (
-              <p className="text-ui text-fg-muted">{workSummary}</p>
+              <p className="font-serif text-subject-title text-fg">{workSummary}</p>
             ) : null}
           </div>
           <Button

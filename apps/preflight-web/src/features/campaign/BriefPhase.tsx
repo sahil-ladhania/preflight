@@ -5,13 +5,6 @@
 
 import { useEffect, useState, type ReactElement } from "react";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { BuildPanel } from "@/features/campaign/BuildPanel";
 import { FieldReview } from "@/features/campaign/FieldReview";
 import {
@@ -56,25 +49,25 @@ export function BriefPhase({
   };
 
   return (
-    <div className="flex flex-col gap-5">
-      <Card className="rounded-none border border-border bg-surface shadow-none">
-        <CardHeader className="border-b border-border/80 px-5 py-3.5">
-          <div className="flex items-center justify-between">
-            <CardTitle className="font-serif text-sm font-semibold tracking-tight text-fg">
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-baseline justify-between">
+            <h2 className="font-serif text-wordmark font-semibold tracking-tight text-fg">
               Campaign Brief
-            </CardTitle>
+            </h2>
             <span className="font-mono text-[11px] text-fg-muted">
               {freeText.trim().length > 0
                 ? `${freeText.trim().length} chars`
                 : "Draft"}
             </span>
           </div>
-          <CardDescription className="font-sans text-xs text-fg-muted">
+          <p className="font-sans text-xs text-fg-muted">
             Describe your campaign in plain language. Preflight compiles
             applicable rules and extracts structured brief fields.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4 p-5">
+          </p>
+        </div>
+        <div className="flex flex-col gap-4">
           <textarea
             value={freeText}
             disabled={building}
@@ -82,7 +75,7 @@ export function BriefPhase({
             onChange={(event) => onFreeTextChange(event.target.value)}
             className={cn(
               CAMPAIGN_TEXTAREA_CLASS,
-              "border-border bg-ground/40 transition-colors focus-visible:border-decision focus-visible:bg-surface",
+              "border-hairline bg-surface transition-colors focus-visible:border-decision",
               building && "pointer-events-none opacity-40",
             )}
           />
@@ -97,8 +90,8 @@ export function BriefPhase({
               onTryExample={building ? undefined : handleTryExample}
             />
           ) : null}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <FieldReview
         brief={brief}

@@ -12,7 +12,8 @@ import { Thread } from "@/features/workbench/Thread";
 import type { WorkbenchProps } from "@/features/workbench/types";
 import { useWorkbench } from "@/features/workbench/useWorkbench";
 import { useWorkbenchFixture } from "@/features/workbench/useWorkbenchFixture";
-import { PageStage } from "@/features/shell/PageStage";
+import { WorkbenchTexture } from "@/features/workbench/WorkbenchTexture";
+import { WORKBENCH_HEADLINE, WORKBENCH_SUBLINE } from "@/features/workbench/lib";
 import { useToastContext } from "@/features/shell/ToastHost";
 
 const PREFETCH_FAIL_TOAST = "Could not load rules catalog.";
@@ -29,10 +30,10 @@ export function Workbench({
   handoffEnabled: handoffEnabledProp,
   handoffDisabledCaption: handoffDisabledCaptionProp,
   briefReadiness: briefReadinessProp,
-  showSearchFallback: showSearchFallbackProp,
-  searchQuery: searchQueryProp,
+  showSearchFallback: _showSearchFallbackProp,
+  searchQuery: _searchQueryProp,
   onComposerTextChange,
-  onSearchQueryChange,
+  onSearchQueryChange: _onSearchQueryChange,
   onSend,
   onGoToCampaign,
   onStartCampaignFromConversation,
@@ -51,28 +52,12 @@ export function Workbench({
   }, [controlled, prefetchFailed, enqueue]);
 
   const messages = controlled ? (messagesProp ?? []) : fixture.messages;
-  const composerText = controlled
-    ? (composerTextProp ?? "")
-    : fixture.composerText;
-  const sendInFlight = controlled
-    ? (sendInFlightProp ?? false)
-    : fixture.sendInFlight;
-  const handoffInFlight = controlled
-    ? (handoffInFlightProp ?? false)
-    : fixture.handoffInFlight;
-  const handoffEnabled = controlled
-    ? (handoffEnabledProp ?? false)
-    : fixture.handoffEnabled;
-  const handoffDisabledCaption = controlled
-    ? (handoffDisabledCaptionProp ?? null)
-    : fixture.handoffDisabledCaption;
-  const briefReadiness = controlled
-    ? briefReadinessProp
-    : fixture.briefReadiness;
-  const showSearchFallback = controlled
-    ? (showSearchFallbackProp ?? false)
-    : fixture.showSearchFallback;
-  const searchQuery = controlled ? (searchQueryProp ?? "") : fixture.searchQuery;
+  const composerText = controlled ? (composerTextProp ?? "") : fixture.composerText;
+  const sendInFlight = controlled ? (sendInFlightProp ?? false) : fixture.sendInFlight;
+  const handoffInFlight = controlled ? (handoffInFlightProp ?? false) : fixture.handoffInFlight;
+  const handoffEnabled = controlled ? (handoffEnabledProp ?? false) : fixture.handoffEnabled;
+  const handoffDisabledCaption = controlled ? (handoffDisabledCaptionProp ?? null) : fixture.handoffDisabledCaption;
+  const briefReadiness = controlled ? briefReadinessProp : fixture.briefReadiness;
   const isEmpty = messages.length === 0;
 
   const setComposerText = onComposerTextChange ?? fixture.setComposerText;
@@ -109,7 +94,7 @@ export function Workbench({
       handoffInFlight={handoffInFlight}
       handoffEnabled={handoffEnabled}
       handoffDisabledCaption={handoffDisabledCaption}
-      showCampaignActions={!isEmpty}
+      showCampaignActions={false}
       appearance={isEmpty ? "empty" : "thread"}
       onChange={setComposerText}
       onSend={handleSend}
@@ -118,41 +103,58 @@ export function Workbench({
     />
   );
 
-  if (isEmpty) {
-    return (
-      <EmptyStage
-        composer={composer}
-        handoffInFlight={handoffInFlight}
-        onPromptSelect={setComposerText}
-      />
-    );
-  }
-
   return (
-    <div className="bg-ground">
-      <PageStage>
-          <Thread
-            messages={messages}
-            rules={rules}
-            showSearchFallback={showSearchFallback}
-            searchQuery={searchQuery}
-            onSearchQueryChange={
-              onSearchQueryChange ?? fixture.setSearchQuery
-            }
+    <div className="relative min-h-below-topbar w-full bg-ground">
+      <WorkbenchTexture />
+      {isEmpty ? (
+        <div className="relative z-10">
+          <EmptyStage
+            composer={composer}
+            handoffInFlight={handoffInFlight}
+            onPromptSelect={setComposerText}
           />
-          <div className="shrink-0 border-t border-border p-4 sm:px-6">
-            {briefReadiness !== undefined ? (
-              <div className="mb-2">
-                <BriefReadiness
-                  capturedCount={briefReadiness.capturedCount}
-                  missing={briefReadiness.missing}
-                  complete={briefReadiness.complete}
-                />
-              </div>
-            ) : null}
+        </div>
+      ) : (
+        <div className="relative z-10 mx-auto flex min-h-below-topbar w-full max-w-workbench flex-col px-8 py-8">
+          <div className="flex flex-col gap-2">
+            <h1 className="font-serif text-subject-title text-fg">
+              {WORKBENCH_HEADLINE}
+            </h1>
+            <p className="text-ui text-fg-muted">{WORKBENCH_SUBLINE}</p>
+          </div>
+          <div className="mt-6">
             {composer}
           </div>
-      </PageStage>
+          <div className="mt-6 flex flex-col gap-6">
+            <Thread
+              messages={messages}
+              rules={rules}
+              showSearchFallback={false}
+              searchQuery=""
+              onSearchQueryChange={() => {}}
+            />
+            {briefReadiness !== undefined ? (
+              <BriefReadiness
+                capturedCount={briefReadiness.capturedCount}
+                missing={briefReadiness.missing}
+                complete={briefReadiness.complete}
+                handoffEnabled={handoffEnabled}
+                handoffInFlight={handoffInFlight}
+                handoffDisabledCaption={handoffDisabledCaption}
+                onStartCampaignFromConversation={handleStartCampaign}
+                onGoToCampaign={handleGoToCampaign}
+              />
+            ) : null}
+          </div>
+          <div className="mt-auto pt-8">
+            <div className="border-t border-fg pt-3">
+              <span className="text-label-strong uppercase text-fg-muted">
+                End of conversation
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

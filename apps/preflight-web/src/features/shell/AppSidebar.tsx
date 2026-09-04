@@ -1,11 +1,9 @@
 /**
  * AppSidebar — product sidebar navigation for Preflight.
- * Why: enterprise workspace shell replacing top navbar per user decision.
+ * Why: enterprise workspace shell in crafted navy chrome per 08 §3.6 / Phase 1.
  */
 
 import type { ReactElement } from "react";
-import { BookOpen, Layers, Sparkles, Target } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
 
 import {
   Sidebar,
@@ -14,22 +12,17 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuBadge,
-  SidebarMenuButton,
-  SidebarMenuItem,
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { RegisterGrid } from "@/features/shell/RegisterGrid";
+import { SidebarNavList } from "@/features/shell/SidebarNavList";
 import { SidebarUserMenu } from "@/features/shell/SidebarUserMenu";
 import { useCampaignNavTarget } from "@/features/shell/useCampaignNavTarget";
 import { usePersonaHomeNavigation } from "@/features/shell/usePersonaHomeNavigation";
 import { useQueueCount } from "@/features/shell/useQueueCount";
-import { cn } from "@/lib/utils";
 
 export function AppSidebar(): ReactElement {
-  const location = useLocation();
-  const navigate = useNavigate();
   const { state, isMobile } = useSidebar();
   const isCollapsed = state === "collapsed" && !isMobile;
   const queueCountValue = useQueueCount();
@@ -37,17 +30,43 @@ export function AppSidebar(): ReactElement {
   const { navigating: navigatingCampaign, navigateToCampaign } =
     useCampaignNavTarget();
 
-  const isAssetsActive = location.pathname.startsWith("/assets");
-  const isCampaignActive = location.pathname.startsWith("/campaign");
-  const isRulebookActive = location.pathname.startsWith("/rulebook");
-  const isWorkbenchActive = location.pathname.startsWith("/workbench");
-
   return (
     <Sidebar
       collapsible="icon"
-      className="border-r border-border bg-ground text-fg"
+      className="relative border-r border-[var(--color-chrome-edge)] text-[var(--color-chrome-fg)] [&_[data-slot=sidebar-inner]]:bg-transparent"
+      style={{
+        background:
+          "linear-gradient(180deg, var(--color-chrome-top) 0%, #253648 45%, var(--color-chrome-bottom) 68%, var(--color-chrome-bottom) 100%)",
+      }}
     >
-      <SidebarHeader className="flex flex-row items-center justify-between border-b border-border p-3 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-2 group-data-[collapsible=icon]:p-2">
+      {/* 1px lighter top highlight line */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 z-20 h-px bg-[#416283]"
+        aria-hidden="true"
+      />
+
+      {/* Ledger grid at low opacity with bottom fade */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+        style={{
+          maskImage:
+            "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0.2) 85%, rgba(0,0,0,0) 100%)",
+          WebkitMaskImage:
+            "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0.2) 85%, rgba(0,0,0,0) 100%)",
+        }}
+        aria-hidden="true"
+      >
+        <RegisterGrid
+          stroke="#ffffff"
+          strokeOpacity={0.05}
+          vStrokeOpacity={0.04}
+          fill="#ffffff"
+          fillOpacity={0.04}
+          className="h-full w-full object-cover"
+        />
+      </div>
+
+      <SidebarHeader className="relative z-10 flex flex-row items-center justify-between border-b border-white/5 p-3 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-2 group-data-[collapsible=icon]:p-2">
         {!isCollapsed ? (
           <>
             <button
@@ -66,16 +85,16 @@ export function AppSidebar(): ReactElement {
                 height={18}
                 role="img"
                 aria-hidden="true"
-                className="shrink-0 text-primary"
+                className="shrink-0 text-[var(--color-chrome-fg)]"
               >
                 <rect x="6" y="4" width="2.5" height="16" fill="currentColor" />
                 <rect x="6" y="14" width="12" height="2.5" fill="currentColor" />
               </svg>
-              <span className="font-serif text-lg font-semibold tracking-tight text-primary">
+              <span className="font-serif text-lg font-semibold tracking-tight text-[var(--color-chrome-fg)]">
                 Preflight
               </span>
             </button>
-            <SidebarTrigger className="size-7 border-0 bg-transparent text-fg shadow-none hover:bg-hover cursor-pointer" />
+            <SidebarTrigger className="size-7 cursor-pointer border-0 bg-transparent text-[var(--color-chrome-fg-muted)] shadow-none hover:bg-white/10 hover:text-[var(--color-chrome-fg)]" />
           </>
         ) : (
           <>
@@ -95,123 +114,33 @@ export function AppSidebar(): ReactElement {
                 height={20}
                 role="img"
                 aria-label="Preflight logo"
-                className="shrink-0 text-primary"
+                className="shrink-0 text-[var(--color-chrome-fg)]"
               >
                 <rect x="6" y="4" width="2.5" height="16" fill="currentColor" />
                 <rect x="6" y="14" width="12" height="2.5" fill="currentColor" />
               </svg>
             </button>
-            <SidebarTrigger className="size-7 border-0 bg-transparent text-fg shadow-none hover:bg-hover cursor-pointer" />
+            <SidebarTrigger className="size-7 cursor-pointer border-0 bg-transparent text-[var(--color-chrome-fg-muted)] shadow-none hover:bg-white/10 hover:text-[var(--color-chrome-fg)]" />
           </>
         )}
       </SidebarHeader>
 
-      <SidebarContent className="p-2">
+      <SidebarContent className="relative z-10 p-2">
         <SidebarGroup className="p-0">
           <SidebarGroupContent>
-            <SidebarMenu className="gap-1">
-              {/* Assets Link */}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  isActive={isAssetsActive}
-                  tooltip={
-                    queueCountValue !== null && queueCountValue > 0
-                      ? `Assets (${queueCountValue})`
-                      : "Assets"
-                  }
-                  className={cn(
-                    "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
-                    isAssetsActive &&
-                      "border-border border-l-2 border-l-primary bg-surface font-semibold text-primary shadow-none",
-                  )}
-                  onClick={() => {
-                    void navigate("/assets");
-                  }}
-                >
-                  <div className="relative flex items-center justify-center">
-                    <Layers className={cn("size-4 shrink-0", isAssetsActive && "text-primary")} />
-                    {isCollapsed &&
-                    queueCountValue !== null &&
-                    queueCountValue > 0 ? (
-                      <span className="absolute -top-1.5 -right-2 flex size-3.5 items-center justify-center rounded-none border border-primary bg-primary font-mono text-[9px] font-semibold text-primary-foreground shadow-xs">
-                        {queueCountValue}
-                      </span>
-                    ) : null}
-                  </div>
-                  <span>Assets</span>
-                  {!isCollapsed &&
-                  queueCountValue !== null &&
-                  queueCountValue > 0 ? (
-                    <SidebarMenuBadge className={cn("font-mono text-xs font-normal", isAssetsActive ? "text-primary font-medium" : "text-fg-muted")}>
-                      [{queueCountValue}]
-                    </SidebarMenuBadge>
-                  ) : null}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Campaign Link */}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  isActive={isCampaignActive}
-                  tooltip="Campaign"
-                  disabled={navigatingCampaign}
-                  className={cn(
-                    "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
-                    isCampaignActive &&
-                      "border-border border-l-2 border-l-primary bg-surface font-semibold text-primary shadow-none",
-                  )}
-                  onClick={() => {
-                    void navigateToCampaign();
-                  }}
-                >
-                  <Target className={cn("size-4 shrink-0", isCampaignActive && "text-primary")} />
-                  <span>Campaign</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Rulebook Link */}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  isActive={isRulebookActive}
-                  tooltip="Rulebook"
-                  className={cn(
-                    "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
-                    isRulebookActive &&
-                      "border-border border-l-2 border-l-primary bg-surface font-semibold text-primary shadow-none",
-                  )}
-                  onClick={() => {
-                    void navigate("/rulebook");
-                  }}
-                >
-                  <BookOpen className={cn("size-4 shrink-0", isRulebookActive && "text-primary")} />
-                  <span>Rulebook</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Workbench Link */}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  isActive={isWorkbenchActive}
-                  tooltip="Workbench"
-                  className={cn(
-                    "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
-                    isWorkbenchActive &&
-                      "border-border border-l-2 border-l-primary bg-surface font-semibold text-primary shadow-none",
-                  )}
-                  onClick={() => {
-                    void navigate("/workbench");
-                  }}
-                >
-                  <Sparkles className={cn("size-4 shrink-0", isWorkbenchActive && "text-primary")} />
-                  <span>Workbench</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
+            <SidebarNavList
+              isCollapsed={isCollapsed}
+              queueCount={queueCountValue}
+              navigatingCampaign={navigatingCampaign}
+              onNavigateCampaign={() => {
+                void navigateToCampaign();
+              }}
+            />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-border p-2">
+      <SidebarFooter className="relative z-10 border-t border-white/5 p-2">
         <SidebarUserMenu />
       </SidebarFooter>
     </Sidebar>

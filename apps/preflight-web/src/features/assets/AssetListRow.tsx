@@ -77,7 +77,7 @@ export function AssetListRow({ asset }: AssetListRowProps): ReactElement {
           handleRowClick();
         }
       }}
-      className="cursor-pointer border-b border-border/80 transition-colors hover:bg-primary-wash/40"
+      className="cursor-pointer border-b border-hairline hover:bg-hover"
     >
       <TableCell className="w-[120px] px-3 py-3 align-middle">
         <div className="flex items-center gap-2">

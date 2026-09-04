@@ -70,27 +70,27 @@ export function SidebarUserMenu(): ReactElement {
               <SidebarMenuButton
                 size="lg"
                 className={cn(
-                  "h-12 w-full rounded-none border border-border bg-surface px-2.5 py-2 hover:bg-hover data-popup-open:bg-hover shadow-none cursor-pointer",
+                  "h-12 w-full rounded-none border border-[#344e66] bg-[#253444] px-2.5 py-2 hover:bg-[#2c3d50] data-popup-open:bg-[#2c3d50] shadow-none cursor-pointer",
                   isCollapsed && "size-9 p-0 justify-center"
                 )}
                 tooltip={isCollapsed ? `${actor.name} (${actor.role})` : undefined}
               />
             }
           >
-            <div className="flex size-7 shrink-0 items-center justify-center border border-fg bg-fg font-mono text-xs font-semibold text-surface">
+            <div className="flex size-7 shrink-0 items-center justify-center border border-[#344e66] bg-[#2d4156] font-mono text-xs font-semibold text-[var(--color-chrome-fg)]">
               {initial}
             </div>
             {!isCollapsed ? (
               <>
                 <div className="grid flex-1 text-left text-xs leading-tight">
-                  <span className="truncate font-sans font-medium text-fg">
+                  <span className="truncate font-sans font-medium text-[var(--color-chrome-fg)]">
                     {actor.name}
                   </span>
-                  <span className="truncate font-mono text-[10px] uppercase text-fg-muted">
+                  <span className="truncate font-mono text-[10px] uppercase text-[var(--color-chrome-fg-muted)]">
                     {actor.role}
                   </span>
                 </div>
-                <ChevronsUpDown className="ml-auto size-4 text-fg-muted shrink-0" />
+                <ChevronsUpDown className="ml-auto size-4 text-[var(--color-chrome-fg-muted)] shrink-0" />
               </>
             ) : null}
           </DropdownMenuTrigger>
@@ -99,7 +99,7 @@ export function SidebarUserMenu(): ReactElement {
             side={isMobile ? "bottom" : "right"}
             align={isCollapsed ? "end" : "end"}
             sideOffset={8}
-            className="w-64 rounded-none border border-fg bg-surface p-2 shadow-none"
+            className="w-64 rounded-none border border-fg bg-surface p-2 shadow-lift"
           >
             <div className="p-2">
               <div className="flex flex-col gap-0.5">

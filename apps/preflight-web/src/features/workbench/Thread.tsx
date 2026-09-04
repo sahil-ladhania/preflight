@@ -8,7 +8,6 @@ import { useCallback, useEffect, useRef, type ReactElement } from "react";
 import { PendingRing } from "@/features/assets/PendingRing";
 import { CommentSheet } from "@/features/workbench/CommentSheet";
 import { RuleCards } from "@/features/workbench/RuleCards";
-import { SearchFallback } from "@/features/workbench/SearchFallback";
 import { useTypewriterReveal } from "@/features/workbench/useTypewriterReveal";
 import type { ThreadProps, WorkbenchMessage } from "@/features/workbench/types";
 
@@ -35,7 +34,7 @@ function AssistantMessageBlock({
 
   return (
     <CommentSheet label="Preflight" variant="assistant">
-      <p className="whitespace-pre-wrap text-body-airy text-fg">
+      <p className="whitespace-pre-wrap font-serif text-[14px] leading-[24px] text-fg">
         {shouldReveal ? visibleText : message.text}
       </p>
       <RuleCards ruleIds={message.ruleIds} rules={rules} />
@@ -55,7 +54,7 @@ function MessageBlock({
   if (message.role === "user") {
     return (
       <CommentSheet variant="user">
-        <p className="whitespace-pre-wrap text-body-airy text-fg">
+        <p className="whitespace-pre-wrap font-serif text-[14px] leading-[22px] font-semibold text-fg">
           {message.text}
         </p>
       </CommentSheet>
@@ -67,7 +66,9 @@ function MessageBlock({
       <CommentSheet label="Preflight" variant="assistant">
         <div className="flex items-center gap-2">
           <PendingRing active />
-          <p className="text-body-airy text-fg-muted">Thinking…</p>
+          <span className="font-serif text-[14px] leading-[24px] text-fg-muted">
+            Thinking…
+          </span>
         </div>
       </CommentSheet>
     );
@@ -85,7 +86,7 @@ function MessageBlock({
 
   return (
     <CommentSheet label="Preflight" variant="error">
-      <p className="whitespace-pre-wrap text-body-airy text-fg-muted">
+      <p className="whitespace-pre-wrap font-serif text-[14px] leading-[24px] text-fg-muted">
         {message.text}
       </p>
     </CommentSheet>
@@ -95,9 +96,6 @@ function MessageBlock({
 export function Thread({
   messages,
   rules,
-  showSearchFallback,
-  searchQuery,
-  onSearchQueryChange,
 }: ThreadProps): ReactElement {
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -114,7 +112,7 @@ export function Thread({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-4 sm:px-6">
+    <div className="flex flex-col gap-4 w-full">
       {messages.map((message) => (
         <MessageBlock
           key={message.id}
@@ -123,13 +121,6 @@ export function Thread({
           onRevealProgress={scrollToEnd}
         />
       ))}
-      {showSearchFallback ? (
-        <SearchFallback
-          rules={rules}
-          query={searchQuery}
-          onQueryChange={onSearchQueryChange}
-        />
-      ) : null}
       <div ref={endRef} />
     </div>
   );

@@ -14,7 +14,7 @@ function KindBadge({
   kind: RuleCardsProps["rules"][number]["kind"];
 }): ReactElement {
   return (
-    <span className="rounded-md border border-border px-1.5 py-0 text-kind text-fg-muted">
+    <span className="rounded-none border border-border px-1.5 py-0 text-kind text-fg-muted">
       {kind === "deterministic" ? "det" : "jdg"}
     </span>
   );
@@ -26,7 +26,7 @@ export function RuleCard({
   rule: RuleCardsProps["rules"][number];
 }): ReactElement {
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface px-4 py-3">
+    <div className="flex flex-col gap-2 rounded-none border border-border bg-surface px-4 py-3">
       <div className="flex items-center gap-2">
         <span className="text-mono text-fg-muted">{rule.ruleId}</span>
         <KindBadge kind={rule.kind} />

@@ -44,10 +44,10 @@ export function RulebookShell({
     <div className="flex min-h-below-topbar flex-col bg-ground px-12 pt-8 pb-12 lg:px-20 xl:px-32">
       <div className="mx-auto flex w-full max-w-register flex-1 flex-col">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             <h1 className="font-serif text-page-title text-fg">Rulebook</h1>
             {summary !== null ? (
-              <p className="text-ui text-fg-muted">{summary}</p>
+              <p className="font-serif text-subject-title text-fg">{summary}</p>
             ) : null}
             {postSaveCaption ? (
               <p className="text-caption text-fg-muted">{POST_SAVE_CAPTION}</p>

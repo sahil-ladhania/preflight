@@ -46,10 +46,10 @@ export function CampaignPageShell({
     <div className="flex min-h-below-topbar flex-col bg-ground px-8 pt-8 pb-12">
       <div className="mx-auto flex w-full max-w-campaign flex-1 flex-col">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             <h1 className="font-serif text-page-title text-fg">Campaign</h1>
             {identityLine.length > 0 ? (
-              <p className="text-ui text-fg-muted">{identityLine}</p>
+              <p className="font-serif text-wordmark text-fg">{identityLine}</p>
             ) : null}
           </div>
           <Button

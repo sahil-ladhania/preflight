@@ -14,7 +14,7 @@ import type { RulebookRowProps } from "@/features/rulebook/types";
 
 export function RulebookRow({ rule, onEdit }: RulebookRowProps): ReactElement {
   return (
-    <TableRow className="border-b border-border py-1.5 hover:bg-hover transition-colors">
+    <TableRow className="border-b border-hairline py-1.5 hover:bg-hover">
       <TableCell className="w-[100px] font-mono text-mono-meta text-fg py-1.5 px-2 align-middle truncate">
         {rule.ruleId}
       </TableCell>

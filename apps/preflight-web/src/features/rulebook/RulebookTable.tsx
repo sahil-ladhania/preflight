@@ -79,7 +79,7 @@ export function RulebookTable({
   const advisory = rules.filter((rule) => rule.kind === "judgement");
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-12">
       <RuleSection
         header={`Binding — checked in code, cannot be edited (${binding.length})`}
         rules={binding}

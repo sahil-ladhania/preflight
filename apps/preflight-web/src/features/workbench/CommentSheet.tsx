@@ -6,31 +6,22 @@
 import type { ReactElement } from "react";
 
 import type { CommentSheetProps } from "@/features/workbench/types";
-import { cn } from "@/lib/utils";
 
 export function CommentSheet({
   label,
   variant = "assistant",
   children,
 }: CommentSheetProps): ReactElement {
-  const showLabel = label !== undefined && variant !== "user";
+  const displayLabel = variant === "user" ? "You" : label;
 
   return (
-    <div className="flex flex-col gap-1">
-      {showLabel ? (
-        <p className="text-caption text-fg-muted">{label}</p>
+    <div className="border-t border-hairline pt-4 flex flex-col gap-1.5">
+      {displayLabel !== undefined ? (
+        <span className="font-sans text-caption text-fg-muted">
+          {displayLabel}
+        </span>
       ) : null}
-      <div
-        className={cn(
-          "rounded-2xl px-4 py-3",
-          variant === "user" && "bg-ground",
-          variant === "assistant" && "border border-border bg-surface",
-          variant === "error" && "border border-border bg-surface",
-        )}
-      >
-        {variant === "user" ? (
-          <p className="mb-1 text-caption text-fg-muted">You</p>
-        ) : null}
+      <div className="text-fg">
         {children}
       </div>
     </div>

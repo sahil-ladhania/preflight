@@ -32,7 +32,7 @@ const HELPER_COPY = {
 } as const;
 
 const modalShellClass = cn(
-  "w-full max-w-[480px] gap-4 rounded-none border border-fg bg-surface p-7 text-fg shadow-none ring-0",
+  "w-full max-w-[480px] gap-4 rounded-none border border-fg bg-surface p-7 text-fg shadow-lift ring-0",
   "duration-0 data-open:animate-none data-closed:animate-none",
 );
 

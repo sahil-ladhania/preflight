@@ -19,7 +19,7 @@ export function SheetShell({
     >
       <SheetContent
         side="right"
-        className="top-0 z-50 flex h-full w-[400px] flex-col gap-0 border-l border-fg bg-surface p-0 shadow-none sm:max-w-[400px]"
+        className="top-0 z-50 flex h-full w-[400px] flex-col gap-0 border-l border-fg bg-surface p-0 shadow-lift sm:max-w-[400px]"
       >
         {children}
       </SheetContent>

@@ -71,9 +71,9 @@ export interface SearchFallbackProps {
 export interface ThreadProps {
   messages: WorkbenchMessage[];
   rules: RuleCatalogRowDTO[];
-  showSearchFallback: boolean;
-  searchQuery: string;
-  onSearchQueryChange: (query: string) => void;
+  showSearchFallback?: boolean;
+  searchQuery?: string;
+  onSearchQueryChange?: (query: string) => void;
 }
 
 export interface ComposerProps {

@@ -44,7 +44,7 @@ export function DeleteRuleModal({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="rounded-none border border-fg bg-surface p-6 shadow-none sm:max-w-[420px]"
+        className="rounded-none border border-fg bg-surface p-6 shadow-lift sm:max-w-[420px]"
       >
         <DialogHeader>
           <DialogTitle className="font-serif text-sheet-title font-semibold text-fg">

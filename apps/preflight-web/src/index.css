@@ -172,11 +172,23 @@
   --color-decision-wash: #eef1f4;
   --color-pass: #3f5c46;
 
-  /* -- Colour: primary brand (institutional compliance navy) ---------------- */
-  --color-primary: #172b42;
-  --color-primary-hover: #0f1e2f;
+  /* -- Colour: primary brand (institutional compliance navy, Phase 5) -------- */
+  --color-primary: #1e2b38;
+  --color-primary-hover: #16222d;
   --color-primary-wash: #edf3f8;
-  --color-primary-foreground: #fffdf9;
+  --color-primary-foreground: #f2efe7;
+
+  /* -- Colour: chrome / navy scale (08 §3.6, Phase 0) ----------------------- */
+  --color-chrome-top: #34506b;
+  --color-chrome-bottom: #1e2b38;
+  --color-chrome-edge: #161f28;
+  --color-chrome-fg: #f2efe7;
+  --color-chrome-fg-muted: #b8c5d1;
+  --color-chrome-active: #38526d;
+
+  /* -- Depth / shadow (08 Phase 0, consumed in Phase 6) -------------------- */
+  --shadow-lift: 0 1px 2px rgba(28, 26, 23, 0.06),
+    0 8px 24px rgba(28, 26, 23, 0.06);
 
   /* -- Colour: channel preview (08 §3.6) ------------------------------------
      The one sanctioned foreign palette. Brand-kit values are injected at
@@ -204,9 +216,9 @@
   --color-card-foreground: var(--color-fg);
   --color-popover: var(--color-surface);
   --color-popover-foreground: var(--color-fg);
-  --color-primary: #172b42;
-  --color-primary-foreground: #fffdf9;
-  --color-primary-hover: #0f1e2f;
+  --color-primary: var(--color-chrome-bottom);
+  --color-primary-foreground: var(--color-chrome-fg);
+  --color-primary-hover: #16222d;
   --color-secondary: var(--color-surface);
   --color-secondary-foreground: var(--color-fg);
   --color-muted: var(--color-hover);
@@ -216,7 +228,7 @@
   --color-destructive: var(--color-fail);
   --color-border: var(--color-hairline);
   --color-input: var(--color-hairline);
-  --color-ring: #172b42;
+  --color-ring: var(--color-chrome-bottom);
 
   --color-sidebar: var(--color-ground);
   --color-sidebar-foreground: var(--color-fg);
