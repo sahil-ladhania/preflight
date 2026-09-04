@@ -8,9 +8,8 @@ import { Link } from "react-router-dom";
 
 import type { RerunStripDTO } from "@preflight/schemas";
 
-import { AgentRunBadge } from "@/features/assets/AgentRunBadge";
 import { ExceptionsSummary } from "@/features/assets/ExceptionsSummary";
-import { formatAssetDetailSubtitle, shortId } from "@/features/assets/lib";
+import { formatContextSubtitle, shortId } from "@/features/assets/lib";
 import { LineageBanner } from "@/features/assets/LineageBanner";
 import { RerunStrip } from "@/features/assets/RerunStrip";
 import type { AssetDetailFixture } from "@/features/assets/types";
@@ -34,17 +33,13 @@ export function AssetContextPane({
     campaignName ?? `Campaign ${shortId(asset.campaignId)}`;
 
   return (
-    <div className="flex h-full min-h-0 w-[300px] shrink-0 flex-col overflow-hidden border-r border-hairline bg-ground">
+    <div className="flex h-full min-h-0 w-[20%] shrink-0 flex-col overflow-hidden border-r border-hairline bg-ground">
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 py-5">
         <div className="flex flex-col gap-4">
-          {/* 1. Meta line */}
+          {/* 1. Meta line: channel · age ago (no asset ID) */}
           <div>
             <p className="font-mono text-mono-meta text-fg-muted">
-              {formatAssetDetailSubtitle(
-                asset.channel,
-                asset.id,
-                asset.generatedAt,
-              )}
+              {formatContextSubtitle(asset.channel, asset.generatedAt)}
             </p>
           </div>
 
@@ -56,8 +51,10 @@ export function AssetContextPane({
             />
           ) : null}
 
-          {/* 3. Provenance */}
-          <AgentRunBadge run={asset.generatorRun} />
+          {/* 3. Exceptions banner (above campaign per spec) */}
+          {asset.exceptions.length > 0 ? (
+            <ExceptionsSummary exceptions={asset.exceptions} />
+          ) : null}
 
           {/* 4. Campaign link */}
           <div className="flex flex-col gap-0.5">
@@ -73,23 +70,17 @@ export function AssetContextPane({
             </Link>
           </div>
 
-          {/* 5. Frozen ruleset */}
+          {/* 5. Rules frozen (no hash) */}
           <div className="flex flex-col gap-0.5">
             <span className="font-sans text-label uppercase tracking-[0.04em] text-fg-muted">
-              Ruleset
+              Rules frozen
             </span>
             <p className="font-mono text-mono-meta text-fg-muted">
-              {asset.findings.length} rules pinned ·{" "}
-              <span className="tabular-nums">{shortId(asset.rulesetHash)}</span>
+              {asset.findings.length} rules
             </p>
           </div>
 
-          {/* 6. Exceptions banner */}
-          {asset.exceptions.length > 0 ? (
-            <ExceptionsSummary exceptions={asset.exceptions} />
-          ) : null}
-
-          {/* 7. Re-run deterministic */}
+          {/* 6. Re-check hard rules */}
           <div className="border-t border-hairline pt-3">
             <RerunStrip
               strip={rerunStrip}
@@ -99,14 +90,6 @@ export function AssetContextPane({
           </div>
         </div>
 
-        {/* Page termination line per 08 §4.5 */}
-        <div className="mt-auto pt-6">
-          <div className="border-t border-fg pt-2">
-            <p className="font-sans text-label-strong uppercase tracking-[0.06em] text-fg-muted text-[10px]">
-              Context · {asset.findings.length} rules pinned
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );

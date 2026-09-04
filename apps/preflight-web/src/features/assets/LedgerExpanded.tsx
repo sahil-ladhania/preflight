@@ -118,14 +118,7 @@ export function LedgerExpanded(props: LedgerExpandedProps): ReactElement {
   const actions = <DecisionButtons {...props} />;
 
   return (
-    <div className="flex flex-col gap-3 border-t border-hairline bg-surface px-5 pb-[18px]">
-      {/* Frozen rule wording outranks machine reason typographically (08 §5.7) */}
-      <div className="pt-3.5 pb-1">
-        <p className="font-serif text-copy text-fg leading-relaxed">
-          {finding.frozenWording}
-        </p>
-      </div>
-
+    <div className="flex flex-col gap-3 bg-surface px-3 pb-3 pt-1">
       {/* Machine finding — unboxed and flush on surface */}
       <div className="flex flex-col gap-2">
         <p className="text-micro uppercase tracking-[0.06em] text-fg-muted font-semibold">

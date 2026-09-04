@@ -5,6 +5,7 @@
 
 import { useState, type ReactElement } from "react";
 
+import { ButtonGroup } from "@/components/ui/button-group";
 import { AssetCopyField } from "@/features/assets/AssetCopyField";
 import { ChannelPreview } from "@/features/assets/previews/ChannelPreview";
 import type { AssetDetailFixture } from "@/features/assets/types";
@@ -24,14 +25,14 @@ export function AssetArtefactPane({
   const [activeTab, setActiveTab] = useState<"copy" | "preview">("copy");
 
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden border-r border-hairline bg-surface">
+    <div className="flex h-full min-h-0 w-[46%] shrink-0 flex-col overflow-hidden border-r border-hairline bg-surface">
       {/* Header: Segmented Control (Copy | Preview) */}
       <div className="flex shrink-0 items-center justify-between border-b border-hairline bg-surface px-6 py-3">
-        <div className="flex items-center gap-1.5">
+        <ButtonGroup className="rounded-none">
           <button
             type="button"
             className={cn(
-              "cursor-pointer border border-fg px-3 py-1 font-sans text-xs",
+              "cursor-pointer rounded-none border border-fg bg-transparent px-3 py-1 font-sans text-xs shadow-none",
               activeTab === "copy"
                 ? "font-semibold text-fg"
                 : "font-normal text-fg-muted hover:text-fg",
@@ -43,7 +44,7 @@ export function AssetArtefactPane({
           <button
             type="button"
             className={cn(
-              "cursor-pointer border border-fg px-3 py-1 font-sans text-xs",
+              "cursor-pointer rounded-none border border-fg bg-transparent px-3 py-1 font-sans text-xs shadow-none",
               activeTab === "preview"
                 ? "font-semibold text-fg"
                 : "font-normal text-fg-muted hover:text-fg",
@@ -52,10 +53,7 @@ export function AssetArtefactPane({
           >
             Preview
           </button>
-        </div>
-        <span className="font-mono text-mono-meta text-fg-muted uppercase">
-          {asset.channel}
-        </span>
+        </ButtonGroup>
       </div>
 
       {/* Main Artefact Body */}
@@ -112,9 +110,11 @@ export function AssetArtefactPane({
 
         {/* Page termination line per 08 §4.5 */}
         <div className="mt-auto pt-6">
-          <div className="border-t border-fg pt-2">
+          <div className="border-t border-fg pt-1.5">
             <p className="font-sans text-label-strong uppercase tracking-[0.06em] text-fg-muted text-[10px]">
-              Artefact · {activeTab === "copy" ? "4 copy fields" : "channel preview"}
+              {activeTab === "copy"
+                ? "END OF COPY — 4 FIELDS"
+                : "END OF COPY — PREVIEW"}
             </p>
           </div>
         </div>

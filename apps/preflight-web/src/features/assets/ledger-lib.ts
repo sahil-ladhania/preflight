@@ -74,9 +74,25 @@ export function ledgerCountLine(findings: FindingDTO[]): string {
 
 export function stepperLabel(open: FindingDTO[], index: number): string {
   if (open.length === 0) {
-    return "All rules resolved";
+    return "";
   }
   return `Finding ${index + 1} of ${open.length}`;
+}
+
+export function rowLeftHue(finding: FindingDTO): string {
+  if (finding.humanVerdict !== null) {
+    return "border-l-[3px] border-decision";
+  }
+  if (
+    finding.evaluationStatus === "pending" ||
+    finding.evaluationStatus === "unavailable"
+  ) {
+    return "border-l-[3px] border-attention";
+  }
+  if (finding.machineVerdict === "fail") {
+    return "border-l-[3px] border-fail";
+  }
+  return "border-l-[3px] border-transparent";
 }
 
 export function stepperIndexForId(

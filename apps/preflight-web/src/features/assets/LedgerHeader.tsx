@@ -23,9 +23,9 @@ function FilterTab({
     <button
       type="button"
       className={cn(
-        "cursor-pointer pb-1.5 font-sans text-xs transition-colors",
+        "cursor-pointer pb-1.5 font-sans text-xs",
         active
-          ? "border-b-2 border-primary pb-[5px] font-semibold text-primary"
+          ? "border-b-2 border-fg pb-[5px] font-semibold text-fg"
           : "text-fg-muted hover:text-fg",
       )}
       onClick={onClick}
@@ -67,35 +67,37 @@ export function LedgerHeader({
             onClick={() => onFilterChange("open")}
           />
         </div>
-        <div className="flex items-center gap-1.5 font-mono text-[11px] text-fg-muted">
-          {showStepperChevrons ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="size-5 rounded-none p-0 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed hover:bg-hover hover:text-fg"
-              disabled={!canStepperPrev}
-              onClick={onStepperPrev}
-              aria-label="Previous open finding"
-            >
-              <ChevronLeft className="size-3.5" aria-hidden />
-            </Button>
-          ) : null}
-          <span className="font-sans text-xs">{stepperText}</span>
-          {showStepperChevrons ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="size-5 rounded-none p-0 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed hover:bg-hover hover:text-fg"
-              disabled={!canStepperNext}
-              onClick={onStepperNext}
-              aria-label="Next open finding"
-            >
-              <ChevronRight className="size-3.5" aria-hidden />
-            </Button>
-          ) : null}
-        </div>
+        {stepperText ? (
+          <div className="flex items-center gap-1.5 font-mono text-[11px] text-fg-muted">
+            {showStepperChevrons ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-5 rounded-none p-0 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed hover:bg-hover hover:text-fg"
+                disabled={!canStepperPrev}
+                onClick={onStepperPrev}
+                aria-label="Previous open finding"
+              >
+                <ChevronLeft className="size-3.5" aria-hidden />
+              </Button>
+            ) : null}
+            <span className="font-sans text-xs">{stepperText}</span>
+            {showStepperChevrons ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-5 rounded-none p-0 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed hover:bg-hover hover:text-fg"
+                disabled={!canStepperNext}
+                onClick={onStepperNext}
+                aria-label="Next open finding"
+              >
+                <ChevronRight className="size-3.5" aria-hidden />
+              </Button>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );

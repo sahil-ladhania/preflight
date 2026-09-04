@@ -14,6 +14,7 @@ import {
   ledgerCountLine,
   lineageVersionLabel,
   openFindings,
+  rowLeftHue,
   stepperLabel,
   visibleFindings,
   wordingTone,
@@ -120,12 +121,43 @@ describe("ledgerCountLine", () => {
 });
 
 describe("stepperLabel", () => {
-  it("reads all resolved at zero", () => {
-    expect(stepperLabel([], 0)).toBe("All rules resolved");
+  it("returns empty string at zero", () => {
+    expect(stepperLabel([], 0)).toBe("");
   });
 
   it("numbers the current open finding", () => {
     expect(stepperLabel([finding({ id: "a" })], 0)).toBe("Finding 1 of 1");
+  });
+});
+
+describe("rowLeftHue", () => {
+  it("returns decision border when human verdict exists", () => {
+    expect(rowLeftHue(finding({ humanVerdict: "waived" }))).toBe(
+      "border-l-[3px] border-decision",
+    );
+  });
+
+  it("returns attention border for pending or unavailable", () => {
+    expect(
+      rowLeftHue(finding({ evaluationStatus: "pending", machineVerdict: null })),
+    ).toBe("border-l-[3px] border-attention");
+    expect(
+      rowLeftHue(
+        finding({ evaluationStatus: "unavailable", machineVerdict: null }),
+      ),
+    ).toBe("border-l-[3px] border-attention");
+  });
+
+  it("returns fail border for machine fail", () => {
+    expect(rowLeftHue(finding({ machineVerdict: "fail" }))).toBe(
+      "border-l-[3px] border-fail",
+    );
+  });
+
+  it("returns transparent border for pass", () => {
+    expect(rowLeftHue(finding({ machineVerdict: "pass" }))).toBe(
+      "border-l-[3px] border-transparent",
+    );
   });
 });
 

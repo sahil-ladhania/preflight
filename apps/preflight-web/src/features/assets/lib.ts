@@ -53,6 +53,13 @@ export function formatAssetDetailSubtitle(
   return `${channelLabel(channel)} · ${shortId(assetId)} · ${formatRelativeAge(generatedAt)} ago`;
 }
 
+export function formatContextSubtitle(
+  channel: Channel,
+  generatedAt: string,
+): string {
+  return `${channelLabel(channel)} · ${formatRelativeAge(generatedAt)} ago`;
+}
+
 export function shortId(id: string): string {
   return id.slice(0, 8);
 }

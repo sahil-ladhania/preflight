@@ -11,7 +11,7 @@ import type { FindingDTO } from "@preflight/schemas";
 import { Badge } from "@/components/ui/badge";
 import { LedgerExpanded } from "@/features/assets/LedgerExpanded";
 import { humanVerdictLabel } from "@/features/assets/lib";
-import { wordingTone } from "@/features/assets/ledger-lib";
+import { rowLeftHue, wordingTone } from "@/features/assets/ledger-lib";
 import { PendingRing } from "@/features/assets/PendingRing";
 import { cn } from "@/lib/utils";
 
@@ -89,17 +89,17 @@ export function LedgerRow({
   onRetry,
 }: LedgerRowProps): ReactElement {
   const isOpen = openFindingId === finding.id;
+  const isPass =
+    finding.machineVerdict === "pass" && finding.humanVerdict === null;
+  const leftHue = isPass ? "border-l-0" : rowLeftHue(finding);
 
   return (
-    <div className="border-b border-hairline">
+    <div className={cn("border-b border-hairline", leftHue)}>
       <button
         type="button"
         data-finding-row={finding.id}
         onClick={() => onRowClick(finding.id)}
-        className={cn(
-          "flex w-full items-center gap-2.5 px-5 py-2.5 text-left font-sans font-normal hover:bg-hover cursor-pointer",
-          isOpen && "bg-surface",
-        )}
+        className="flex w-full items-center gap-2.5 px-3 py-2 text-left font-sans font-normal hover:bg-hover cursor-pointer"
       >
         <span className="inline-flex size-3 shrink-0 items-center justify-center">
           <MachineIcon finding={finding} />
@@ -109,7 +109,7 @@ export function LedgerRow({
         </span>
         <span
           className={cn(
-            "min-w-0 flex-1 truncate font-sans text-xs",
+            "min-w-0 flex-1 font-serif text-serif-row leading-[1.4]",
             wordingTone(finding) === "muted" ? "text-fg-muted" : "text-fg",
           )}
           title={finding.frozenWording}
@@ -122,7 +122,7 @@ export function LedgerRow({
       {isOpen ? (
         <LedgerExpanded
           finding={finding}
-          isPassSelected={finding.machineVerdict === "pass"}
+          isPassSelected={isPass}
           onConfirm={() => onConfirm(finding.id)}
           onOverride={() => onOverride(finding.id)}
           onWaive={() => onWaive(finding.id)}

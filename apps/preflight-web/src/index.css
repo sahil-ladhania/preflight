@@ -381,12 +381,13 @@
      a clear asset is the absence of a problem and should not read as an event.
      ------------------------------------------------------------------------- */
   .status-marker {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     border-left: var(--border-status-rule) solid currentColor;
     padding-left: 6px;
     font-family: var(--font-mono);
     font-size: 11px;
-    line-height: 1.4;
+    line-height: 1.2;
     font-weight: 600;
     text-transform: uppercase;
   }

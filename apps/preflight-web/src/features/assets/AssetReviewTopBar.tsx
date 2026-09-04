@@ -5,11 +5,9 @@
 
 import type { ReactElement } from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import type { AssetStatus } from "@preflight/schemas";
 
-import { Button } from "@/components/ui/button";
 import { StatusChip } from "@/features/assets/StatusChip";
 import { cn } from "@/lib/utils";
 
@@ -22,11 +20,6 @@ export interface AssetReviewTopBarProps {
   hasNextAsset: boolean;
   onPrevAsset?: () => void;
   onNextAsset?: () => void;
-  acceptEnabled: boolean;
-  disabledReason: string | null;
-  onAccept: () => void;
-  onRegenerate: () => void;
-  regenerateInFlight?: boolean;
   onExport: () => void;
   exportInFlight?: boolean;
 }
@@ -40,11 +33,6 @@ export function AssetReviewTopBar({
   hasNextAsset,
   onPrevAsset,
   onNextAsset,
-  acceptEnabled,
-  disabledReason,
-  onAccept,
-  onRegenerate,
-  regenerateInFlight = false,
   onExport,
   exportInFlight = false,
 }: AssetReviewTopBarProps): ReactElement {
@@ -67,48 +55,43 @@ export function AssetReviewTopBar({
         </Link>
         <span className="text-hairline select-none">&middot;</span>
         <h1
-          className="max-w-[280px] truncate font-serif text-[15px] font-semibold text-fg"
+          className="font-serif text-subject-title font-semibold text-fg"
           title={headline}
         >
           {headline}
         </h1>
-        <span className="text-hairline select-none">&middot;</span>
         <StatusChip status={status} surface="detail" />
       </div>
 
       {/* Centre Slot: Queue stepper */}
       <div className="flex items-center gap-2 font-sans text-caption text-fg">
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="icon"
-          className="size-6 rounded-none p-0 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed hover:bg-hover hover:text-fg"
+          className="cursor-pointer font-mono text-sm leading-none text-fg disabled:cursor-not-allowed disabled:opacity-30 hover:text-fg-muted p-0 bg-transparent border-0"
           disabled={!hasPrevAsset}
           onClick={onPrevAsset}
           aria-label="Previous asset in queue"
         >
-          <ChevronLeft className="size-4" aria-hidden />
-        </Button>
+          &lsaquo;
+        </button>
         <span className="select-none font-medium">{queueLabel}</span>
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="icon"
-          className="size-6 rounded-none p-0 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed hover:bg-hover hover:text-fg"
+          className="cursor-pointer font-mono text-sm leading-none text-fg disabled:cursor-not-allowed disabled:opacity-30 hover:text-fg-muted p-0 bg-transparent border-0"
           disabled={!hasNextAsset}
           onClick={onNextAsset}
           aria-label="Next asset in queue"
         >
-          <ChevronRight className="size-4" aria-hidden />
-        </Button>
+          &rsaquo;
+        </button>
       </div>
 
-      {/* Right Slot: Export, Regenerate, Ready with disabled reason */}
-      <div className="flex items-center gap-4">
+      {/* Right Slot: Export report plain-link tertiary only */}
+      <div className="flex items-center">
         <button
           type="button"
           className={cn(
-            "cursor-pointer font-sans text-caption text-fg-muted underline underline-offset-4 hover:text-fg",
+            "cursor-pointer font-sans text-xs text-fg-muted underline underline-offset-4 hover:text-fg font-normal bg-transparent border-0 p-0 shadow-none",
             exportInFlight && "cursor-wait opacity-70",
           )}
           disabled={exportInFlight}
@@ -116,37 +99,6 @@ export function AssetReviewTopBar({
         >
           {exportInFlight ? "Exporting…" : "Export report"}
         </button>
-
-        <Button
-          type="button"
-          variant="outline"
-          className="h-8 rounded-none border-fg bg-transparent px-3 font-sans text-xs font-medium text-fg hover:bg-hover cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-          disabled={regenerateInFlight}
-          onClick={onRegenerate}
-        >
-          {regenerateInFlight ? "Regenerating…" : "Regenerate"}
-        </Button>
-
-        <div className="flex items-center gap-2.5">
-          <Button
-            type="button"
-            className={cn(
-              "h-8 rounded-none border px-4 font-sans text-xs font-medium leading-none",
-              acceptEnabled
-                ? "border-fg bg-fg text-surface hover:opacity-90 cursor-pointer"
-                : "border-hairline bg-surface text-fg-faint cursor-not-allowed",
-            )}
-            disabled={!acceptEnabled}
-            onClick={acceptEnabled ? onAccept : undefined}
-          >
-            Ready for compliance desk
-          </Button>
-          {!acceptEnabled && disabledReason !== null ? (
-            <span className="font-sans text-caption text-fg-muted max-w-[200px] truncate" title={disabledReason}>
-              {disabledReason}
-            </span>
-          ) : null}
-        </div>
       </div>
     </header>
   );

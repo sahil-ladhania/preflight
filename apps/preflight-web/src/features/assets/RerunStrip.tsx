@@ -4,9 +4,11 @@
  */
 
 import { useState, type ReactElement } from "react";
-import { ChevronDown, ChevronRight, Loader2, RefreshCw } from "lucide-react";
+import { ChevronDown, ChevronRight, Loader2 } from "lucide-react";
 
 import type { RerunStripDTO } from "@preflight/schemas";
+
+import { Button } from "@/components/ui/button";
 
 import { shortId } from "@/features/assets/lib";
 import {
@@ -102,9 +104,6 @@ function StripBody({ strip }: { strip: RerunStripDTO }): ReactElement {
     </div>
   );
 }
-
-import { Button } from "@/components/ui/button";
-
 export function RerunStrip({
   strip,
   onRerun,
@@ -124,18 +123,20 @@ export function RerunStrip({
           {rerunInFlight ? (
             <>
               <Loader2 className="size-3.5 animate-spin" aria-hidden />
-              Re-running…
+              Re-checking…
             </>
           ) : (
             <>
-              <RefreshCw className="size-3.5 shrink-0" aria-hidden />
-              Re-run deterministic
+              <span className="text-xs" aria-hidden="true">
+                ↻
+              </span>
+              Re-check hard rules
             </>
           )}
         </Button>
       </div>
       <p className="font-sans text-caption text-fg-muted">
-        Re-runs frozen rules on this copy. Read-only — does not change pass/fail.
+        Checks this copy against the rules frozen when it was made. Changes no verdict.
       </p>
       {strip !== null ? <StripBody strip={strip} /> : null}
     </div>

@@ -14,11 +14,7 @@ import {
 } from "@/features/assets/AssetDetailStates";
 import { AssetReviewTopBar } from "@/features/assets/AssetReviewTopBar";
 import { ReasonModal } from "@/features/assets/ReasonModal";
-import {
-  acceptDisabledCaption,
-  acceptIsEnabled,
-  findingById,
-} from "@/features/assets/lib";
+import { findingById } from "@/features/assets/lib";
 import type { AssetDetailProps } from "@/features/assets/types";
 import { useAssetSelection } from "@/features/assets/useAssetSelection";
 
@@ -105,15 +101,6 @@ export function AssetDetail({
         hasNextAsset={hasNextAsset}
         onPrevAsset={onPrevAsset}
         onNextAsset={onNextAsset}
-        acceptEnabled={acceptIsEnabled(asset.status)}
-        disabledReason={acceptDisabledCaption(asset.status, asset.findings)}
-        onAccept={handleAccept}
-        onRegenerate={() => {
-          if (onRegenerate !== undefined) {
-            void onRegenerate();
-          }
-        }}
-        regenerateInFlight={regenerateInFlight}
         onExport={() => {
           if (onExport !== undefined) {
             void onExport();
