@@ -2,7 +2,7 @@
 
 Preflight is a checklist before a marketing asset ships — same procedure every time, producing a record.
 
-This note is the product story. Locks live in `[documentation/](documentation/)`. Run steps live in the [README](README.md).
+This note is the product story. Locks live in `[documentation/](documentation/)`. Run steps live in the [README](README.md). Design philosophy lives in [design.md](design.md).
 
 ## Opening we took
 
@@ -75,13 +75,13 @@ Skills are not pasted into the prompt. The agent gets a list of names and paths,
 ## Five decisions
 
 
-| Decision                                                                          | Why                                                                                           | Trade-off                                                                    |
-| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| The ledger is the product, not the copywriter.                                    | Review is where the calendar time goes. Proof is the work; copy is not.                       | Generation stays plain. Assets is the hero screen, not Campaign.             |
-| Two engines. Code checks the hard rules; one isolated model call checks each soft rule. | "Disclaimer missing" is a fact. "Tone is off" is a reading. One model doing both loses per-rule attribution. | More moving parts. The model alone can never clear or block an asset.        |
-| Evidence points at one frozen string. The model's span is a claim; the server finds it. | Trust the model's offsets and you will highlight a lie. Live fields shift; a frozen string does not. | Text only. No images, video, or layout.                                      |
-| Status is computed from findings, never stored.                                   | A stored status is a second source of truth, and it drifts from the ledger.                   | Recomputed on every read. Nothing to index or filter on.                     |
-| Compile freezes the rule's wording, and nothing travels on regenerate.            | A rule edited Wednesday must not rewrite Monday's proof. A waiver covers one asset, not every future one. | Wording is duplicated per compile. Reviewers decide again after each regenerate. |
+| Decision                                                                                | Why                                                                                                          | Trade-off                                                                        |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| The ledger is the product, not the copywriter.                                          | Review is where the calendar time goes. Proof is the work; copy is not.                                      | Generation stays plain. Assets is the hero screen, not Campaign.                 |
+| Two engines. Code checks the hard rules; one isolated model call checks each soft rule. | "Disclaimer missing" is a fact. "Tone is off" is a reading. One model doing both loses per-rule attribution. | More moving parts. The model alone can never clear or block an asset.            |
+| Evidence points at one frozen string. The model's span is a claim; the server finds it. | Trust the model's offsets and you will highlight a lie. Live fields shift; a frozen string does not.         | Text only. No images, video, or layout.                                          |
+| Status is computed from findings, never stored.                                         | A stored status is a second source of truth, and it drifts from the ledger.                                  | Recomputed on every read. Nothing to index or filter on.                         |
+| Compile freezes the rule's wording, and nothing travels on regenerate.                  | A rule edited Wednesday must not rewrite Monday's proof. A waiver covers one asset, not every future one.    | Wording is duplicated per compile. Reviewers decide again after each regenerate. |
 
 
 
@@ -91,6 +91,8 @@ Skills are not pasted into the prompt. The agent gets a list of names and paths,
 - **Confirm** — the machine is right. Do not ship. Fix the copy.
 - **Override** — the machine misread. Not an exception. Forbidden on deterministic fails.
 - **Waive** — the machine is right, ship anyway. Both readings stay. Chip is Exception, never Clear.
+
+
 
 ## What audit trail sits around the ledger?
 
@@ -103,6 +105,8 @@ The ledger is the proof. These are the records that sit around it:
 - If a brief tries to override instructions, it is flagged and logged — nothing is silently fixed.
 - Export a compliance report as JSON — freeze, findings, exceptions, and run details in one file.
 
+
+
 ## What did we leave out — and why?
 
 - Auth, tenants, or a compliance department.
@@ -112,22 +116,24 @@ The ledger is the proof. These are the records that sit around it:
 - SOC 2, a model-risk programme, or PII redaction. Shape of a trail, not a certification.
 - N locales as one feature. Each locale is another asset.
 
+
+
 ## Stack
 
 
-| Layer        | Choice                                              |
-| ------------ | --------------------------------------------------- |
-| Repo         | Turborepo — two apps, two shared packages           |
-| Language     | TypeScript, end to end                              |
-| Frontend     | React + Vite                                        |
-| Backend      | Express                                             |
-| Database     | PostgreSQL + Prisma                                 |
-| Styling      | Tailwind + shadcn/ui                                |
-| Validation   | Zod, in a shared package                            |
-| Agents       | GitAgent (Lyzr OpenGAP), in-process `query()`       |
-| Model        | OpenAI `gpt-4o-mini`                                |
-| Rule engine  | Plain TypeScript                                    |
-| Tests        | Vitest in the packages, `node:test` in the backend  |
+| Layer       | Choice                                             |
+| ----------- | -------------------------------------------------- |
+| Repo        | Turborepo — two apps, two shared packages          |
+| Language    | TypeScript, end to end                             |
+| Frontend    | React + Vite                                       |
+| Backend     | Express                                            |
+| Database    | PostgreSQL + Prisma                                |
+| Styling     | Tailwind + shadcn/ui                               |
+| Validation  | Zod, in a shared package                           |
+| Agents      | GitAgent (Lyzr OpenGAP), in-process `query()`      |
+| Model       | OpenAI `gpt-4o-mini`                               |
+| Rule engine | Plain TypeScript                                   |
+| Tests       | Vitest in the packages, `node:test` in the backend |
 
 
 Two of those are load-bearing:
@@ -135,7 +141,11 @@ Two of those are load-bearing:
 - **The rule engine has zero dependencies.** Nothing to install means nothing to drift. That is what makes the determinism claim checkable.
 - **Every agent reply is parsed by Zod before it becomes data.** Bad JSON means no asset and no finding — never a silent pass.
 
+
+
 ## Read next
 
+- [Design philosophy](design.md) — why the product looks and behaves the way it does
 - [README](README.md) — run locally
 - [Walkthrough](https://www.loom.com/share/2e1dccfde6b740f1a604ed5cb3e4b906)
+

@@ -8,7 +8,7 @@ A checklist before a marketing asset ships — same procedure, a record.
 
 `TypeScript` · `React` · `Vite` · `Express` · `PostgreSQL` · `Prisma` · `GitAgent` · `OpenAI`
 
-[How the product works →](product.md)
+[How the product works →](product.md) · [Design philosophy →](design.md)
 
 </div>
 
@@ -52,6 +52,7 @@ Four places carry the claims. Each one is checkable in a minute.
 
 | Path | What it shows |
 | ---- | ------------- |
+| `design.md` | Why the product looks and behaves the way it does |
 | `apps/preflight-backend/agents/defs/` | The four agents — SOUL, RULES, and the skill files a channel is made of |
 | `packages/rules/` | The deterministic engine. Zero dependencies, 52 tests |
 | `packages/schemas/src/fold-status.ts` | Status is computed here, and nowhere else |
