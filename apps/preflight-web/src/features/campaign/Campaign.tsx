@@ -21,6 +21,7 @@ import {
   CampaignLoadingState,
 } from "@/features/campaign/CampaignStates";
 import { FreezeTable } from "@/features/campaign/FreezeTable";
+import { GeneratingPane } from "@/features/campaign/GeneratingPane";
 import { briefFromCampaign, campaignGateState } from "@/features/campaign/lib";
 import type { CampaignProps } from "@/features/campaign/types";
 import { useCampaignFixture } from "@/features/campaign/useCampaignFixture";
@@ -129,7 +130,20 @@ function CampaignLoaded(props: CampaignProps): ReactElement {
   };
 
   let paneContent: ReactElement;
-  if (pane === "building") {
+  if (
+    pane === "building" &&
+    buildPhase === "generate" &&
+    compileResult !== null
+  ) {
+    paneContent = (
+      <GeneratingPane
+        buildPhase={buildPhase}
+        buildInFlight={buildInFlight}
+        compileResult={compileResult}
+        onRunBuild={onRunBuild ?? (() => undefined)}
+      />
+    );
+  } else if (pane === "building") {
     paneContent = <BriefPhase {...sharedBriefProps} building />;
   } else if (pane === "freeze") {
     paneContent = (

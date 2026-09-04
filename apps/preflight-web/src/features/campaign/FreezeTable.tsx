@@ -32,9 +32,9 @@ function RuleRow({ rule }: { rule: CompileRuleCardDTO }): ReactElement {
       </span>
       <div className="flex min-w-0 flex-col gap-1">
         <p className="font-serif text-serif-row text-fg">{rule.wording}</p>
-        <p className="text-[11px] text-fg-muted">
-          Applies because: {rule.applicabilityReason}
-        </p>
+        {/* The server sends the whole sentence ("Applies because …"); a client
+            prefix here would double it. */}
+        <p className="text-[11px] text-fg-muted">{rule.applicabilityReason}</p>
       </div>
     </div>
   );

@@ -141,16 +141,25 @@ export function countNeedsHuman(assets: AssetListItemDTO[]): number {
   return assets.filter((asset) => NEEDS_HUMAN.includes(asset.status)).length;
 }
 
+export function countPendingFindings(assets: AssetListItemDTO[]): number {
+  return assets.reduce((total, asset) => total + asset.pendingCount, 0);
+}
+
 export function campaignProgressLine(assets: AssetListItemDTO[]): string {
   const total = assets.length;
   if (total === 0) {
     return "";
   }
   const needsHuman = countNeedsHuman(assets);
-  if (needsHuman > 0) {
-    return `${needsHuman} of ${total} still need a human decision.`;
+  const settled =
+    needsHuman > 0
+      ? `${needsHuman} of ${total} still need a human decision.`
+      : `All ${total} ready to ship.`;
+  const pending = countPendingFindings(assets);
+  if (pending === 0) {
+    return settled;
   }
-  return `All ${total} ready to ship.`;
+  return `${settled} Evaluating ${pending} rules…`;
 }
 
 export function campaignEndLine(assets: AssetListItemDTO[]): string {

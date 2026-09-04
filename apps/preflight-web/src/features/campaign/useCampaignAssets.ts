@@ -1,60 +1,66 @@
 /**
  * useCampaignAssets — campaign-scoped assets from GET /assets.
- * Why: Built pane filters list items by campaignId client-side.
+ * Why: Built pane filters list items by campaignId and polls the judgement
+ * fan-out the same way the register does.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { AssetListItemDTO } from "@preflight/schemas";
 
 import { getAssetsService } from "@/features/assets/assets.service";
+import { usePendingPoll } from "@/features/assets/usePendingPoll";
 
 export function useCampaignAssets(campaignId: string | undefined): {
   assets: AssetListItemDTO[];
   loading: boolean;
-  reload: () => void;
+  reload: () => Promise<void>;
 } {
   const [assets, setAssets] = useState<AssetListItemDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [reloadToken, setReloadToken] = useState<number>(0);
+  const abortRef = useRef<AbortController | null>(null);
 
-  const reload = useCallback((): void => {
-    setReloadToken((token) => token + 1);
-  }, []);
-
-  useEffect(() => {
+  const load = useCallback(async (): Promise<void> => {
     if (campaignId === undefined) {
       setAssets([]);
       return;
     }
 
+    abortRef.current?.abort();
     const controller = new AbortController();
+    abortRef.current = controller;
     setLoading(true);
 
-    void (async (): Promise<void> => {
-      try {
-        const response = await getAssetsService(controller.signal);
-        if (controller.signal.aborted) {
-          return;
-        }
-        setAssets(
-          response.assets.filter((asset) => asset.campaignId === campaignId),
-        );
-      } catch {
-        if (!controller.signal.aborted) {
-          setAssets([]);
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
+    try {
+      const response = await getAssetsService(controller.signal);
+      if (controller.signal.aborted) {
+        return;
       }
-    })();
+      setAssets(
+        response.assets.filter((asset) => asset.campaignId === campaignId),
+      );
+    } catch {
+      // Keep the rows already on screen; the next poll tick may recover.
+    } finally {
+      if (!controller.signal.aborted) {
+        setLoading(false);
+      }
+    }
+  }, [campaignId]);
+
+  useEffect(() => {
+    setAssets([]);
+    void load();
 
     return () => {
-      controller.abort();
+      abortRef.current?.abort();
     };
-  }, [campaignId, reloadToken]);
+  }, [load]);
 
-  return { assets, loading, reload };
+  usePendingPoll(
+    load,
+    assets.some((asset) => asset.pendingCount > 0),
+  );
+
+  return { assets, loading, reload: load };
 }

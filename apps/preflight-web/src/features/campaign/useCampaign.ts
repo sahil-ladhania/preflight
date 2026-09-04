@@ -112,6 +112,7 @@ export function useCampaign(campaignId: string | undefined): {
     setExtractInjection,
     setCompileResult: load.setCompileResult,
     setEmptySetAcknowledged,
+    reloadCampaignAssets: assetsHook.reload,
     toastApiError: load.toastApiError,
   });
 
@@ -187,6 +188,7 @@ export function useCampaign(campaignId: string | undefined): {
     setSaveInFlight,
     setCompileInFlight,
     setGenerateInFlight,
+    reloadCampaignAssets: assetsHook.reload,
     toastApiError: load.toastApiError,
   });
 

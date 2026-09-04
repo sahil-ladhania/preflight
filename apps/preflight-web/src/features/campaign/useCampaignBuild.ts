@@ -4,7 +4,6 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import type {
   CampaignDTO,
@@ -18,6 +17,7 @@ import type { CampaignStepId } from "@/features/campaign/CampaignStepRail";
 import {
   runCampaignBuildChain,
   runGenerateOnly,
+  type BuildChainResult,
 } from "@/features/campaign/runCampaignBuildChain";
 import type { BuildPhase, CampaignNarrations } from "@/features/campaign/types";
 import { ApiClientError } from "@/lib/api";
@@ -69,6 +69,7 @@ export function useCampaignBuild(input: {
   setExtractInjection: (injection: InjectionDetection | null) => void;
   setCompileResult: (result: CompileResponseDTO | null) => void;
   setEmptySetAcknowledged: (checked: boolean) => void;
+  reloadCampaignAssets: () => Promise<void>;
   toastApiError: (error: unknown) => void;
 }): {
   buildPhase: BuildPhase;
@@ -79,7 +80,6 @@ export function useCampaignBuild(input: {
   setBriefNarration: (text: string) => void;
   runBuild: () => Promise<void>;
 } {
-  const navigate = useNavigate();
   const abortRef = useRef<AbortController | null>(null);
   const phaseRef = useRef<BuildPhase>("idle");
   const [buildPhase, setBuildPhase] = useState<BuildPhase>("idle");
@@ -116,11 +116,20 @@ export function useCampaignBuild(input: {
       setBuildPhase(result.phase);
       setNarrations(result.narrations);
       setMissingFields(result.missingFields);
-      if (result.navigate !== undefined) {
-        void navigate(result.navigate.path, { state: result.navigate.state });
-      }
     },
-    [navigate],
+    [],
+  );
+
+  // Assets are refreshed before the spinner clears, so the pane goes straight
+  // from `building` to S4 Built without a flash of the empty brief.
+  const settleAssets = useCallback(
+    async (result: BuildChainResult): Promise<void> => {
+      if (result.assetsGenerated !== true) {
+        return;
+      }
+      await input.reloadCampaignAssets();
+    },
+    [input],
   );
 
   const runBuild = useCallback(async (): Promise<void> => {
@@ -147,6 +156,7 @@ export function useCampaignBuild(input: {
           onPhase: setBuildPhase,
         });
         applyResult(result);
+        await settleAssets(result);
         return;
       }
 
@@ -168,6 +178,7 @@ export function useCampaignBuild(input: {
         onPhase: setBuildPhase,
       });
       applyResult(result);
+      await settleAssets(result);
     } catch (error: unknown) {
       if (isBuildAbortError(error)) {
         return;
@@ -189,7 +200,7 @@ export function useCampaignBuild(input: {
     } finally {
       setBuildInFlight(false);
     }
-  }, [applyResult, buildInFlight, buildPhase, input]);
+  }, [applyResult, buildInFlight, buildPhase, input, settleAssets]);
 
   return {
     buildPhase,

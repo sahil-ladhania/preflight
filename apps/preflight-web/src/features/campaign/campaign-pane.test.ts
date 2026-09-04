@@ -136,6 +136,15 @@ describe("campaignProgressLine", () => {
       "All 2 ready to ship.",
     );
   });
+
+  it("appends the judgement fan-out count while findings are pending", () => {
+    expect(
+      campaignProgressLine([
+        { ...asset("clear"), pendingCount: 2 },
+        { ...asset("blocked"), pendingCount: 1 },
+      ]),
+    ).toBe("1 of 2 still need a human decision. Evaluating 3 rules…");
+  });
 });
 
 describe("campaignEndLine", () => {

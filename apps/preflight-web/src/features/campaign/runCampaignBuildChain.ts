@@ -39,16 +39,12 @@ import {
 import type { BuildPhase } from "@/features/campaign/types";
 import type { CampaignNarrations } from "@/features/campaign/types";
 
-export type BuildNavigateTarget = {
-  path: string;
-  state: { generatorSkillsRead: string[]; buildNarration: string };
-};
-
 export type BuildChainResult = {
   phase: BuildPhase;
   narrations: CampaignNarrations;
   missingFields: BriefField[];
-  navigate?: BuildNavigateTarget;
+  /** Generate returned; the caller refreshes campaign assets so S4 can land. */
+  assetsGenerated?: boolean;
 };
 
 function narrationPatch(
@@ -178,15 +174,8 @@ export async function runCampaignBuildChain(input: {
   );
   narrations = narrationPatch(narrations, "generate", generateNarration);
 
-  const navigate = {
-    path: "/assets",
-    state: {
-      generatorSkillsRead: response.skillsRead,
-      buildNarration: generateNarration,
-    },
-  };
-
-  return { phase: "idle", narrations, missingFields: [], navigate };
+  // Meera stays on Campaign; S4 Built answers "did my campaign work?".
+  return { phase: "idle", narrations, missingFields: [], assetsGenerated: true };
 }
 
 export async function runGenerateOnly(input: {
@@ -210,13 +199,6 @@ export async function runGenerateOnly(input: {
     freeze: null,
     generate: generateNarration,
   };
-  const navigate = {
-    path: "/assets",
-    state: {
-      generatorSkillsRead: response.skillsRead,
-      buildNarration: generateNarration,
-    },
-  };
 
-  return { phase: "idle", narrations, missingFields: [], navigate };
+  return { phase: "idle", narrations, missingFields: [], assetsGenerated: true };
 }

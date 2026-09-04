@@ -5,7 +5,6 @@
 // size: four handlers share the same setter bundle; splitting duplicates the input type.
 
 import { useCallback, useRef, type Dispatch, type SetStateAction } from "react";
-import { useNavigate } from "react-router-dom";
 
 import type {
   CampaignDTO,
@@ -58,6 +57,7 @@ export function useCampaignMutations(input: {
   setSaveInFlight: (inFlight: boolean) => void;
   setCompileInFlight: (inFlight: boolean) => void;
   setGenerateInFlight: (inFlight: boolean) => void;
+  reloadCampaignAssets: () => Promise<void>;
   toastApiError: (error: unknown) => void;
 }): {
   extract: () => Promise<void>;
@@ -65,7 +65,6 @@ export function useCampaignMutations(input: {
   compile: () => Promise<void>;
   generate: () => Promise<void>;
 } {
-  const navigate = useNavigate();
   const {
     campaignId,
     freeText,
@@ -88,6 +87,7 @@ export function useCampaignMutations(input: {
     setSaveInFlight,
     setCompileInFlight,
     setGenerateInFlight,
+    reloadCampaignAssets,
     toastApiError,
   } = input;
 
@@ -212,14 +212,9 @@ export function useCampaignMutations(input: {
     setGenerateInFlight(true);
 
     try {
-      const response = await generateCampaignAssetsService(
-        campaignId,
-        {},
-        controller.signal,
-      );
-      void navigate("/assets", {
-        state: { generatorSkillsRead: response.skillsRead },
-      });
+      await generateCampaignAssetsService(campaignId, {}, controller.signal);
+      // Stay on Campaign; refreshed assets land the pane on S4 Built.
+      await reloadCampaignAssets();
     } catch (error: unknown) {
       toastApiError(error);
     } finally {
@@ -230,7 +225,7 @@ export function useCampaignMutations(input: {
     campaignId,
     compileResult,
     generateDisabled,
-    navigate,
+    reloadCampaignAssets,
     setGenerateInFlight,
     toastApiError,
   ]);
