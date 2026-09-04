@@ -55,7 +55,7 @@ export function EmptyStage({
   const groups = promptGroupsForPersona(actor?.id ?? "arjun");
 
   return (
-    <div className="mx-auto flex min-h-below-topbar w-full max-w-workbench flex-col justify-center px-8">
+    <div className="mx-auto flex h-full min-h-below-topbar w-full max-w-workbench flex-col justify-center px-8">
       <div className="-translate-y-[6vh] flex flex-col gap-6">
         <div>
           <h1 className="font-serif text-page-title text-fg font-semibold tracking-tight">

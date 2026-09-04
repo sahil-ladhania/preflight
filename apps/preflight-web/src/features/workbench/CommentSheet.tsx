@@ -1,6 +1,6 @@
 /**
- * CommentSheet — rounded message card inside the stage.
- * Why: user/assistant/error cards without chat bubbles (09 R2b–R2e).
+ * CommentSheet — message container inside the stage.
+ * Why: operator turn contained on right; preflight turn flush on left (08 §5.7).
  */
 
 import type { ReactElement } from "react";
@@ -12,18 +12,30 @@ export function CommentSheet({
   variant = "assistant",
   children,
 }: CommentSheetProps): ReactElement {
-  const displayLabel = variant === "user" ? "You" : label;
+  if (variant === "user") {
+    return (
+      <div className="flex flex-col items-end w-full">
+        <span className="font-sans text-caption text-fg-muted mb-1 text-right">
+          You
+        </span>
+        <div className="bg-hover border border-hairline border-r-2 border-r-decision p-[12px_16px] max-w-[72%] rounded-none text-left text-fg">
+          {children}
+        </div>
+      </div>
+    );
+  }
+
+  const displayLabel = label ?? "Preflight";
 
   return (
-    <div className="border-t border-hairline pt-4 flex flex-col gap-1.5">
-      {displayLabel !== undefined ? (
-        <span className="font-sans text-caption text-fg-muted">
-          {displayLabel}
-        </span>
-      ) : null}
-      <div className="text-fg">
+    <div className="flex flex-col items-start w-full">
+      <span className="font-sans text-caption text-fg-muted mb-1 text-left">
+        {displayLabel}
+      </span>
+      <div className="w-full max-w-[88%] text-fg">
         {children}
       </div>
     </div>
   );
 }
+

@@ -3,13 +3,35 @@
  * Why: no empty prompt; cards only when messages exist.
  */
 
-import { useCallback, useEffect, useRef, type ReactElement } from "react";
+import { useCallback, useEffect, useRef, type ReactElement, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 
 import { PendingRing } from "@/features/assets/PendingRing";
 import { CommentSheet } from "@/features/workbench/CommentSheet";
 import { RuleCards } from "@/features/workbench/RuleCards";
 import { useTypewriterReveal } from "@/features/workbench/useTypewriterReveal";
 import type { ThreadProps, WorkbenchMessage } from "@/features/workbench/types";
+
+function renderProseWithRuleReferences(text: string): ReactNode {
+  const parts = text.split(/(\[[A-Z0-9_-]+\])/g);
+  if (parts.length === 1) {
+    return text;
+  }
+  return parts.map((part, index) => {
+    if (/^\[[A-Z0-9_-]+\]$/.test(part)) {
+      return (
+        <Link
+          key={index}
+          to="/rulebook"
+          className="font-mono text-decision underline hover:text-decision/80 cursor-pointer"
+        >
+          {part}
+        </Link>
+      );
+    }
+    return part;
+  });
+}
 
 function AssistantMessageBlock({
   message,
@@ -32,10 +54,12 @@ function AssistantMessageBlock({
     }
   }, [visibleText, shouldReveal, isComplete, onRevealProgress]);
 
+  const displayedText = shouldReveal ? visibleText : message.text;
+
   return (
     <CommentSheet label="Preflight" variant="assistant">
       <p className="whitespace-pre-wrap font-serif text-[14px] leading-[24px] text-fg">
-        {shouldReveal ? visibleText : message.text}
+        {renderProseWithRuleReferences(displayedText)}
       </p>
       <RuleCards ruleIds={message.ruleIds} rules={rules} />
     </CommentSheet>
@@ -63,14 +87,17 @@ function MessageBlock({
 
   if (message.role === "pending") {
     return (
-      <CommentSheet label="Preflight" variant="assistant">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col items-start w-full">
+        <span className="font-sans text-caption text-fg-muted mb-1 text-left">
+          Preflight
+        </span>
+        <div className="w-full max-w-[88%] flex items-center gap-2">
           <PendingRing active />
           <span className="font-serif text-[14px] leading-[24px] text-fg-muted">
             Thinking…
           </span>
         </div>
-      </CommentSheet>
+      </div>
     );
   }
 

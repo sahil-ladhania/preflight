@@ -19,7 +19,7 @@ export function Composer({
   handoffEnabled = false,
   handoffDisabledCaption = null,
   showCampaignActions = false,
-  appearance: _appearance = "thread",
+  appearance = "thread",
   onChange,
   onSend,
   onGoToCampaign,
@@ -80,18 +80,31 @@ export function Composer({
       </div>
     ) : null;
 
+  const isThread = appearance === "thread";
+
   return (
     <div className="flex flex-col gap-2 w-full">
-      <div className="relative flex min-h-[96px] max-h-[200px] flex-col justify-between rounded-none border border-fg bg-ground p-3.5 focus-within:border-decision">
+      <div
+        className={cn(
+          "relative flex justify-between rounded-none border border-fg bg-ground focus-within:border-decision",
+          isThread
+            ? "min-h-[48px] max-h-[140px] items-center px-3.5 py-2 gap-3"
+            : "min-h-[96px] max-h-[200px] flex-col p-3.5",
+        )}
+      >
         <textarea
           value={value}
           disabled={inputDisabled}
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={WORKBENCH_COMPOSER_PLACEHOLDER}
-          className="w-full flex-1 resize-none border-0 bg-transparent p-0 font-serif text-copy text-fg shadow-none outline-none placeholder:text-fg-faint focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 overflow-y-auto"
+          rows={isThread ? 1 : 2}
+          className={cn(
+            "w-full flex-1 resize-none border-0 bg-transparent p-0 font-serif text-copy text-fg shadow-none outline-none placeholder:text-fg-faint focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50",
+            isThread ? "min-h-[24px] max-h-[90px] overflow-y-auto py-1" : "overflow-y-auto",
+          )}
         />
-        <div className="mt-2 flex justify-end">
+        <div className={cn("flex justify-end", isThread ? "shrink-0" : "mt-2")}>
           <button
             type="button"
             aria-label="Send message"

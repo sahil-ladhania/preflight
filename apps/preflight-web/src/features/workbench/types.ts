@@ -48,6 +48,7 @@ export interface WorkbenchProps {
     capturedCount: number;
     missing: BriefField[];
     complete: boolean;
+    captured?: Partial<StructuredBriefInput>;
   };
 }
 

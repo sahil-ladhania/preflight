@@ -3,17 +3,17 @@
  * Why: empty welcome or thread + stage-docked composer; no page footer strip.
  */
 
-import { useEffect, type ReactElement } from "react";
+import { useEffect, useRef, type ReactElement } from "react";
 
-import { BriefReadiness } from "@/features/workbench/BriefReadiness";
 import { Composer } from "@/features/workbench/Composer";
 import { EmptyStage } from "@/features/workbench/EmptyStage";
-import { Thread } from "@/features/workbench/Thread";
+import { SessionStartInterstitial } from "@/features/workbench/SessionStartInterstitial";
+import { ThreadStage } from "@/features/workbench/ThreadStage";
 import type { WorkbenchProps } from "@/features/workbench/types";
+import { useSessionTransition } from "@/features/workbench/useSessionTransition";
 import { useWorkbench } from "@/features/workbench/useWorkbench";
 import { useWorkbenchFixture } from "@/features/workbench/useWorkbenchFixture";
 import { WorkbenchTexture } from "@/features/workbench/WorkbenchTexture";
-import { WORKBENCH_HEADLINE } from "@/features/workbench/lib";
 import { useToastContext } from "@/features/shell/ToastHost";
 
 const PREFETCH_FAIL_TOAST = "Could not load rules catalog.";
@@ -30,10 +30,7 @@ export function Workbench({
   handoffEnabled: handoffEnabledProp,
   handoffDisabledCaption: handoffDisabledCaptionProp,
   briefReadiness: briefReadinessProp,
-  showSearchFallback: _showSearchFallbackProp,
-  searchQuery: _searchQueryProp,
   onComposerTextChange,
-  onSearchQueryChange: _onSearchQueryChange,
   onSend,
   onGoToCampaign,
   onStartCampaignFromConversation,
@@ -58,17 +55,25 @@ export function Workbench({
   const handoffEnabled = controlled ? (handoffEnabledProp ?? false) : fixture.handoffEnabled;
   const handoffDisabledCaption = controlled ? (handoffDisabledCaptionProp ?? null) : fixture.handoffDisabledCaption;
   const briefReadiness = controlled ? briefReadinessProp : fixture.briefReadiness;
-  const isEmpty = messages.length === 0;
 
   const setComposerText = onComposerTextChange ?? fixture.setComposerText;
+  const lastSubmittedTextRef = useRef<string>("");
 
-  const handleSend = (): void => {
+  const handleSendCore = (): void | Promise<void> => {
+    lastSubmittedTextRef.current = composerText;
     if (onSend !== undefined) {
-      void onSend();
-      return;
+      return onSend();
     }
     fixture.handleSend();
   };
+
+  const sessionTransition = useSessionTransition({
+    hasMessages: messages.length > 0,
+    sendInFlight,
+    onSend: handleSendCore,
+  });
+
+  const isThreadView = sessionTransition.transitionState === "thread";
 
   const handleGoToCampaign = (): void => {
     if (onGoToCampaign !== undefined) {
@@ -88,71 +93,51 @@ export function Workbench({
 
   const composer = (
     <Composer
-      value={composerText}
-      disabled={prefetchFailed}
-      sendInFlight={sendInFlight}
+      value={
+        sessionTransition.isHoldingComposer
+          ? (lastSubmittedTextRef.current || composerText)
+          : composerText
+      }
+      disabled={prefetchFailed || sessionTransition.isHoldingComposer}
+      sendInFlight={sendInFlight || sessionTransition.isHoldingComposer}
       handoffInFlight={handoffInFlight}
       handoffEnabled={handoffEnabled}
       handoffDisabledCaption={handoffDisabledCaption}
       showCampaignActions={false}
-      appearance={isEmpty ? "empty" : "thread"}
+      appearance={isThreadView ? "thread" : "empty"}
       onChange={setComposerText}
-      onSend={handleSend}
+      onSend={sessionTransition.handleSessionSend}
       onGoToCampaign={handleGoToCampaign}
       onStartCampaignFromConversation={handleStartCampaign}
     />
   );
 
   return (
-    <div className="relative min-h-below-topbar w-full bg-ground">
+    <div className="relative h-full flex-1 w-full bg-ground overflow-hidden flex flex-col">
       <WorkbenchTexture />
-      {isEmpty ? (
-        <div className="relative z-10">
+      {!isThreadView ? (
+        <div className="relative z-10 h-full w-full">
           <EmptyStage
             composer={composer}
             handoffInFlight={handoffInFlight}
             onPromptSelect={setComposerText}
           />
+          {sessionTransition.showInterstitial ? (
+            <SessionStartInterstitial isFadingOut={sessionTransition.isFadingOut} />
+          ) : null}
         </div>
       ) : (
-        <div className="relative z-10 mx-auto flex min-h-below-topbar w-full max-w-workbench flex-col px-8 py-8">
-          <div>
-            <h1 className="font-serif text-page-title text-fg font-semibold tracking-tight">
-              {WORKBENCH_HEADLINE}
-            </h1>
-          </div>
-          <div className="mt-6">
-            {composer}
-          </div>
-          <div className="mt-6 flex flex-col gap-6">
-            <Thread
-              messages={messages}
-              rules={rules}
-              showSearchFallback={false}
-              searchQuery=""
-              onSearchQueryChange={() => {}}
-            />
-            {briefReadiness !== undefined ? (
-              <BriefReadiness
-                capturedCount={briefReadiness.capturedCount}
-                missing={briefReadiness.missing}
-                complete={briefReadiness.complete}
-                handoffEnabled={handoffEnabled}
-                handoffInFlight={handoffInFlight}
-                handoffDisabledCaption={handoffDisabledCaption}
-                onStartCampaignFromConversation={handleStartCampaign}
-                onGoToCampaign={handleGoToCampaign}
-              />
-            ) : null}
-          </div>
-          <div className="mt-auto pt-8">
-            <div className="border-t border-fg pt-3">
-              <span className="text-label-strong uppercase text-fg-muted">
-                End of conversation
-              </span>
-            </div>
-          </div>
-        </div>
+        <ThreadStage
+          composer={composer}
+          messages={messages}
+          rules={rules}
+          briefReadiness={briefReadiness}
+          handoffEnabled={handoffEnabled}
+          handoffInFlight={handoffInFlight}
+          handoffDisabledCaption={handoffDisabledCaption}
+          onStartCampaign={handleStartCampaign}
+          onGoToCampaign={handleGoToCampaign}
+        />
       )}
     </div>
   );
@@ -176,9 +161,7 @@ export function WorkbenchRoute(): ReactElement {
       searchQuery={hook.searchQuery}
       onComposerTextChange={hook.setComposerText}
       onSearchQueryChange={hook.setSearchQuery}
-      onSend={() => {
-        void hook.send();
-      }}
+      onSend={() => hook.send()}
       onGoToCampaign={() => {
         void hook.goToCampaign();
       }}
