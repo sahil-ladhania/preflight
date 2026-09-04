@@ -214,6 +214,15 @@
   --color-input: var(--color-hairline);
   --color-ring: var(--color-decision);
 
+  --color-sidebar: var(--color-ground);
+  --color-sidebar-foreground: var(--color-fg);
+  --color-sidebar-primary: var(--color-fg);
+  --color-sidebar-primary-foreground: var(--color-surface);
+  --color-sidebar-accent: var(--color-hover);
+  --color-sidebar-accent-foreground: var(--color-fg);
+  --color-sidebar-border: var(--color-hairline);
+  --color-sidebar-ring: var(--color-decision);
+
   /* -- Geometry (08 §4.1, §4.2) ---------------------------------------------
      Radius is zero. Squared corners are the system's core stance (08 §1);
      the only circles in the product are the two spinner rings, which are

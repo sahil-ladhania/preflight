@@ -21,19 +21,10 @@ import {
   loginAccountabilityLine,
 } from "@/features/login/lib";
 import { useLogin } from "@/features/login/useLogin";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-
-const filledButtonClass = cn(
-  "flex h-8 w-full cursor-pointer items-center justify-center gap-2 rounded-none",
-  "border border-solid border-fg bg-fg px-4 font-sans text-(length:--text-button) leading-none font-medium text-surface shadow-none",
-  "focus-visible:outline focus-visible:outline-1 focus-visible:outline-decision",
-  "disabled:cursor-not-allowed",
-);
-
-const disabledButtonClass = cn(
-  "flex h-8 w-full cursor-not-allowed items-center justify-center gap-2 rounded-none",
-  "border border-solid border-hairline bg-surface px-4 font-sans text-(length:--text-button) leading-none font-medium text-fg-faint shadow-none",
-);
 
 function LoginForm(): ReactElement {
   const login = useLogin();
@@ -88,78 +79,84 @@ function LoginForm(): ReactElement {
   }
 
   return (
-    <form
-      className="flex w-full min-w-0 max-w-[360px] flex-col gap-4 rounded-none border border-fg-muted bg-surface p-7 shadow-none"
-      onSubmit={onSubmit}
-    >
-      {notice !== null ? <LoginNotice kind={notice} /> : null}
+    <Card className="w-full min-w-0 max-w-[360px] rounded-none border border-border bg-surface p-7 shadow-none">
+      <form
+        className="flex w-full min-w-0 flex-col gap-4"
+        onSubmit={onSubmit}
+      >
+        {notice !== null ? <LoginNotice kind={notice} /> : null}
 
-      {step === "identity" ? (
-        <LoginIdentityFields
-          email={email}
-          disabled={busy === "resolving"}
-          onEmailChange={login.setEmail}
-        />
-      ) : null}
-
-      {step === "password" ? (
-        <LoginPasswordFields
-          email={email}
-          password={password}
-          disabled={busy === "submitting" || locked}
-          onChangeEmail={login.handleChangeEmail}
-          onPasswordChange={login.setPassword}
-        />
-      ) : null}
-
-      {step === "sso" ? (
-        <LoginSsoFields email={email} onChangeEmail={login.handleChangeEmail} />
-      ) : null}
-
-      <div className="flex flex-col">
-        <button
-          type="submit"
-          disabled={submitDisabled}
-          aria-busy={showRing}
-          className={showFilled ? filledButtonClass : disabledButtonClass}
-        >
-          {showRing ? (
-            <span className="pending-ring" aria-hidden="true" />
-          ) : null}
-          {loginSubmitLabel({ step, busy, idpName })}
-        </button>
-
-        <div aria-live="polite" className={hasLiveLine ? "mt-2" : "sr-only"}>
-          {hasLiveLine ? (
-            <p className="font-sans text-(length:--text-caption) leading-[18px] font-normal text-fg-muted">
-              {liveLine}
-            </p>
-          ) : null}
-        </div>
+        {step === "identity" ? (
+          <LoginIdentityFields
+            email={email}
+            disabled={busy === "resolving"}
+            onEmailChange={login.setEmail}
+          />
+        ) : null}
 
         {step === "password" ? (
-          <a href="#login-help" className={cn(plainLinkClass, "mt-2 self-start")}>
-            {LOGIN_COPY.forgotPassword}
-          </a>
+          <LoginPasswordFields
+            email={email}
+            password={password}
+            disabled={busy === "submitting" || locked}
+            onChangeEmail={login.handleChangeEmail}
+            onPasswordChange={login.setPassword}
+          />
         ) : null}
 
-        {showTryAgain ? (
-          <button
-            type="button"
-            className={cn(plainLinkClass, "mt-2 self-start")}
-            onClick={login.handleTryAgain}
+        {step === "sso" ? (
+          <LoginSsoFields email={email} onChangeEmail={login.handleChangeEmail} />
+        ) : null}
+
+        <div className="flex flex-col">
+          <Button
+            type="submit"
+            disabled={submitDisabled}
+            aria-busy={showRing}
+            variant={showFilled ? "default" : "outline"}
+            className={cn(
+              "h-8 w-full rounded-none px-4 font-sans text-(length:--text-button) font-medium",
+              !showFilled && "cursor-not-allowed border-hairline bg-surface text-fg-faint hover:bg-surface hover:text-fg-faint"
+            )}
           >
-            {LOGIN_COPY.tryAgain}
-          </button>
-        ) : null}
+            {showRing ? (
+              <span className="pending-ring" aria-hidden="true" />
+            ) : null}
+            {loginSubmitLabel({ step, busy, idpName })}
+          </Button>
 
-        <div className="mt-4 h-px w-full bg-hairline" aria-hidden="true" />
+          <div aria-live="polite" className={hasLiveLine ? "mt-2" : "sr-only"}>
+            {hasLiveLine ? (
+              <p className="font-sans text-(length:--text-caption) leading-[18px] font-normal text-fg-muted">
+                {liveLine}
+              </p>
+            ) : null}
+          </div>
 
-        <p className="mt-3 font-sans text-(length:--text-caption) leading-[18px] font-normal text-fg-muted">
-          {loginAccountabilityLine(step)}
-        </p>
-      </div>
-    </form>
+          {step === "password" ? (
+            <a href="#login-help" className={cn(plainLinkClass, "mt-2 self-start")}>
+              {LOGIN_COPY.forgotPassword}
+            </a>
+          ) : null}
+
+          {showTryAgain ? (
+            <button
+              type="button"
+              className={cn(plainLinkClass, "mt-2 self-start")}
+              onClick={login.handleTryAgain}
+            >
+              {LOGIN_COPY.tryAgain}
+            </button>
+          ) : null}
+
+          <Separator className="mt-4 bg-hairline" />
+
+          <p className="mt-3 font-sans text-(length:--text-caption) leading-[18px] font-normal text-fg-muted">
+            {loginAccountabilityLine(step)}
+          </p>
+        </div>
+      </form>
+    </Card>
   );
 }
 

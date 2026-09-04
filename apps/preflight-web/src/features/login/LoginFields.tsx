@@ -11,20 +11,14 @@ import {
   type LoginBusy,
   type LoginStep,
 } from "@/features/login/lib";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-
-export const loginFieldClass = cn(
-  "box-border h-9 w-full min-w-0 rounded-none border border-solid border-hairline bg-transparent px-3 py-2",
-  "font-sans text-(length:--text-ui) leading-[1.4] font-normal text-fg shadow-none outline-none",
-  "placeholder:font-sans placeholder:text-(length:--text-ui) placeholder:leading-[1.4] placeholder:font-normal placeholder:not-italic placeholder:text-fg-faint",
-  "focus-visible:border-decision disabled:text-fg-faint",
-  "appearance-none [&::-ms-reveal]:hidden [&::-webkit-caps-lock-indicator]:hidden",
-  "[&::-webkit-contacts-auto-fill-button]:hidden [&::-webkit-credentials-auto-fill-button]:hidden",
-);
 
 export const plainLinkClass = cn(
   "cursor-pointer border-0 bg-transparent p-0 font-sans text-(length:--text-caption) leading-[18px] font-normal text-fg-muted underline underline-offset-4",
-  "focus-visible:outline focus-visible:outline-1 focus-visible:outline-decision",
+  "focus-visible:outline focus-visible:outline-1 focus-visible:outline-decision hover:text-foreground",
 );
 
 export interface LoginEchoedEmailProps {
@@ -41,9 +35,15 @@ export function LoginEchoedEmail({
       <p className="min-w-0 truncate font-sans text-(length:--text-label) leading-[1.4] font-normal tracking-[0.04em] normal-case text-fg-muted">
         {email}
       </p>
-      <button type="button" className={plainLinkClass} onClick={onChangeEmail}>
+      <Button
+        type="button"
+        variant="link"
+        size="xs"
+        className="h-auto p-0 font-sans text-(length:--text-caption) leading-[18px] font-normal text-fg-muted underline underline-offset-4 hover:text-foreground"
+        onClick={onChangeEmail}
+      >
         {LOGIN_COPY.changeLabel}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -60,11 +60,11 @@ export function LoginIdentityFields({
   onEmailChange,
 }: LoginIdentityFieldsProps): ReactElement {
   return (
-    <label className="flex flex-col gap-1.5" htmlFor="login-email">
-      <span className="font-sans text-(length:--text-label) leading-[1.4] font-normal tracking-[0.04em] uppercase text-fg-muted">
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor="login-email">
         {LOGIN_COPY.emailLabel}
-      </span>
-      <input
+      </Label>
+      <Input
         id="login-email"
         type="email"
         name="email"
@@ -76,9 +76,8 @@ export function LoginIdentityFields({
         onChange={(event) => {
           onEmailChange(event.target.value);
         }}
-        className={loginFieldClass}
       />
-    </label>
+    </div>
   );
 }
 
@@ -98,13 +97,13 @@ export function LoginPasswordFields({
   onPasswordChange,
 }: LoginPasswordFieldsProps): ReactElement {
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <LoginEchoedEmail email={email} onChangeEmail={onChangeEmail} />
-      <label className="flex flex-col gap-1.5" htmlFor="login-password">
-        <span className="font-sans text-(length:--text-label) leading-[1.4] font-normal tracking-[0.04em] uppercase text-fg-muted">
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="login-password">
           {LOGIN_COPY.passwordLabel}
-        </span>
-        <input
+        </Label>
+        <Input
           id="login-password"
           type="password"
           name="password"
@@ -115,10 +114,9 @@ export function LoginPasswordFields({
           onChange={(event) => {
             onPasswordChange(event.target.value);
           }}
-          className={loginFieldClass}
         />
-      </label>
-    </>
+      </div>
+    </div>
   );
 }
 

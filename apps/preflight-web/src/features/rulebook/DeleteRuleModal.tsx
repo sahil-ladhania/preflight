@@ -1,8 +1,3 @@
-/**
- * DeleteRuleModal — R4 delete confirm.
- * Why: hard delete confirmation before row removal.
- */
-
 import type { ReactElement } from "react";
 import { useState } from "react";
 
@@ -15,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { DeleteRuleModalProps } from "@/features/rulebook/types";
 
@@ -46,38 +42,53 @@ export function DeleteRuleModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent>
+      <DialogContent
+        showCloseButton={false}
+        className="rounded-none border border-fg bg-surface p-6 shadow-none sm:max-w-[420px]"
+      >
         <DialogHeader>
-          <DialogTitle>Delete this rule?</DialogTitle>
+          <DialogTitle className="font-serif text-sheet-title font-semibold text-fg">
+            Delete this rule?
+          </DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <p className="text-body text-fg">
+        <div className="flex flex-col gap-4 py-2">
+          <div className="flex flex-col gap-1">
+            <p className="font-sans text-caption leading-relaxed text-fg">
               Existing frozen snapshots still cite this rule.
             </p>
-            <p className="text-mono text-caption text-fg-muted" title={ruleId}>
+            <p className="font-mono text-xs text-fg-muted" title={ruleId}>
               {ruleId.length > 24 ? `${shortId(ruleId)}…` : ruleId}
             </p>
           </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="delete-reason" className="text-caption text-fg-muted">
+          <div className="flex flex-col gap-1.5">
+            <Label
+              htmlFor="delete-reason"
+              className="font-sans text-[11px] uppercase tracking-[0.04em] text-fg-muted"
+            >
               Change reason
-            </label>
+            </Label>
             <Textarea
               id="delete-reason"
               value={reason}
               onChange={(event) => setReason(event.target.value)}
-              className="min-h-20 text-body-airy"
+              className="min-h-20 rounded-none font-sans text-sm leading-relaxed text-fg"
+              placeholder="Mandatory reason for audit trail (min 10 characters)..."
             />
           </div>
         </div>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={onClose}>
+        <DialogFooter className="flex items-center justify-end gap-2 pt-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="h-8 rounded-none border border-hairline bg-surface px-4 font-sans text-button text-fg shadow-none hover:bg-hover"
+            onClick={onClose}
+          >
             Cancel
           </Button>
           <Button
             type="button"
             variant="destructive"
+            className="h-8 rounded-none border border-fail bg-fail px-4 font-sans text-button text-surface shadow-none hover:bg-fail/90 disabled:opacity-50"
             disabled={!reasonValid}
             onClick={handleConfirm}
           >

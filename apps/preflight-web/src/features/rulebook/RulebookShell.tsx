@@ -5,6 +5,8 @@
 
 import type { ReactElement, ReactNode } from "react";
 
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { POST_SAVE_CAPTION } from "@/features/rulebook/lib";
 
 export interface RulebookShellProps {
@@ -51,18 +53,20 @@ export function RulebookShell({
               <p className="text-caption text-fg-muted">{POST_SAVE_CAPTION}</p>
             ) : null}
           </div>
-          <button
+          <Button
             type="button"
-            className="inline-flex h-8 shrink-0 cursor-pointer items-center justify-center border border-fg bg-ground px-4 font-sans text-button font-medium text-fg"
+            variant="outline"
+            className="h-8 shrink-0 rounded-none border border-fg bg-ground px-4 font-sans text-button font-medium text-fg shadow-none hover:bg-hover hover:text-fg"
             onClick={onAdd}
           >
             Add judgement rule
-          </button>
+          </Button>
         </div>
         <div className="mt-6 flex flex-1 flex-col">{children}</div>
         {showEndLine && totalCount !== undefined ? (
           <div className="mt-auto pt-8">
-            <div className="border-t border-fg pt-3">
+            <Separator className="bg-fg" />
+            <div className="pt-3">
               <p className="text-center text-label-strong uppercase text-fg-muted">
                 End of rulebook — {totalCount} rules total
               </p>

@@ -1,67 +1,69 @@
-/**
- * RulebookRow — one catalog table row.
- * Why: det lock vs jdg Edit link per 09 R2.
- */
-
 import type { ReactElement } from "react";
 import { Lock } from "lucide-react";
 
-import { appliesLabel, RULEBOOK_ROW_GRID } from "@/features/rulebook/lib";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { TableCell, TableRow } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { appliesLabel } from "@/features/rulebook/lib";
 import type { RulebookRowProps } from "@/features/rulebook/types";
-import { cn } from "@/lib/utils";
-
-function KindBadge({
-  kind,
-}: {
-  kind: RulebookRowProps["rule"]["kind"];
-}): ReactElement {
-  return (
-    <span className="font-mono text-kind-badge uppercase text-fg-muted">
-      {kind === "deterministic" ? "DET" : "JDG"}
-    </span>
-  );
-}
 
 export function RulebookRow({ rule, onEdit }: RulebookRowProps): ReactElement {
   return (
-    <div className={cn(RULEBOOK_ROW_GRID, "border-b border-border py-1.5")}>
-      <span
-        className="truncate font-mono text-mono-meta text-fg"
-        title={rule.ruleId}
-      >
+    <TableRow className="border-b border-border py-1.5 hover:bg-hover transition-colors">
+      <TableCell className="w-[100px] font-mono text-mono-meta text-fg py-1.5 px-2 align-middle truncate">
         {rule.ruleId}
-      </span>
-      <KindBadge kind={rule.kind} />
-      <span
-        className="truncate font-serif text-serif-row text-fg"
+      </TableCell>
+      <TableCell className="w-[60px] py-1.5 px-2 align-middle">
+        <Badge
+          variant="outline"
+          className="border-0 p-0 font-mono text-kind-badge font-normal uppercase text-fg-muted"
+        >
+          {rule.kind === "deterministic" ? "DET" : "JDG"}
+        </Badge>
+      </TableCell>
+      <TableCell
+        className="max-w-0 font-serif text-serif-row text-fg py-1.5 px-2 align-middle truncate"
         title={rule.wording}
       >
         {rule.wording}
-      </span>
-      <span
-        className="truncate text-ui text-fg-muted"
+      </TableCell>
+      <TableCell
+        className="w-[220px] max-w-[220px] text-ui text-fg-muted py-1.5 px-2 align-middle truncate"
         title={appliesLabel(rule)}
       >
         {appliesLabel(rule)}
-      </span>
-      <div className="flex items-center justify-end">
+      </TableCell>
+      <TableCell className="w-[40px] text-right py-1.5 px-2 align-middle">
         {rule.kind === "deterministic" ? (
-          <span
-            className="inline-flex items-center justify-center text-fg-faint"
-            title="Defined in code"
-          >
-            <Lock className="size-[13px] shrink-0" aria-label="Defined in code" />
-          </span>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <span
+                  className="inline-flex cursor-default items-center justify-center text-fg-faint"
+                  title="Defined in code"
+                >
+                  <Lock className="size-[13px] shrink-0" aria-label="Defined in code" />
+                </span>
+              }
+            />
+            <TooltipContent>Defined in code — cannot be edited</TooltipContent>
+          </Tooltip>
         ) : (
-          <button
+          <Button
             type="button"
-            className="cursor-pointer border-0 bg-transparent p-0 text-caption text-decision underline"
+            variant="link"
+            className="h-auto cursor-pointer p-0 font-sans text-caption text-decision underline hover:text-decision/80"
             onClick={() => onEdit(rule.ruleId)}
           >
             Edit
-          </button>
+          </Button>
         )}
-      </div>
-    </div>
+      </TableCell>
+    </TableRow>
   );
 }

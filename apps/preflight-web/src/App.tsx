@@ -46,12 +46,13 @@ import {
 } from "@/design-proof/WorkbenchStates";
 import { WorkbenchRoute } from "@/features/workbench/Workbench";
 import { LoginRoute } from "@/features/login/Login";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/features/shell/AppSidebar";
 import { ErrorBoundary } from "@/features/shell/ErrorBoundary";
 import { NotFound } from "@/features/shell/NotFound";
 import { PersonaHomeRedirect } from "@/features/shell/PersonaHomeRedirect";
 import { PersonaProvider, usePersona } from "@/features/shell/PersonaProvider";
 import { ToastHost } from "@/features/shell/ToastHost";
-import { TopBar } from "@/features/shell/TopBar";
 
 function ShellFrame(): ReactElement {
   const location = useLocation();
@@ -74,12 +75,16 @@ function ShellFrame(): ReactElement {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <TopBar />
-      <ErrorBoundary key={location.pathname}>
-        <Outlet />
-      </ErrorBoundary>
-    </div>
+    <SidebarProvider defaultOpen={true}>
+      <div className="flex h-screen w-screen overflow-hidden bg-ground">
+        <AppSidebar />
+        <SidebarInset className="flex h-screen min-w-0 flex-1 flex-col overflow-auto bg-ground shadow-none">
+          <ErrorBoundary key={location.pathname}>
+            <Outlet />
+          </ErrorBoundary>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
   );
 }
 

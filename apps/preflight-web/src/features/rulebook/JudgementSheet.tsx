@@ -7,7 +7,9 @@ import type { ReactElement } from "react";
 import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -27,9 +29,6 @@ import type { JudgementSheetProps } from "@/features/rulebook/types";
 const ADD_BANNER =
   "Judgement rules are LLM-evaluated and editable here. Deterministic rules are defined in code and read-only in the table.";
 
-const SELECT_TRIGGER =
-  "h-auto w-full rounded-md border-border bg-surface px-4 py-3 text-body text-fg";
-
 export function JudgementSheet({
   mode,
   rule,
@@ -47,22 +46,41 @@ export function JudgementSheet({
   return (
     <SheetShell open={open} onClose={onCancel}>
       <div className="flex min-h-0 flex-1 flex-col">
-        <div className="flex-1 overflow-y-auto p-4">
-          {isAdd ? (
-            <div className="mb-4 rounded-md border border-border bg-surface px-4 py-3">
-              <p className="text-body-airy text-fg">{ADD_BANNER}</p>
-            </div>
-          ) : null}
-          {!isAdd && rule !== null ? (
-            <p className="mb-4 text-mono text-caption text-fg-muted">
-              {rule.ruleId}
-            </p>
-          ) : null}
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <label htmlFor="wording" className="text-caption text-fg-muted">
+        <div className="flex-1 overflow-y-auto p-5">
+          <div className="flex flex-col gap-5">
+            {isAdd ? (
+              <>
+                <div className="flex flex-col gap-0.5">
+                  <h2 className="font-serif text-sheet-title font-semibold text-fg">
+                    New judgement rule
+                  </h2>
+                  <span className="font-mono text-[11px] text-fg-muted">
+                    ID assigned on save
+                  </span>
+                </div>
+                <Card className="rounded-none border border-border bg-surface p-3 shadow-none">
+                  <p className="font-sans text-caption leading-relaxed text-fg">
+                    {ADD_BANNER}
+                  </p>
+                </Card>
+              </>
+            ) : null}
+
+            {!isAdd && rule !== null ? (
+              <div className="flex flex-col gap-0.5">
+                <h2 className="font-mono text-mono-meta font-semibold text-fg">
+                  {rule.ruleId}
+                </h2>
+              </div>
+            ) : null}
+
+            <div className="flex flex-col gap-1.5">
+              <Label
+                htmlFor="wording"
+                className="font-sans text-[11px] font-normal uppercase tracking-[0.04em] text-fg-muted"
+              >
                 Wording
-              </label>
+              </Label>
               <Textarea
                 id="wording"
                 value={form.wording}
@@ -70,12 +88,16 @@ export function JudgementSheet({
                 onChange={(event) =>
                   onFormChange({ ...form, wording: event.target.value })
                 }
-                className="min-h-24 text-body-airy"
+                className="min-h-24 rounded-none font-serif text-sm leading-relaxed text-fg"
+                placeholder="Declare the rule wording..."
               />
             </div>
-            <div className="flex flex-col gap-2">
-              <p className="text-caption text-fg-muted">Applicability</p>
-              <div className="flex flex-col gap-2 sm:grid sm:grid-cols-[1fr_1fr_1fr]">
+
+            <div className="flex flex-col gap-1.5">
+              <Label className="font-sans text-[11px] font-normal uppercase tracking-[0.04em] text-fg-muted">
+                Applicability
+              </Label>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 <Select
                   value={form.field}
                   disabled={disabled}
@@ -86,7 +108,10 @@ export function JudgementSheet({
                     })
                   }
                 >
-                  <SelectTrigger className={SELECT_TRIGGER} aria-label="Predicate field">
+                  <SelectTrigger
+                    className="h-8 w-full rounded-none border border-border bg-surface px-2.5 text-xs text-fg"
+                    aria-label="Predicate field"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -107,7 +132,10 @@ export function JudgementSheet({
                     })
                   }
                 >
-                  <SelectTrigger className={SELECT_TRIGGER} aria-label="Predicate operator">
+                  <SelectTrigger
+                    className="h-8 w-full rounded-none border border-border bg-surface px-2.5 text-xs text-fg"
+                    aria-label="Predicate operator"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -122,14 +150,32 @@ export function JudgementSheet({
                   onChange={(event) =>
                     onFormChange({ ...form, valueText: event.target.value })
                   }
-                  className="h-auto px-4 py-3 text-body-airy"
+                  className="h-8 rounded-none border border-border bg-surface px-2.5 font-mono text-xs text-fg"
                 />
               </div>
             </div>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="change-reason" className="text-caption text-fg-muted">
+
+            {isAdd ? (
+              <Card className="rounded-none border border-dashed border-border bg-surface/40 p-3 shadow-none">
+                <p className="font-sans text-caption leading-relaxed text-fg-muted">
+                  New rule — no assets can cite it until this is saved.
+                </p>
+              </Card>
+            ) : (
+              <Card className="rounded-none border border-border bg-surface/40 p-3 shadow-none">
+                <p className="font-sans text-caption leading-relaxed text-fg">
+                  3 assets currently cite this wording. Editing it does not change their ledgers — they keep the wording frozen at their compile. The difference will show on each asset&apos;s re-run strip as drift.
+                </p>
+              </Card>
+            )}
+
+            <div className="flex flex-col gap-1.5">
+              <Label
+                htmlFor="change-reason"
+                className="font-sans text-[11px] font-normal uppercase tracking-[0.04em] text-fg-muted"
+              >
                 Change reason
-              </label>
+              </Label>
               <Textarea
                 id="change-reason"
                 value={form.changeReason}
@@ -137,16 +183,19 @@ export function JudgementSheet({
                 onChange={(event) =>
                   onFormChange({ ...form, changeReason: event.target.value })
                 }
-                className="min-h-20 text-body-airy"
+                className="min-h-20 rounded-none font-sans text-sm leading-relaxed text-fg"
+                placeholder="Reason for this change (required)..."
               />
             </div>
           </div>
         </div>
-        <div className="flex shrink-0 items-center justify-between gap-2 border-t border-border p-4">
+
+        <div className="flex shrink-0 items-center justify-between gap-2 border-t border-border bg-surface p-4">
           {!isAdd ? (
             <Button
               type="button"
               variant="destructive"
+              className="h-8 rounded-none border-0 bg-transparent px-2 font-sans text-button text-fail shadow-none hover:bg-fail-wash"
               disabled={disabled}
               onClick={onDelete}
             >
@@ -155,10 +204,11 @@ export function JudgementSheet({
           ) : (
             <span />
           )}
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <Button
               type="button"
               variant="outline"
+              className="h-8 rounded-none border border-hairline bg-surface px-4 font-sans text-button text-fg shadow-none hover:bg-hover"
               disabled={disabled}
               onClick={onCancel}
             >
@@ -166,6 +216,7 @@ export function JudgementSheet({
             </Button>
             <Button
               type="button"
+              className="h-8 rounded-none border border-fg bg-fg px-4 font-sans text-button text-surface shadow-none hover:bg-fg/90"
               disabled={disabled || !formIsValid(form)}
               onClick={onSave}
             >

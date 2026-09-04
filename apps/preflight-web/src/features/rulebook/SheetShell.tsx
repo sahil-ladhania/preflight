@@ -1,10 +1,6 @@
-/**
- * SheetShell — R3 right slide-over panel.
- * Why: 480px sheet below top bar with overlay.
- */
-
 import type { ReactElement } from "react";
 
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import type { SheetShellProps } from "@/features/rulebook/types";
 
 export function SheetShell({
@@ -12,21 +8,21 @@ export function SheetShell({
   onClose,
   children,
 }: SheetShellProps): ReactElement {
-  if (!open) {
-    return <></>;
-  }
-
   return (
-    <div className="fixed inset-0 z-40">
-      <button
-        type="button"
-        aria-label="Close sheet"
-        className="absolute inset-0 top-12 bg-ground"
-        onClick={onClose}
-      />
-      <aside className="absolute top-12 right-0 bottom-0 flex w-sheet flex-col border-l border-border bg-surface">
+    <Sheet
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          onClose();
+        }
+      }}
+    >
+      <SheetContent
+        side="right"
+        className="top-0 z-50 flex h-full w-[400px] flex-col gap-0 border-l border-fg bg-surface p-0 shadow-none sm:max-w-[400px]"
+      >
         {children}
-      </aside>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 }
