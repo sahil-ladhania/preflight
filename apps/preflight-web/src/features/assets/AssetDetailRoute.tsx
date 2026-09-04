@@ -4,7 +4,7 @@
  */
 
 import type { ReactElement } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { AssetDetail } from "@/features/assets/AssetDetail";
 import {
@@ -13,7 +13,9 @@ import {
   NotFoundState,
 } from "@/features/assets/AssetDetailStates";
 import { ComplianceDeskModal } from "@/features/assets/ComplianceDeskModal";
+import { isNeedsYouStatus } from "@/features/assets/register-lib";
 import { useAssetDetail } from "@/features/assets/useAssetDetail";
+import { useAssetsList } from "@/features/assets/useAssetsList";
 
 /** Generate and regenerate hand the run's skill paths over in router state. */
 type AssetDetailLocationState = {
@@ -23,11 +25,15 @@ type AssetDetailLocationState = {
 
 export function AssetDetailRoute(): ReactElement {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const location = useLocation();
   const locationState = location.state as AssetDetailLocationState | null;
   const generatorSkillsRead = locationState?.generatorSkillsRead ?? null;
   const buildNarration = locationState?.buildNarration ?? null;
   const showVerdictBanner = buildNarration !== null;
+
+  const { assets: listAssets } = useAssetsList();
+
   const {
     asset,
     view,
@@ -69,6 +75,42 @@ export function AssetDetailRoute(): ReactElement {
     return <ErrorState onRetry={retryLoad} />;
   }
 
+  const queueAssets = listAssets.filter((item) => isNeedsYouStatus(item.status));
+  const queueIndex0 = queueAssets.findIndex((item) => item.id === id);
+  const queueIndex = queueIndex0 >= 0 ? queueIndex0 + 1 : null;
+  const queueTotal = queueAssets.length;
+  const hasPrevAsset = queueIndex0 > 0;
+  const hasNextAsset =
+    queueIndex0 >= 0
+      ? queueIndex0 < queueAssets.length - 1
+      : queueAssets.length > 0;
+
+  const onPrevAsset = hasPrevAsset
+    ? () => {
+        const prev = queueAssets[queueIndex0 - 1];
+        if (prev) {
+          navigate(`/assets/${prev.id}`);
+        }
+      }
+    : undefined;
+
+  const onNextAsset = hasNextAsset
+    ? () => {
+        const next =
+          queueIndex0 >= 0
+            ? queueAssets[queueIndex0 + 1]
+            : queueAssets[0];
+        if (next) {
+          navigate(`/assets/${next.id}`);
+        }
+      }
+    : undefined;
+
+  const campaignItem = listAssets.find(
+    (item) => item.campaignId === asset.campaignId,
+  );
+  const campaignName = campaignItem?.campaignName;
+
   return (
     <>
       <AssetDetail
@@ -98,6 +140,13 @@ export function AssetDetailRoute(): ReactElement {
         onCloseReasonModal={closeReasonModal}
         onSubmitReason={submitReason}
         onRetryLoad={retryLoad}
+        queueIndex={queueIndex}
+        queueTotal={queueTotal}
+        hasPrevAsset={hasPrevAsset}
+        hasNextAsset={hasNextAsset}
+        onPrevAsset={onPrevAsset}
+        onNextAsset={onNextAsset}
+        campaignName={campaignName}
       />
       <ComplianceDeskModal
         open={complianceDeskOpen}

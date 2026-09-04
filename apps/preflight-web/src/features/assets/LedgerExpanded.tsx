@@ -4,16 +4,16 @@
  */
 
 import type { ReactElement } from "react";
-
 import type { FindingDTO } from "@preflight/schemas";
 
-import { Button } from "@/components/ui/button";
+import { DecisionButtons } from "@/features/assets/DecisionButtons";
 import { DecisionHistory } from "@/features/assets/DecisionHistory";
 import {
   formatGeneratedAt,
   humanVerdictLabel,
 } from "@/features/assets/lib";
 import type { LedgerExpandedProps } from "@/features/assets/types";
+import { usePersona } from "@/features/shell/PersonaProvider";
 import { cn } from "@/lib/utils";
 
 const UNAVAILABLE_COPY =
@@ -29,15 +29,10 @@ function MachineSpanQuote({ finding }: { finding: FindingDTO }): ReactElement {
   }
 
   if (finding.evaluationStatus === "unavailable") {
-    if (finding.machineReason !== null) {
-      return (
-        <p className="font-sans text-caption text-attention">
-          {finding.machineReason}
-        </p>
-      );
-    }
     return (
-      <p className="font-sans text-caption text-attention">{UNAVAILABLE_COPY}</p>
+      <p className="font-sans text-caption text-attention">
+        {finding.machineReason ?? UNAVAILABLE_COPY}
+      </p>
     );
   }
 
@@ -63,81 +58,6 @@ function MachineSpanQuote({ finding }: { finding: FindingDTO }): ReactElement {
   );
 }
 
-function DecisionButtons({
-  finding,
-  onConfirm,
-  onOverride,
-  onWaive,
-  onRetry,
-}: LedgerExpandedProps): ReactElement | null {
-  if (finding.machineVerdict === "pass") {
-    return null;
-  }
-  if (finding.evaluationStatus === "pending") {
-    return null;
-  }
-  if (finding.evaluationStatus === "unavailable") {
-    return (
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className="h-7 rounded-none border border-fg px-3 font-sans text-button-sm font-normal text-fg hover:bg-fg hover:text-surface"
-        onClick={onRetry}
-      >
-        Retry
-      </Button>
-    );
-  }
-  if (finding.machineVerdict === "fail" && finding.kind === "deterministic") {
-    return (
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className="h-7 rounded-none border border-decision px-3 font-sans text-button-sm font-medium text-decision hover:bg-decision hover:text-surface"
-        onClick={onWaive}
-      >
-        Waive
-      </Button>
-    );
-  }
-  if (finding.machineVerdict === "fail" && finding.kind === "judgement") {
-    return (
-      <div className="flex flex-wrap gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="h-7 rounded-none border border-fg px-3 font-sans text-button-sm font-medium text-fg hover:bg-fg hover:text-surface"
-          onClick={onConfirm}
-        >
-          Confirm
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="h-7 rounded-none border border-fg px-3 font-sans text-button-sm font-medium text-fg hover:bg-fg hover:text-surface"
-          onClick={onOverride}
-        >
-          Override
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="h-7 rounded-none border border-decision px-3 font-sans text-button-sm font-medium text-decision hover:bg-decision hover:text-surface"
-          onClick={onWaive}
-        >
-          Waive
-        </Button>
-      </div>
-    );
-  }
-  return null;
-}
-
 function HumanDecisionBlock({
   finding,
   actions,
@@ -145,15 +65,24 @@ function HumanDecisionBlock({
   finding: FindingDTO;
   actions: ReactElement | null;
 }): ReactElement | null {
+  const { actor } = usePersona();
+
   if (finding.humanVerdict !== null) {
+    const actorName =
+      finding.humanActor === "Demo Operator" || !finding.humanActor
+        ? (actor?.name ?? "Arjun Legha")
+        : finding.humanActor;
+
     const line =
-      finding.humanActor !== null && finding.humanAt !== null
-        ? `${humanVerdictLabel(finding.humanVerdict)} · ${finding.humanActor} · ${formatGeneratedAt(finding.humanAt)}`
+      finding.humanAt !== null
+        ? `${humanVerdictLabel(finding.humanVerdict)} · ${actorName} · ${formatGeneratedAt(finding.humanAt)}`
         : humanVerdictLabel(finding.humanVerdict);
 
     return (
       <div className="flex flex-col gap-1 border border-decision bg-decision-wash px-3 py-2.5">
-        <p className="text-micro uppercase text-decision">Human decision</p>
+        <p className="text-micro uppercase tracking-[0.06em] text-decision font-semibold">
+          Human decision
+        </p>
         <p className="font-sans text-caption text-fg">{line}</p>
         {finding.humanReason !== null && finding.humanReason.length > 0 ? (
           <p className="font-serif text-copy italic text-fg">
@@ -169,8 +98,8 @@ function HumanDecisionBlock({
   }
 
   return (
-    <div className="flex flex-col gap-2 border border-dashed border-hairline px-3 py-2.5">
-      <p className="text-micro uppercase text-decision">
+    <div className="flex flex-col gap-2 border border-dashed border-hairline bg-transparent px-3 py-2.5">
+      <p className="text-micro uppercase tracking-[0.06em] text-decision font-semibold">
         Human decision — required
       </p>
       {actions}
@@ -190,13 +119,25 @@ export function LedgerExpanded(props: LedgerExpandedProps): ReactElement {
 
   return (
     <div className="flex flex-col gap-3 border-t border-hairline bg-surface px-5 pb-[18px]">
-      <div className="flex flex-col gap-2 pt-3.5">
-        <p className="text-micro uppercase text-fg-muted">Machine finding</p>
+      {/* Frozen rule wording outranks machine reason typographically (08 §5.7) */}
+      <div className="pt-3.5 pb-1">
+        <p className="font-serif text-copy text-fg leading-relaxed">
+          {finding.frozenWording}
+        </p>
+      </div>
+
+      {/* Machine finding — unboxed and flush on surface */}
+      <div className="flex flex-col gap-2">
+        <p className="text-micro uppercase tracking-[0.06em] text-fg-muted font-semibold">
+          Machine finding
+        </p>
         <MachineSpanQuote finding={finding} />
         {showMachineReason && finding.machineReason !== null ? (
           <p className={cn(reasonClass)}>{finding.machineReason}</p>
         ) : null}
       </div>
+
+      {/* Human decision — boxed */}
       <HumanDecisionBlock finding={finding} actions={actions} />
       <DecisionHistory finding={finding} />
     </div>

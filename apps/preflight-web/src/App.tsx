@@ -6,12 +6,7 @@
 import type { ReactElement } from "react";
 
 import {
-  BrowserRouter,
-  Navigate,
-  Outlet,
-  Route,
-  Routes,
-  useLocation,
+  BrowserRouter, Navigate, Outlet, Route, Routes, useLocation,
 } from "react-router-dom";
 
 import { DesignProof } from "@/design-proof/DesignProof";
@@ -54,25 +49,21 @@ import { PersonaHomeRedirect } from "@/features/shell/PersonaHomeRedirect";
 import { PersonaProvider, usePersona } from "@/features/shell/PersonaProvider";
 import { ToastHost } from "@/features/shell/ToastHost";
 
-function ShellFrame(): ReactElement {
+function RequireAuth(): ReactElement {
   const location = useLocation();
   const { actor, hydrated } = usePersona();
 
   if (!hydrated) {
-    return (
-      <div className="flex min-h-screen flex-col bg-background" aria-hidden />
-    );
+    return <div className="flex min-h-screen flex-col bg-background" aria-hidden />;
   }
-
   if (actor === null) {
-    return (
-      <Navigate
-        to="/login"
-        replace
-        state={{ from: location }}
-      />
-    );
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
+  return <Outlet />;
+}
+
+function ShellFrame(): ReactElement {
+  const location = useLocation();
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -95,13 +86,21 @@ export default function App(): ReactElement {
         <ToastHost>
           <Routes>
             <Route path="login" element={<LoginRoute />} />
-            <Route element={<ShellFrame />}>
-              <Route index element={<PersonaHomeRedirect />} />
-              <Route path="assets" element={<AssetsListRoute />} />
-              <Route path="assets/:id" element={<AssetDetailRoute />} />
-              <Route path="campaign/:campaignId" element={<CampaignRoute />} />
-              <Route path="rulebook" element={<RulebookRoute />} />
-              <Route path="workbench" element={<WorkbenchRoute />} />
+            <Route element={<RequireAuth />}>
+              <Route
+                path="assets/:id"
+                element={
+                  <ErrorBoundary>
+                    <AssetDetailRoute />
+                  </ErrorBoundary>
+                }
+              />
+              <Route element={<ShellFrame />}>
+                <Route index element={<PersonaHomeRedirect />} />
+                <Route path="assets" element={<AssetsListRoute />} />
+                <Route path="campaign/:campaignId" element={<CampaignRoute />} />
+                <Route path="rulebook" element={<RulebookRoute />} />
+                <Route path="workbench" element={<WorkbenchRoute />} />
               <Route path="design-proof" element={<DesignProof />} />
               <Route path="design-proof/assets-list" element={<AssetsListStates />} />
               <Route
@@ -187,7 +186,8 @@ export default function App(): ReactElement {
               />
               <Route path="*" element={<NotFound />} />
             </Route>
-          </Routes>
+          </Route>
+        </Routes>
         </ToastHost>
       </PersonaProvider>
     </BrowserRouter>

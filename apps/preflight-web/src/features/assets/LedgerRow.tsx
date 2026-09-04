@@ -33,22 +33,14 @@ function VerdictChip({ finding }: { finding: FindingDTO }): ReactElement | null 
 
   if (finding.humanVerdict === "waived") {
     return (
-      <span className="shrink-0 font-sans font-semibold text-verdict-chip uppercase chip-waived">
+      <span className="shrink-0 font-sans font-semibold text-verdict-chip uppercase border border-decision text-decision px-[5px] py-px">
         Waived
       </span>
     );
   }
 
-  const chipClass =
-    finding.humanVerdict === "confirmed" ? "human-confirmed" : "human-overridden";
-
   return (
-    <span
-      className={cn(
-        "shrink-0 font-sans font-semibold text-verdict-chip uppercase",
-        chipClass,
-      )}
-    >
+    <span className="shrink-0 font-sans font-semibold text-verdict-chip uppercase text-decision">
       {humanVerdictLabel(finding.humanVerdict)}
     </span>
   );
@@ -105,29 +97,27 @@ export function LedgerRow({
         data-finding-row={finding.id}
         onClick={() => onRowClick(finding.id)}
         className={cn(
-          "flex w-full items-center px-4 py-2 text-left font-sans font-normal transition-colors hover:bg-primary-wash/30",
-          isOpen && "border-l-2 border-l-primary bg-primary-wash/40 font-medium",
+          "flex w-full items-center gap-2.5 px-5 py-2.5 text-left font-sans font-normal hover:bg-hover cursor-pointer",
+          isOpen && "bg-surface",
         )}
       >
-        <span className="flex min-w-0 max-w-[640px] items-center gap-2">
-          <span className="inline-flex size-3 shrink-0 items-center justify-center">
-            <MachineIcon finding={finding} />
-          </span>
-          <span className="min-w-[58px] shrink-0 font-mono text-[11px] text-fg-muted">
-            {finding.ruleId}
-          </span>
-          <span
-            className={cn(
-              "min-w-0 truncate font-sans text-xs",
-              wordingTone(finding) === "muted" ? "text-fg-muted" : "text-fg",
-            )}
-            title={finding.frozenWording}
-          >
-            {finding.frozenWording}
-          </span>
-          <KindBadge kind={finding.kind} />
-          <VerdictChip finding={finding} />
+        <span className="inline-flex size-3 shrink-0 items-center justify-center">
+          <MachineIcon finding={finding} />
         </span>
+        <span className="min-w-[66px] shrink-0 font-mono text-mono-meta text-fg-muted">
+          {finding.ruleId}
+        </span>
+        <span
+          className={cn(
+            "min-w-0 flex-1 truncate font-sans text-xs",
+            wordingTone(finding) === "muted" ? "text-fg-muted" : "text-fg",
+          )}
+          title={finding.frozenWording}
+        >
+          {finding.frozenWording}
+        </span>
+        <KindBadge kind={finding.kind} />
+        <VerdictChip finding={finding} />
       </button>
       {isOpen ? (
         <LedgerExpanded

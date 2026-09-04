@@ -1,27 +1,26 @@
 /**
- * AssetDetail — Screen 1 orchestrator.
- * Why: region siblings extracted; route and states are separate modules.
+ * AssetDetail — Screen 1 orchestrator in full-screen review mode.
+ * Why: 3-column review mode outside app sidebar (08 §4.4, 09 Screen 1).
  */
-// size: orchestrator wires shell, split, modals — extract loses load order clarity
 
-import { useState, useEffect, useRef, type ReactElement } from "react";
+import type { ReactElement } from "react";
 
-import { AssetDetailShell } from "@/features/assets/AssetDetailShell";
-import { AssetPane } from "@/features/assets/AssetPane";
+import { AssetArtefactPane } from "@/features/assets/AssetArtefactPane";
+import { AssetContextPane } from "@/features/assets/AssetContextPane";
+import { AssetDecisionPane } from "@/features/assets/AssetDecisionPane";
 import {
   ErrorState,
   LoadingState,
 } from "@/features/assets/AssetDetailStates";
-import { ExceptionsSummary } from "@/features/assets/ExceptionsSummary";
-import { GeneratorRunBanner } from "@/features/assets/GeneratorRunBanner";
-import { LedgerPane } from "@/features/assets/LedgerPane";
-import { LineageBanner } from "@/features/assets/LineageBanner";
+import { AssetReviewTopBar } from "@/features/assets/AssetReviewTopBar";
 import { ReasonModal } from "@/features/assets/ReasonModal";
-import { findingById, scrollFindingTarget } from "@/features/assets/lib";
-import { firstOpenFindingId } from "@/features/assets/ledger-lib";
-import type { AssetDetailProps, ReasonModalState } from "@/features/assets/types";
-import { useToastContext } from "@/features/shell/ToastHost";
-import { RERUN_STRIPS } from "@/fixtures/assets-detail";
+import {
+  acceptDisabledCaption,
+  acceptIsEnabled,
+  findingById,
+} from "@/features/assets/lib";
+import type { AssetDetailProps } from "@/features/assets/types";
+import { useAssetSelection } from "@/features/assets/useAssetSelection";
 
 export { AssetDetailRoute } from "@/features/assets/AssetDetailRoute";
 
@@ -29,8 +28,6 @@ export function AssetDetail({
   asset,
   view = "loaded",
   rerunStrip: rerunStripProp = null,
-  generatorSkillsRead = null,
-  buildNarration = null,
   showLoadingSpinner = true,
   openFindingId: openFindingIdProp,
   reasonModal: reasonModalProp,
@@ -50,63 +47,39 @@ export function AssetDetail({
   onCloseReasonModal,
   onSubmitReason,
   onRetryLoad,
+  queueIndex = null,
+  queueTotal = 0,
+  hasPrevAsset = false,
+  hasNextAsset = false,
+  onPrevAsset,
+  onNextAsset,
+  campaignName,
 }: AssetDetailProps): ReactElement {
-  const { enqueue } = useToastContext();
-  const [localOpenFindingId, setLocalOpenFindingId] = useState<string | null>(
-    () =>
-      openFindingIdProp !== undefined
-        ? null
-        : firstOpenFindingId(asset.findings),
-  );
-  const [localReasonModal, setLocalReasonModal] = useState<ReasonModalState>({
-    mode: "closed",
-    findingId: null,
+  const {
+    openFindingId,
+    reasonModal,
+    rerunStrip,
+    selectSpanFinding,
+    selectRowFinding,
+    handleAccept,
+    handleRerun,
+    closeModal,
+    submitModal,
+    openOverrideModal,
+    openWaiveModal,
+  } = useAssetSelection({
+    assetId: asset.id,
+    findings: asset.findings,
+    openFindingIdProp,
+    reasonModalProp,
+    rerunStripProp,
+    onSpanClick,
+    onRowClick,
+    onAccept,
+    onRerun,
+    onCloseReasonModal,
+    onSubmitReason,
   });
-  const [localRerunStrip, setLocalRerunStrip] = useState(rerunStripProp);
-  const scrollTargetRef = useRef<"span" | "row" | null>(
-    openFindingIdProp === undefined &&
-      firstOpenFindingId(asset.findings) !== null
-      ? "span"
-      : null,
-  );
-
-  const openFindingId = openFindingIdProp ?? localOpenFindingId;
-  const reasonModal = reasonModalProp ?? localReasonModal;
-  const rerunStrip = onRerun !== undefined ? rerunStripProp : localRerunStrip;
-  const modalFinding =
-    reasonModal.findingId !== null
-      ? findingById(asset.findings, reasonModal.findingId)
-      : undefined;
-
-  const selectSpanFinding = (findingId: string): void => {
-    if (onSpanClick !== undefined) {
-      onSpanClick(findingId);
-      return;
-    }
-    scrollTargetRef.current = "row";
-    setLocalOpenFindingId(findingId);
-  };
-
-  const selectRowFinding = (findingId: string): void => {
-    if (onRowClick !== undefined) {
-      onRowClick(findingId);
-      return;
-    }
-    scrollTargetRef.current = "span";
-    setLocalOpenFindingId(findingId);
-  };
-
-  useEffect(() => {
-    if (openFindingIdProp !== undefined || openFindingId === null) {
-      return;
-    }
-    if (scrollTargetRef.current === null) {
-      return;
-    }
-    const target = scrollTargetRef.current;
-    scrollTargetRef.current = null;
-    scrollFindingTarget(openFindingId, target);
-  }, [openFindingId, openFindingIdProp]);
 
   if (view === "loading") {
     return <LoadingState showSpinner={showLoadingSpinner} />;
@@ -116,120 +89,93 @@ export function AssetDetail({
     return <ErrorState onRetry={onRetryLoad} />;
   }
 
-  const handleAccept = (): void => {
-    if (onAccept !== undefined) {
-      onAccept();
-      return;
-    }
-    enqueue("Would ship — demo has no publishing.");
-  };
-
-  const handleRerun = (): void => {
-    if (onRerun !== undefined) {
-      onRerun();
-      return;
-    }
-    setLocalRerunStrip(RERUN_STRIPS[asset.id] ?? null);
-  };
-
-  const closeModal = (): void => {
-    if (onCloseReasonModal !== undefined) {
-      onCloseReasonModal();
-      return;
-    }
-    setLocalReasonModal({ mode: "closed", findingId: null });
-  };
-
-  const submitModal = (reason: string): void => {
-    if (onSubmitReason !== undefined) {
-      void onSubmitReason(reason);
-      return;
-    }
-    closeModal();
-  };
+  const modalFinding =
+    reasonModal.findingId !== null
+      ? findingById(asset.findings, reasonModal.findingId)
+      : undefined;
 
   return (
-    <AssetDetailShell
-      headline={asset.headline}
-      channel={asset.channel}
-      assetId={asset.id}
-      generatedAt={asset.generatedAt}
-      status={asset.status}
-    >
-      <div className="flex shrink-0 flex-col gap-4 px-8 pb-4">
-        {asset.lineage !== null ? (
-          <LineageBanner
-            lineage={asset.lineage}
-            generationIndex={asset.generationIndex}
-          />
-        ) : null}
-        {generatorSkillsRead !== null ? (
-          <GeneratorRunBanner
-            skillsRead={generatorSkillsRead}
-            narration={buildNarration}
-          />
-        ) : null}
-        {asset.exceptions.length > 0 ? (
-          <ExceptionsSummary exceptions={asset.exceptions} />
-        ) : null}
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-ground">
+      <AssetReviewTopBar
+        headline={asset.headline}
+        status={asset.status}
+        queueIndex={queueIndex}
+        queueTotal={queueTotal}
+        hasPrevAsset={hasPrevAsset}
+        hasNextAsset={hasNextAsset}
+        onPrevAsset={onPrevAsset}
+        onNextAsset={onNextAsset}
+        acceptEnabled={acceptIsEnabled(asset.status)}
+        disabledReason={acceptDisabledCaption(asset.status, asset.findings)}
+        onAccept={handleAccept}
+        onRegenerate={() => {
+          if (onRegenerate !== undefined) {
+            void onRegenerate();
+          }
+        }}
+        regenerateInFlight={regenerateInFlight}
+        onExport={() => {
+          if (onExport !== undefined) {
+            void onExport();
+          }
+        }}
+        exportInFlight={exportInFlight}
+      />
+
+      <div className="flex min-h-0 flex-1 overflow-hidden border-t border-fg">
+        <AssetContextPane
+          asset={asset}
+          campaignName={campaignName}
+          rerunStrip={rerunStrip}
+          onRerun={handleRerun}
+          rerunInFlight={rerunInFlight}
+        />
+
+        <AssetArtefactPane
+          asset={asset}
+          openFindingId={openFindingId}
+          onSpanClick={selectSpanFinding}
+        />
+
+        <AssetDecisionPane
+          findings={asset.findings}
+          status={asset.status}
+          openFindingId={openFindingId}
+          onRowClick={selectRowFinding}
+          onConfirm={(findingId) => {
+            if (onConfirm !== undefined) {
+              void onConfirm(findingId);
+            }
+          }}
+          onOverride={(findingId) => {
+            if (onOverride !== undefined) {
+              onOverride(findingId);
+              return;
+            }
+            openOverrideModal(findingId);
+          }}
+          onWaive={(findingId) => {
+            if (onWaive !== undefined) {
+              onWaive(findingId);
+              return;
+            }
+            openWaiveModal(findingId);
+          }}
+          onRetry={(findingId) => {
+            if (onRetry !== undefined) {
+              void onRetry(findingId);
+            }
+          }}
+          onAccept={handleAccept}
+          onRegenerate={() => {
+            if (onRegenerate !== undefined) {
+              void onRegenerate();
+            }
+          }}
+          regenerateInFlight={regenerateInFlight}
+        />
       </div>
-      <div className="flex min-h-0 flex-1 overflow-hidden border-t border-hairline">
-        <div className="h-full min-h-0 w-pane-evidence shrink-0 overflow-hidden bg-surface">
-          <AssetPane
-            asset={asset}
-            openFindingId={openFindingId}
-            onSpanClick={selectSpanFinding}
-            rerunStrip={rerunStrip}
-            onRerun={handleRerun}
-            rerunInFlight={rerunInFlight}
-          />
-        </div>
-        <div className="h-full min-h-0 w-pane-ledger shrink-0 overflow-hidden border-l border-hairline bg-ground">
-          <LedgerPane
-            findings={asset.findings}
-            status={asset.status}
-            openFindingId={openFindingId}
-            onRowClick={selectRowFinding}
-            onAccept={handleAccept}
-            onRegenerate={() => {
-              if (onRegenerate !== undefined) {
-                void onRegenerate();
-              }
-            }}
-            onExport={() => {
-              if (onExport !== undefined) {
-                void onExport();
-              }
-            }}
-            exportInFlight={exportInFlight}
-            regenerateInFlight={regenerateInFlight}
-            onConfirm={(findingId) => {
-              if (onConfirm !== undefined) {
-                void onConfirm(findingId);
-              }
-            }}
-            onOverride={(findingId) => {
-              if (onOverride !== undefined) {
-                onOverride(findingId);
-                return;
-              }
-              setLocalReasonModal({ mode: "override", findingId });
-            }}
-            onWaive={(findingId) => {
-              if (onWaive !== undefined) {
-                onWaive(findingId);
-                return;
-              }
-              setLocalReasonModal({ mode: "waive", findingId });
-            }}
-            onRetry={(findingId) => {
-              if (onRetry !== undefined) {
-                void onRetry(findingId);
-              }
-            }}
-          />
-        </div>
-      </div>
+
       <ReasonModal
         mode={reasonModal.mode}
         onClose={closeModal}
@@ -238,6 +184,6 @@ export function AssetDetail({
         frozenWording={modalFinding?.frozenWording}
         machineReason={modalFinding?.machineReason}
       />
-    </AssetDetailShell>
+    </div>
   );
 }

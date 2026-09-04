@@ -22,12 +22,6 @@ function spanClassName(
   if (finding === undefined || !isFailFinding(finding)) {
     return null;
   }
-  if (finding.humanVerdict === "overridden") {
-    return cn("span-overridden", selected && "span-fail-selected");
-  }
-  if (finding.humanVerdict === "waived") {
-    return cn("span-waived-fail", selected && "span-fail-selected");
-  }
   return cn("span-fail", selected && "span-fail-selected");
 }
 
@@ -50,16 +44,14 @@ export function AssetCopyField({
   const isEmpty = text.trim().length === 0;
 
   return (
-    <div className="flex flex-col gap-1.5 border border-border bg-surface p-3.5 shadow-none">
-      <div className="flex items-center justify-between">
-        <p className="font-mono text-[10px] font-medium uppercase tracking-wider text-fg-muted">
-          {label}
-        </p>
-      </div>
+    <div className="flex flex-col gap-1.5 py-2">
+      <p className="font-sans text-label uppercase tracking-[0.04em] text-fg-muted">
+        {label}
+      </p>
       {isEmpty ? (
         <p className="font-serif text-copy italic text-fg-faint">(empty)</p>
       ) : (
-        <p className={cn(contentClass, "leading-relaxed")}>
+        <p className={cn("font-serif text-copy leading-relaxed text-fg", contentClass)}>
           {segments.map((segment, index) => {
             if (segment.findingId === null) {
               return <span key={index}>{segment.text}</span>;

@@ -146,6 +146,13 @@ export interface AssetDetailProps {
   onCloseReasonModal?: () => void;
   onSubmitReason?: (reason: string) => void;
   onRetryLoad?: () => void;
+  queueIndex?: number | null;
+  queueTotal?: number;
+  hasPrevAsset?: boolean;
+  hasNextAsset?: boolean;
+  onPrevAsset?: () => void;
+  onNextAsset?: () => void;
+  campaignName?: string;
 }
 
 export interface LineageBannerProps {
