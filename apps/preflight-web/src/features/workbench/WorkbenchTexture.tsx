@@ -14,8 +14,10 @@ export function WorkbenchTexture(): ReactElement {
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
       style={{
-        maskImage: "linear-gradient(to bottom, black 0%, transparent 40%)",
-        WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 40%)",
+        maskImage:
+          "radial-gradient(ellipse 65% 45% at 50% 0%, black 0%, rgba(0,0,0,0.5) 45%, transparent 100%)",
+        WebkitMaskImage:
+          "radial-gradient(ellipse 65% 45% at 50% 0%, black 0%, rgba(0,0,0,0.5) 45%, transparent 100%)",
       }}
     >
       <RegisterGrid

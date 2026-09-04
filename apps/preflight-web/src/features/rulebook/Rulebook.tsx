@@ -3,61 +3,18 @@
  * Why: sheet and delete modal wired from useRulebook in RulebookRoute.
  */
 
-import type { ReactElement } from "react";
+import { useMemo, useState, type ReactElement } from "react";
 
-import { Button } from "@/components/ui/button";
+import { SearchInput } from "@/components/ui/search-input";
 import { DeleteRuleModal } from "@/features/rulebook/DeleteRuleModal";
 import { JudgementSheet } from "@/features/rulebook/JudgementSheet";
-import { catalogCounts, emptyJudgementForm } from "@/features/rulebook/lib";
+import { emptyJudgementForm } from "@/features/rulebook/lib";
+import { filterCatalogRules } from "@/features/rulebook/rule-search";
 import { RulebookShell } from "@/features/rulebook/RulebookShell";
+import { LoadingState, StageError } from "@/features/rulebook/RulebookStatus";
 import { RulebookTable } from "@/features/rulebook/RulebookTable";
-import type {
-  RulebookLoadingStateProps,
-  RulebookProps,
-} from "@/features/rulebook/types";
+import type { RulebookProps } from "@/features/rulebook/types";
 import { useRulebook } from "@/features/rulebook/useRulebook";
-
-function StageSpinner(): ReactElement {
-  return (
-    <div className="flex min-h-48 items-center justify-center">
-      <div
-        className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
-        aria-label="Loading"
-      />
-    </div>
-  );
-}
-
-function StageError({ onRetry }: { onRetry?: () => void }): ReactElement {
-  const handleRetry = (): void => {
-    onRetry?.();
-  };
-
-  return (
-    <div className="flex min-h-48 flex-col items-center justify-center gap-4">
-      <p className="text-caption text-fg-muted">Could not load rules.</p>
-      <Button type="button" variant="outline" onClick={handleRetry}>
-        Retry
-      </Button>
-    </div>
-  );
-}
-
-function LoadingState({ showSpinner }: RulebookLoadingStateProps): ReactElement {
-  if (!showSpinner) {
-    return (
-      <RulebookShell postSaveCaption={false} onAdd={() => {}}>
-        <div className="min-h-48" />
-      </RulebookShell>
-    );
-  }
-
-  return (
-    <RulebookShell postSaveCaption={false} onAdd={() => {}}>
-      <StageSpinner />
-    </RulebookShell>
-  );
-}
 
 export function Rulebook({
   rules,
@@ -79,6 +36,20 @@ export function Rulebook({
   onConfirmDelete,
   onRetry,
 }: RulebookProps): ReactElement {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const safeRules = Array.isArray(rules) ? rules : [];
+
+  const filteredRules = useMemo(
+    () => filterCatalogRules(safeRules, searchQuery),
+    [safeRules, searchQuery],
+  );
+
+  const editingRule =
+    editingRuleId === null
+      ? null
+      : (safeRules.find((rule) => rule.ruleId === editingRuleId) ?? null);
+
   if (view === "loading") {
     return <LoadingState showSpinner={showLoadingSpinner} />;
   }
@@ -95,13 +66,6 @@ export function Rulebook({
       </RulebookShell>
     );
   }
-
-  const editingRule =
-    editingRuleId === null
-      ? null
-      : (rules.find((rule) => rule.ruleId === editingRuleId) ?? null);
-
-  const counts = catalogCounts(rules);
 
   const handleSave = (): void => {
     if (onSave !== undefined) {
@@ -123,14 +87,18 @@ export function Rulebook({
     <>
       <RulebookShell
         postSaveCaption={postSaveCaption}
-        bindingCount={counts.binding}
-        advisoryCount={counts.advisory}
-        totalCount={counts.total}
-        showEndLine
+        search={
+          <SearchInput
+            value={searchQuery}
+            onValueChange={setSearchQuery}
+            placeholder="Search rules…"
+            className="w-64"
+          />
+        }
         onAdd={handleAdd}
       >
         <RulebookTable
-          rules={rules}
+          rules={filteredRules}
           onEdit={(ruleId) => {
             onEdit?.(ruleId);
           }}

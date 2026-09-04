@@ -177,6 +177,8 @@ function CampaignLoaded(props: CampaignProps): ReactElement {
       activeStep={activeStep}
       compiling={compiling}
       identity={brief.schemeName.trim()}
+      isBuilt={pane === "built"}
+      campaignName={brief.schemeName}
       s2Dimmed={s2Dimmed}
       s3Dimmed={s3Dimmed}
       backToSummary={showBack}

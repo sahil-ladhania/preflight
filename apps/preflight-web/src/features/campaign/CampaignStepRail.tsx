@@ -90,16 +90,26 @@ export function CampaignStepRail({
         disabled={!reachable}
         onClick={() => onViewStepChange(stepId)}
         className={cn(
-          "flex shrink-0 flex-col items-start gap-0.5 border-l-2 py-2 pr-2 pl-3 text-left",
+          "relative flex shrink-0 flex-col items-start gap-0.5 py-1.5 pr-2 text-left transition-none",
           compact ? "px-3" : "w-full",
-          isActive
-            ? "border-fg font-semibold text-fg text-ui-strong"
-            : "border-hairline font-normal text-fg-muted",
           !reachable && "pointer-events-none opacity-40",
           reachable && !isActive && "cursor-pointer hover:text-fg",
         )}
       >
-        <span>{stepTitle(stepId, compiling)}</span>
+        {!compact && isActive ? (
+          <span
+            className="absolute -left-4 top-0 bottom-0 w-[2px] bg-primary"
+            aria-hidden="true"
+          />
+        ) : null}
+        <span
+          className={cn(
+            "text-ui tracking-tight",
+            isActive ? "font-semibold text-fg" : "font-normal text-fg-muted",
+          )}
+        >
+          {stepTitle(stepId, compiling)}
+        </span>
         <span className="text-[11px] font-normal text-fg-muted">{meta.subtitle}</span>
       </button>
     );
@@ -108,14 +118,18 @@ export function CampaignStepRail({
   return (
     <>
       <aside className="hidden w-[180px] shrink-0 md:block">
-        <nav aria-label="Campaign steps" className="flex flex-col gap-5">
+        <nav aria-label="Campaign steps" className="relative flex flex-col gap-5 pl-4">
+          <div
+            className="pointer-events-none absolute left-0 top-2 bottom-2 w-px bg-hairline"
+            aria-hidden="true"
+          />
           {STEP_META.map((step) => renderStep(step.id, false))}
         </nav>
       </aside>
       <div className="md:hidden">
         <nav
           aria-label="Campaign steps"
-          className="flex gap-2 overflow-x-auto pb-1"
+          className="flex gap-2 overflow-x-auto pb-1 border-b border-hairline"
         >
           {STEP_META.map((step) => renderStep(step.id, true))}
         </nav>

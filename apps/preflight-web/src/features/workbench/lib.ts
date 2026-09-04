@@ -19,7 +19,7 @@ import {
 } from "@/features/workbench/useBriefReadiness";
 import type { WorkbenchMessage } from "@/features/workbench/types";
 
-export const WORKBENCH_HEADLINE = "Workbench";
+export const WORKBENCH_HEADLINE = "Ask a question, or start a brief.";
 
 export const WORKBENCH_SUBLINE =
   "Ask about a rule, or describe a campaign to start a brief.";
@@ -27,7 +27,7 @@ export const WORKBENCH_SUBLINE =
 export const WORKBENCH_INVITATION = WORKBENCH_HEADLINE;
 
 export const WORKBENCH_COMPOSER_PLACEHOLDER =
-  "Ask about a rule, or describe a campaign";
+  "Type your question, or paste your brief…";
 
 export const WORKBENCH_PROMPT_GROUPS = [
   {

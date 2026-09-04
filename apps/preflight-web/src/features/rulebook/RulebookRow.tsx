@@ -4,11 +4,6 @@ import { Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { appliesLabel } from "@/features/rulebook/lib";
 import type { RulebookRowProps } from "@/features/rulebook/types";
 
@@ -33,26 +28,21 @@ export function RulebookRow({ rule, onEdit }: RulebookRowProps): ReactElement {
         {rule.wording}
       </TableCell>
       <TableCell
-        className="w-[220px] max-w-[220px] text-ui text-fg-muted py-1.5 px-2 align-middle truncate"
+        className="w-[260px] whitespace-normal py-1.5 px-2 align-middle"
         title={appliesLabel(rule)}
       >
-        {appliesLabel(rule)}
+        <span className="line-clamp-2 text-ui text-fg-muted leading-snug">
+          {appliesLabel(rule)}
+        </span>
       </TableCell>
-      <TableCell className="w-[40px] text-right py-1.5 px-2 align-middle">
+      <TableCell className="w-[56px] text-right py-1.5 px-2 align-middle">
         {rule.kind === "deterministic" ? (
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <span
-                  className="inline-flex cursor-default items-center justify-center text-fg-faint"
-                  title="Defined in code"
-                >
-                  <Lock className="size-[13px] shrink-0" aria-label="Defined in code" />
-                </span>
-              }
-            />
-            <TooltipContent>Defined in code — cannot be edited</TooltipContent>
-          </Tooltip>
+          <span
+            className="inline-flex cursor-default items-center justify-center text-fg-faint"
+            title="Defined in code — cannot be edited"
+          >
+            <Lock className="size-[13px] shrink-0" aria-label="Defined in code" />
+          </span>
         ) : (
           <Button
             type="button"

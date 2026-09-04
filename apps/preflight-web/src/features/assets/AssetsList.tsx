@@ -3,8 +3,9 @@
  * Why: register table inside paper-ground shell (09 R2).
  */
 
-import { useState, type ReactElement } from "react";
+import { useMemo, useState, type ReactElement } from "react";
 
+import { SearchInput } from "@/components/ui/search-input";
 import { AssetsListShell } from "@/features/assets/AssetsListShell";
 import { AssetsRegisterTable } from "@/features/assets/AssetsRegisterTable";
 import {
@@ -12,9 +13,9 @@ import {
   endOfRegisterLine,
   registerCounts,
   type RegisterFilter,
-  workSummaryLine,
 } from "@/features/assets/register-lib";
 import type { AssetsListProps } from "@/features/assets/types";
+import { WorkSummaryStats } from "@/features/assets/WorkSummaryStats";
 import { useCreateCampaign } from "@/features/campaign/useCreateCampaign";
 import { useAssetsList } from "@/features/assets/useAssetsList";
 import { usePersona } from "@/features/shell/PersonaProvider";
@@ -95,9 +96,10 @@ export function AssetsList({
   const [filter, setFilter] = useState<RegisterFilter>(() =>
     defaultRegisterFilter(personaId),
   );
+  const [searchQuery, setSearchQuery] = useState("");
 
   const loaded = view === "loaded" && assets.length > 0;
-  const workSummary = loaded ? workSummaryLine(assets) : null;
+  const workSummary = loaded ? <WorkSummaryStats assets={assets} /> : null;
   const endLine = loaded ? endOfRegisterLine(assets) : null;
   const counts = loaded
     ? {
@@ -107,11 +109,31 @@ export function AssetsList({
       }
     : undefined;
 
+  const filteredAssets = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return assets;
+    return assets.filter(
+      (asset) =>
+        asset.headline.toLowerCase().includes(q) ||
+        asset.campaignName.toLowerCase().includes(q),
+    );
+  }, [assets, searchQuery]);
+
   const shell = (content: ReactElement): ReactElement => (
     <AssetsListShell
       createInFlight={createInFlight}
       onNewCampaign={onNewCampaign}
       workSummary={workSummary}
+      search={
+        loaded ? (
+          <SearchInput
+            value={searchQuery}
+            onValueChange={setSearchQuery}
+            placeholder="Search assets…"
+            className="w-64"
+          />
+        ) : undefined
+      }
       filter={filter}
       onFilterChange={setFilter}
       showFilter={loaded}
@@ -139,7 +161,7 @@ export function AssetsList({
   return shell(
     <>
       {pollError ? <PollErrorBanner onRetry={onRetry} /> : null}
-      <AssetsRegisterTable assets={assets} filter={filter} />
+      <AssetsRegisterTable assets={filteredAssets} filter={filter} />
     </>,
   );
 }

@@ -3,10 +3,11 @@
  * Why: 09 Screen 3 max-w 1024, 32px padding, Built back link.
  */
 
-import { Loader2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import type { ReactElement, ReactNode } from "react";
 
-import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
+import { PrimaryButton } from "@/components/ui/primary-button";
 import {
   CampaignStepRail,
   type CampaignStepId,
@@ -18,6 +19,8 @@ export interface CampaignPageShellProps {
   activeStep: CampaignStepId;
   compiling: boolean;
   identity?: string;
+  isBuilt?: boolean;
+  campaignName?: string;
   s2Dimmed: boolean;
   s3Dimmed: boolean;
   backToSummary?: boolean;
@@ -31,6 +34,8 @@ export function CampaignPageShell({
   activeStep,
   compiling,
   identity = "",
+  isBuilt = false,
+  campaignName = "",
   s2Dimmed,
   s3Dimmed,
   backToSummary = false,
@@ -41,33 +46,29 @@ export function CampaignPageShell({
   const { createInFlight, createCampaignAndGo } = useCreateCampaign();
   const reachability = { s2Dimmed, s3Dimmed };
   const identityLine = identity.trim();
+  const resolvedName = campaignName.trim() || identityLine;
+
+  const title = isBuilt && resolvedName.length > 0 ? resolvedName : "Start a campaign";
+  const eyebrow = isBuilt ? "CAMPAIGN" : undefined;
 
   return (
     <div className="flex min-h-below-topbar flex-col bg-ground px-8 pt-8 pb-12">
-      <div className="mx-auto flex w-full max-w-campaign flex-1 flex-col">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex flex-col gap-2">
-            <h1 className="font-serif text-page-title text-fg">Campaign</h1>
-            {identityLine.length > 0 ? (
-              <p className="font-serif text-wordmark text-fg">{identityLine}</p>
-            ) : null}
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            disabled={createInFlight}
-            className="h-8 rounded-none border border-fg bg-ground px-4 font-sans text-button font-medium text-fg shadow-none hover:bg-fg hover:text-surface disabled:cursor-not-allowed disabled:opacity-50"
-            onClick={() => {
-              void createCampaignAndGo();
-            }}
-          >
-            {createInFlight ? (
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-            ) : (
-              "+ New campaign"
-            )}
-          </Button>
-        </div>
+      <div className="mx-auto flex w-full max-w-register flex-1 flex-col">
+        <PageHeader
+          eyebrow={eyebrow}
+          title={title}
+          action={
+            <PrimaryButton
+              loading={createInFlight}
+              icon={<Plus className="size-4 shrink-0" aria-hidden="true" />}
+              onClick={() => {
+                void createCampaignAndGo();
+              }}
+            >
+              New campaign
+            </PrimaryButton>
+          }
+        />
 
         {backToSummary && onBackToSummary !== undefined ? (
           <button

@@ -82,25 +82,12 @@ export function sortCatalogRules(
   return [...det, ...jdg];
 }
 
-export function appliesLabel(rule: RuleCatalogRowDTO): string {
-  if (rule.kind === "deterministic") {
-    return "In code";
-  }
-  if (rule.applicabilitySummary !== null) {
-    return rule.applicabilitySummary;
-  }
-  if (rule.predicateSpec === null) {
-    return "—";
-  }
-  return formatPredicateSpec(rule.predicateSpec);
-}
+import {
+  appliesLabel,
+  formatPredicateSpec,
+} from "@/features/rulebook/applies-label";
 
-export function formatPredicateSpec(spec: PredicateSpec): string {
-  if (spec.op === "equals") {
-    return `${spec.field} equals ${spec.value}`;
-  }
-  return `${spec.field} in ${spec.value.join(", ")}`;
-}
+export { appliesLabel, formatPredicateSpec };
 
 export function emptyJudgementForm(): JudgementFormState {
   return {

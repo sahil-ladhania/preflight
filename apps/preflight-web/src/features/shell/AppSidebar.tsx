@@ -34,10 +34,14 @@ export function AppSidebar(): ReactElement {
     <Sidebar
       collapsible="icon"
       className="relative border-r border-[var(--color-chrome-edge)] text-[var(--color-chrome-fg)] [&_[data-slot=sidebar-inner]]:bg-transparent"
-      style={{
-        background:
-          "linear-gradient(180deg, var(--color-chrome-top) 0%, #253648 45%, var(--color-chrome-bottom) 68%, var(--color-chrome-bottom) 100%)",
-      }}
+      style={
+        {
+          background:
+            "linear-gradient(180deg, var(--color-chrome-top) 0%, #253648 45%, var(--color-chrome-bottom) 68%, var(--color-chrome-bottom) 100%)",
+          "--sidebar-accent": "var(--color-chrome-active)",
+          "--sidebar-accent-foreground": "var(--color-chrome-fg)",
+        } as React.CSSProperties
+      }
     >
       {/* 1px lighter top highlight line */}
       <div
@@ -140,7 +144,7 @@ export function AppSidebar(): ReactElement {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="relative z-10 border-t border-white/5 p-2">
+      <SidebarFooter className="relative z-10 border-t border-white/10 p-2">
         <SidebarUserMenu />
       </SidebarFooter>
     </Sidebar>

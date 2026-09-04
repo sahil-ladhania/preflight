@@ -51,31 +51,25 @@ export function BriefPhase({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-baseline justify-between">
-            <h2 className="font-serif text-wordmark font-semibold tracking-tight text-fg">
-              Campaign Brief
-            </h2>
-            <span className="font-mono text-[11px] text-fg-muted">
-              {freeText.trim().length > 0
-                ? `${freeText.trim().length} chars`
-                : "Draft"}
-            </span>
-          </div>
-          <p className="font-sans text-xs text-fg-muted">
-            Describe your campaign in plain language. Preflight compiles
-            applicable rules and extracts structured brief fields.
-          </p>
+        <div className="flex items-baseline justify-between">
+          <h2 className="font-serif text-wordmark font-semibold tracking-tight text-fg">
+            Campaign Brief
+          </h2>
+          <span className="font-mono text-[11px] text-fg-muted">
+            {freeText.trim().length > 0
+              ? `${freeText.trim().length} chars`
+              : "Draft"}
+          </span>
         </div>
         <div className="flex flex-col gap-4">
           <textarea
             value={freeText}
             disabled={building}
-            placeholder="Describe your campaign in plain language…"
+            placeholder="Describe or paste your brief to start."
             onChange={(event) => onFreeTextChange(event.target.value)}
             className={cn(
               CAMPAIGN_TEXTAREA_CLASS,
-              "border-hairline bg-surface transition-colors focus-visible:border-decision",
+              "border-hairline bg-surface font-serif text-copy transition-colors placeholder:font-sans placeholder:text-ui placeholder:text-fg-faint focus-visible:border-decision",
               building && "pointer-events-none opacity-40",
             )}
           />

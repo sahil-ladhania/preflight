@@ -54,7 +54,8 @@ export interface AssetsListShellProps {
   children: ReactNode;
   createInFlight: boolean;
   onNewCampaign: () => void;
-  workSummary: string | null;
+  workSummary: ReactNode;
+  search?: ReactNode;
   filter: RegisterFilter;
   onFilterChange: (filter: RegisterFilter) => void;
   showFilter: boolean;

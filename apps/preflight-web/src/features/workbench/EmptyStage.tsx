@@ -9,7 +9,6 @@ import { usePersona } from "@/features/shell/PersonaProvider";
 import {
   promptGroupsForPersona,
   WORKBENCH_HEADLINE,
-  WORKBENCH_SUBLINE,
 } from "@/features/workbench/lib";
 
 export interface EmptyStageProps {
@@ -32,9 +31,17 @@ function PromptPill({
       type="button"
       disabled={disabled}
       onClick={onSelect}
-      className="cursor-pointer rounded-none border border-fg bg-ground px-3.5 py-2 text-left text-ui leading-[18px] text-fg shadow-none hover:bg-hover focus-visible:outline focus-visible:outline-1 focus-visible:outline-decision disabled:pointer-events-none disabled:opacity-50"
+      className="group flex items-start gap-2.5 cursor-pointer border-0 p-0 bg-transparent text-left text-ui leading-[18px] focus-visible:outline focus-visible:outline-1 focus-visible:outline-decision disabled:pointer-events-none disabled:opacity-50"
     >
-      {text}
+      <span
+        className="select-none text-fg-muted text-xs leading-[18px] group-hover:text-decision"
+        aria-hidden="true"
+      >
+        •
+      </span>
+      <span className="text-decision underline decoration-dotted underline-offset-4 group-hover:decoration-solid">
+        {text}
+      </span>
     </button>
   );
 }
@@ -50,11 +57,10 @@ export function EmptyStage({
   return (
     <div className="mx-auto flex min-h-below-topbar w-full max-w-workbench flex-col justify-center px-8">
       <div className="-translate-y-[6vh] flex flex-col gap-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="font-serif text-subject-title text-fg">
+        <div>
+          <h1 className="font-serif text-page-title text-fg font-semibold tracking-tight">
             {WORKBENCH_HEADLINE}
           </h1>
-          <p className="text-ui text-fg-muted">{WORKBENCH_SUBLINE}</p>
         </div>
         {composer}
         <div className="flex flex-col gap-5">
@@ -63,7 +69,7 @@ export function EmptyStage({
               <span className="text-label-strong uppercase text-fg-muted">
                 {group.label}
               </span>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-col items-start gap-2">
                 {group.chips.map((chip) => (
                   <PromptPill
                     key={chip}

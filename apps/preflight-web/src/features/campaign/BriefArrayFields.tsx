@@ -36,12 +36,10 @@ export function ChannelsField({
       <div className="flex items-center justify-between">
         <p className="font-mono text-xs font-medium uppercase tracking-wider text-fg-muted">
           Channels
-          <span className="text-fail" aria-hidden="true">
-            {" "}
-            *
-          </span>
         </p>
-        {proposed && !missing ? (
+        {missing ? (
+          <span className="font-sans text-[11px] text-fg-muted">Required</span>
+        ) : proposed ? (
           <span className="text-[11px] text-fg-muted">Proposed by extract</span>
         ) : null}
       </div>
@@ -70,7 +68,7 @@ export function ChannelsField({
         })}
       </div>
       {missing ? (
-        <p className="text-caption text-fail">Required — select at least one channel.</p>
+        <p className="text-caption text-fg-muted">Required — select at least one channel.</p>
       ) : null}
     </div>
   );
@@ -85,20 +83,12 @@ export function PerformanceFiguresField({
   proposed: boolean;
   onChange: (figures: Array<{ value: string; period: string }>) => void;
 }): ReactElement {
-  const canAddFigure =
-    figures.length === 0 ||
-    ((figures[figures.length - 1]?.value.trim().length ?? 0) > 0 &&
-      (figures[figures.length - 1]?.period.trim().length ?? 0) > 0);
+  const lastFig = figures[figures.length - 1];
+  const canAddFigure = figures.length === 0 ||
+    ((lastFig?.value.trim().length ?? 0) > 0 && (lastFig?.period.trim().length ?? 0) > 0);
 
-  const updateRow = (
-    index: number,
-    key: "value" | "period",
-    value: string,
-  ): void => {
-    const next = figures.map((row, rowIndex) =>
-      rowIndex === index ? { ...row, [key]: value } : row,
-    );
-    onChange(next);
+  const updateRow = (index: number, key: "value" | "period", val: string): void => {
+    onChange(figures.map((row, i) => (i === index ? { ...row, [key]: val } : row)));
   };
 
   return (

@@ -3,10 +3,11 @@
  * Why: paper-ground register per 09 R1; no PageStage card (08 §4.4).
  */
 
-import { Loader2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import type { ReactElement } from "react";
 
-import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
+import { PrimaryButton } from "@/components/ui/primary-button";
 import type { RegisterFilter } from "@/features/assets/register-lib";
 import type { AssetsListShellProps } from "@/features/assets/types";
 import { cn } from "@/lib/utils";
@@ -27,7 +28,7 @@ function RegisterFilterRail({
   counts?: { needYou: number; all: number; resolved: number };
 }): ReactElement {
   return (
-    <div className="mt-5 border-b border-[var(--color-chrome-bottom)]/15">
+    <div className="my-6 border-b border-[var(--color-chrome-bottom)]/15 py-3">
       <div className="flex gap-6">
         {FILTER_TABS.map((tab) => {
           const active = filter === tab.id;
@@ -46,9 +47,9 @@ function RegisterFilterRail({
               key={tab.id}
               type="button"
               className={cn(
-                "flex cursor-pointer items-center gap-2 border-0 bg-transparent pb-2 text-xs transition-colors",
+                "flex cursor-pointer items-center gap-2 border-0 bg-transparent pb-1 text-xs transition-colors",
                 active
-                  ? "border-b-2 border-primary pb-[7px] font-semibold text-primary"
+                  ? "border-b-2 border-primary pb-[3px] font-semibold text-primary"
                   : "text-fg-muted hover:text-fg",
               )}
               onClick={() => onFilterChange(tab.id)}
@@ -79,6 +80,7 @@ export function AssetsListShell({
   createInFlight,
   onNewCampaign,
   workSummary,
+  search,
   filter,
   onFilterChange,
   showFilter,
@@ -89,28 +91,23 @@ export function AssetsListShell({
   };
 
   return (
-    <div className="flex min-h-below-topbar flex-col bg-ground px-12 pt-8 pb-12 lg:px-20 xl:px-32">
+    <div className="flex min-h-below-topbar flex-col bg-ground px-8 pt-8 pb-12">
       <div className="mx-auto flex w-full max-w-register flex-1 flex-col">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex flex-col gap-2">
-            <h1 className="font-serif text-page-title text-fg">Asset Register</h1>
-            {workSummary !== null ? (
-              <p className="font-serif text-subject-title text-fg">{workSummary}</p>
-            ) : null}
-          </div>
-          <Button
-            type="button"
-            disabled={createInFlight}
-            className="h-8 rounded-none border border-primary bg-primary px-4 font-sans text-button font-medium text-primary-foreground shadow-none hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
-            onClick={handleNewCampaign}
-          >
-            {createInFlight ? (
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-            ) : (
-              "+ New campaign"
-            )}
-          </Button>
-        </div>
+        <PageHeader
+          eyebrow="ASSET REGISTER"
+          title="Your review queue"
+          supportingLine={workSummary}
+          search={search}
+          action={
+            <PrimaryButton
+              loading={createInFlight}
+              icon={<Plus className="size-4 shrink-0" aria-hidden="true" />}
+              onClick={handleNewCampaign}
+            >
+              New campaign
+            </PrimaryButton>
+          }
+        />
 
         {showFilter ? (
           <RegisterFilterRail

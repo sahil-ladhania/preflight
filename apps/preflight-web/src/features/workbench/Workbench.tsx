@@ -13,7 +13,7 @@ import type { WorkbenchProps } from "@/features/workbench/types";
 import { useWorkbench } from "@/features/workbench/useWorkbench";
 import { useWorkbenchFixture } from "@/features/workbench/useWorkbenchFixture";
 import { WorkbenchTexture } from "@/features/workbench/WorkbenchTexture";
-import { WORKBENCH_HEADLINE, WORKBENCH_SUBLINE } from "@/features/workbench/lib";
+import { WORKBENCH_HEADLINE } from "@/features/workbench/lib";
 import { useToastContext } from "@/features/shell/ToastHost";
 
 const PREFETCH_FAIL_TOAST = "Could not load rules catalog.";
@@ -116,11 +116,10 @@ export function Workbench({
         </div>
       ) : (
         <div className="relative z-10 mx-auto flex min-h-below-topbar w-full max-w-workbench flex-col px-8 py-8">
-          <div className="flex flex-col gap-2">
-            <h1 className="font-serif text-subject-title text-fg">
+          <div>
+            <h1 className="font-serif text-page-title text-fg font-semibold tracking-tight">
               {WORKBENCH_HEADLINE}
             </h1>
-            <p className="text-ui text-fg-muted">{WORKBENCH_SUBLINE}</p>
           </div>
           <div className="mt-6">
             {composer}

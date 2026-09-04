@@ -56,7 +56,7 @@ function RegisterSection({
         <h2 className="font-serif text-wordmark font-semibold tracking-tight text-fg">
           {label}
         </h2>
-        <span className="font-mono text-[11px] text-fg-muted">
+        <span className="font-mono text-xs text-fg-muted">
           [{count}]
         </span>
       </div>
@@ -79,6 +79,14 @@ export function AssetsRegisterTable({
   filter,
 }: AssetsRegisterTableProps): ReactElement {
   const { needsYou, resolved } = splitRegisterSections(assets, filter);
+
+  if (needsYou.length === 0 && resolved.length === 0) {
+    return (
+      <div className="py-12 text-center text-caption text-fg-muted">
+        No matching assets found
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-12">

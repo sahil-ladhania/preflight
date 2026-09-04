@@ -50,7 +50,7 @@ export function SidebarNavList({
           className={cn(
             "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-[var(--color-chrome-fg-muted)] hover:bg-white/5 hover:text-[var(--color-chrome-fg)]",
             isAssetsActive &&
-              "border-transparent border-l-2 border-l-[var(--color-chrome-fg)] bg-[var(--color-chrome-active)] font-semibold text-[var(--color-chrome-fg)] shadow-none",
+              "border-transparent border-l-2 border-l-[var(--color-chrome-fg)] bg-[var(--color-chrome-active)] font-semibold text-white shadow-none data-[active=true]:bg-[var(--color-chrome-active)] data-[active=true]:text-white",
           )}
           onClick={() => {
             void navigate("/assets");
@@ -89,7 +89,7 @@ export function SidebarNavList({
           className={cn(
             "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-[var(--color-chrome-fg-muted)] hover:bg-white/5 hover:text-[var(--color-chrome-fg)]",
             isCampaignActive &&
-              "border-transparent border-l-2 border-l-[var(--color-chrome-fg)] bg-[var(--color-chrome-active)] font-semibold text-[var(--color-chrome-fg)] shadow-none",
+              "border-transparent border-l-2 border-l-[var(--color-chrome-fg)] bg-[var(--color-chrome-active)] font-semibold text-white shadow-none data-[active=true]:bg-[var(--color-chrome-active)] data-[active=true]:text-white",
           )}
           onClick={() => {
             onNavigateCampaign();
@@ -108,7 +108,7 @@ export function SidebarNavList({
           className={cn(
             "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-[var(--color-chrome-fg-muted)] hover:bg-white/5 hover:text-[var(--color-chrome-fg)]",
             isRulebookActive &&
-              "border-transparent border-l-2 border-l-[var(--color-chrome-fg)] bg-[var(--color-chrome-active)] font-semibold text-[var(--color-chrome-fg)] shadow-none",
+              "border-transparent border-l-2 border-l-[var(--color-chrome-fg)] bg-[var(--color-chrome-active)] font-semibold text-white shadow-none data-[active=true]:bg-[var(--color-chrome-active)] data-[active=true]:text-white",
           )}
           onClick={() => {
             void navigate("/rulebook");
@@ -127,7 +127,7 @@ export function SidebarNavList({
           className={cn(
             "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-[var(--color-chrome-fg-muted)] hover:bg-white/5 hover:text-[var(--color-chrome-fg)]",
             isWorkbenchActive &&
-              "border-transparent border-l-2 border-l-[var(--color-chrome-fg)] bg-[var(--color-chrome-active)] font-semibold text-[var(--color-chrome-fg)] shadow-none",
+              "border-transparent border-l-2 border-l-[var(--color-chrome-fg)] bg-[var(--color-chrome-active)] font-semibold text-white shadow-none data-[active=true]:bg-[var(--color-chrome-active)] data-[active=true]:text-white",
           )}
           onClick={() => {
             void navigate("/workbench");

@@ -25,7 +25,6 @@ export function BuildPanel({
   onTryExample?: () => void;
 }): ReactElement {
   const line = buildPhaseLine(buildPhase, buildInFlight);
-  const showEmptyReason = !canBuild && !buildInFlight && line === null;
   const buildDisabled =
     buildInFlight ||
     !canBuild ||
@@ -58,14 +57,6 @@ export function BuildPanel({
             "Build it"
           )}
         </Button>
-        {!buildInFlight && line !== null ? (
-          <p className="text-caption text-fg-muted">{line}</p>
-        ) : null}
-        {showEmptyReason ? (
-          <p className="text-caption text-fg-muted">
-            Describe or paste your brief to start.
-          </p>
-        ) : null}
         {onTryExample !== undefined && !buildInFlight ? (
           <button
             type="button"
@@ -74,6 +65,9 @@ export function BuildPanel({
           >
             Try an example
           </button>
+        ) : null}
+        {!buildInFlight && line !== null ? (
+          <p className="text-caption text-fg-muted">{line}</p>
         ) : null}
       </div>
       {buildInFlight && line !== null ? (
