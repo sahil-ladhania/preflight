@@ -1,73 +1,46 @@
 /**
- * LoginPattern — static register texture for the login brand panel.
- * Why: layered ledger motif with quiet top for logo overlay (08 tokens).
+ * LoginPattern — ledger-grid texture for the dark login brand panel.
+ * Why: paper/record motif at low opacity over the gradient ground (08 §3.6).
  */
 
 import type { ReactElement } from "react";
 
 import { cn } from "@/lib/utils";
 
-const QUIET_TOP_END = 560;
 const VIEW_W = 1200;
 const VIEW_H = 1600;
 
-function quietRowYs(): number[] {
+function gridRows(start: number, end: number, step: number): number[] {
   const rows: number[] = [];
-  for (let y = 64; y <= QUIET_TOP_END; y += 40) {
+  for (let y = start; y <= end; y += step) {
     rows.push(y);
   }
   return rows;
 }
 
-function richRowYs(): number[] {
-  const rows: number[] = [];
-  for (let y = QUIET_TOP_END + 32; y <= VIEW_H; y += 32) {
-    rows.push(y);
-  }
-  return rows;
-}
+const QUIET_ROWS = gridRows(64, 560, 40);
+const DENSE_ROWS = gridRows(592, VIEW_H, 32);
+const V_STOPS = [110, 280, 450, 620, 790, 960];
 
-function RegisterPatternSvg(): ReactElement {
-  const quietRows = quietRowYs();
-  const richRows = richRowYs();
+function RegisterGrid(): ReactElement {
+  const vPath = V_STOPS.map((x) => `M${x} 0V${VIEW_H}`).join("");
 
   return (
     <>
-      <rect width={VIEW_W} height={VIEW_H} fill="#f6f4ee" />
-      <rect width={VIEW_W} height={VIEW_H} fill="#eef1f4" fillOpacity="0.45" />
-
-      <g stroke="#c7c0b0" strokeOpacity="0.26">
-        {quietRows.map((y) => (
-          <path key={`quiet-${y}`} d={`M0 ${y}H${VIEW_W}`} />
+      <g stroke="#c7c0b0" strokeOpacity="0.12">
+        {QUIET_ROWS.map((y) => (
+          <path key={`q-${y}`} d={`M0 ${y}H${VIEW_W}`} />
         ))}
-        <path
-          d={`M110 0V${QUIET_TOP_END}M280 0V${QUIET_TOP_END}M450 0V${QUIET_TOP_END}M620 0V${QUIET_TOP_END}M790 0V${QUIET_TOP_END}M960 0V${QUIET_TOP_END}`}
-          strokeOpacity="0.14"
-        />
-      </g>
-
-      <g fill="#2c4257" fillOpacity="0.05">
-        <rect x="277" y="120" width="3" height="280" />
-        <rect x="617" y="200" width="3" height="240" />
-      </g>
-
-      <g stroke="#c7c0b0" strokeOpacity="0.35">
-        {richRows.map((y) => (
-          <path key={`rich-${y}`} d={`M0 ${y}H${VIEW_W}`} />
+        {DENSE_ROWS.map((y) => (
+          <path key={`d-${y}`} d={`M0 ${y}H${VIEW_W}`} />
         ))}
-        <path
-          d={`M110 0V${VIEW_H}M280 0V${VIEW_H}M450 0V${VIEW_H}M620 0V${VIEW_H}M790 0V${VIEW_H}M960 0V${VIEW_H}`}
-          strokeOpacity="0.18"
-        />
+        <path d={vPath} strokeOpacity="0.08" />
       </g>
 
-      <g fill="#2c4257" fillOpacity="0.08">
-        <rect x="107" y={QUIET_TOP_END + 80} width="3" height={VIEW_H - QUIET_TOP_END - 80} />
-        <rect x="277" y={QUIET_TOP_END + 160} width="3" height={VIEW_H - QUIET_TOP_END - 160} />
-        <rect x="447" y={QUIET_TOP_END + 40} width="3" height={VIEW_H - QUIET_TOP_END - 40} />
-        <rect x="617" y={QUIET_TOP_END + 240} width="3" height={VIEW_H - QUIET_TOP_END - 240} />
-        <rect x="787" y={QUIET_TOP_END + 120} width="3" height={VIEW_H - QUIET_TOP_END - 120} />
-        <rect x="957" y={QUIET_TOP_END + 200} width="3" height={VIEW_H - QUIET_TOP_END - 200} />
+      <g fill="#c7c0b0" fillOpacity="0.06">
+        {V_STOPS.map((x, i) => (
+          <rect key={x} x={x - 3} y={200 + i * 80} width="3" height={VIEW_H - 200 - i * 80} />
+        ))}
       </g>
     </>
   );
@@ -86,22 +59,7 @@ export function LoginPattern({ className }: LoginPatternProps): ReactElement {
       aria-hidden="true"
       className={cn("h-full w-full", className)}
     >
-      <RegisterPatternSvg />
+      <RegisterGrid />
     </svg>
-  );
-}
-
-export function LoginPatternGhost({ className }: LoginPatternProps): ReactElement {
-  return (
-    <div
-      className={cn(
-        "pointer-events-none absolute inset-0 opacity-20",
-        "origin-top-left translate-x-px translate-y-px scale-[1.02]",
-        className,
-      )}
-      aria-hidden="true"
-    >
-      <LoginPattern />
-    </div>
   );
 }

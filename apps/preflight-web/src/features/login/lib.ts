@@ -2,6 +2,7 @@
  * lib — Screen 0 email-first tenant resolution and card copy.
  * Why: the gate reveals domains, never whether an address exists.
  */
+// size: domain map, credentials, copy, carousel data, and format helpers co-located because all serve the login gate.
 
 import type { Location } from "react-router-dom";
 
@@ -53,6 +54,36 @@ export const LOGIN_COPY = {
   privacyLabel: "Privacy",
   termsLabel: "Terms",
   defaultSsoError: "The identity provider cancelled sign-in.",
+} as const;
+
+export interface CarouselSlide {
+  heading: string;
+  line: string;
+}
+
+export const LOGIN_CAROUSEL_SLIDES: CarouselSlide[] = [
+  {
+    heading: "Constraints before copy",
+    line: "The rules that bind a campaign are frozen before a single word is written.",
+  },
+  {
+    heading: "Every asset carries its evidence",
+    line: "Rule by rule: what was checked, what passed, and the exact words that failed.",
+  },
+  {
+    heading: "Defensible months later",
+    line: "Frozen wording, preserved findings, and the name of whoever decided.",
+  },
+];
+
+export const LOGIN_SSO_LABELS = {
+  microsoft: "Continue with Microsoft",
+  okta: "Continue with Okta",
+} as const;
+
+export const LOGIN_HEADING = {
+  title: "Welcome back",
+  subtitle: "Please provide your details to sign in.",
 } as const;
 
 export const LOGIN_NOTICE_COPY: Record<LoginNoticeKind, string> = {
