@@ -6,13 +6,9 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { ReactElement } from "react";
 
+import { Button } from "@/components/ui/button";
 import type { LedgerHeaderProps } from "@/features/assets/types";
 import { cn } from "@/lib/utils";
-
-const headerLineClass = "font-sans text-count text-fg";
-
-const filterTabClass =
-  "cursor-pointer pb-1 font-sans text-[9px] leading-[1.4] font-normal tracking-normal";
 
 function FilterTab({
   label,
@@ -27,10 +23,10 @@ function FilterTab({
     <button
       type="button"
       className={cn(
-        filterTabClass,
+        "cursor-pointer pb-1.5 font-sans text-xs transition-colors",
         active
-          ? "border-b border-fg pb-[5px] font-medium text-fg"
-          : "text-fg-muted",
+          ? "border-b-2 border-primary pb-[5px] font-semibold text-primary"
+          : "text-fg-muted hover:text-fg",
       )}
       onClick={onClick}
     >
@@ -51,12 +47,14 @@ export function LedgerHeader({
   onStepperNext,
 }: LedgerHeaderProps): ReactElement {
   return (
-    <div className="flex shrink-0 flex-col gap-1 border-b border-hairline bg-ground px-5 py-3">
-      <p className="text-label-strong uppercase text-fg-muted">
+    <div className="flex shrink-0 flex-col gap-1 border-b border-hairline bg-ground px-5 py-3.5">
+      <p className="font-mono text-[10px] font-medium uppercase tracking-wider text-fg-muted">
         Evidence &amp; decisions
       </p>
-      <p className={headerLineClass}>{countLine}</p>
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-3 border-b border-hairline pb-1.5">
+      <p className="font-sans text-sm font-semibold tracking-tight text-fg">
+        {countLine}
+      </p>
+      <div className="mt-2.5 flex flex-wrap items-center justify-between gap-3 border-b border-hairline/80 pb-1.5">
         <div className="flex gap-5">
           <FilterTab
             label="All"
@@ -69,29 +67,33 @@ export function LedgerHeader({
             onClick={() => onFilterChange("open")}
           />
         </div>
-        <div className="flex items-center gap-1.5 font-sans text-[9px] leading-[1.4] font-normal tracking-normal text-fg-muted">
+        <div className="flex items-center gap-1.5 font-mono text-[11px] text-fg-muted">
           {showStepperChevrons ? (
-            <button
+            <Button
               type="button"
-              className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+              variant="ghost"
+              size="icon"
+              className="size-5 rounded-none p-0 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed hover:bg-hover hover:text-fg"
               disabled={!canStepperPrev}
               onClick={onStepperPrev}
               aria-label="Previous open finding"
             >
-              <ChevronLeft className="size-3" aria-hidden />
-            </button>
+              <ChevronLeft className="size-3.5" aria-hidden />
+            </Button>
           ) : null}
-          <span>{stepperText}</span>
+          <span className="font-sans text-xs">{stepperText}</span>
           {showStepperChevrons ? (
-            <button
+            <Button
               type="button"
-              className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+              variant="ghost"
+              size="icon"
+              className="size-5 rounded-none p-0 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed hover:bg-hover hover:text-fg"
               disabled={!canStepperNext}
               onClick={onStepperNext}
               aria-label="Next open finding"
             >
-              <ChevronRight className="size-3" aria-hidden />
-            </button>
+              <ChevronRight className="size-3.5" aria-hidden />
+            </Button>
           ) : null}
         </div>
       </div>

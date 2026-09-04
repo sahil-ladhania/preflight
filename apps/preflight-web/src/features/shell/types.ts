@@ -7,13 +7,16 @@ export interface ErrorBoundaryState {
   hasError: boolean;
 }
 
+export type ToastType = "success" | "error" | "info" | "warning";
+
 export interface ToastItem {
   id: string;
   message: string;
+  type?: ToastType;
 }
 
 export interface ToastContextValue {
-  enqueue: (message: string) => void;
+  enqueue: (message: string, type?: ToastType) => void;
 }
 
 export interface CampaignNavTarget {

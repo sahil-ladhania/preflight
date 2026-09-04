@@ -49,7 +49,7 @@ function RegisterFilterRail({
               className={cn(
                 "flex cursor-pointer items-center gap-2 border-0 bg-transparent pb-2 text-xs transition-colors",
                 active
-                  ? "border-b-2 border-fg pb-[7px] font-semibold text-fg"
+                  ? "border-b-2 border-primary pb-[7px] font-semibold text-primary"
                   : "text-fg-muted hover:text-fg",
               )}
               onClick={() => onFilterChange(tab.id)}
@@ -61,7 +61,7 @@ function RegisterFilterRail({
                   className={cn(
                     "rounded-none px-1.5 py-0 font-mono text-[10px] font-normal transition-colors",
                     active
-                      ? "border-fg bg-fg text-surface"
+                      ? "border-primary bg-primary text-primary-foreground font-medium"
                       : "border-border text-fg-muted",
                   )}
                 >
@@ -102,9 +102,8 @@ export function AssetsListShell({
           </div>
           <Button
             type="button"
-            variant="outline"
             disabled={createInFlight}
-            className="h-8 rounded-none border border-fg bg-ground px-4 font-sans text-button font-medium text-fg shadow-none hover:bg-fg hover:text-surface disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-8 rounded-none border border-primary bg-primary px-4 font-sans text-button font-medium text-primary-foreground shadow-none hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
             onClick={handleNewCampaign}
           >
             {createInFlight ? (

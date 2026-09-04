@@ -55,11 +55,10 @@ export function RulebookShell({
           </div>
           <Button
             type="button"
-            variant="outline"
-            className="h-8 shrink-0 rounded-none border border-fg bg-ground px-4 font-sans text-button font-medium text-fg shadow-none hover:bg-hover hover:text-fg"
+            className="h-8 shrink-0 rounded-none border border-primary bg-primary px-4 font-sans text-button font-medium text-primary-foreground shadow-xs hover:bg-primary-hover"
             onClick={onAdd}
           >
-            Add judgement rule
+            + Add judgement rule
           </Button>
         </div>
         <div className="mt-6 flex flex-1 flex-col">{children}</div>

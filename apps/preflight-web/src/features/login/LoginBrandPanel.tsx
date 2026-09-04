@@ -28,8 +28,8 @@ export function LoginBrandPanel({ className }: LoginBrandPanelProps): ReactEleme
 
       <div className="relative z-10 flex w-full flex-1 items-center px-8 py-8 md:px-14 md:py-0">
         <div className="-translate-y-[6vh] flex flex-col items-start">
-          <h1 className="font-serif text-display text-fg">{LOGIN_COPY.wordmark}</h1>
-          <span className="my-2.5 h-px w-10 bg-fg" aria-hidden="true" />
+          <h1 className="font-serif text-display text-primary">{LOGIN_COPY.wordmark}</h1>
+          <span className="my-2.5 h-px w-10 bg-primary" aria-hidden="true" />
           <p className="font-serif text-tagline italic text-fg">
             {LOGIN_COPY.tagline}
           </p>

@@ -5,6 +5,7 @@
 
 import type { ReactElement } from "react";
 
+import { Button } from "@/components/ui/button";
 import {
   acceptDisabledCaption,
   acceptIsEnabled,
@@ -12,31 +13,7 @@ import {
 import type { AssetActionRowProps } from "@/features/assets/types";
 import { cn } from "@/lib/utils";
 
-const buttonTypeClass =
-  "font-sans text-(length:--text-button) leading-none font-medium";
-
-const filledButtonClass = cn(
-  "inline-flex h-8 shrink-0 cursor-pointer items-center justify-center rounded-none border border-fg bg-fg px-4 text-surface disabled:cursor-not-allowed",
-  buttonTypeClass,
-);
-
-const disabledButtonClass = cn(
-  "inline-flex h-8 shrink-0 cursor-not-allowed items-center justify-center rounded-none border border-hairline bg-surface px-4 text-fg-faint",
-  buttonTypeClass,
-);
-
-const quietButtonClass = cn(
-  "inline-flex h-8 shrink-0 cursor-pointer items-center justify-center rounded-none border border-hairline bg-surface px-4 text-fg disabled:cursor-not-allowed disabled:opacity-50",
-  buttonTypeClass,
-);
-
 const captionClass = "font-sans text-caption font-normal text-fg-muted";
-
-const exportLinkClass = cn(
-  "shrink-0 cursor-pointer underline underline-offset-4",
-  captionClass,
-);
-
 const supportingLineClass = cn("mt-2", captionClass);
 
 const SUPPORTING_COPY =
@@ -50,14 +27,19 @@ function ReadyButton({
   onAccept: () => void;
 }): ReactElement {
   return (
-    <button
+    <Button
       type="button"
-      className={enabled ? filledButtonClass : disabledButtonClass}
+      className={cn(
+        "h-8 rounded-none border px-4 font-sans text-(length:--text-button) font-medium leading-none",
+        enabled
+          ? "border-primary bg-primary text-primary-foreground hover:bg-primary-hover cursor-pointer shadow-xs"
+          : "border-hairline bg-surface text-fg-faint cursor-not-allowed",
+      )}
       disabled={!enabled}
       onClick={enabled ? onAccept : undefined}
     >
       Ready for compliance desk
-    </button>
+    </Button>
   );
 }
 
@@ -71,14 +53,19 @@ function RegenerateButton({
   onRegenerate: () => void;
 }): ReactElement {
   return (
-    <button
+    <Button
       type="button"
-      className={primary ? filledButtonClass : quietButtonClass}
+      className={cn(
+        "h-8 rounded-none border px-4 font-sans text-(length:--text-button) font-medium leading-none cursor-pointer disabled:cursor-not-allowed",
+        primary
+          ? "border-primary bg-primary text-primary-foreground hover:bg-primary-hover shadow-xs"
+          : "border-hairline bg-surface text-fg hover:bg-hover disabled:opacity-50",
+      )}
       disabled={inFlight}
       onClick={onRegenerate}
     >
       {inFlight ? "Regenerating…" : "Regenerate"}
-    </button>
+    </Button>
   );
 }
 
@@ -93,8 +80,7 @@ function ExportLink({
     <button
       type="button"
       className={cn(
-        exportLinkClass,
-        "rounded-none",
+        "shrink-0 cursor-pointer underline underline-offset-4 font-sans text-caption font-normal text-fg-muted rounded-none hover:text-fg",
         inFlight && "cursor-wait opacity-70",
       )}
       disabled={inFlight}

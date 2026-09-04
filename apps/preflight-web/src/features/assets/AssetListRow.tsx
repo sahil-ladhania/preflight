@@ -34,7 +34,7 @@ function VersionCell({
       {generationIndex > 1 ? (
         <Badge
           variant="outline"
-          className="rounded-none border-border bg-ground/60 px-1 py-0 font-mono text-[10px] text-fg"
+          className="rounded-none border-primary/30 bg-primary-wash/80 px-1 py-0 font-mono text-[10px] text-primary font-medium"
         >
           v{generationIndex}
         </Badge>
@@ -44,7 +44,7 @@ function VersionCell({
           from{" "}
           <Link
             to={`/assets/${regeneratedFromId}`}
-            className="font-mono text-decision underline underline-offset-4 hover:text-decision/80"
+            className="font-mono text-primary underline underline-offset-4 hover:text-primary/80"
             onClick={onParentClick}
           >
             {shortId(regeneratedFromId)}
@@ -77,7 +77,7 @@ export function AssetListRow({ asset }: AssetListRowProps): ReactElement {
           handleRowClick();
         }
       }}
-      className="cursor-pointer border-b border-border/80 transition-colors hover:bg-hover"
+      className="cursor-pointer border-b border-border/80 transition-colors hover:bg-primary-wash/40"
     >
       <TableCell className="w-[120px] px-3 py-3 align-middle">
         <div className="flex items-center gap-2">

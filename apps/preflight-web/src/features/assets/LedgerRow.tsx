@@ -8,6 +8,7 @@ import { Check, MinusCircle, X } from "lucide-react";
 
 import type { FindingDTO } from "@preflight/schemas";
 
+import { Badge } from "@/components/ui/badge";
 import { LedgerExpanded } from "@/features/assets/LedgerExpanded";
 import { humanVerdictLabel } from "@/features/assets/lib";
 import { wordingTone } from "@/features/assets/ledger-lib";
@@ -16,9 +17,12 @@ import { cn } from "@/lib/utils";
 
 function KindBadge({ kind }: { kind: FindingDTO["kind"] }): ReactElement {
   return (
-    <span className="shrink-0 border border-hairline px-[5px] py-0 font-mono text-kind-badge uppercase text-fg-muted">
+    <Badge
+      variant="outline"
+      className="shrink-0 rounded-none border-hairline px-[5px] py-0 font-mono text-kind-badge uppercase text-fg-muted font-normal"
+    >
       {kind === "deterministic" ? "DET" : "JDG"}
-    </span>
+    </Badge>
   );
 }
 
@@ -101,20 +105,20 @@ export function LedgerRow({
         data-finding-row={finding.id}
         onClick={() => onRowClick(finding.id)}
         className={cn(
-          "flex w-full items-center px-5 py-2.5 text-left font-sans font-normal hover:bg-hover",
-          isOpen && "bg-surface",
+          "flex w-full items-center px-4 py-2 text-left font-sans font-normal transition-colors hover:bg-primary-wash/30",
+          isOpen && "border-l-2 border-l-primary bg-primary-wash/40 font-medium",
         )}
       >
-        <span className="flex min-w-0 max-w-[640px] items-center gap-2.5">
+        <span className="flex min-w-0 max-w-[640px] items-center gap-2">
           <span className="inline-flex size-3 shrink-0 items-center justify-center">
             <MachineIcon finding={finding} />
           </span>
-          <span className="min-w-[66px] shrink-0 font-mono text-mono-meta text-fg-muted">
+          <span className="min-w-[58px] shrink-0 font-mono text-[11px] text-fg-muted">
             {finding.ruleId}
           </span>
           <span
             className={cn(
-              "min-w-0 truncate font-sans text-ui",
+              "min-w-0 truncate font-sans text-xs",
               wordingTone(finding) === "muted" ? "text-fg-muted" : "text-fg",
             )}
             title={finding.frozenWording}

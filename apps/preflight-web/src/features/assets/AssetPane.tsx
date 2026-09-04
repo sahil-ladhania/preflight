@@ -26,7 +26,7 @@ export function AssetPane({
     <AssetCopyField
       label={label}
       segments={segments}
-      contentClass="font-serif text-copy text-fg"
+      contentClass="font-serif text-[13px] leading-relaxed text-fg"
       findings={asset.findings}
       openFindingId={openFindingId}
       onSpanClick={onSpanClick}
@@ -34,8 +34,8 @@ export function AssetPane({
   );
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto px-8 pb-12 pt-6">
-      <div className="flex flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto px-6 pb-10 pt-5">
+      <div className="flex flex-col gap-4">
         <AgentRunBadge run={asset.generatorRun} />
         <ChannelPreviewSection
           channel={asset.channel}
@@ -45,7 +45,7 @@ export function AssetPane({
           cta={asset.cta}
           brandKit={asset.brandKit}
         />
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           {renderCopy(asset.copySegments.headline, "Headline")}
           {renderCopy(asset.copySegments.body, "Body")}
           {renderCopy(asset.copySegments.disclaimer, "Disclaimer")}

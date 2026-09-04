@@ -103,6 +103,8 @@ function StripBody({ strip }: { strip: RerunStripDTO }): ReactElement {
   );
 }
 
+import { Button } from "@/components/ui/button";
+
 export function RerunStrip({
   strip,
   onRerun,
@@ -111,24 +113,26 @@ export function RerunStrip({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-center gap-3">
-        <button
+        <Button
           type="button"
-          className="inline-flex h-7 cursor-pointer items-center gap-2 border border-hairline px-3 font-sans text-button-sm font-normal text-fg disabled:cursor-not-allowed disabled:opacity-50"
+          variant="outline"
+          size="sm"
+          className="h-7 cursor-pointer rounded-none border-border bg-surface text-xs text-fg shadow-none hover:bg-hover disabled:cursor-not-allowed disabled:opacity-50"
           disabled={rerunInFlight}
           onClick={onRerun}
         >
           {rerunInFlight ? (
             <>
-              <Loader2 className="size-4 animate-spin" aria-hidden />
+              <Loader2 className="size-3.5 animate-spin" aria-hidden />
               Re-running…
             </>
           ) : (
             <>
-              <RefreshCw className="size-4 shrink-0" aria-hidden />
+              <RefreshCw className="size-3.5 shrink-0" aria-hidden />
               Re-run deterministic
             </>
           )}
-        </button>
+        </Button>
       </div>
       <p className="font-sans text-caption text-fg-muted">
         Re-runs frozen rules on this copy. Read-only — does not change pass/fail.

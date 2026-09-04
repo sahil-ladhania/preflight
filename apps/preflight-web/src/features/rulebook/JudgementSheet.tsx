@@ -216,7 +216,7 @@ export function JudgementSheet({
             </Button>
             <Button
               type="button"
-              className="h-8 rounded-none border border-fg bg-fg px-4 font-sans text-button text-surface shadow-none hover:bg-fg/90"
+              className="h-8 rounded-none border border-primary bg-primary px-4 font-sans text-button text-primary-foreground shadow-xs hover:bg-primary-hover"
               disabled={disabled || !formIsValid(form)}
               onClick={onSave}
             >

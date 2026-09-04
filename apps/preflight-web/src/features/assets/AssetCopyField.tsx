@@ -50,12 +50,16 @@ export function AssetCopyField({
   const isEmpty = text.trim().length === 0;
 
   return (
-    <div className="flex flex-col gap-1">
-      <p className="text-label uppercase text-fg-muted">{label}</p>
+    <div className="flex flex-col gap-1.5 border border-border bg-surface p-3.5 shadow-none">
+      <div className="flex items-center justify-between">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-wider text-fg-muted">
+          {label}
+        </p>
+      </div>
       {isEmpty ? (
-        <p className="font-serif text-copy text-fg-faint">(empty)</p>
+        <p className="font-serif text-copy italic text-fg-faint">(empty)</p>
       ) : (
-        <p className={contentClass}>
+        <p className={cn(contentClass, "leading-relaxed")}>
           {segments.map((segment, index) => {
             if (segment.findingId === null) {
               return <span key={index}>{segment.text}</span>;
@@ -74,7 +78,7 @@ export function AssetCopyField({
                 role="button"
                 tabIndex={0}
                 data-finding-span={segment.findingId}
-                className={mark}
+                className={cn(mark, "cursor-pointer")}
                 onClick={() => onSpanClick(segment.findingId as string)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" || event.key === " ") {

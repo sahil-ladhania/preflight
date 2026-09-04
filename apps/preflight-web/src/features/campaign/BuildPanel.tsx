@@ -41,7 +41,7 @@ export function BuildPanel({
           className={cn(
             "h-8 rounded-none px-4 font-sans text-button font-medium shadow-none cursor-pointer transition-colors",
             filled
-              ? "border border-fg bg-fg text-surface hover:bg-fg/90"
+              ? "border border-primary bg-primary text-primary-foreground hover:bg-primary-hover shadow-xs"
               : "border border-hairline bg-transparent text-fg-faint hover:bg-transparent",
             buildDisabled && "cursor-not-allowed opacity-50"
           )}

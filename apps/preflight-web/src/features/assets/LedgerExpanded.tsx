@@ -7,6 +7,7 @@ import type { ReactElement } from "react";
 
 import type { FindingDTO } from "@preflight/schemas";
 
+import { Button } from "@/components/ui/button";
 import { DecisionHistory } from "@/features/assets/DecisionHistory";
 import {
   formatGeneratedAt,
@@ -77,50 +78,60 @@ function DecisionButtons({
   }
   if (finding.evaluationStatus === "unavailable") {
     return (
-      <button
+      <Button
         type="button"
-        className="inline-flex h-7 cursor-pointer items-center justify-center border border-fg px-3 font-sans text-button-sm font-normal text-fg"
+        variant="outline"
+        size="sm"
+        className="h-7 rounded-none border border-fg px-3 font-sans text-button-sm font-normal text-fg hover:bg-fg hover:text-surface"
         onClick={onRetry}
       >
         Retry
-      </button>
+      </Button>
     );
   }
   if (finding.machineVerdict === "fail" && finding.kind === "deterministic") {
     return (
-      <button
+      <Button
         type="button"
-        className="inline-flex h-7 cursor-pointer items-center justify-center border border-decision px-3 font-sans text-button-sm font-medium text-decision"
+        variant="outline"
+        size="sm"
+        className="h-7 rounded-none border border-decision px-3 font-sans text-button-sm font-medium text-decision hover:bg-decision hover:text-surface"
         onClick={onWaive}
       >
         Waive
-      </button>
+      </Button>
     );
   }
   if (finding.machineVerdict === "fail" && finding.kind === "judgement") {
     return (
       <div className="flex flex-wrap gap-2">
-        <button
+        <Button
           type="button"
-          className="inline-flex h-7 cursor-pointer items-center justify-center border border-fg px-3 font-sans text-button-sm font-medium text-fg"
+          variant="outline"
+          size="sm"
+          className="h-7 rounded-none border border-fg px-3 font-sans text-button-sm font-medium text-fg hover:bg-fg hover:text-surface"
           onClick={onConfirm}
         >
           Confirm
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          className="inline-flex h-7 cursor-pointer items-center justify-center border border-fg px-3 font-sans text-button-sm font-medium text-fg"
+          variant="outline"
+          size="sm"
+          className="h-7 rounded-none border border-fg px-3 font-sans text-button-sm font-medium text-fg hover:bg-fg hover:text-surface"
           onClick={onOverride}
         >
           Override
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          className="inline-flex h-7 cursor-pointer items-center justify-center border border-decision px-3 font-sans text-button-sm font-medium text-decision"
+          variant="outline"
+          size="sm"
+          className="h-7 rounded-none border border-decision px-3 font-sans text-button-sm font-medium text-decision hover:bg-decision hover:text-surface"
           onClick={onWaive}
         >
           Waive
-        </button>
+        </Button>
       </div>
     );
   }

@@ -5,6 +5,7 @@
 
 import { useState, type ReactElement } from "react";
 
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import type { ReasonModalProps } from "@/features/assets/types";
 import { cn } from "@/lib/utils";
 
@@ -29,24 +31,6 @@ const HELPER_COPY = {
   override: "Explain why the machine's reading does not apply to this copy.",
 } as const;
 
-const buttonTypeClass =
-  "font-sans text-(length:--text-button) leading-none font-medium";
-
-const cancelButtonClass = cn(
-  "inline-flex h-8 cursor-pointer items-center justify-center rounded-none border border-hairline bg-surface px-4 text-fg",
-  buttonTypeClass,
-);
-
-const waiveConfirmClass = cn(
-  "inline-flex h-8 cursor-pointer items-center justify-center rounded-none border border-decision bg-surface px-4 text-decision disabled:cursor-not-allowed disabled:opacity-50",
-  buttonTypeClass,
-);
-
-const overrideConfirmClass = cn(
-  "inline-flex h-8 cursor-pointer items-center justify-center rounded-none border border-fg bg-surface px-4 text-fg disabled:cursor-not-allowed disabled:opacity-50",
-  buttonTypeClass,
-);
-
 const modalShellClass = cn(
   "w-full max-w-[480px] gap-4 rounded-none border border-fg bg-surface p-7 text-fg shadow-none ring-0",
   "duration-0 data-open:animate-none data-closed:animate-none",
@@ -55,13 +39,6 @@ const modalShellClass = cn(
 const modalOverlayClass = cn(
   "bg-[rgba(28,26,23,0.5)] backdrop-blur-none duration-0",
   "data-open:animate-none data-closed:animate-none",
-);
-
-const textareaClass = cn(
-  "field-sizing-content min-h-[72px] w-full rounded-none border border-hairline bg-transparent px-3 py-2",
-  "font-sans text-(length:--text-ui) leading-normal outline-none",
-  "focus-visible:border-decision focus-visible:ring-0",
-  "disabled:cursor-not-allowed disabled:opacity-50",
 );
 
 export function ReasonModal({
@@ -98,7 +75,6 @@ export function ReasonModal({
   }
 
   const helperCopy = HELPER_COPY[mode];
-  const confirmClass = mode === "waive" ? waiveConfirmClass : overrideConfirmClass;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -131,11 +107,11 @@ export function ReasonModal({
             >
               Reason (required)
             </label>
-            <textarea
+            <Textarea
               id="reason"
               value={reason}
               onChange={(event) => setReason(event.target.value)}
-              className={textareaClass}
+              className="min-h-[72px] border-hairline bg-transparent focus-visible:border-decision text-(length:--text-ui)"
             />
             <p className="font-sans text-caption font-normal text-fg-muted">
               {helperCopy}
@@ -153,17 +129,28 @@ export function ReasonModal({
           )}
         </div>
         <DialogFooter className="mx-0 mb-0 flex flex-row justify-end gap-2 border-0 bg-transparent p-0">
-          <button type="button" className={cancelButtonClass} onClick={onClose}>
-            Cancel
-          </button>
-          <button
+          <Button
             type="button"
-            className={confirmClass}
+            variant="outline"
+            className="h-8 rounded-none border-hairline bg-surface px-4 font-sans text-(length:--text-button) font-medium text-fg hover:bg-hover"
+            onClick={onClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className={cn(
+              "h-8 rounded-none px-4 font-sans text-(length:--text-button) font-medium disabled:cursor-not-allowed disabled:opacity-50",
+              mode === "waive"
+                ? "border-decision bg-surface text-decision hover:bg-decision hover:text-surface"
+                : "border-fg bg-surface text-fg hover:bg-fg hover:text-surface",
+            )}
             disabled={!canSubmit}
             onClick={handleSubmit}
           >
             {title}
-          </button>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

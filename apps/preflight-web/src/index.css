@@ -172,6 +172,12 @@
   --color-decision-wash: #eef1f4;
   --color-pass: #3f5c46;
 
+  /* -- Colour: primary brand (institutional compliance navy) ---------------- */
+  --color-primary: #172b42;
+  --color-primary-hover: #0f1e2f;
+  --color-primary-wash: #edf3f8;
+  --color-primary-foreground: #fffdf9;
+
   /* -- Colour: channel preview (08 §3.6) ------------------------------------
      The one sanctioned foreign palette. Brand-kit values are injected at
      runtime by preview-styles.ts; these are the neutrals around them and the
@@ -186,9 +192,7 @@
   /* -- shadcn compatibility aliases -----------------------------------------
      NOT part of the design vocabulary. The seven vendored components in
      components/ui/ hardcode these names; the aliases keep them working and
-     map them onto the roles above. Feature code must use the role names.
-     --color-primary is INK, not the decision hue: shadcn's bg-primary is the
-     filled-button ground and 08 §5.9 specifies filled = background fg. */
+     map them onto the roles above. Feature code must use the role names. */
   /* dialog.tsx uses `font-heading`, which has never resolved in this project.
      Serif per 08 §5.10 — the waive modal renders its rule wording in serif, and
      it is the most-seen modal in the product. Extraction, not a design call. */
@@ -200,9 +204,9 @@
   --color-card-foreground: var(--color-fg);
   --color-popover: var(--color-surface);
   --color-popover-foreground: var(--color-fg);
-  --color-primary: var(--color-fg);
-  --color-primary-foreground: var(--color-surface);
-  --color-primary-hover: var(--color-fg);
+  --color-primary: #172b42;
+  --color-primary-foreground: #fffdf9;
+  --color-primary-hover: #0f1e2f;
   --color-secondary: var(--color-surface);
   --color-secondary-foreground: var(--color-fg);
   --color-muted: var(--color-hover);
@@ -212,16 +216,16 @@
   --color-destructive: var(--color-fail);
   --color-border: var(--color-hairline);
   --color-input: var(--color-hairline);
-  --color-ring: var(--color-decision);
+  --color-ring: #172b42;
 
   --color-sidebar: var(--color-ground);
   --color-sidebar-foreground: var(--color-fg);
-  --color-sidebar-primary: var(--color-fg);
-  --color-sidebar-primary-foreground: var(--color-surface);
+  --color-sidebar-primary: #172b42;
+  --color-sidebar-primary-foreground: #fffdf9;
   --color-sidebar-accent: var(--color-hover);
   --color-sidebar-accent-foreground: var(--color-fg);
   --color-sidebar-border: var(--color-hairline);
-  --color-sidebar-ring: var(--color-decision);
+  --color-sidebar-ring: #172b42;
 
   /* -- Geometry (08 §4.1, §4.2) ---------------------------------------------
      Radius is zero. Squared corners are the system's core stance (08 §1);

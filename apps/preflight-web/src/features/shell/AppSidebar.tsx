@@ -66,12 +66,12 @@ export function AppSidebar(): ReactElement {
                 height={18}
                 role="img"
                 aria-hidden="true"
-                className="shrink-0 text-fg"
+                className="shrink-0 text-primary"
               >
                 <rect x="6" y="4" width="2.5" height="16" fill="currentColor" />
                 <rect x="6" y="14" width="12" height="2.5" fill="currentColor" />
               </svg>
-              <span className="font-serif text-lg font-semibold tracking-tight text-fg">
+              <span className="font-serif text-lg font-semibold tracking-tight text-primary">
                 Preflight
               </span>
             </button>
@@ -95,7 +95,7 @@ export function AppSidebar(): ReactElement {
                 height={20}
                 role="img"
                 aria-label="Preflight logo"
-                className="shrink-0 text-fg"
+                className="shrink-0 text-primary"
               >
                 <rect x="6" y="4" width="2.5" height="16" fill="currentColor" />
                 <rect x="6" y="14" width="12" height="2.5" fill="currentColor" />
@@ -122,18 +122,18 @@ export function AppSidebar(): ReactElement {
                   className={cn(
                     "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
                     isAssetsActive &&
-                      "border-border bg-surface font-medium text-fg shadow-none",
+                      "border-border border-l-2 border-l-primary bg-surface font-semibold text-primary shadow-none",
                   )}
                   onClick={() => {
                     void navigate("/assets");
                   }}
                 >
                   <div className="relative flex items-center justify-center">
-                    <Layers className="size-4 shrink-0" />
+                    <Layers className={cn("size-4 shrink-0", isAssetsActive && "text-primary")} />
                     {isCollapsed &&
                     queueCountValue !== null &&
                     queueCountValue > 0 ? (
-                      <span className="absolute -top-1.5 -right-2 flex size-3.5 items-center justify-center rounded-none border border-border bg-fg font-mono text-[9px] font-semibold text-surface shadow-xs">
+                      <span className="absolute -top-1.5 -right-2 flex size-3.5 items-center justify-center rounded-none border border-primary bg-primary font-mono text-[9px] font-semibold text-primary-foreground shadow-xs">
                         {queueCountValue}
                       </span>
                     ) : null}
@@ -142,7 +142,7 @@ export function AppSidebar(): ReactElement {
                   {!isCollapsed &&
                   queueCountValue !== null &&
                   queueCountValue > 0 ? (
-                    <SidebarMenuBadge className="font-mono text-xs font-normal text-fg-muted">
+                    <SidebarMenuBadge className={cn("font-mono text-xs font-normal", isAssetsActive ? "text-primary font-medium" : "text-fg-muted")}>
                       [{queueCountValue}]
                     </SidebarMenuBadge>
                   ) : null}
@@ -158,13 +158,13 @@ export function AppSidebar(): ReactElement {
                   className={cn(
                     "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
                     isCampaignActive &&
-                      "border-border bg-surface font-medium text-fg shadow-none",
+                      "border-border border-l-2 border-l-primary bg-surface font-semibold text-primary shadow-none",
                   )}
                   onClick={() => {
                     void navigateToCampaign();
                   }}
                 >
-                  <Target className="size-4 shrink-0" />
+                  <Target className={cn("size-4 shrink-0", isCampaignActive && "text-primary")} />
                   <span>Campaign</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -177,13 +177,13 @@ export function AppSidebar(): ReactElement {
                   className={cn(
                     "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
                     isRulebookActive &&
-                      "border-border bg-surface font-medium text-fg shadow-none",
+                      "border-border border-l-2 border-l-primary bg-surface font-semibold text-primary shadow-none",
                   )}
                   onClick={() => {
                     void navigate("/rulebook");
                   }}
                 >
-                  <BookOpen className="size-4 shrink-0" />
+                  <BookOpen className={cn("size-4 shrink-0", isRulebookActive && "text-primary")} />
                   <span>Rulebook</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -196,13 +196,13 @@ export function AppSidebar(): ReactElement {
                   className={cn(
                     "h-9 cursor-pointer rounded-none border border-transparent font-sans text-xs text-fg hover:bg-hover",
                     isWorkbenchActive &&
-                      "border-border bg-surface font-medium text-fg shadow-none",
+                      "border-border border-l-2 border-l-primary bg-surface font-semibold text-primary shadow-none",
                   )}
                   onClick={() => {
                     void navigate("/workbench");
                   }}
                 >
-                  <Sparkles className="size-4 shrink-0" />
+                  <Sparkles className={cn("size-4 shrink-0", isWorkbenchActive && "text-primary")} />
                   <span>Workbench</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
