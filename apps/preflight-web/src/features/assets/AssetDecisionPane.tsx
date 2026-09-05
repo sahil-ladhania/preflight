@@ -63,7 +63,7 @@ export function AssetDecisionPane({
   };
 
   return (
-    <div className="flex h-full min-h-0 w-[34%] shrink-0 flex-col overflow-hidden bg-ground">
+    <div className="flex h-full min-h-0 w-[34%] shrink-0 flex-col overflow-hidden bg-surface">
       {/* Sticky Procedure Header */}
       <div className="shrink-0">
         <LedgerHeader
@@ -81,7 +81,21 @@ export function AssetDecisionPane({
 
       {/* Scrollable Findings Procedure */}
       <div className="flex-1 min-h-0 overflow-y-auto">
-        {findings.length === 0 ? (
+        {regenerateInFlight ? (
+          <div className="flex flex-col">
+            {Array.from({ length: findings.length || 5 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-2.5 border-b border-hairline px-3.5 py-2.5"
+              >
+                <div className="size-3 shrink-0 regenerate-shimmer" />
+                <div className="h-3.5 w-16 shrink-0 regenerate-shimmer" />
+                <div className="h-3.5 flex-1 regenerate-shimmer" />
+                <div className="h-3.5 w-10 shrink-0 regenerate-shimmer" />
+              </div>
+            ))}
+          </div>
+        ) : findings.length === 0 ? (
           <p className="px-5 py-3 font-sans text-caption text-fg-muted">
             No rules in the pinned set.
           </p>
@@ -106,7 +120,7 @@ export function AssetDecisionPane({
       </div>
 
       {/* Pinned next action block and termination line */}
-      <div className="shrink-0 bg-ground">
+      <div className="shrink-0 bg-surface">
         <NextActionBlock
           status={status}
           findings={findings}
@@ -116,9 +130,9 @@ export function AssetDecisionPane({
         />
 
         {/* Page termination line per 08 §4.5 */}
-        <div className="px-5 pt-2 pb-5">
+        <div className="px-5 pt-2 pb-3">
           <div className="border-t border-fg pt-1.5">
-            <p className="font-sans text-label-strong uppercase tracking-[0.06em] text-fg-muted text-[10px]">
+            <p className="font-sans text-label-strong uppercase tracking-[0.06em] text-fg-muted">
               END OF LEDGER — {findings.length} RULES · {open.length} NEED YOU
             </p>
           </div>

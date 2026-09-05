@@ -23,9 +23,9 @@ function FilterTab({
     <button
       type="button"
       className={cn(
-        "cursor-pointer pb-1.5 font-sans text-xs",
+        "cursor-pointer pb-2 font-sans text-xs",
         active
-          ? "border-b-2 border-primary pb-[5px] font-semibold text-primary"
+          ? "-mb-px border-b-2 border-fg font-semibold text-fg"
           : "text-fg-muted hover:text-fg",
       )}
       onClick={onClick}
@@ -47,26 +47,12 @@ export function LedgerHeader({
   onStepperNext,
 }: LedgerHeaderProps): ReactElement {
   return (
-    <div className="flex shrink-0 flex-col gap-1 border-b border-hairline bg-ground px-5 py-3.5">
-      <p className="font-mono text-[10px] font-medium uppercase tracking-wider text-fg-muted">
-        Evidence &amp; decisions
-      </p>
-      <p className="font-serif text-subject-title font-semibold tracking-tight text-fg">
-        {countLine}
-      </p>
-      <div className="mt-2.5 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--color-chrome-bottom)]/15 pb-1.5">
-        <div className="flex gap-5">
-          <FilterTab
-            label="All"
-            active={filter === "all"}
-            onClick={() => onFilterChange("all")}
-          />
-          <FilterTab
-            label="Open only"
-            active={filter === "open"}
-            onClick={() => onFilterChange("open")}
-          />
-        </div>
+    <div className="flex shrink-0 flex-col bg-surface px-5 pt-4 pb-1.5">
+      {/* Column 3 Horizon Header: Label left, stepper right */}
+      <div className="flex h-7 shrink-0 items-center justify-between">
+        <p className="font-sans text-label-strong uppercase tracking-[0.06em] text-fg-muted">
+          Evidence &amp; decisions
+        </p>
         {stepperText ? (
           <div className="flex items-center gap-1.5 font-mono text-[11px] text-fg-muted">
             {showStepperChevrons ? (
@@ -98,6 +84,25 @@ export function LedgerHeader({
             ) : null}
           </div>
         ) : null}
+      </div>
+
+      {/* Count Line and Filter Tabs Rail */}
+      <div className="mt-3 flex flex-col gap-2">
+        <p className="font-serif text-lg font-semibold tracking-tight text-fg">
+          {countLine}
+        </p>
+        <div className="flex gap-5 border-b border-hairline">
+          <FilterTab
+            label="All"
+            active={filter === "all"}
+            onClick={() => onFilterChange("all")}
+          />
+          <FilterTab
+            label="Open only"
+            active={filter === "open"}
+            onClick={() => onFilterChange("open")}
+          />
+        </div>
       </div>
     </div>
   );

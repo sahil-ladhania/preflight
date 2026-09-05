@@ -94,12 +94,16 @@ export function LedgerRow({
   const leftHue = isPass ? "border-l-0" : rowLeftHue(finding);
 
   return (
-    <div className={cn("border-b border-hairline", leftHue)}>
+    <div className="border-b border-hairline bg-surface">
       <button
         type="button"
         data-finding-row={finding.id}
         onClick={() => onRowClick(finding.id)}
-        className="flex w-full items-center gap-2.5 px-3 py-2 text-left font-sans font-normal hover:bg-hover cursor-pointer"
+        className={cn(
+          "flex w-full items-center gap-2.5 px-3.5 py-1.5 text-left font-sans font-normal hover:bg-hover cursor-pointer bg-surface",
+          leftHue,
+          isOpen && "font-medium",
+        )}
       >
         <span className="inline-flex size-3 shrink-0 items-center justify-center">
           <MachineIcon finding={finding} />
@@ -109,7 +113,7 @@ export function LedgerRow({
         </span>
         <span
           className={cn(
-            "min-w-0 flex-1 font-serif text-serif-row leading-[1.4]",
+            "min-w-0 flex-1 font-serif text-serif-row leading-[1.3]",
             wordingTone(finding) === "muted" ? "text-fg-muted" : "text-fg",
           )}
           title={finding.frozenWording}

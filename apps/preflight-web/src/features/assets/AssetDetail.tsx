@@ -3,7 +3,7 @@
  * Why: 3-column review mode outside app sidebar (08 §4.4, 09 Screen 1).
  */
 
-import type { ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 
 import { AssetArtefactPane } from "@/features/assets/AssetArtefactPane";
 import { AssetContextPane } from "@/features/assets/AssetContextPane";
@@ -13,6 +13,7 @@ import {
   LoadingState,
 } from "@/features/assets/AssetDetailStates";
 import { AssetReviewTopBar } from "@/features/assets/AssetReviewTopBar";
+import { LineageDialog } from "@/features/assets/lineage/LineageDialog";
 import { ReasonModal } from "@/features/assets/ReasonModal";
 import { findingById } from "@/features/assets/lib";
 import type { AssetDetailProps } from "@/features/assets/types";
@@ -76,6 +77,7 @@ export function AssetDetail({
     onCloseReasonModal,
     onSubmitReason,
   });
+  const [lineageOpen, setLineageOpen] = useState(false);
 
   if (view === "loading") {
     return <LoadingState showSpinner={showLoadingSpinner} />;
@@ -109,19 +111,21 @@ export function AssetDetail({
         exportInFlight={exportInFlight}
       />
 
-      <div className="flex min-h-0 flex-1 overflow-hidden border-t border-fg">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         <AssetContextPane
           asset={asset}
           campaignName={campaignName}
           rerunStrip={rerunStrip}
           onRerun={handleRerun}
           rerunInFlight={rerunInFlight}
+          onOpenLineage={() => setLineageOpen(true)}
         />
 
         <AssetArtefactPane
           asset={asset}
           openFindingId={openFindingId}
           onSpanClick={selectSpanFinding}
+          regenerateInFlight={regenerateInFlight}
         />
 
         <AssetDecisionPane
@@ -170,6 +174,12 @@ export function AssetDetail({
         ruleId={modalFinding?.ruleId}
         frozenWording={modalFinding?.frozenWording}
         machineReason={modalFinding?.machineReason}
+      />
+
+      <LineageDialog
+        assetId={asset.id}
+        open={lineageOpen}
+        onClose={() => setLineageOpen(false)}
       />
     </div>
   );

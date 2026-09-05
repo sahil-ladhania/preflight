@@ -26,42 +26,46 @@ export function LinkedInPreview({
 
   return (
     <div
-      className="channel-preview-frame rounded-md border-2 p-4"
+      className="channel-preview-frame rounded-none border p-5 shadow-none"
       style={styles.frame}
     >
-      <div className="mb-3 flex items-center gap-2">
+      <div className="mb-3.5 flex items-center gap-2.5">
         <div
-          className="flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+          className="flex size-9 shrink-0 items-center justify-center rounded-none text-xs font-bold"
           style={logoMarkStyle(brandKit)}
         >
           {clientInitials(brandKit.clientName)}
         </div>
-        <div>
-          <p className="text-sm font-semibold" style={styles.heading}>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold" style={styles.heading}>
             {brandKit.clientName}
           </p>
-          <p className="text-xs" style={{ color: "var(--color-preview-ink-faint)" }}>
+          <p className="text-[11px]" style={{ color: "var(--color-preview-ink-faint)" }}>
             Sponsored · Financial services
           </p>
         </div>
       </div>
-      <h3 className="mb-2 text-base font-semibold" style={styles.heading}>
+      <h3 className="mb-2.5 font-serif text-base font-semibold leading-snug" style={styles.heading}>
         {displayHeadline}
       </h3>
-      <p className="mb-3 text-sm leading-relaxed" style={styles.body}>
+      <p className="mb-3.5 text-sm leading-relaxed" style={styles.body}>
         {body}
       </p>
-      <p className="mb-2 text-xs" style={styles.disclaimer}>
-        {disclaimer}
-      </p>
-      <span
-        className="inline-block rounded-md px-3 py-1.5 text-sm font-semibold"
-        style={styles.cta}
-      >
-        {cta}
-      </span>
+      <div className="mb-3.5 border-t border-hairline/60 pt-2">
+        <p className="text-xs leading-normal" style={styles.disclaimer}>
+          {disclaimer}
+        </p>
+      </div>
+      <div className="mb-3">
+        <span
+          className="inline-block rounded-none px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider"
+          style={styles.cta}
+        >
+          {cta}
+        </span>
+      </div>
       <div
-        className="mt-3 flex gap-4 border-t pt-2 text-xs"
+        className="flex gap-4 border-t border-hairline/60 pt-2.5 text-[11px] font-medium"
         style={{ color: "var(--color-preview-ink-faint)" }}
       >
         <span>Like</span>

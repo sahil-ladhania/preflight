@@ -12,15 +12,18 @@ import { formatGeneratedAt, shortId } from "@/features/assets/lib";
 import { PendingRing } from "@/features/assets/PendingRing";
 import { StatusChip } from "@/features/assets/StatusChip";
 import type { AssetListRowProps } from "@/features/assets/types";
+import { cn } from "@/lib/utils";
 
 function VersionCell({
   generationIndex,
   regeneratedFromId,
   onParentClick,
+  onOpenLineage,
 }: {
   generationIndex: number;
   regeneratedFromId: string | null;
   onParentClick: (event: MouseEvent<HTMLAnchorElement>) => void;
+  onOpenLineage?: () => void;
 }): ReactElement {
   const showVersion =
     generationIndex > 1 || regeneratedFromId !== null;
@@ -29,8 +32,23 @@ function VersionCell({
     return <span />;
   }
 
+  const handleCellClick = (e: MouseEvent): void => {
+    if (onOpenLineage) {
+      e.stopPropagation();
+      onOpenLineage();
+    }
+  };
+
   return (
-    <div className="flex items-center gap-1.5 text-[11px] text-fg-muted">
+    <div
+      role={onOpenLineage ? "button" : undefined}
+      tabIndex={onOpenLineage ? 0 : undefined}
+      onClick={handleCellClick}
+      className={cn(
+        "flex items-center gap-1.5 text-[11px] text-fg-muted",
+        onOpenLineage && "cursor-pointer hover:text-fg",
+      )}
+    >
       {generationIndex > 1 ? (
         <Badge
           variant="outline"
@@ -55,7 +73,7 @@ function VersionCell({
   );
 }
 
-export function AssetListRow({ asset }: AssetListRowProps): ReactElement {
+export function AssetListRow({ asset, onOpenLineage }: AssetListRowProps): ReactElement {
   const navigate = useNavigate();
 
   const handleRowClick = (): void => {
@@ -106,6 +124,7 @@ export function AssetListRow({ asset }: AssetListRowProps): ReactElement {
           generationIndex={asset.generationIndex}
           regeneratedFromId={asset.regeneratedFromId}
           onParentClick={handleParentClick}
+          onOpenLineage={onOpenLineage ? () => onOpenLineage(asset.id) : undefined}
         />
       </TableCell>
     </TableRow>

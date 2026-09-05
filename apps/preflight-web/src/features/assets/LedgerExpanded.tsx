@@ -13,7 +13,6 @@ import {
   humanVerdictLabel,
 } from "@/features/assets/lib";
 import type { LedgerExpandedProps } from "@/features/assets/types";
-import { usePersona } from "@/features/shell/PersonaProvider";
 import { cn } from "@/lib/utils";
 
 const UNAVAILABLE_COPY =
@@ -58,6 +57,49 @@ function MachineSpanQuote({ finding }: { finding: FindingDTO }): ReactElement {
   );
 }
 
+function ConsequenceExplanation({ finding }: { finding: FindingDTO }): ReactElement {
+  if (finding.machineVerdict === "fail" && finding.kind === "judgement") {
+    return (
+      <div className="flex flex-col gap-1.5 border-t border-hairline/60 pt-2 font-sans text-caption text-fg-muted">
+        <p className="text-xs font-medium text-fg">Consequence before clicking:</p>
+        <ul className="space-y-1 text-xs">
+          <li>
+            <span className="font-semibold text-fg">Confirm</span> — Failure is valid. Asset dead-ends to <span className="font-mono text-[11px] font-semibold text-decision">NEEDS REGEN</span>.
+          </li>
+          <li>
+            <span className="font-semibold text-fg">Override</span> — Machine misread. Clears hold toward <span className="font-mono text-[11px] font-semibold text-fg">CLEAR</span> without exception.
+          </li>
+          <li>
+            <span className="font-semibold text-decision">Waive</span> — Failure stands, approved to ship. Resolves to permanent <span className="font-mono text-[11px] font-semibold text-decision">EXCEPTION</span>.
+          </li>
+        </ul>
+      </div>
+    );
+  }
+
+  if (finding.machineVerdict === "fail" && finding.kind === "deterministic") {
+    return (
+      <div className="border-t border-hairline/60 pt-2 font-sans text-xs text-fg-muted">
+        <p>
+          Deterministic checks cannot be overridden. <span className="font-semibold text-decision">Waive</span> permanently creates an <span className="font-mono text-[11px] font-semibold text-decision">EXCEPTION</span> allowing this asset to ship.
+        </p>
+      </div>
+    );
+  }
+
+  if (finding.evaluationStatus === "unavailable") {
+    return (
+      <div className="border-t border-hairline/60 pt-2 font-sans text-xs text-fg-muted">
+        <p>
+          <span className="font-semibold text-fg">Retry</span> re-evaluates this rule against the frozen copy snapshot.
+        </p>
+      </div>
+    );
+  }
+
+  return <></>;
+}
+
 function HumanDecisionBlock({
   finding,
   actions,
@@ -65,13 +107,8 @@ function HumanDecisionBlock({
   finding: FindingDTO;
   actions: ReactElement | null;
 }): ReactElement | null {
-  const { actor } = usePersona();
-
   if (finding.humanVerdict !== null) {
-    const actorName =
-      finding.humanActor === "Demo Operator" || !finding.humanActor
-        ? (actor?.name ?? "Arjun Legha")
-        : finding.humanActor;
+    const actorName = finding.humanActor?.trim() || "Unrecorded actor";
 
     const line =
       finding.humanAt !== null
@@ -98,11 +135,17 @@ function HumanDecisionBlock({
   }
 
   return (
-    <div className="flex flex-col gap-2 border border-dashed border-hairline bg-transparent px-3 py-2.5">
-      <p className="text-micro uppercase tracking-[0.06em] text-decision font-semibold">
-        Human decision — required
-      </p>
-      {actions}
+    <div className="flex flex-col gap-2.5 border-2 border-dashed border-decision/60 bg-decision-wash/30 p-3.5">
+      <div className="flex items-center justify-between">
+        <p className="text-micro uppercase tracking-[0.06em] text-decision font-semibold">
+          Human decision — required
+        </p>
+        <span className="font-mono text-[10px] uppercase tracking-wider text-decision font-semibold">
+          Action required
+        </span>
+      </div>
+      <ConsequenceExplanation finding={finding} />
+      <div className="pt-1">{actions}</div>
     </div>
   );
 }

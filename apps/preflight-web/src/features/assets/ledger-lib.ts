@@ -32,8 +32,11 @@ export function firstOpenFindingId(findings: FindingDTO[]): string | null {
   return openFindings(findings)[0]?.id ?? null;
 }
 
-export function initialLedgerFilter(findings: FindingDTO[]): LedgerFilter {
-  return openFindings(findings).length > 0 ? "open" : "all";
+export function initialLedgerFilter(findings?: FindingDTO[]): LedgerFilter {
+  void findings;
+  // A3 + 09 S-2: Always open on "all" so all checked rules (passes + fails)
+  // are visible on load, with the first open finding expanded and scrolled to.
+  return "all";
 }
 
 export function wordingTone(finding: FindingDTO): "muted" | "ink" {

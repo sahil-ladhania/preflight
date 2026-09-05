@@ -8,6 +8,7 @@ import { useMemo, useState, type ReactElement } from "react";
 import { SearchInput } from "@/components/ui/search-input";
 import { AssetsListShell } from "@/features/assets/AssetsListShell";
 import { AssetsRegisterTable } from "@/features/assets/AssetsRegisterTable";
+import { LineageDialog } from "@/features/assets/lineage/LineageDialog";
 import {
   defaultRegisterFilter,
   endOfRegisterLine,
@@ -43,10 +44,6 @@ function StageSpinner(): ReactElement {
 }
 
 function PollErrorBanner({ onRetry }: { onRetry?: () => void }): ReactElement {
-  const handleRetry = (): void => {
-    onRetry?.();
-  };
-
   return (
     <div className="mb-4 flex items-center justify-between gap-4 border-b border-hairline pb-3">
       <p className="text-caption text-fg-muted">
@@ -55,7 +52,7 @@ function PollErrorBanner({ onRetry }: { onRetry?: () => void }): ReactElement {
       <button
         type="button"
         className="inline-flex h-7 cursor-pointer items-center justify-center border border-fg bg-ground px-3 text-button-sm font-medium text-fg"
-        onClick={handleRetry}
+        onClick={onRetry}
       >
         Retry
       </button>
@@ -64,17 +61,13 @@ function PollErrorBanner({ onRetry }: { onRetry?: () => void }): ReactElement {
 }
 
 function StageError({ onRetry }: { onRetry?: () => void }): ReactElement {
-  const handleRetry = (): void => {
-    onRetry?.();
-  };
-
   return (
     <div className="flex min-h-48 flex-col items-center justify-center gap-4">
       <p className="text-caption text-fg-muted">Could not load assets.</p>
       <button
         type="button"
         className="inline-flex h-8 cursor-pointer items-center justify-center border border-fg bg-ground px-4 text-button font-medium text-fg hover:bg-fg hover:text-surface"
-        onClick={handleRetry}
+        onClick={onRetry}
       >
         Retry
       </button>
@@ -97,6 +90,7 @@ export function AssetsList({
     defaultRegisterFilter(personaId),
   );
   const [searchQuery, setSearchQuery] = useState("");
+  const [lineageAssetId, setLineageAssetId] = useState<string | null>(null);
 
   const loaded = view === "loaded" && assets.length > 0;
   const workSummary = loaded ? <WorkSummaryStats assets={assets} /> : null;
@@ -158,11 +152,24 @@ export function AssetsList({
     return shell(<EmptyState />);
   }
 
-  return shell(
+  return (
     <>
-      {pollError ? <PollErrorBanner onRetry={onRetry} /> : null}
-      <AssetsRegisterTable assets={filteredAssets} filter={filter} />
-    </>,
+      {shell(
+        <>
+          {pollError ? <PollErrorBanner onRetry={onRetry} /> : null}
+          <AssetsRegisterTable
+            assets={filteredAssets}
+            filter={filter}
+            onOpenLineage={setLineageAssetId}
+          />
+        </>,
+      )}
+      <LineageDialog
+        assetId={lineageAssetId ?? ""}
+        open={lineageAssetId !== null}
+        onClose={() => setLineageAssetId(null)}
+      />
+    </>
   );
 }
 

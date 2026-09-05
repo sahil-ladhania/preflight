@@ -26,40 +26,44 @@ export function EmailPreview({
 
   return (
     <div
-      className="channel-preview-frame rounded-md border-2 p-4"
+      className="channel-preview-frame rounded-none border p-5 shadow-none"
       style={styles.frame}
     >
-      <div className="mb-3 flex items-center gap-2 border-b pb-3">
+      <div className="mb-4 flex items-center gap-2.5 border-b border-hairline/60 pb-3.5">
         <div
-          className="flex size-8 shrink-0 items-center justify-center rounded-md text-xs font-bold"
+          className="flex size-8 shrink-0 items-center justify-center rounded-none text-xs font-bold"
           style={logoMarkStyle(brandKit)}
         >
           {clientInitials(brandKit.clientName)}
         </div>
-        <div>
-          <p className="text-sm font-semibold" style={styles.heading}>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold" style={styles.heading}>
             {brandKit.clientName}
           </p>
-          <p className="text-xs" style={{ color: "var(--color-preview-ink-faint)" }}>
+          <p className="font-mono text-[11px]" style={{ color: "var(--color-preview-ink-faint)" }}>
             marketing@{brandKit.clientName.toLowerCase().replace(/\s+/g, "")}.com
           </p>
         </div>
       </div>
-      <h3 className="mb-3 text-lg font-semibold leading-snug" style={styles.heading}>
+      <h3 className="mb-3 font-serif text-base font-semibold leading-snug" style={styles.heading}>
         {displayHeadline}
       </h3>
       <p className="mb-4 text-sm leading-relaxed" style={styles.body}>
         {body}
       </p>
-      <p className="mb-4 border-t pt-3" style={styles.disclaimer}>
-        {disclaimer}
-      </p>
-      <span
-        className="inline-block rounded-md px-4 py-2 text-sm font-semibold shadow-sm"
-        style={styles.cta}
-      >
-        {cta}
-      </span>
+      <div className="mb-4 border-t border-hairline/60 pt-3">
+        <p className="text-xs leading-normal" style={styles.disclaimer}>
+          {disclaimer}
+        </p>
+      </div>
+      <div>
+        <span
+          className="inline-block rounded-none px-4 py-2 text-xs font-semibold uppercase tracking-wider shadow-none"
+          style={styles.cta}
+        >
+          {cta}
+        </span>
+      </div>
     </div>
   );
 }

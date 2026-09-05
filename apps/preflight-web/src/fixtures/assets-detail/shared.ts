@@ -11,7 +11,7 @@ export const RUN_HASH = "a".repeat(64);
 export const RULESET_HASH = "b".repeat(64);
 export const KIT_FINGERPRINT =
   "ee486f142f8f420347a9e9f4aff59bfbadae6960bad38495cf7133877740f306";
-export const DEMO_OPERATOR = "Demo Operator";
+export const DEMO_OPERATOR = "Arjun Legha";
 
 export const BLUEPEAK_BRAND_KIT: BrandKitDTO = {
   kitId: "bluepeak-v1",

@@ -28,43 +28,56 @@ export function ShortformPreview({
 
   return (
     <div
-      className="channel-preview-frame rounded-md border-2 p-4"
+      className="channel-preview-frame rounded-none border p-5 shadow-none"
       style={styles.frame}
     >
       {isLanding ? (
-        <div className="mb-2 flex items-center gap-2">
+        <div className="mb-3 flex items-center gap-2.5">
           <div
-            className="flex size-7 shrink-0 items-center justify-center rounded-md text-[10px] font-bold"
+            className="flex size-7 shrink-0 items-center justify-center rounded-none text-[10px] font-bold"
             style={logoMarkStyle(brandKit)}
           >
             {clientInitials(brandKit.clientName)}
           </div>
           <p
-            className="text-xs font-medium uppercase tracking-wide"
+            className="font-mono text-xs font-semibold uppercase tracking-wider"
             style={{ color: brandKit.colors.secondary }}
           >
             {brandKit.clientName}
           </p>
         </div>
-      ) : null}
+      ) : (
+        <div className="mb-2.5 flex items-center justify-between border-b border-hairline/60 pb-2">
+          <span className="font-mono text-[11px] font-medium" style={{ color: brandKit.colors.secondary }}>
+            {brandKit.clientName}
+          </span>
+          <span className="font-mono text-[10px]" style={{ color: "var(--color-preview-ink-faint)" }}>
+            WhatsApp Broadcast
+          </span>
+        </div>
+      )}
       <h3
-        className={isLanding ? "mb-2 text-xl font-bold" : "mb-2 text-sm font-semibold"}
+        className={isLanding ? "mb-2.5 font-serif text-lg font-bold leading-snug" : "mb-2 font-serif text-sm font-semibold"}
         style={styles.heading}
       >
         {displayHeadline}
       </h3>
-      <p className="mb-3 text-sm leading-snug" style={styles.body}>
+      <p className="mb-3.5 text-sm leading-relaxed" style={styles.body}>
         {body}
       </p>
-      <p className="mb-2 text-xs" style={styles.disclaimer}>
-        {disclaimer}
-      </p>
-      <span
-        className="inline-block rounded-md px-3 py-1.5 text-xs font-semibold shadow-sm"
-        style={styles.cta}
-      >
-        {cta}
-      </span>
+      <div className="mb-3.5 border-t border-hairline/60 pt-2.5">
+        <p className="text-xs leading-normal" style={styles.disclaimer}>
+          {disclaimer}
+        </p>
+      </div>
+      <div>
+        <span
+          className="inline-block rounded-none px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider shadow-none"
+          style={styles.cta}
+        >
+          {cta}
+        </span>
+      </div>
     </div>
   );
 }

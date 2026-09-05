@@ -195,12 +195,12 @@ describe("firstOpenFindingId", () => {
 });
 
 describe("initialLedgerFilter", () => {
-  it("defaults to open when open findings exist", () => {
+  it("defaults to all even when open findings exist (A3)", () => {
     const findings = [
       finding({ id: "a", machineVerdict: "pass" }),
       finding({ id: "b", machineVerdict: "fail" }),
     ];
-    expect(initialLedgerFilter(findings)).toBe("open");
+    expect(initialLedgerFilter(findings)).toBe("all");
   });
 
   it("defaults to all when nothing is open", () => {

@@ -26,7 +26,7 @@ export function DisplayPreview({
 
   return (
     <div
-      className="channel-preview-frame overflow-hidden rounded-md border-2"
+      className="channel-preview-frame overflow-hidden rounded-none border shadow-none"
       style={styles.frame}
     >
       <div
@@ -34,13 +34,13 @@ export function DisplayPreview({
         style={{ backgroundColor: `${brandKit.colors.primary}18` }}
       >
         <div
-          className="mr-3 flex size-10 shrink-0 items-center justify-center rounded-md text-sm font-bold"
+          className="mr-3 flex size-10 shrink-0 items-center justify-center rounded-none text-sm font-bold"
           style={logoMarkStyle(brandKit)}
         >
           {clientInitials(brandKit.clientName)}
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-sm font-bold leading-tight" style={styles.heading}>
+          <h3 className="truncate font-serif text-sm font-bold leading-tight" style={styles.heading}>
             {displayHeadline}
           </h3>
           <p className="truncate text-xs" style={styles.body}>
@@ -48,17 +48,17 @@ export function DisplayPreview({
           </p>
         </div>
         <span
-          className="ml-3 shrink-0 rounded px-3 py-1.5 text-xs font-semibold"
+          className="ml-3 shrink-0 rounded-none px-3 py-1.5 text-xs font-semibold uppercase tracking-wider"
           style={styles.cta}
         >
           {cta}
         </span>
       </div>
-      <div className="px-4 py-2">
-        <p className="mb-1 text-caption" style={{ color: brandKit.colors.secondary }}>
+      <div className="border-t border-hairline/60 px-4 py-3">
+        <p className="mb-1 font-mono text-[11px] font-medium" style={{ color: brandKit.colors.secondary }}>
           {brandKit.clientName}
         </p>
-        <p className="text-[10px] leading-snug" style={styles.disclaimer}>
+        <p className="text-[11px] leading-snug" style={styles.disclaimer}>
           {disclaimer}
         </p>
       </div>

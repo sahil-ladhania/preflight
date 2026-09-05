@@ -25,10 +25,26 @@ export function NextActionBlock({
   onRegenerate,
   regenerateInFlight = false,
 }: NextActionBlockProps): ReactElement | null {
-  // New rule: Suppress block when any finding is still open.
-  // The HUMAN DECISION — REQUIRED box is the next action; sticky header keeps {m} need you visible.
-  if (openFindings(findings).length > 0) {
-    return null;
+  // When findings are open, render persistent guidance naming what happens once resolved
+  // eliminating the 550px beige void (A1 + open item 14).
+  const open = openFindings(findings);
+  if (open.length > 0) {
+    const count = open.length;
+    return (
+      <div className="m-3 flex flex-col gap-1.5 border border-hairline bg-surface p-3">
+        <p className="font-sans text-xs font-semibold uppercase tracking-wider text-fg-muted">
+          Review in progress
+        </p>
+        <p className="font-sans text-caption text-fg-muted">
+          {count === 1
+            ? "1 open finding requires a recorded human decision before this asset can ship."
+            : `${count} open findings require recorded human decisions before this asset can ship.`}
+        </p>
+        <p className="font-sans text-caption text-fg-faint">
+          Resolving all findings enables Ready for compliance desk. Preflight does not publish.
+        </p>
+      </div>
+    );
   }
 
   if (status === "needs_regen") {
@@ -36,7 +52,7 @@ export function NextActionBlock({
     const ruleId = confirmed?.ruleId ?? "a rule";
 
     return (
-      <div className="m-4 flex flex-col gap-3 border border-hairline bg-surface p-4">
+      <div className="m-3 flex flex-col gap-2.5 border border-hairline bg-surface p-3">
         <p className="font-sans text-xs font-semibold uppercase tracking-wider text-decision">
           Regenerate to ship
         </p>
@@ -44,15 +60,22 @@ export function NextActionBlock({
           You confirmed {ruleId} as a real failure. This copy cannot ship —
           generate a new version.
         </p>
-        <div className="pt-1">
+        <div className="pt-0.5">
           <Button
             type="button"
             variant="outline"
-            className="h-8 rounded-none border border-fg bg-surface px-4 font-sans text-xs font-medium text-fg hover:bg-hover cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-8 items-center gap-2 rounded-none border border-fg bg-surface px-4 font-sans text-xs font-medium text-fg hover:bg-hover cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
             disabled={regenerateInFlight}
             onClick={onRegenerate}
           >
-            {regenerateInFlight ? "Regenerating…" : "Regenerate copy"}
+            {regenerateInFlight ? (
+              <>
+                <span className="pending-ring" aria-hidden="true" />
+                <span>Regenerating…</span>
+              </>
+            ) : (
+              "Regenerate copy"
+            )}
           </Button>
         </div>
       </div>
@@ -61,7 +84,7 @@ export function NextActionBlock({
 
   if (status === "clear" || status === "cleared_with_exception") {
     return (
-      <div className="m-4 flex flex-col gap-3 border border-hairline bg-surface p-4">
+      <div className="m-3 flex flex-col gap-2.5 border border-hairline bg-surface p-3">
         <p className="font-sans text-xs font-semibold uppercase tracking-wider text-decision">
           Ready for the compliance desk
         </p>
@@ -69,7 +92,7 @@ export function NextActionBlock({
           Every pinned rule has been evaluated or carries a recorded human
           decision. Preflight does not publish.
         </p>
-        <div className="pt-1">
+        <div className="pt-0.5">
           <Button
             type="button"
             className="h-8 rounded-none border border-fg bg-fg px-4 font-sans text-xs font-medium text-surface hover:opacity-90 cursor-pointer"

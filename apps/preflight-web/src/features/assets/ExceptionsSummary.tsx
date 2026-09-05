@@ -7,20 +7,14 @@ import type { ReactElement } from "react";
 
 import type { ExceptionsSummaryProps } from "@/features/assets/types";
 import { formatGeneratedAt } from "@/features/assets/lib";
-import { usePersona } from "@/features/shell/PersonaProvider";
 
 export function ExceptionsSummary({
   exceptions,
 }: ExceptionsSummaryProps): ReactElement {
-  const { actor } = usePersona();
-
   return (
     <div className="flex flex-col gap-3">
       {exceptions.map((item) => {
-        const actorName =
-          item.humanActor === "Demo Operator" || !item.humanActor
-            ? (actor?.name ?? "Arjun Legha")
-            : item.humanActor;
+        const actorName = item.humanActor?.trim() || "Unrecorded actor";
 
         return (
           <div
@@ -29,7 +23,7 @@ export function ExceptionsSummary({
           >
             <p className="text-micro uppercase text-decision">
               Waived by human decision{" "}
-              <span className="font-mono text-mono-meta normal-case tracking-normal">
+              <span className="font-mono text-mono-meta normal-case tracking-normal whitespace-nowrap inline-block">
                 {item.ruleId}
               </span>{" "}
               <span className="font-sans text-caption font-normal normal-case tracking-normal text-fg">

@@ -10,6 +10,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "@xyflow/react/dist/style.css";
 
 /* ---------------------------------------------------------------------------
    Token layer. Single source of truth: documentation/08-design-system.md.
@@ -186,6 +187,30 @@
   --color-chrome-fg-muted: #b8c5d1;
   --color-chrome-active: #38526d;
 
+  /* -- Colour: status on chrome / navy surface (08 §3.3 amendment) ----------- */
+  --color-status-chrome-fail: #e67768;
+  --color-status-chrome-attention: #deb054;
+  --color-status-chrome-decision: #94b9d6;
+  --color-status-chrome-clear: #b8c5d1;
+  --color-status-chrome-clear-rule: #4b6175;
+
+  /* -- Colour: status badges on chrome surface (Pass 5) --------------------- */
+  --color-badge-blocked-bg: #9a2b1f;
+  --color-badge-blocked-fg: #ffffff;
+  --color-badge-review-bg: #d99b26;
+  --color-badge-review-fg: #1c1a17;
+  --color-badge-navy-bg: #2e4a68;
+  --color-badge-navy-fg: #ffffff;
+  --color-badge-navy-border: #5a7f9e;
+  --color-badge-clear-bg: #226738;
+  --color-badge-clear-fg: #ffffff;
+
+  /* -- Colour: column header band (Pass 3) -------------------------------- */
+  --color-header-band: #eeebe2;
+
+  /* -- Colour: lineage dialog darkened canvas (Pass 7) ---------------------- */
+  --lineage-canvas-bg: linear-gradient(180deg, #182430 0%, #0d141d 100%);
+
   /* -- Depth / shadow (08 Phase 0, consumed in Phase 6) -------------------- */
   --shadow-lift: 0 1px 2px rgba(28, 26, 23, 0.06),
     0 8px 24px rgba(28, 26, 23, 0.06);
@@ -194,7 +219,7 @@
      The one sanctioned foreign palette. Brand-kit values are injected at
      runtime by preview-styles.ts; these are the neutrals around them and the
      three containment layers. */
-  --color-preview-stage: #efece2;
+  --color-preview-stage: #eae5d8;
   --color-preview-card: #ffffff;
   --color-preview-ink: #1a1a1a;
   --color-preview-ink-muted: #4a5568;
@@ -269,7 +294,7 @@
 /* Non-namespaced layout constants. These generate no utilities; they are
    referenced by the composite utilities below and by layout code. */
 :root {
-  --topbar-h: 52px;
+  --topbar-h: 44px;
   --sheet-w: 400px;
   --pane-evidence: 56%;
   --pane-ledger: 44%;
@@ -428,6 +453,35 @@
     font-weight: 400;
   }
 
+  /* Status badges on chrome / navy surface (08 §3.3 amendment, Pass 5).
+     Square filled badges with zero radius and WCAG AA contrast. */
+  .status-chrome-blocked {
+    background-color: var(--color-badge-blocked-bg);
+    color: var(--color-badge-blocked-fg);
+  }
+
+  .status-chrome-review {
+    background-color: var(--color-badge-review-bg);
+    color: var(--color-badge-review-fg);
+  }
+
+  .status-chrome-regen {
+    background-color: var(--color-badge-navy-bg);
+    color: var(--color-badge-navy-fg);
+    border: 1px solid var(--color-badge-navy-border);
+  }
+
+  .status-chrome-exception {
+    background-color: var(--color-badge-navy-bg);
+    color: var(--color-badge-navy-fg);
+    border: 1px solid var(--color-badge-navy-border);
+  }
+
+  .status-chrome-clear {
+    background-color: var(--color-badge-clear-bg);
+    color: var(--color-badge-clear-fg);
+  }
+
   /* Waived verdict badge (08 §5.6) — the only bordered verdict chip, because it
      is the only verdict that ships an asset over a rule that failed. */
   .chip-waived {
@@ -451,6 +505,21 @@
   .pending-ring-slot {
     visibility: hidden;
     animation: none;
+  }
+
+  /* Regenerate skeleton shimmer (Pass 5 amendment).
+     Permitted strictly on skeleton placeholders during an in-flight regenerate. */
+  .regenerate-shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--color-surface) 0%,
+      var(--color-hover) 50%,
+      var(--color-surface) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer-skeleton 1.5s infinite linear;
+    border: 1px solid var(--color-hairline);
+    border-radius: 0;
   }
 
   /* Human verdicts (08 §9). All three are the decision hue — confirmed is not
@@ -489,6 +558,10 @@
     .pending-ring {
       animation: none;
     }
+    .regenerate-shimmer {
+      animation: none;
+      background: var(--color-hover);
+    }
   }
 }
 
@@ -497,3 +570,48 @@
     transform: rotate(360deg);
   }
 }
+
+@keyframes shimmer-skeleton {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* React Flow styling overrides (Pass 6 Amendment 21).
+   Strict zero radius, zero shadow, zero node transitions across canvas. */
+.react-flow__node {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  transition: none !important;
+}
+
+.react-flow__handle {
+  border-radius: 0 !important;
+}
+
+.react-flow__controls {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: 1px solid #334459 !important;
+  background: #182430 !important;
+}
+
+.react-flow__controls-button {
+  border-radius: 0 !important;
+  border-bottom: 1px solid #334459 !important;
+  background: #182430 !important;
+  color: #fffdf9 !important;
+  fill: #fffdf9 !important;
+}
+
+.react-flow__controls-button:hover {
+  background: #243547 !important;
+}
+
+.react-flow__attribution {
+  display: none !important;
+}
+

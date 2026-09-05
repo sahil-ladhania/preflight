@@ -40,11 +40,13 @@ function RegisterSection({
   label,
   count,
   assets,
+  onOpenLineage,
 }: {
   type: "needs_you" | "resolved";
   label: string;
   count: number;
   assets: AssetsRegisterTableProps["assets"];
+  onOpenLineage?: (assetId: string) => void;
 }): ReactElement {
   if (assets.length === 0) {
     return <></>;
@@ -66,7 +68,11 @@ function RegisterSection({
         </TableHeader>
         <TableBody>
           {assets.map((asset) => (
-            <AssetListRow key={asset.id} asset={asset} />
+            <AssetListRow
+              key={asset.id}
+              asset={asset}
+              onOpenLineage={onOpenLineage}
+            />
           ))}
         </TableBody>
       </Table>
@@ -77,6 +83,7 @@ function RegisterSection({
 export function AssetsRegisterTable({
   assets,
   filter,
+  onOpenLineage,
 }: AssetsRegisterTableProps): ReactElement {
   const { needsYou, resolved } = splitRegisterSections(assets, filter);
 
@@ -95,12 +102,14 @@ export function AssetsRegisterTable({
         label="Needs you"
         count={needsYou.length}
         assets={needsYou}
+        onOpenLineage={onOpenLineage}
       />
       <RegisterSection
         type="resolved"
         label="Resolved"
         count={resolved.length}
         assets={resolved}
+        onOpenLineage={onOpenLineage}
       />
     </div>
   );

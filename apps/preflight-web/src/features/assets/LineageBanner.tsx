@@ -13,6 +13,7 @@ import { shortId } from "@/features/assets/lib";
 export function LineageBanner({
   lineage,
   generationIndex,
+  onOpenLineage,
 }: LineageBannerProps): ReactElement {
   const versionLabel = lineageVersionLabel(generationIndex);
 
@@ -30,6 +31,18 @@ export function LineageBanner({
           <>
             {" "}
             <span className="font-mono text-mono-meta">· {versionLabel}</span>
+          </>
+        ) : null}
+        {onOpenLineage !== undefined ? (
+          <>
+            {" "}
+            <button
+              type="button"
+              onClick={onOpenLineage}
+              className="cursor-pointer font-sans text-caption text-decision underline underline-offset-4 hover:text-fg"
+            >
+              · View lineage →
+            </button>
           </>
         ) : null}
       </p>

@@ -86,7 +86,8 @@ function DecisionEntry({
   inForce: boolean;
 }): ReactElement {
   const transition = decisionTransitionLabel(row);
-  const verdictLine = `${decisionVerdictLabel(row)} · ${row.actor} · ${formatGeneratedAt(row.at)}`;
+  const actorName = row.actor?.trim() || "Unrecorded actor";
+  const verdictLine = `${decisionVerdictLabel(row)} · ${actorName} · ${formatGeneratedAt(row.at)}`;
 
   return (
     <div

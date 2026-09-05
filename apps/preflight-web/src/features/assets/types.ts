@@ -70,15 +70,18 @@ export interface AssetsListShellProps {
 export interface AssetsRegisterTableProps {
   assets: AssetListItemDTO[];
   filter: RegisterFilter;
+  onOpenLineage?: (assetId: string) => void;
 }
 
 export interface AssetListRowProps {
   asset: AssetListItemDTO;
+  onOpenLineage?: (assetId: string) => void;
 }
 
 export interface StatusChipProps {
   status: AssetStatus;
-  surface?: "register" | "detail";
+  surface?: "register" | "detail" | "chrome";
+  className?: string;
 }
 
 export interface AssetDetailShellProps {
@@ -90,24 +93,6 @@ export interface AssetDetailShellProps {
   status?: AssetStatus;
 }
 
-export interface AssetActionRowProps {
-  status: AssetStatus;
-  findings: FindingDTO[];
-  onAccept: () => void;
-  onRegenerate: () => void;
-  onExport: () => void;
-  exportInFlight?: boolean;
-  regenerateInFlight?: boolean;
-}
-
-export interface ChannelPreviewSectionProps {
-  channel: Channel;
-  headline: string;
-  body: string;
-  disclaimer: string;
-  cta: string;
-  brandKit: AssetDetailDTO["brandKit"];
-}
 
 export interface LedgerHeaderProps {
   countLine: string;
@@ -159,6 +144,7 @@ export interface AssetDetailProps {
 export interface LineageBannerProps {
   lineage: LineageDTO;
   generationIndex: number;
+  onOpenLineage?: () => void;
 }
 
 export interface GeneratorRunBannerProps {
@@ -170,30 +156,6 @@ export interface ExceptionsSummaryProps {
   exceptions: ExceptionItemDTO[];
 }
 
-export interface AssetPaneProps {
-  asset: AssetDetailFixture;
-  openFindingId: string | null;
-  onSpanClick: (findingId: string) => void;
-  rerunStrip: RerunStripDTO | null;
-  onRerun: () => void;
-  rerunInFlight?: boolean;
-}
-
-export interface LedgerPaneProps {
-  findings: FindingDTO[];
-  status: AssetStatus;
-  openFindingId: string | null;
-  onRowClick: (findingId: string) => void;
-  onConfirm: (findingId: string) => void;
-  onOverride: (findingId: string) => void;
-  onWaive: (findingId: string) => void;
-  onRetry: (findingId: string) => void;
-  onAccept: () => void;
-  onRegenerate: () => void;
-  onExport: () => void;
-  exportInFlight?: boolean;
-  regenerateInFlight?: boolean;
-}
 
 export interface LedgerExpandedProps {
   finding: FindingDTO;
