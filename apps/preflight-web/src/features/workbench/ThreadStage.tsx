@@ -4,7 +4,6 @@
  */
 
 import { useCallback, type ReactElement, type ReactNode } from "react";
-import type { RuleCatalogRowDTO } from "@preflight/schemas";
 
 import { BriefReadiness } from "@/features/workbench/BriefReadiness";
 import { Thread } from "@/features/workbench/Thread";
@@ -16,7 +15,7 @@ import { cn } from "@/lib/utils";
 export interface ThreadStageProps {
   composer: ReactNode;
   messages: WorkbenchMessage[];
-  rules: RuleCatalogRowDTO[];
+  rules: WorkbenchProps["rules"];
   briefReadiness?: WorkbenchProps["briefReadiness"];
   handoffEnabled?: boolean;
   handoffInFlight?: boolean;
@@ -36,12 +35,9 @@ export function ThreadStage({
   onStartCampaign,
   onGoToCampaign,
 }: ThreadStageProps): ReactElement {
+  const capturedCount = briefReadiness?.capturedCount ?? 0;
   const { scrollRef, showTopFade, onScroll } = useThreadScrollFade(messages.length);
-  const showBriefRail = useBriefRailLatch(
-    messages,
-    briefReadiness?.capturedCount ?? 0,
-    scrollRef,
-  );
+  const showBriefRail = useBriefRailLatch(messages, capturedCount, scrollRef);
 
   const scrollToEnd = useCallback((): void => {
     const el = scrollRef.current;
@@ -81,18 +77,13 @@ export function ThreadStage({
               <Thread
                 messages={messages}
                 rules={rules}
-                showSearchFallback={false}
-                searchQuery=""
-                onSearchQueryChange={() => {}}
                 onScrollToEnd={scrollToEnd}
               />
             </div>
           </div>
         </div>
 
-        <div className="shrink-0 bg-ground pt-2">
-          {composer}
-        </div>
+        <div className="shrink-0 bg-ground pt-2">{composer}</div>
       </div>
 
       {showBriefRail ? (
@@ -101,7 +92,7 @@ export function ThreadStage({
           className="sticky top-0 w-[320px] shrink-0 self-start overflow-y-auto border-l border-hairline pl-8"
         >
           <BriefReadiness
-            capturedCount={briefReadiness?.capturedCount ?? 0}
+            capturedCount={capturedCount}
             missing={briefReadiness?.missing ?? []}
             complete={briefReadiness?.complete ?? false}
             captured={briefReadiness?.captured}

@@ -61,7 +61,7 @@ export function EmptyStage({
     <div className="mx-auto flex h-full min-h-below-topbar w-full max-w-workbench flex-col justify-center px-8">
       <div className="-translate-y-[6vh] flex flex-col gap-6">
         <div>
-          <h1 className="font-serif text-page-title text-fg font-semibold tracking-tight">
+          <h1 className="font-serif text-page-title font-semibold tracking-tight text-fg">
             {WORKBENCH_HEADLINE}
           </h1>
         </div>

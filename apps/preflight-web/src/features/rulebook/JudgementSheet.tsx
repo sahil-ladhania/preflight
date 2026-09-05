@@ -2,13 +2,12 @@
  * JudgementSheet — R3 add/edit form.
  * Why: R4 delete confirm for judgement rules.
  */
-// size: add/edit sheet + impact blocks; extract worse than one local label helper
+// size: sheet footer save gate + impact blocks; applicability lives in SheetApplicability
 
 import type { ReactElement, ReactNode } from "react";
 import {
   GitCompareArrows,
   Info,
-  ListFilter,
   Loader2,
   PenLine,
   Pencil,
@@ -19,26 +18,16 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { SheetApplicability } from "@/features/rulebook/SheetApplicability";
 import {
-  BRIEF_FIELD_LABELS,
-  PREDICATE_FIELD_OPTIONS,
   formIsValid,
+  saveBlockedReason,
 } from "@/features/rulebook/lib";
 import { SheetShell } from "@/features/rulebook/SheetShell";
 import type { JudgementSheetProps } from "@/features/rulebook/types";
-
-const ADD_BANNER =
-  "Judgement rules are LLM-evaluated and editable here. Deterministic rules are defined in code and read-only in the table.";
+import { cn } from "@/lib/utils";
 
 function SheetFieldLabel({
   htmlFor,
@@ -75,35 +64,24 @@ export function JudgementSheet({
   const open = mode !== "closed";
   const isAdd = mode === "add";
   const disabled = saveInFlight;
+  const canSave = formIsValid(form, mode);
+  const blockedReason = saveBlockedReason(form, mode);
 
   return (
     <SheetShell open={open} onClose={onCancel}>
       <div className="flex min-h-0 flex-1 flex-col">
-        <div className="flex-1 overflow-y-auto p-5">
-          <div className="flex flex-col gap-5">
+        <div className="flex-1 overflow-y-auto p-7">
+          <div className="flex flex-col gap-4">
             {isAdd ? (
-              <>
-                <div className="flex flex-col gap-0.5">
-                  <h2 className="inline-flex items-center gap-2 font-serif text-sheet-title font-semibold text-fg">
-                    <Scale className="size-3.5 shrink-0 text-fg-muted" aria-hidden />
-                    New judgement rule
-                  </h2>
-                  <span className="font-mono text-[11px] text-fg-muted">
-                    ID assigned on save
-                  </span>
-                </div>
-                <Card className="rounded-none border border-border bg-surface p-3 shadow-none">
-                  <div className="flex gap-2.5">
-                    <Info
-                      className="size-3.5 shrink-0 text-fg-muted"
-                      aria-hidden
-                    />
-                    <p className="font-sans text-caption leading-relaxed text-fg">
-                      {ADD_BANNER}
-                    </p>
-                  </div>
-                </Card>
-              </>
+              <div className="flex flex-col gap-0.5">
+                <h2 className="inline-flex items-center gap-2 font-serif text-sheet-title font-semibold text-fg">
+                  <Scale className="size-3.5 shrink-0 text-fg-muted" aria-hidden />
+                  New judgement rule
+                </h2>
+                <span className="font-mono text-[11px] text-fg-muted">
+                  ID assigned on save
+                </span>
+              </div>
             ) : null}
 
             {!isAdd && rule !== null ? (
@@ -133,68 +111,13 @@ export function JudgementSheet({
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <SheetFieldLabel
-                label="Applicability"
-                icon={<ListFilter className="size-3.5" />}
-              />
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                <Select
-                  value={form.field}
-                  disabled={disabled}
-                  onValueChange={(value) =>
-                    onFormChange({
-                      ...form,
-                      field: value as typeof form.field,
-                    })
-                  }
-                >
-                  <SelectTrigger
-                    className="h-8 w-full rounded-none border border-border bg-surface px-2.5 text-xs text-fg"
-                    aria-label="Predicate field"
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PREDICATE_FIELD_OPTIONS.map((field) => (
-                      <SelectItem key={field} value={field}>
-                        {BRIEF_FIELD_LABELS[field]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select
-                  value={form.op}
-                  disabled={disabled}
-                  onValueChange={(value) =>
-                    onFormChange({
-                      ...form,
-                      op: value as typeof form.op,
-                    })
-                  }
-                >
-                  <SelectTrigger
-                    className="h-8 w-full rounded-none border border-border bg-surface px-2.5 text-xs text-fg"
-                    aria-label="Predicate operator"
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="equals">equals</SelectItem>
-                    <SelectItem value="in">in</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Input
-                  value={form.valueText}
-                  disabled={disabled}
-                  placeholder={form.op === "in" ? "a, b, c" : "value"}
-                  onChange={(event) =>
-                    onFormChange({ ...form, valueText: event.target.value })
-                  }
-                  className="h-8 rounded-none border border-border bg-surface px-2.5 font-mono text-xs text-fg"
-                />
-              </div>
-            </div>
+            <SheetApplicability
+              mode={mode}
+              rule={rule}
+              form={form}
+              disabled={disabled}
+              onFormChange={onFormChange}
+            />
 
             {isAdd ? (
               <Card className="rounded-none border border-dashed border-border bg-surface/40 p-3 shadow-none">
@@ -209,17 +132,16 @@ export function JudgementSheet({
                 </div>
               </Card>
             ) : (
-              <Card className="rounded-none border border-border bg-surface/40 p-3 shadow-none">
+              <Card className="rounded-none border border-hairline bg-surface p-3 shadow-none">
                 <div className="flex gap-2.5">
                   <GitCompareArrows
                     className="size-3.5 shrink-0 text-fg-muted"
                     aria-hidden
                   />
                   <p className="font-sans text-caption leading-relaxed text-fg">
-                    3 assets currently cite this wording. Editing it does not
-                    change their ledgers — they keep the wording frozen at their
-                    compile. The difference will show on each asset&apos;s
-                    re-run strip as drift.
+                    Assets that already cite this wording keep it frozen at their
+                    compile. Editing it does not change their ledgers — the
+                    difference shows on each asset&apos;s re-run strip as drift.
                   </p>
                 </div>
               </Card>
@@ -239,49 +161,59 @@ export function JudgementSheet({
                   onFormChange({ ...form, changeReason: event.target.value })
                 }
                 className="min-h-20 rounded-none font-sans text-sm leading-relaxed text-fg"
-                placeholder="Reason for this change (required)..."
+                placeholder="Reason for this change…"
               />
             </div>
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center justify-between gap-2 border-t border-border bg-surface p-4">
-          {!isAdd ? (
-            <Button
-              type="button"
-              variant="destructive"
-              className="inline-flex h-8 items-center gap-1.5 rounded-none border-0 bg-transparent px-2 font-sans text-button text-fail shadow-none hover:bg-fail-wash"
-              disabled={disabled}
-              onClick={onDelete}
-            >
-              <Trash2 className="size-3 shrink-0" aria-hidden />
-              Delete
-            </Button>
-          ) : (
-            <span />
-          )}
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="h-8 rounded-none border border-hairline bg-surface px-4 font-sans text-button text-fg shadow-none hover:bg-hover"
-              disabled={disabled}
-              onClick={onCancel}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              className="h-8 rounded-none border border-primary bg-primary px-4 font-sans text-button text-primary-foreground shadow-xs hover:bg-primary-hover"
-              disabled={disabled || !formIsValid(form)}
-              onClick={onSave}
-            >
-              {saveInFlight ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
-              ) : (
-                "Save"
-              )}
-            </Button>
+        <div className="flex shrink-0 flex-col gap-2 border-t border-border bg-surface p-4">
+          {!canSave && blockedReason !== null && !disabled ? (
+            <p className="text-caption text-fg-muted">{blockedReason}</p>
+          ) : null}
+          <div className="flex items-center justify-between gap-2">
+            {!isAdd ? (
+              <Button
+                type="button"
+                variant="destructive"
+                className="inline-flex h-8 items-center gap-1.5 rounded-none border-0 bg-transparent px-2 font-sans text-button text-fail shadow-none hover:bg-fail-wash"
+                disabled={disabled}
+                onClick={onDelete}
+              >
+                <Trash2 className="size-3 shrink-0" aria-hidden />
+                Delete
+              </Button>
+            ) : (
+              <span />
+            )}
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="h-8 rounded-none border border-hairline bg-surface px-4 font-sans text-button text-fg shadow-none hover:bg-hover"
+                disabled={disabled}
+                onClick={onCancel}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                disabled={disabled || !canSave}
+                className={cn(
+                  "h-8 rounded-none px-4 font-sans text-button shadow-none",
+                  canSave && !disabled
+                    ? "border border-primary bg-primary text-primary-foreground shadow-xs hover:bg-primary-hover"
+                    : "cursor-not-allowed border border-hairline bg-transparent text-fg-faint",
+                )}
+                onClick={onSave}
+              >
+                {saveInFlight ? (
+                  <Loader2 className="size-4 animate-spin" aria-hidden />
+                ) : (
+                  "Save"
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </div>

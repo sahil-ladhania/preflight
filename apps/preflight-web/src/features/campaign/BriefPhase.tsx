@@ -67,7 +67,7 @@ export function BriefPhase({
           <textarea
             value={freeText}
             disabled={building}
-            placeholder="Describe or paste your brief to start."
+            placeholder="Describe your campaign in plain language…"
             onChange={(event) => onFreeTextChange(event.target.value)}
             className={cn(
               CAMPAIGN_TEXTAREA_CLASS,
@@ -98,6 +98,14 @@ export function BriefPhase({
         onBriefChange={onBriefChange}
         onFieldEdit={onFieldEdit}
       />
+      {!building ? (
+        <div className="border-t border-hairline pt-4">
+          <p className="font-sans text-caption text-fg-muted">
+            Build it structures your brief, freezes the rules that apply, then
+            writes copy for each channel.
+          </p>
+        </div>
+      ) : null}
     </div>
   );
 }

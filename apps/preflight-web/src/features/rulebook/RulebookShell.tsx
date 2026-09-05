@@ -1,5 +1,5 @@
 /**
- * RulebookShell — Screen 4 register column, header, and page end-line.
+ * RulebookShell — Screen 4 register column and header.
  * Why: centered 1280px column per 09 R1; no PageStage card.
  */
 
@@ -7,7 +7,6 @@ import { Plus } from "lucide-react";
 import type { ReactElement, ReactNode } from "react";
 
 import { PageHeader } from "@/components/ui/page-header";
-import { PrimaryButton } from "@/components/ui/primary-button";
 import { POST_SAVE_CAPTION } from "@/features/rulebook/lib";
 
 export interface RulebookShellProps {
@@ -15,10 +14,6 @@ export interface RulebookShellProps {
   postSaveCaption: boolean;
   search?: ReactNode;
   onAdd: () => void;
-  bindingCount?: number;
-  advisoryCount?: number;
-  totalCount?: number;
-  showEndLine?: boolean;
 }
 
 export function RulebookShell({
@@ -39,12 +34,14 @@ export function RulebookShell({
           }
           search={search}
           action={
-            <PrimaryButton
-              icon={<Plus className="size-4 shrink-0" aria-hidden="true" />}
+            <button
+              type="button"
+              className="flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-none border border-fg bg-transparent px-4 font-sans text-button font-medium text-fg select-none cursor-pointer shadow-none transition-colors hover:bg-fg hover:text-surface"
               onClick={onAdd}
             >
+              <Plus className="size-3.5 shrink-0" aria-hidden="true" />
               Add judgement rule
-            </PrimaryButton>
+            </button>
           }
         />
         <div className="flex flex-1 flex-col">{children}</div>

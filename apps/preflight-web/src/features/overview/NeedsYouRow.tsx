@@ -8,8 +8,9 @@ import type { ReactElement } from "react";
 import type { AssetListItemDTO } from "@preflight/schemas";
 
 import { ChannelGlyph } from "@/features/assets/ChannelGlyph";
-import { channelLabel } from "@/features/assets/lib";
+import { channelLabel, formatGeneratedAt } from "@/features/assets/lib";
 import { StatusChip } from "@/features/assets/StatusChip";
+import { OVERVIEW_QUEUE_GRID } from "@/features/overview/needs-you-table";
 
 export function NeedsYouRow({
   asset,
@@ -17,7 +18,7 @@ export function NeedsYouRow({
   asset: AssetListItemDTO;
 }): ReactElement {
   return (
-    <div className="grid grid-cols-[110px_minmax(0,1.2fr)_120px_minmax(140px,1fr)_minmax(180px,1.4fr)] items-start gap-x-3 border-b border-hairline px-0 py-3">
+    <div className={`${OVERVIEW_QUEUE_GRID} items-start py-3`}>
       <div className="px-1">
         <StatusChip status={asset.status} />
       </div>
@@ -28,6 +29,9 @@ export function NeedsYouRow({
       </span>
       <span className="text-xs text-fg-muted">{asset.campaignName}</span>
       <span className="text-xs text-fg">{asset.statusDetail}</span>
+      <span className="whitespace-nowrap font-mono text-[11px] text-fg-muted">
+        {formatGeneratedAt(asset.generatedAt)}
+      </span>
     </div>
   );
 }

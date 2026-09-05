@@ -50,7 +50,9 @@ export function TimeToClearChart({
     ...points.map((point) => point.medianHours),
     INDUSTRY_BASELINE_HOURS,
   );
-  const yMax = Math.ceil(maxHours / 4) * 4 + 4;
+  const yMax = Math.ceil(maxHours / 15) * 15;
+  const xTickIndices = [0, 3, 6, 9, points.length - 1];
+  const xTicks = xTickIndices.map((index) => points[index]?.weekLabel ?? "");
 
   return (
     <figure className="flex w-full flex-col gap-3">
@@ -72,7 +74,7 @@ export function TimeToClearChart({
             dataKey="weekLabel"
             tickLine={false}
             axisLine={{ stroke: "var(--color-chart-grid)" }}
-            interval={1}
+            ticks={xTicks}
             tickMargin={8}
           />
           <YAxis
@@ -81,7 +83,7 @@ export function TimeToClearChart({
             width={44}
             domain={[0, yMax]}
             tickFormatter={formatHours}
-            tickCount={6}
+            tickCount={5}
           />
           <ChartTooltip
             cursor={{ stroke: "var(--color-chart-grid)" }}

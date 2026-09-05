@@ -4,7 +4,7 @@
  */
 
 import type { ReactElement } from "react";
-import { Lock } from "lucide-react";
+import { ArrowRight, Lock } from "lucide-react";
 
 import type { CompileResponseDTO, CompileRuleCardDTO } from "@preflight/schemas";
 
@@ -18,6 +18,7 @@ export interface FreezeTableProps {
   staleBanner: boolean;
   showAcknowledgement: boolean;
   onEmptySetAckChange: (checked: boolean) => void;
+  onContinue?: () => void;
 }
 
 function kindLabel(kind: CompileRuleCardDTO["kind"]): string {
@@ -47,6 +48,7 @@ export function FreezeTable({
   staleBanner,
   showAcknowledgement,
   onEmptySetAckChange,
+  onContinue,
 }: FreezeTableProps): ReactElement {
   const ruleCount = compileResult?.ruleIds.length ?? 0;
   const hash = compileResult?.rulesetHash ?? "";
@@ -91,6 +93,18 @@ export function FreezeTable({
               with an empty constraint set.
             </span>
           </label>
+        </div>
+      ) : null}
+      {onContinue !== undefined && compileResult !== null && ruleCount > 0 ? (
+        <div className="border-t border-hairline pt-4">
+          <button
+            type="button"
+            className="inline-flex cursor-pointer items-center gap-1 font-sans text-[11px] text-fg-muted underline underline-offset-4 hover:text-fg"
+            onClick={onContinue}
+          >
+            Continue to Generate
+            <ArrowRight className="size-3 shrink-0" aria-hidden="true" />
+          </button>
         </div>
       ) : null}
     </div>

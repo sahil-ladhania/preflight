@@ -9,11 +9,11 @@ import type { RulebookRowProps } from "@/features/rulebook/types";
 
 export function RulebookRow({ rule, onEdit }: RulebookRowProps): ReactElement {
   return (
-    <TableRow className="border-b border-hairline py-1.5 hover:bg-hover">
-      <TableCell className="w-[100px] font-mono text-mono-meta text-fg py-1.5 px-2 align-middle truncate">
+    <TableRow className="border-b border-hairline hover:bg-hover">
+      <TableCell className="w-[100px] truncate px-3 py-3 align-middle font-mono text-mono-meta text-fg">
         {rule.ruleId}
       </TableCell>
-      <TableCell className="w-[60px] py-1.5 px-2 align-middle">
+      <TableCell className="w-[60px] px-3 py-3 align-middle">
         <Badge
           variant="outline"
           className="border-0 p-0 font-mono text-kind-badge font-normal uppercase text-fg-muted"
@@ -22,20 +22,20 @@ export function RulebookRow({ rule, onEdit }: RulebookRowProps): ReactElement {
         </Badge>
       </TableCell>
       <TableCell
-        className="max-w-0 font-serif text-serif-row text-fg py-1.5 px-2 align-middle truncate"
+        className="max-w-0 truncate px-3 py-3 align-middle font-serif text-serif-row text-fg"
         title={rule.wording}
       >
         {rule.wording}
       </TableCell>
       <TableCell
-        className="w-[260px] whitespace-normal py-1.5 px-2 align-middle"
+        className="w-[260px] whitespace-normal px-3 py-3 align-middle"
         title={appliesLabel(rule)}
       >
-        <span className="line-clamp-2 text-ui text-fg-muted leading-snug">
+        <span className="line-clamp-2 text-ui leading-snug text-fg-muted">
           {appliesLabel(rule)}
         </span>
       </TableCell>
-      <TableCell className="w-[56px] text-right py-1.5 px-2 align-middle">
+      <TableCell className="w-[56px] px-3 py-3 text-right align-middle">
         {rule.kind === "deterministic" ? (
           <span
             className="inline-flex cursor-default items-center justify-center text-fg-faint"

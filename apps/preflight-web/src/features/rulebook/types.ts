@@ -66,7 +66,7 @@ export interface JudgementSheetProps {
 }
 
 export interface DeleteRuleModalProps {
-  ruleId: string | null;
+  rule: RuleCatalogRowDTO | null;
   onClose: () => void;
   onConfirm: (reason: string) => void;
 }

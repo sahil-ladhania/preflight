@@ -5,7 +5,7 @@
  */
 
 import type { ReactElement, ReactNode } from "react";
-import { Inbox, Loader2, Octagon, ShieldCheck } from "lucide-react";
+import { CircleCheck, Hand, Inbox, Loader2 } from "lucide-react";
 
 import type { AssetListItemDTO } from "@preflight/schemas";
 import { registerCounts } from "@/features/assets/register-lib";
@@ -50,13 +50,13 @@ export function WorkSummaryStats({
       <StatCount
         value={counts.blocked}
         label="held"
-        icon={<Octagon className="size-3.5" />}
+        icon={<Hand className="size-3.5" />}
       />
       <span className="text-xs text-fg-muted">·</span>
       <StatCount
         value={counts.readyToShip}
         label="cleared"
-        icon={<ShieldCheck className="size-3.5" />}
+        icon={<CircleCheck className="size-3.5" />}
       />
       {counts.pendingRules > 0 ? (
         <>

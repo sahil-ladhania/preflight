@@ -155,6 +155,25 @@ export function campaignProgressLine(assets: AssetListItemDTO[]): string {
 }
 
 
+export function countFilledBriefFields(brief: StructuredBriefInput): number {
+  let count = 0;
+  if (brief.objective.trim().length > 0) count++;
+  if (brief.schemeName.trim().length > 0) count++;
+  if (brief.schemeCategory.trim().length > 0) count++;
+  if (brief.audience.trim().length > 0) count++;
+  if (brief.market.trim().length > 0) count++;
+  if (brief.channels.length > 0) count++;
+  if (
+    brief.performanceFigures.some(
+      (figure) => figure.value.trim().length > 0 || figure.period.trim().length > 0,
+    )
+  ) {
+    count++;
+  }
+  if (brief.claims.some((claim) => claim.trim().length > 0)) count++;
+  return count;
+}
+
 export function buildPhaseLine(
   phase: BuildPhase,
   inFlight: boolean,

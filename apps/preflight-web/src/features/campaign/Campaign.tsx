@@ -105,6 +105,13 @@ function CampaignLoaded(props: CampaignProps): ReactElement {
         compileResult={compileResult} emptySetAcknowledged={emptySetAcknowledged}
         staleBanner={staleBanner} showAcknowledgement={compileResult !== null && compileResult.ruleIds.length === 0}
         onEmptySetAckChange={onEmptySetAckChange ?? fixture.setEmptySetAcknowledged}
+        onContinue={() => {
+          setPaneOverride(null);
+          setRailView("campaign-generate");
+          if (!s3Dimmed && !hasAssets && onGenerate) {
+            onGenerate();
+          }
+        }}
       />
     );
   } else if (pane === "built") {
@@ -121,7 +128,7 @@ function CampaignLoaded(props: CampaignProps): ReactElement {
   return (
     <CampaignPageShell
       activeStep={activeStep} compiling={compiling} identity={brief.schemeName.trim()}
-      isBuilt={pane === "built"} campaignName={brief.schemeName}
+      campaignName={brief.schemeName}
       s2Dimmed={s2Dimmed} s3Dimmed={s3Dimmed} backToSummary={showBack}
       onBackToSummary={() => {
         setPaneOverride(null);

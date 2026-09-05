@@ -8,9 +8,11 @@ import { describe, expect, it } from "vitest";
 import {
   driftAssetNoun,
   driftCountLabel,
+  needsYouSectionTitle,
   rulePressureCountLabel,
   stateLineCampaignsInProgress,
   stateLineNeedHuman,
+  stateLineNeedHumanForPersona,
   stateLineShippedException,
 } from "@/features/overview/overview-copy";
 
@@ -19,6 +21,29 @@ describe("stateLineNeedHuman", () => {
     expect(stateLineNeedHuman(0)).toBe("assets need a human");
     expect(stateLineNeedHuman(1)).toBe("asset needs a human");
     expect(stateLineNeedHuman(9)).toBe("assets need a human");
+  });
+});
+
+describe("stateLineNeedHumanForPersona", () => {
+  it("uses Arjun phrasing by default", () => {
+    expect(stateLineNeedHumanForPersona(9, "arjun")).toBe("assets need a human");
+    expect(stateLineNeedHumanForPersona(1, "arjun")).toBe("asset needs a human");
+  });
+
+  it("uses Meera phrasing when the campaign owner is signed in", () => {
+    expect(stateLineNeedHumanForPersona(9, "meera")).toBe(
+      "assets waiting on compliance",
+    );
+    expect(stateLineNeedHumanForPersona(1, "meera")).toBe(
+      "asset waiting on compliance",
+    );
+  });
+});
+
+describe("needsYouSectionTitle", () => {
+  it("forks the queue heading by persona", () => {
+    expect(needsYouSectionTitle("arjun")).toBe("Needs you");
+    expect(needsYouSectionTitle("meera")).toBe("Held for compliance");
   });
 });
 

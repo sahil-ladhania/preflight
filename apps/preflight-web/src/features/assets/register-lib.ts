@@ -111,11 +111,6 @@ export function workSummaryLine(assets: AssetListItemDTO[]): string {
   return line;
 }
 
-export function endOfRegisterLine(assets: AssetListItemDTO[]): string {
-  const counts = registerCounts(assets);
-  return `End of register — ${counts.needYou} need you · ${counts.resolved} resolved`;
-}
-
 export function splitRegisterSections(
   assets: AssetListItemDTO[],
   filter: RegisterFilter,

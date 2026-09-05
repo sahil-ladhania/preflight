@@ -146,7 +146,10 @@ export function PerformanceFiguresField({
         }
       />
       {figures.length === 0 ? (
-        addBtn
+        <div className="flex flex-col gap-2">
+          <p className="font-sans text-caption text-fg-muted">None recorded.</p>
+          {addBtn}
+        </div>
       ) : (
         <div className={cn("flex flex-col gap-2 border border-border bg-ground/30 p-3", proposed && "border-dashed")}>
           {figures.map((row, index) => (
@@ -212,7 +215,10 @@ export function ClaimsField({
         }
       />
       {claims.length === 0 ? (
-        addBtn
+        <div className="flex flex-col gap-2">
+          <p className="font-sans text-caption text-fg-muted">None recorded.</p>
+          {addBtn}
+        </div>
       ) : (
         <div className={cn("flex flex-col gap-2 border border-border bg-ground/30 p-3", proposed && "border-dashed")}>
           {claims.map((claim, index) => (

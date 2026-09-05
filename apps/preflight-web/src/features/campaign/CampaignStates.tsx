@@ -5,6 +5,7 @@
 
 import type { ReactElement } from "react";
 
+import { CampaignSkeleton } from "@/features/campaign/CampaignSkeleton";
 import type {
   CampaignErrorStateProps,
   CampaignLoadingStateProps,
@@ -17,14 +18,7 @@ export function CampaignLoadingState({
     return <div className="min-h-below-topbar bg-ground" />;
   }
 
-  return (
-    <div className="flex min-h-below-topbar items-center justify-center">
-      <div
-        className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
-        aria-label="Loading"
-      />
-    </div>
-  );
+  return <CampaignSkeleton />;
 }
 
 export function CampaignErrorState({

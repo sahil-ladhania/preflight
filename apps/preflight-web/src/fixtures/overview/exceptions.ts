@@ -15,7 +15,8 @@ export const OVERVIEW_EXCEPTIONS: OverviewExceptionRow[] = [
     campaignName: "Bluepeak Flexi Cap Fund",
     ruleId: "SEBI-05",
     frozenWording: FROZEN_WORDING["SEBI-05"],
-    humanReason: "Approved exception for internal demo static.",
+    humanReason:
+      "The static omits the as-on date in the inline CAGR footnote, but the linked factsheet carries the substantiation SEBI-05 requires. Waiving for the internal investor-day demo because the desk reviewed the underlying numbers yesterday and the exception stays on the record.",
     humanActor: "Arjun Legha",
     humanAt: "2026-03-13T15:20:00.000Z",
   },

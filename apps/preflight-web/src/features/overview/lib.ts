@@ -70,3 +70,18 @@ export function topNeedsYouAssets(
     .filter((asset) => isNeedsYouStatus(asset.status))
     .slice(0, limit);
 }
+
+/** Mount-time stamp; replace with fetch timestamp when Overview is API-backed. */
+export function overviewAsOfStamp(asOf: Date): string {
+  const formatted = new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Kolkata",
+  }).format(asOf);
+
+  return `AS OF ${formatted.toUpperCase()} IST`;
+}

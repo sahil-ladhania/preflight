@@ -1,6 +1,6 @@
 /**
  * ChannelGlyph — monochrome icon for asset channel.
- * Why: recognition support in 08 §5.18 icon language without third-party marks.
+ * Why: Overview Needs-you queue only (08 §13 #29); register stays text-only.
  */
 
 import type { ReactElement } from "react";

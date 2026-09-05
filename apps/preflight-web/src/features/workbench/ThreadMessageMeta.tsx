@@ -1,6 +1,6 @@
 /**
- * ThreadMessageMeta — timestamp and mock feedback controls under a turn.
- * Why: evaluation affordances are visible before backend wiring exists.
+ * ThreadMessageMeta — timestamp and evaluation controls under a turn.
+ * Why: copy + thumbs for local evaluation before backend wiring exists.
  */
 
 import { useCallback, useState, type ReactElement } from "react";

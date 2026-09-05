@@ -64,18 +64,9 @@ export interface RuleCardsProps {
   rules: RuleCatalogRowDTO[];
 }
 
-export interface SearchFallbackProps {
-  rules: RuleCatalogRowDTO[];
-  query: string;
-  onQueryChange: (query: string) => void;
-}
-
 export interface ThreadProps {
   messages: WorkbenchMessage[];
   rules: RuleCatalogRowDTO[];
-  showSearchFallback?: boolean;
-  searchQuery?: string;
-  onSearchQueryChange?: (query: string) => void;
   onScrollToEnd?: () => void;
 }
 

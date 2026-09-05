@@ -6,6 +6,7 @@
 import type { ReactElement } from "react";
 
 import { Button } from "@/components/ui/button";
+import { AssetDetailSkeleton } from "@/features/assets/AssetDetailSkeleton";
 import { AssetDetailShell } from "@/features/assets/AssetDetailShell";
 
 export function LoadingState({
@@ -23,12 +24,7 @@ export function LoadingState({
 
   return (
     <AssetDetailShell>
-      <div className="flex min-h-48 flex-1 items-center justify-center">
-        <div
-          className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
-          aria-label="Loading"
-        />
-      </div>
+      <AssetDetailSkeleton />
     </AssetDetailShell>
   );
 }

@@ -4,7 +4,6 @@
  */
 
 import type { ReactElement } from "react";
-import { Link } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { rulePressureCountLabel } from "@/features/overview/overview-copy";
@@ -18,10 +17,7 @@ export function RulePressureRowView({
   suffix: "failed" | "waived";
 }): ReactElement {
   return (
-    <Link
-      to="/rulebook"
-      className="grid grid-cols-[100px_60px_minmax(0,1fr)_auto] items-center gap-3 border-b border-hairline px-3 py-2.5 no-underline hover:bg-hover"
-    >
+    <div className="grid grid-cols-[100px_60px_minmax(0,1fr)_auto] items-center gap-3 border-b border-hairline px-3 py-2.5">
       <span className="font-mono text-mono-meta text-fg">{row.ruleId}</span>
       <Badge
         variant="outline"
@@ -33,6 +29,6 @@ export function RulePressureRowView({
       <span className="whitespace-nowrap font-sans text-caption text-fg-muted">
         {rulePressureCountLabel(row.eventCount, row.assetCount, suffix)}
       </span>
-    </Link>
+    </div>
   );
 }

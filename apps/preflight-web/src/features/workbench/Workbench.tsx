@@ -157,10 +157,7 @@ export function WorkbenchRoute(): ReactElement {
       handoffEnabled={hook.handoffEnabled}
       handoffDisabledCaption={hook.handoffDisabledCaption}
       briefReadiness={hook.briefReadiness}
-      showSearchFallback={hook.showSearchFallback}
-      searchQuery={hook.searchQuery}
       onComposerTextChange={hook.setComposerText}
-      onSearchQueryChange={hook.setSearchQuery}
       onSend={() => hook.send()}
       onGoToCampaign={() => {
         void hook.goToCampaign();

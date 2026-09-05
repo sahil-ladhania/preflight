@@ -5,7 +5,6 @@
 
 import type { ReactElement } from "react";
 import { UserRound } from "lucide-react";
-import { Link } from "react-router-dom";
 
 import { formatGeneratedAt } from "@/features/assets/lib";
 import type { OverviewExceptionRow } from "@/features/overview/types";
@@ -16,10 +15,7 @@ export function ExceptionRow({
   row: OverviewExceptionRow;
 }): ReactElement {
   return (
-    <Link
-      to={`/assets/${row.assetId}`}
-      className="flex flex-col gap-2 border-b border-hairline px-3 py-4 no-underline hover:bg-hover"
-    >
+    <div className="flex flex-col gap-2 border-b border-hairline px-3 py-4">
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
         <span className="font-mono text-mono-meta text-fg">{row.ruleId}</span>
         <span className="font-serif text-serif-row text-fg">{row.headline}</span>
@@ -28,9 +24,9 @@ export function ExceptionRow({
         <UserRound className="size-3 shrink-0" aria-hidden="true" />
         {row.humanActor} · {formatGeneratedAt(row.humanAt)}
       </p>
-      <p className="font-serif text-copy italic text-fg">
+      <p className="font-serif text-serif-row italic text-fg">
         &ldquo;{row.humanReason}&rdquo;
       </p>
-    </Link>
+    </div>
   );
 }

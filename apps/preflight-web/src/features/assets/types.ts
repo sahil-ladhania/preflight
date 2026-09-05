@@ -55,21 +55,17 @@ export interface AssetsListShellProps {
   createInFlight: boolean;
   onNewCampaign: () => void;
   workSummary: ReactNode;
-  search?: ReactNode;
-  filter: RegisterFilter;
-  onFilterChange: (filter: RegisterFilter) => void;
   showFilter: boolean;
-  endLine: string | null;
-  counts?: {
-    needYou: number;
-    all: number;
-    resolved: number;
-  };
+  toolbar?: ReactNode;
 }
 
 export interface AssetsRegisterTableProps {
   assets: AssetListItemDTO[];
   filter: RegisterFilter;
+  needsYouPage: number;
+  resolvedPage: number;
+  onNeedsYouPageChange: (page: number) => void;
+  onResolvedPageChange: (page: number) => void;
   onOpenLineage?: (assetId: string) => void;
 }
 

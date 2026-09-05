@@ -61,13 +61,12 @@ export function BriefFieldRow({
       ) : showEmptyOptional ? (
         <p className="font-sans text-caption text-fg-faint">none</p>
       ) : (
-        <div
-          className="flex flex-col gap-0.5"
+        <span
+          className="font-serif text-copy text-fg-faint"
           aria-label={`${label} ${ariaSuffix}`.trim()}
         >
-          <span className="font-serif text-copy text-fg-faint">—</span>
-          <span className="h-px w-8 border-t border-dashed border-hairline" aria-hidden />
-        </div>
+          —
+        </span>
       )}
     </div>
   );

@@ -9,17 +9,8 @@ import { Cpu, Scale } from "lucide-react";
 import type { RuleCatalogRowDTO } from "@preflight/schemas";
 
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -44,26 +35,6 @@ function SectionHeading({
       <OverviewSectionHeading title={title} count={count} icon={icon} />
       <p className="font-sans text-xs text-fg-muted">{description}</p>
     </div>
-  );
-}
-
-function TablePagination(): ReactElement {
-  return (
-    <Pagination className="justify-start pt-2">
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious disabled />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink isActive>
-            1
-          </PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationNext disabled />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
   );
 }
 
@@ -107,41 +78,29 @@ function RuleSection({
       <Table className="w-full table-fixed">
         <TableHeader className="[&_tr]:border-b-fg">
           <TableRow className="border-b border-fg hover:bg-transparent">
-            <TableHead className="h-auto w-[100px] px-2 py-1.5 font-sans text-label font-normal uppercase text-fg-muted">
+            <TableHead className="h-auto w-[100px] px-3 py-2 font-sans text-label font-normal uppercase text-fg-muted">
               Rule
             </TableHead>
-            <TableHead className="h-auto w-[60px] px-2 py-1.5 font-sans text-label font-normal uppercase text-fg-muted">
+            <TableHead className="h-auto w-[60px] px-3 py-2 font-sans text-label font-normal uppercase text-fg-muted">
               Kind
             </TableHead>
-            <TableHead className="h-auto px-2 py-1.5 font-sans text-label font-normal uppercase text-fg-muted">
+            <TableHead className="h-auto px-3 py-2 font-sans text-label font-normal uppercase text-fg-muted">
               Wording
             </TableHead>
-            <TableHead className="h-auto w-[260px] px-2 py-1.5 font-sans text-label font-normal uppercase text-fg-muted">
+            <TableHead className="h-auto w-[260px] px-3 py-2 font-sans text-label font-normal uppercase text-fg-muted">
               Applies to
             </TableHead>
-            <TableHead className="h-auto w-[56px] px-2 py-1.5 text-right font-sans text-label font-normal uppercase text-fg-muted">
+            <TableHead className="h-auto w-[56px] px-3 py-2 text-right font-sans text-label font-normal uppercase text-fg-muted">
               {showEditColumn ? "Edit" : ""}
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rules.length === 0 ? (
-            <TableRow>
-              <TableCell
-                colSpan={5}
-                className="py-6 text-center text-caption text-fg-muted"
-              >
-                No matching rules
-              </TableCell>
-            </TableRow>
-          ) : (
-            rules.map((rule) => (
-              <RulebookRow key={rule.ruleId} rule={rule} onEdit={onEdit} />
-            ))
-          )}
+          {rules.map((rule) => (
+            <RulebookRow key={rule.ruleId} rule={rule} onEdit={onEdit} />
+          ))}
         </TableBody>
       </Table>
-      <TablePagination />
     </section>
   );
 }

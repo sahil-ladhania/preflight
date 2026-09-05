@@ -2,20 +2,23 @@
  * AssetsList — Screen 2 list page body.
  * Why: register table inside paper-ground shell (09 R2).
  */
+// size: stage shells stay co-located with route wiring
 
 import { useMemo, useState, type ReactElement } from "react";
 
-import { SearchInput } from "@/components/ui/search-input";
 import { AssetsListShell } from "@/features/assets/AssetsListShell";
 import { AssetsRegisterTable } from "@/features/assets/AssetsRegisterTable";
 import { LineageDialog } from "@/features/assets/lineage/LineageDialog";
+import { RegisterToolbar } from "@/features/assets/RegisterToolbar";
 import {
   defaultRegisterFilter,
-  endOfRegisterLine,
   registerCounts,
   type RegisterFilter,
 } from "@/features/assets/register-lib";
+import { registerCampaignOptions } from "@/features/assets/register-query";
 import type { AssetsListProps } from "@/features/assets/types";
+import { useRegisterQuery } from "@/features/assets/useRegisterQuery";
+import { RegisterSkeleton } from "@/features/assets/RegisterSkeleton";
 import { WorkSummaryStats } from "@/features/assets/WorkSummaryStats";
 import { useCreateCampaign } from "@/features/campaign/useCreateCampaign";
 import { useAssetsList } from "@/features/assets/useAssetsList";
@@ -28,17 +31,6 @@ function EmptyState(): ReactElement {
       <p className="text-caption text-fg-muted">
         Start a new campaign to generate your first asset.
       </p>
-    </div>
-  );
-}
-
-function StageSpinner(): ReactElement {
-  return (
-    <div className="flex min-h-48 items-center justify-center">
-      <div
-        className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
-        aria-label="Loading"
-      />
     </div>
   );
 }
@@ -89,12 +81,22 @@ export function AssetsList({
   const [filter, setFilter] = useState<RegisterFilter>(() =>
     defaultRegisterFilter(personaId),
   );
-  const [searchQuery, setSearchQuery] = useState("");
   const [lineageAssetId, setLineageAssetId] = useState<string | null>(null);
+  const {
+    query,
+    filteredAssets,
+    needsYouPage,
+    resolvedPage,
+    setSearch,
+    setCampaign,
+    setStatus,
+    setSort,
+    setNeedsYouPage,
+    setResolvedPage,
+  } = useRegisterQuery(assets);
 
   const loaded = view === "loaded" && assets.length > 0;
   const workSummary = loaded ? <WorkSummaryStats assets={assets} /> : null;
-  const endLine = loaded ? endOfRegisterLine(assets) : null;
   const counts = loaded
     ? {
         needYou: registerCounts(assets).needYou,
@@ -102,37 +104,33 @@ export function AssetsList({
         resolved: registerCounts(assets).resolved,
       }
     : undefined;
+  const campaignOptions = useMemo(
+    () => registerCampaignOptions(assets),
+    [assets],
+  );
 
-  const filteredAssets = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return assets;
-    return assets.filter(
-      (asset) =>
-        asset.headline.toLowerCase().includes(q) ||
-        asset.campaignName.toLowerCase().includes(q),
-    );
-  }, [assets, searchQuery]);
+  const toolbar =
+    loaded && counts !== undefined ? (
+      <RegisterToolbar
+        filter={filter}
+        onFilterChange={setFilter}
+        counts={counts}
+        query={query}
+        campaignOptions={campaignOptions}
+        onSearchChange={setSearch}
+        onCampaignChange={setCampaign}
+        onStatusChange={setStatus}
+        onSortChange={setSort}
+      />
+    ) : null;
 
   const shell = (content: ReactElement): ReactElement => (
     <AssetsListShell
       createInFlight={createInFlight}
       onNewCampaign={onNewCampaign}
       workSummary={workSummary}
-      search={
-        loaded ? (
-          <SearchInput
-            value={searchQuery}
-            onValueChange={setSearchQuery}
-            placeholder="Search assets…"
-            className="w-64"
-          />
-        ) : undefined
-      }
-      filter={filter}
-      onFilterChange={setFilter}
       showFilter={loaded}
-      endLine={endLine}
-      counts={counts}
+      toolbar={toolbar}
     >
       {content}
     </AssetsListShell>
@@ -140,7 +138,7 @@ export function AssetsList({
 
   if (view === "loading") {
     return shell(
-      showLoadingSpinner ? <StageSpinner /> : <div className="min-h-48" />,
+      showLoadingSpinner ? <RegisterSkeleton /> : <div className="min-h-48" />,
     );
   }
 
@@ -160,6 +158,10 @@ export function AssetsList({
           <AssetsRegisterTable
             assets={filteredAssets}
             filter={filter}
+            needsYouPage={needsYouPage}
+            resolvedPage={resolvedPage}
+            onNeedsYouPageChange={setNeedsYouPage}
+            onResolvedPageChange={setResolvedPage}
             onOpenLineage={setLineageAssetId}
           />
         </>,

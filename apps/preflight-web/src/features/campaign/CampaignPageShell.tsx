@@ -17,7 +17,6 @@ export interface CampaignPageShellProps {
   activeStep: CampaignStepId;
   compiling: boolean;
   identity?: string;
-  isBuilt?: boolean;
   campaignName?: string;
   s2Dimmed: boolean;
   s3Dimmed: boolean;
@@ -31,7 +30,6 @@ export function CampaignPageShell({
   activeStep,
   compiling,
   identity = "",
-  isBuilt = false,
   campaignName = "",
   s2Dimmed,
   s3Dimmed,
@@ -45,8 +43,9 @@ export function CampaignPageShell({
   const identityLine = identity.trim();
   const resolvedName = campaignName.trim() || identityLine;
 
-  const title = isBuilt && resolvedName.length > 0 ? resolvedName : "Start a campaign";
-  const eyebrow = isBuilt ? "CAMPAIGN" : undefined;
+  const hasName = resolvedName.length > 0;
+  const title = hasName ? resolvedName : "Start a campaign";
+  const eyebrow = hasName ? "CAMPAIGN" : undefined;
 
   return (
     <div className="flex min-h-below-topbar flex-col bg-ground px-8 pt-8 pb-16">

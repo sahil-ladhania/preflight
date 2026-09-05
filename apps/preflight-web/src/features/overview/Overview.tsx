@@ -24,7 +24,7 @@ export function Overview({
   const stateCounts = overviewStateCounts(data.assets, data.campaigns);
 
   return (
-    <OverviewShell stateCounts={stateCounts}>
+    <OverviewShell stateCounts={stateCounts} personaId={personaId}>
       <OverviewLayout data={data} personaId={personaId} />
     </OverviewShell>
   );

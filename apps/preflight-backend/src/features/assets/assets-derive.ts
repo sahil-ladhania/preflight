@@ -45,27 +45,32 @@ export function buildStatusDetail(
       )
       .map((finding) => finding.ruleId);
 
-    return `Deterministic fail: ${formatRuleIds(ruleIds)}`;
+    return `Fails ${formatRuleIds(ruleIds)} — must be fixed or waived`;
   }
 
   if (status === "needs_human" && pendingCount > 0) {
-    return `Evaluating ${pendingCount} rule(s)…`;
+    return `Checking ${pendingCount} rules…`;
   }
 
   if (status === "needs_human") {
-    const tokens = findings
+    const unavailableIds = findings
+      .filter((finding) => finding.evaluationStatus === "unavailable")
+      .map((finding) => finding.ruleId);
+
+    if (unavailableIds.length > 0) {
+      return `${formatRuleIds(unavailableIds)} could not be evaluated — retry`;
+    }
+
+    const ruleIds = findings
       .filter(
         (finding) =>
-          finding.evaluationStatus === "unavailable" ||
-          (finding.kind === "judgement" &&
-            finding.machineVerdict === "fail" &&
-            finding.humanVerdict === null),
+          finding.kind === "judgement" &&
+          finding.machineVerdict === "fail" &&
+          finding.humanVerdict === null,
       )
-      .map((finding) =>
-        finding.evaluationStatus === "unavailable" ? "unavailable" : finding.ruleId,
-      );
+      .map((finding) => finding.ruleId);
 
-    return `Review: ${formatRuleIds(tokens)}`;
+    return `${formatRuleIds(ruleIds)} needs your decision`;
   }
 
   if (status === "needs_regen") {
@@ -78,12 +83,14 @@ export function buildStatusDetail(
       )
       .map((finding) => finding.ruleId);
 
-    return `Confirmed fail: ${formatRuleIds(ruleIds)}`;
+    return `You confirmed ${formatRuleIds(ruleIds)} — needs regenerating`;
   }
 
   if (status === "cleared_with_exception") {
     const count = findings.filter((finding) => finding.humanVerdict === "waived").length;
-    return `${count} waived exception(s)`;
+    return count === 1
+      ? "Ships with 1 waived exception"
+      : `Ships with ${count} waived exceptions`;
   }
 
   return "Ready to ship";

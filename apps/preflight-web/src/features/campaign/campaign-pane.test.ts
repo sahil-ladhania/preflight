@@ -10,6 +10,7 @@ import {
   activeCampaignPane,
   buildPhaseLine,
   campaignProgressLine,
+  countFilledBriefFields,
   countNeedsHuman,
   fieldReviewRows,
   formatBriefSummary,
@@ -143,6 +144,27 @@ describe("campaignProgressLine", () => {
         { ...asset("blocked"), pendingCount: 1 },
       ]),
     ).toBe("1 of 2 still need a human decision. Evaluating 3 rules…");
+  });
+});
+
+describe("countFilledBriefFields", () => {
+  it("returns zero for an empty brief", () => {
+    expect(
+      countFilledBriefFields({
+        objective: "",
+        schemeName: "",
+        schemeCategory: "",
+        audience: "",
+        channels: [],
+        market: "",
+        performanceFigures: [],
+        claims: [],
+      }),
+    ).toBe(0);
+  });
+
+  it("counts populated scalar and array fields up to eight", () => {
+    expect(countFilledBriefFields(validBrief())).toBe(8);
   });
 });
 

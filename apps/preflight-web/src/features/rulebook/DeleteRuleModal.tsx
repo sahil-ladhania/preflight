@@ -2,7 +2,6 @@ import type { ReactElement } from "react";
 import { useState } from "react";
 import { PenLine, Trash2 } from "lucide-react";
 
-import { shortId } from "@/features/assets/lib";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,11 +15,11 @@ import { Textarea } from "@/components/ui/textarea";
 import type { DeleteRuleModalProps } from "@/features/rulebook/types";
 
 export function DeleteRuleModal({
-  ruleId,
+  rule,
   onClose,
   onConfirm,
 }: DeleteRuleModalProps): ReactElement {
-  const open = ruleId !== null;
+  const open = rule !== null;
   const [reason, setReason] = useState<string>("");
 
   const handleOpenChange = (nextOpen: boolean): void => {
@@ -35,7 +34,7 @@ export function DeleteRuleModal({
     setReason("");
   };
 
-  if (!open) {
+  if (!open || rule === null) {
     return <></>;
   }
 
@@ -53,12 +52,14 @@ export function DeleteRuleModal({
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4 py-2">
-          <div className="flex flex-col gap-1">
-            <p className="font-sans text-caption leading-relaxed text-fg">
-              Existing frozen snapshots still cite this rule.
-            </p>
-            <p className="font-mono text-xs text-fg-muted" title={ruleId}>
-              {ruleId.length > 24 ? `${shortId(ruleId)}…` : ruleId}
+          <div className="flex flex-col gap-2">
+            <p className="font-mono text-mono-meta text-fg">{rule.ruleId}</p>
+            <p className="font-serif text-serif-row text-fg">{rule.wording}</p>
+            <p className="font-sans text-caption leading-relaxed text-fg-muted">
+              Assets that already cite this wording keep their frozen snapshot.
+              Re-run strips will show{" "}
+              <span className="font-mono text-mono-meta">frozen_rule_missing</span>{" "}
+              for this rule id.
             </p>
           </div>
           <div className="flex flex-col gap-1.5">

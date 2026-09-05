@@ -33,7 +33,7 @@ export const ASSETS_LIST_FIXTURE: AssetListItemDTO[] = [
     regeneratedFromId: null,
     generatedAt: "2026-03-15T14:00:00.000Z",
     pendingCount: 2,
-    statusDetail: "Evaluating 2 rule(s)…",
+    statusDetail: "Checking 2 rules…",
   },
   {
     id: ASSET_ID_B,
@@ -46,7 +46,7 @@ export const ASSETS_LIST_FIXTURE: AssetListItemDTO[] = [
     regeneratedFromId: ASSET_ID_A,
     generatedAt: "2026-03-15T12:30:00.000Z",
     pendingCount: 0,
-    statusDetail: "Review: SEBI-06",
+    statusDetail: "SEBI-06 needs your decision",
   },
   {
     id: ASSET_ID_A,
@@ -59,7 +59,7 @@ export const ASSETS_LIST_FIXTURE: AssetListItemDTO[] = [
     regeneratedFromId: null,
     generatedAt: "2026-03-15T11:00:00.000Z",
     pendingCount: 0,
-    statusDetail: "Confirmed fail: SEBI-06",
+    statusDetail: "You confirmed SEBI-06 — needs regenerating",
   },
   {
     id: ASSET_ID_G,
@@ -72,7 +72,7 @@ export const ASSETS_LIST_FIXTURE: AssetListItemDTO[] = [
     regeneratedFromId: null,
     generatedAt: "2026-03-14T16:00:00.000Z",
     pendingCount: 0,
-    statusDetail: "Review: BRAND-03",
+    statusDetail: "BRAND-03 needs your decision",
   },
   {
     id: ASSET_ID_F,
@@ -85,7 +85,7 @@ export const ASSETS_LIST_FIXTURE: AssetListItemDTO[] = [
     regeneratedFromId: null,
     generatedAt: "2026-03-14T14:00:00.000Z",
     pendingCount: 0,
-    statusDetail: "Review: SEBI-06, unavailable",
+    statusDetail: "SEBI-06 could not be evaluated — retry",
   },
   {
     id: ASSET_ID_E,
@@ -111,7 +111,7 @@ export const ASSETS_LIST_FIXTURE: AssetListItemDTO[] = [
     regeneratedFromId: null,
     generatedAt: "2026-03-13T15:00:00.000Z",
     pendingCount: 0,
-    statusDetail: "1 waived exception(s)",
+    statusDetail: "Ships with 1 waived exception",
   },
   {
     id: ASSET_ID_C,
@@ -124,6 +124,6 @@ export const ASSETS_LIST_FIXTURE: AssetListItemDTO[] = [
     regeneratedFromId: null,
     generatedAt: "2026-03-13T09:00:00.000Z",
     pendingCount: 0,
-    statusDetail: "Deterministic fail: SEBI-01",
+    statusDetail: "Fails SEBI-01 — must be fixed or waived",
   },
 ];

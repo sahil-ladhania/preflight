@@ -17,7 +17,7 @@ import {
   PerformanceFiguresField,
 } from "@/features/campaign/BriefArrayFields";
 import { FieldReviewScalars } from "@/features/campaign/FieldReviewScalars";
-import { fieldReviewRows } from "@/features/campaign/campaign-pane";
+import { countFilledBriefFields, fieldReviewRows } from "@/features/campaign/campaign-pane";
 import { cn } from "@/lib/utils";
 
 export interface FieldReviewProps {
@@ -41,9 +41,10 @@ export function FieldReview({
 }: FieldReviewProps): ReactElement {
   const missingSet = new Set(missingFields);
   const rows = fieldReviewRows(brief);
+  const filledCount = countFilledBriefFields(brief);
 
   return (
-    <div className="flex flex-col gap-3 pb-8 md:pb-12">
+    <div className="flex flex-col gap-3">
       <button
         type="button"
         className="flex w-fit cursor-pointer items-center gap-2 border border-border bg-surface px-3 py-1.5 font-sans text-xs font-medium text-fg shadow-none transition-colors hover:bg-hover"
@@ -60,7 +61,7 @@ export function FieldReview({
           variant="outline"
           className="rounded-none border-border font-mono text-[10px] font-normal text-fg-muted"
         >
-          8 fields
+          {filledCount} of 8
         </Badge>
         {missingFields.length > 0 ? (
           <Badge
@@ -120,7 +121,7 @@ export function FieldReview({
               <Separator className="bg-border" />
 
               {/* Performance Figures & Claims */}
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="flex flex-col gap-6">
                 <PerformanceFiguresField
                   figures={brief.performanceFigures}
                   proposed={false}

@@ -39,6 +39,10 @@ export function BuildPanel({
   onTryExample?: () => void;
 }): ReactElement {
   const line = buildPhaseLine(buildPhase, buildInFlight);
+  const adjacentLine =
+    !buildInFlight
+      ? (line ?? (!canBuild ? "Describe or paste your brief to start." : null))
+      : null;
   const isActionable =
     canBuild &&
     !buildInFlight &&
@@ -58,7 +62,7 @@ export function BuildPanel({
               "border border-primary bg-primary text-primary-foreground hover:bg-primary-hover shadow-xs cursor-pointer",
             !isActionable &&
               !buildInFlight &&
-              "border border-primary/30 bg-primary/20 text-fg-muted cursor-not-allowed",
+              "border border-hairline bg-transparent text-fg-faint cursor-not-allowed",
           )}
           onClick={() => {
             if (isActionable) {
@@ -88,8 +92,8 @@ export function BuildPanel({
             Try an example
           </button>
         ) : null}
-        {!buildInFlight && line !== null ? (
-          <p className="text-caption text-fg-muted">{line}</p>
+        {!buildInFlight && adjacentLine !== null ? (
+          <p className="text-caption text-fg-muted">{adjacentLine}</p>
         ) : null}
       </div>
       {buildInFlight && line !== null ? (

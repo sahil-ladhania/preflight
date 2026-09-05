@@ -100,6 +100,7 @@ export function SidebarNavList({
         tooltip="Campaign"
         isActive={isCampaignActive}
         disabled={navigatingCampaign}
+        pending={navigatingCampaign}
         onClick={onNavigateCampaign}
         icon={<ClipboardList className="size-4 shrink-0 text-current" />}
       />

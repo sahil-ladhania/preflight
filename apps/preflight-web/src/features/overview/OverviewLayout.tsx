@@ -48,7 +48,9 @@ export function OverviewLayout({
   data: OverviewData;
   personaId: PersonaId;
 }): ReactElement {
-  const needsYou = <NeedsYouSection assets={data.assets} />;
+  const needsYou = (
+    <NeedsYouSection assets={data.assets} personaId={personaId} />
+  );
   const exceptions = <ExceptionsSection exceptions={data.exceptions} />;
   const proofSpeed = <ProofSpeedSection proofSpeed={data.proofSpeed} />;
   const rulePressure = (

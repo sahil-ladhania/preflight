@@ -15,6 +15,8 @@ import {
   promptGroupsForPersona,
   seedProposalFromExplainer,
   toChatHistory,
+  workbenchModeLine,
+  WORKBENCH_SUBLINE,
 } from "@/features/workbench/lib";
 import type { WorkbenchMessage } from "@/features/workbench/types";
 
@@ -54,6 +56,26 @@ describe("promptGroupsForPersona", () => {
       "ASK ABOUT THE RULES",
       "START A CAMPAIGN",
     ]);
+  });
+});
+
+describe("workbenchModeLine", () => {
+  it("returns the empty-state subline when there are no messages", () => {
+    expect(
+      workbenchModeLine({ hasMessages: false, briefing: false, capturedCount: 0 }),
+    ).toBe(WORKBENCH_SUBLINE);
+  });
+
+  it("returns asking copy when the thread has no captured brief fields", () => {
+    expect(
+      workbenchModeLine({ hasMessages: true, briefing: false, capturedCount: 0 }),
+    ).toBe("Answering questions about the rulebook.");
+  });
+
+  it("returns briefing copy with captured count when fields exist", () => {
+    expect(
+      workbenchModeLine({ hasMessages: true, briefing: true, capturedCount: 2 }),
+    ).toBe("Collecting your campaign brief — 2 of 6 fields captured.");
   });
 });
 

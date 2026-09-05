@@ -16,6 +16,7 @@ export interface SidebarNavButtonProps {
   tooltip: string;
   isActive: boolean;
   disabled?: boolean;
+  pending?: boolean;
   onClick: () => void;
   icon: ReactNode;
   badge?: ReactNode;
@@ -27,11 +28,19 @@ export function SidebarNavButton({
   tooltip,
   isActive,
   disabled = false,
+  pending = false,
   onClick,
   icon,
   badge,
   collapsedBadge,
 }: SidebarNavButtonProps): ReactElement {
+  const pendingBadge = pending ? (
+    <div
+      className="size-2.5 animate-spin rounded-full border border-[var(--color-chrome-fg-muted)] border-t-[var(--color-chrome-fg)]"
+      aria-label="Loading"
+    />
+  ) : null;
+
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
@@ -51,7 +60,7 @@ export function SidebarNavButton({
           {collapsedBadge}
         </span>
         <span>{label}</span>
-        {badge}
+        {pendingBadge ?? badge}
       </SidebarMenuButton>
     </SidebarMenuItem>
   );

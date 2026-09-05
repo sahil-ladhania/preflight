@@ -50,6 +50,11 @@ export function Rulebook({
       ? null
       : (safeRules.find((rule) => rule.ruleId === editingRuleId) ?? null);
 
+  const deleteRule =
+    deleteRuleId === null
+      ? null
+      : (safeRules.find((rule) => rule.ruleId === deleteRuleId) ?? null);
+
   if (view === "loading") {
     return <LoadingState showSpinner={showLoadingSpinner} />;
   }
@@ -121,7 +126,7 @@ export function Rulebook({
         }}
       />
       <DeleteRuleModal
-        ruleId={deleteRuleId}
+        rule={deleteRule}
         onClose={() => {
           onCloseDelete?.();
         }}

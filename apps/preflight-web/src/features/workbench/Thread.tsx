@@ -25,7 +25,7 @@ function renderProseWithRuleReferences(text: string): ReactNode {
         <Link
           key={index}
           to="/rulebook"
-          className="font-mono text-decision underline hover:text-decision/80 cursor-pointer"
+          className="cursor-pointer font-mono text-decision underline hover:text-decision/80"
         >
           {part}
         </Link>
@@ -112,15 +112,13 @@ function MessageBlock({
 
   if (message.role === "pending") {
     return (
-      <div className="flex flex-col items-start w-full">
-        <span className="font-sans text-caption text-fg-muted mb-1 text-left">
+      <div className="flex w-full flex-col items-start">
+        <span className="mb-1 text-left font-sans text-caption text-fg-muted">
           Preflight
         </span>
-        <div className="w-full max-w-measure-thread flex items-center gap-2">
+        <div className="flex max-w-measure-thread items-center gap-2">
           <PendingRing active />
-          <span className="font-serif text-prose text-fg-muted">
-            Thinking…
-          </span>
+          <span className="font-serif text-prose text-fg-muted">Thinking…</span>
         </div>
       </div>
     );
@@ -179,7 +177,7 @@ export function Thread({
   }
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex w-full flex-col gap-4">
       {messages.map((message) => (
         <MessageBlock
           key={message.id}

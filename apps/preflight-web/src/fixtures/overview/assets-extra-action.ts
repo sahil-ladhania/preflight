@@ -26,7 +26,7 @@ export const OVERVIEW_ASSETS_EXTRA_ACTION: AssetListItemDTO[] = [
     regeneratedFromId: null,
     generatedAt: "2026-02-18T10:00:00.000Z",
     pendingCount: 0,
-    statusDetail: "1 waived exception(s)",
+    statusDetail: "Ships with 1 waived exception",
   }),
   overviewAssetRow({
     id: "ov-exc-002-4111-8111-000000000002",
@@ -39,7 +39,7 @@ export const OVERVIEW_ASSETS_EXTRA_ACTION: AssetListItemDTO[] = [
     regeneratedFromId: null,
     generatedAt: "2026-01-29T08:30:00.000Z",
     pendingCount: 0,
-    statusDetail: "1 waived exception(s)",
+    statusDetail: "Ships with 1 waived exception",
   }),
   overviewAssetRow({
     id: "ov-exc-003-4111-8111-000000000003",
@@ -52,7 +52,7 @@ export const OVERVIEW_ASSETS_EXTRA_ACTION: AssetListItemDTO[] = [
     regeneratedFromId: null,
     generatedAt: "2025-12-06T15:00:00.000Z",
     pendingCount: 0,
-    statusDetail: "1 waived exception(s)",
+    statusDetail: "Ships with 1 waived exception",
   }),
   overviewAssetRow({
     id: "ov-nh-001-4111-8111-000000000001",
@@ -65,7 +65,7 @@ export const OVERVIEW_ASSETS_EXTRA_ACTION: AssetListItemDTO[] = [
     regeneratedFromId: null,
     generatedAt: "2026-03-10T09:00:00.000Z",
     pendingCount: 0,
-    statusDetail: "Review: SEBI-06",
+    statusDetail: "SEBI-06 needs your decision",
   }),
   overviewAssetRow({
     id: "ov-block-001-4111-8111-000000000001",
@@ -78,7 +78,7 @@ export const OVERVIEW_ASSETS_EXTRA_ACTION: AssetListItemDTO[] = [
     regeneratedFromId: null,
     generatedAt: "2026-03-08T14:00:00.000Z",
     pendingCount: 0,
-    statusDetail: "Deterministic fail: SEBI-01",
+    statusDetail: "Fails SEBI-01 — must be fixed or waived",
   }),
   overviewAssetRow({
     id: "ov-regen-001-4111-8111-000000000001",
@@ -91,6 +91,6 @@ export const OVERVIEW_ASSETS_EXTRA_ACTION: AssetListItemDTO[] = [
     regeneratedFromId: null,
     generatedAt: "2026-03-07T11:00:00.000Z",
     pendingCount: 0,
-    statusDetail: "Confirmed fail: BRAND-03",
+    statusDetail: "You confirmed BRAND-03 — needs regenerating",
   }),
 ];

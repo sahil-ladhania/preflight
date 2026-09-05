@@ -29,6 +29,30 @@ export const WORKBENCH_INVITATION = WORKBENCH_HEADLINE;
 export const WORKBENCH_COMPOSER_PLACEHOLDER =
   "Type your question, or paste your brief…";
 
+export const WORKBENCH_START_CAMPAIGN_NOTE =
+  "Carries this conversation as a form proposal — you still review and save on Campaign.";
+
+export const WORKBENCH_GO_CAMPAIGN_NOTE =
+  "Opens Campaign without this conversation's draft.";
+
+export function workbenchModeLine({
+  hasMessages,
+  briefing,
+  capturedCount,
+}: {
+  hasMessages: boolean;
+  briefing: boolean;
+  capturedCount: number;
+}): string {
+  if (!hasMessages) {
+    return WORKBENCH_SUBLINE;
+  }
+  if (briefing || capturedCount > 0) {
+    return `Collecting your campaign brief — ${capturedCount} of 6 fields captured.`;
+  }
+  return "Answering questions about the rulebook.";
+}
+
 export const WORKBENCH_PROMPT_GROUPS = [
   {
     label: "ASK ABOUT THE RULES",

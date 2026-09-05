@@ -15,6 +15,10 @@ import {
   REQUIRED_BRIEF_FIELDS,
 } from "@/features/workbench/brief-readiness-lib";
 import { CampaignHandoffLink } from "@/features/workbench/CampaignHandoffLink";
+import {
+  WORKBENCH_GO_CAMPAIGN_NOTE,
+  WORKBENCH_START_CAMPAIGN_NOTE,
+} from "@/features/workbench/lib";
 
 export interface BriefReadinessProps {
   capturedCount: number;
@@ -74,7 +78,7 @@ export function BriefReadiness({
       </div>
 
       <div className="flex flex-col gap-3.5 border-t border-hairline pt-3">
-        <span className="text-caption italic text-fg-muted">
+        <span className="text-caption text-fg-muted">
           Optional — &quot;none&quot; is a valid answer for both.
         </span>
         {OPTIONAL_BRIEF_FIELDS.map(({ key, label }) => (
@@ -120,14 +124,24 @@ export function BriefReadiness({
                 {handoffDisabledCaption}
               </span>
             ) : null}
+            {canStart ? (
+              <p className="font-sans text-caption leading-snug text-fg-muted">
+                {WORKBENCH_START_CAMPAIGN_NOTE}
+              </p>
+            ) : null}
           </div>
         ) : null}
 
         {showLink ? (
-          <CampaignHandoffLink
-            onClick={onGoToCampaign}
-            disabled={handoffInFlight}
-          />
+          <div className="flex flex-col gap-1">
+            <CampaignHandoffLink
+              onClick={onGoToCampaign}
+              disabled={handoffInFlight}
+            />
+            <p className="font-sans text-caption leading-snug text-fg-muted">
+              {WORKBENCH_GO_CAMPAIGN_NOTE}
+            </p>
+          </div>
         ) : null}
       </div>
     </div>

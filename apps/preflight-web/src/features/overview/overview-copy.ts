@@ -3,8 +3,14 @@
  * Why: fragmented noun + phrase helpers duplicated words and broke singular/plural.
  */
 
+import type { PersonaId } from "@/features/shell/types";
+
 function pluralNoun(count: number, singular: string, plural: string): string {
   return count === 1 ? singular : plural;
+}
+
+export function needsYouSectionTitle(personaId: PersonaId): string {
+  return personaId === "meera" ? "Held for compliance" : "Needs you";
 }
 
 export function stateLineNeedHuman(count: number): string {
@@ -12,6 +18,18 @@ export function stateLineNeedHuman(count: number): string {
     return "asset needs a human";
   }
   return "assets need a human";
+}
+
+export function stateLineNeedHumanForPersona(
+  count: number,
+  personaId: PersonaId,
+): string {
+  if (personaId === "meera") {
+    return count === 1
+      ? "asset waiting on compliance"
+      : "assets waiting on compliance";
+  }
+  return stateLineNeedHuman(count);
 }
 
 export function stateLineShippedException(count: number): string {

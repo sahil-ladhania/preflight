@@ -129,8 +129,8 @@ export function FieldReviewScalars({
               placeholder={placeholder}
               aria-invalid={isMissing}
               className={cn(
-                "rounded-none border-border bg-ground/40 font-serif text-sm text-fg shadow-none focus-visible:border-decision focus-visible:ring-0",
-                isMissing && "border-hairline/80",
+                "rounded-none border-0 border-b border-hairline bg-transparent px-0 py-2 font-serif text-sm text-fg shadow-none focus-visible:border-b-decision focus-visible:ring-0",
+                isMissing && "border-b-fail/60",
               )}
               onChange={(event) => {
                 onFieldEdit(id);

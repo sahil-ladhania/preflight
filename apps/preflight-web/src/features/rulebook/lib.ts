@@ -11,7 +11,7 @@ import type {
 } from "@preflight/schemas";
 import type { BriefField } from "@preflight/schemas";
 
-import type { JudgementFormState } from "@/features/rulebook/types";
+import type { JudgementFormState, SheetMode } from "@/features/rulebook/types";
 
 export const POST_SAVE_CAPTION =
   "Live catalog updated. Existing assets keep their frozen snapshots — recompile on Campaign or re-run on Assets to compare.";
@@ -57,7 +57,18 @@ export function createRequestFromForm(
 export function updateRequestFromForm(
   form: JudgementFormState,
 ): UpdateJudgementRuleRequest | null {
-  return createRequestFromForm(form);
+  if (form.wording.trim().length === 0 || form.changeReason.trim().length < 10) {
+    return null;
+  }
+  const predicateSpec = parsePredicateSpec(form);
+  const body: UpdateJudgementRuleRequest = {
+    wording: form.wording.trim(),
+    changeReason: form.changeReason.trim(),
+  };
+  if (predicateSpec !== null) {
+    body.predicateSpec = predicateSpec;
+  }
+  return body;
 }
 
 export function catalogCounts(rules: RuleCatalogRowDTO[]): {
@@ -136,10 +147,33 @@ export function parsePredicateSpec(
   return { field: form.field, op: "in", value: values };
 }
 
-export function formIsValid(form: JudgementFormState): boolean {
-  return (
-    parsePredicateSpec(form) !== null && form.changeReason.trim().length >= 10
-  );
+export function formIsValid(form: JudgementFormState, mode: SheetMode = "add"): boolean {
+  if (form.wording.trim().length === 0) {
+    return false;
+  }
+  if (form.changeReason.trim().length < 10) {
+    return false;
+  }
+  if (mode === "add") {
+    return parsePredicateSpec(form) !== null;
+  }
+  return true;
+}
+
+export function saveBlockedReason(
+  form: JudgementFormState,
+  mode: SheetMode,
+): string | null {
+  if (form.wording.trim().length === 0) {
+    return "Add rule wording before saving.";
+  }
+  if (mode === "add" && parsePredicateSpec(form) === null) {
+    return "Enter an applicability value above.";
+  }
+  if (form.changeReason.trim().length < 10) {
+    return "Add a change reason of at least 10 characters.";
+  }
+  return null;
 }
 
 export function rowFromForm(

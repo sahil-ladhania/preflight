@@ -14,11 +14,11 @@ export function CommentSheet({
 }: CommentSheetProps): ReactElement {
   if (variant === "user") {
     return (
-      <div className="flex flex-col items-end w-full">
-        <span className="font-sans text-caption text-fg-muted mb-1 text-right">
+      <div className="flex w-full flex-col items-end">
+        <span className="mb-1 text-right font-sans text-caption text-fg-muted">
           You
         </span>
-        <div className="bg-hover border border-hairline border-r-2 border-r-decision p-[12px_16px] max-w-measure-thread rounded-none text-left text-fg">
+        <div className="max-w-measure-thread rounded-none border border-hairline border-r-2 border-r-decision bg-hover p-[12px_16px] text-left text-fg">
           {children}
         </div>
       </div>
@@ -28,14 +28,11 @@ export function CommentSheet({
   const displayLabel = label ?? "Preflight";
 
   return (
-    <div className="flex flex-col items-start w-full">
-      <span className="font-sans text-caption text-fg-muted mb-1 text-left">
+    <div className="flex w-full flex-col items-start">
+      <span className="mb-1 text-left font-sans text-caption text-fg-muted">
         {displayLabel}
       </span>
-      <div className="w-full max-w-measure-thread text-fg">
-        {children}
-      </div>
+      <div className="w-full max-w-measure-thread text-fg">{children}</div>
     </div>
   );
 }
-

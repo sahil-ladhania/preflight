@@ -1,24 +1,14 @@
 /**
- * RulebookStatus — Loading spinner and error state for Rulebook.
+ * RulebookStatus — loading skeleton and error state for Rulebook.
  * Why: extracted to preserve Rulebook.tsx under 200 lines.
  */
 
 import type { ReactElement } from "react";
 
 import { Button } from "@/components/ui/button";
+import { RulebookSkeleton } from "@/features/rulebook/RulebookSkeleton";
 import { RulebookShell } from "@/features/rulebook/RulebookShell";
 import type { RulebookLoadingStateProps } from "@/features/rulebook/types";
-
-export function StageSpinner(): ReactElement {
-  return (
-    <div className="flex min-h-48 items-center justify-center">
-      <div
-        className="size-4 animate-spin rounded-full border-2 border-fg border-t-transparent"
-        aria-label="Loading"
-      />
-    </div>
-  );
-}
 
 export function StageError({ onRetry }: { onRetry?: () => void }): ReactElement {
   const handleRetry = (): void => {
@@ -46,7 +36,7 @@ export function LoadingState({ showSpinner }: RulebookLoadingStateProps): ReactE
 
   return (
     <RulebookShell postSaveCaption={false} onAdd={() => {}}>
-      <StageSpinner />
+      <RulebookSkeleton />
     </RulebookShell>
   );
 }

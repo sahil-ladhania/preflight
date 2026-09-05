@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 
 import { OverviewRegion } from "@/features/overview/OverviewRegion";
 import { OverviewSectionHeading } from "@/features/overview/OverviewSectionHeading";
+import { RegisterLink } from "@/features/overview/RegisterLink";
 import { RulePressureRowView } from "@/features/overview/RulePressureRow";
 import type { RulePressureSnapshot } from "@/features/overview/types";
 
@@ -48,20 +49,14 @@ export function RulePressureListsSection({
         title="Rule pressure"
         icon={<Gauge className="size-4" />}
       />
-      <SubBlock
-        title="Most-failed rules"
-        icon={<CircleX className="size-3.5" />}
-      >
+      <SubBlock title="Most-failed rules" icon={<CircleX className="size-3.5" />}>
         <div className="flex flex-col">
           {rulePressure.mostFailed.map((row) => (
             <RulePressureRowView key={row.ruleId} row={row} suffix="failed" />
           ))}
         </div>
       </SubBlock>
-      <SubBlock
-        title="Most-waived rules"
-        icon={<Scale className="size-3.5" />}
-      >
+      <SubBlock title="Most-waived rules" icon={<Scale className="size-3.5" />}>
         <div className="flex flex-col">
           {rulePressure.mostWaived.map((row) => (
             <RulePressureRowView
@@ -72,6 +67,7 @@ export function RulePressureListsSection({
           ))}
         </div>
       </SubBlock>
+      <RegisterLink to="/rulebook">Open the Rulebook</RegisterLink>
     </OverviewRegion>
   );
 }

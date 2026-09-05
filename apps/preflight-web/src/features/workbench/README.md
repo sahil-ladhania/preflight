@@ -4,15 +4,16 @@ Turn a campaign brief into copy you can defend. Ask about rules or describe a ca
 
 | Item | What it is |
 |---|---|
-| `BriefReadiness.tsx` | Captured vs still-needed line above the composer. |
-| `CommentSheet.tsx` | One bordered comment sheet in the thread. |
-| `Composer.tsx` | Textarea, Send, and always-visible handoff button with disabled reason. |
-| `EmptyStage.tsx` | Outcome-first headline, subline, and prompt chips. |
+| `BriefReadiness.tsx` | Campaign brief rail with captured fields and handoff actions. |
+| `CommentSheet.tsx` | Flat record turn wrapper in the thread. |
+| `Composer.tsx` | Textarea and Ask → send control. |
+| `EmptyStage.tsx` | Headline, mode line, composer, and prompt pills. |
 | `RuleCards.tsx` | Catalog cards for ruleIds cited in an answer. |
-| `SearchFallback.tsx` | Empty or no-match state when catalog filter finds nothing. |
-| `Thread.tsx` | Bordered comment sheets; bounded typewriter reveal. |
-| `Workbench.tsx` | Screen 5 thread layout on canvas-subtle background. |
-| `lib.ts` | Handoff gating on brief completeness, catalog filter, message ids. |
+| `Thread.tsx` | Flat hairline-separated turns; typewriter reveal on new answers. |
+| `ThreadStage.tsx` | Thread column with heading, scroll dock, and optional brief rail. |
+| `WorkbenchStageHeader.tsx` | Shared R1 heading + R1a mode line. |
+| `Workbench.tsx` | Screen 5 layout on ledger-grid texture. |
+| `lib.ts` | Handoff gating, mode line copy, catalog filter, message ids. |
 | `types.ts` | Feature props and local view shapes. |
 | `useBriefReadiness.ts` | Accumulate draft briefs from assistant turns. |
 | `useWorkbench.ts` | POST /workbench/chat with capturedBrief ledger; prefetches rules. |

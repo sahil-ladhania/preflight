@@ -4,14 +4,15 @@
  */
 
 import type { ReactElement, ReactNode } from "react";
-import { Layers, Stamp, UserRound } from "lucide-react";
+import { Inbox, Layers, Scale, Stamp } from "lucide-react";
 
 import type { OverviewStateCounts } from "@/features/overview/lib";
 import {
   stateLineCampaignsInProgress,
-  stateLineNeedHuman,
+  stateLineNeedHumanForPersona,
   stateLineShippedException,
 } from "@/features/overview/overview-copy";
+import type { PersonaId } from "@/features/shell/types";
 
 function StatCount({
   value,
@@ -50,18 +51,28 @@ function StatCount({
   );
 }
 
+function stateLineNeedHumanIcon(personaId: PersonaId): ReactElement {
+  return personaId === "meera" ? (
+    <Scale className="size-3.5" />
+  ) : (
+    <Inbox className="size-3.5" />
+  );
+}
+
 export function StateLine({
   counts,
+  personaId,
 }: {
   counts: OverviewStateCounts;
+  personaId: PersonaId;
 }): ReactElement {
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
       <StatCount
         value={counts.needHuman}
-        label={stateLineNeedHuman(counts.needHuman)}
+        label={stateLineNeedHumanForPersona(counts.needHuman, personaId)}
         href="#needs-you"
-        icon={<UserRound className="size-3.5" />}
+        icon={stateLineNeedHumanIcon(personaId)}
       />
       <span className="text-xs text-fg-muted">·</span>
       <StatCount
