@@ -7,7 +7,7 @@ import type { PersonaId, SessionActor } from "@/features/shell/types";
 
 export const SESSION_ACTOR_STORAGE_KEY = "preflight.sessionActor";
 
-export type PersonaLandingKind = "assets" | "campaign";
+export const PERSONA_HOME_PATH = "/overview";
 
 const PERSONA_CATALOG: Record<
   PersonaId,
@@ -20,10 +20,6 @@ const PERSONA_CATALOG: Record<
 export function sessionActorFromPersonaId(id: PersonaId): SessionActor {
   const entry = PERSONA_CATALOG[id];
   return { id, name: entry.name, role: entry.role };
-}
-
-export function landingKind(id: PersonaId): PersonaLandingKind {
-  return id === "arjun" ? "assets" : "campaign";
 }
 
 function isPersonaId(value: unknown): value is PersonaId {

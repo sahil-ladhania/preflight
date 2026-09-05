@@ -39,7 +39,9 @@ import {
   WorkbenchPrefetchErrorDemo,
   WorkbenchStates,
 } from "@/design-proof/WorkbenchStates";
+import { OverviewEmptyQueueDemo } from "@/design-proof/OverviewStates";
 import { WorkbenchRoute } from "@/features/workbench/Workbench";
+import { OverviewRoute } from "@/features/overview/Overview";
 import { LoginRoute } from "@/features/login/Login";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/features/shell/AppSidebar";
@@ -97,6 +99,7 @@ export default function App(): ReactElement {
               />
               <Route element={<ShellFrame />}>
                 <Route index element={<PersonaHomeRedirect />} />
+                <Route path="overview" element={<OverviewRoute />} />
                 <Route path="assets" element={<AssetsListRoute />} />
                 <Route path="campaign/:campaignId" element={<CampaignRoute />} />
                 <Route path="rulebook" element={<RulebookRoute />} />
@@ -183,6 +186,10 @@ export default function App(): ReactElement {
               <Route
                 path="design-proof/workbench/handoff-suggested"
                 element={<WorkbenchHandoffSuggestedDemo />}
+              />
+              <Route
+                path="design-proof/overview/empty-queue"
+                element={<OverviewEmptyQueueDemo />}
               />
               <Route path="*" element={<NotFound />} />
             </Route>

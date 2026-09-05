@@ -1,22 +1,18 @@
 /**
- * usePersonaHomeNavigation — wordmark and 404 home follow persona landing.
- * Why: Meera resolves latest campaign; Arjun opens the asset register.
+ * usePersonaHomeNavigation — wordmark and 404 home open Overview.
+ * Why: both personas land on the same operation-wide register first.
  */
 
 import { useCallback, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { resolveWorkbenchCampaignHandoff } from "@/features/shell/campaign-nav.service";
-import { landingKind } from "@/features/shell/persona";
+import { PERSONA_HOME_PATH } from "@/features/shell/persona";
 import { usePersona } from "@/features/shell/PersonaProvider";
-import { useToastContext } from "@/features/shell/ToastHost";
 import type { PersonaHomeNavigation } from "@/features/shell/types";
-import { ApiClientError } from "@/lib/api";
 
 export function usePersonaHomeNavigation(): PersonaHomeNavigation {
   const navigate = useNavigate();
   const { actor } = usePersona();
-  const { enqueue } = useToastContext();
   const [navigatingHome, setNavigatingHome] = useState<boolean>(false);
   const guardRef = useRef<boolean>(false);
 
@@ -25,40 +21,15 @@ export function usePersonaHomeNavigation(): PersonaHomeNavigation {
       return;
     }
 
-    if (landingKind(actor.id) === "assets") {
-      void navigate("/assets");
-      return;
-    }
-
     guardRef.current = true;
     setNavigatingHome(true);
-    const controller = new AbortController();
-
     try {
-      const campaignId = await resolveWorkbenchCampaignHandoff(controller.signal);
-      if (controller.signal.aborted) {
-        return;
-      }
-      void navigate(`/campaign/${campaignId}`);
-    } catch (error: unknown) {
-      if (controller.signal.aborted) {
-        return;
-      }
-      if (error instanceof ApiClientError && error.kind === "abort") {
-        return;
-      }
-      if (error instanceof ApiClientError) {
-        enqueue(error.apiError ?? error.message);
-        return;
-      }
-      if (error instanceof Error) {
-        enqueue(error.message);
-      }
+      void navigate(PERSONA_HOME_PATH);
     } finally {
       guardRef.current = false;
       setNavigatingHome(false);
     }
-  }, [actor, enqueue, navigate, navigatingHome]);
+  }, [actor, navigate, navigatingHome]);
 
   return { navigatingHome, goHome };
 }

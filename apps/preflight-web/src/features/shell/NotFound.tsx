@@ -5,16 +5,12 @@
 
 import type { ReactElement } from "react";
 
-import { landingKind } from "@/features/shell/persona";
-import { usePersona } from "@/features/shell/PersonaProvider";
 import { usePersonaHomeNavigation } from "@/features/shell/usePersonaHomeNavigation";
 
 export function NotFound(): ReactElement {
-  const { actor } = usePersona();
   const { navigatingHome, goHome } = usePersonaHomeNavigation();
 
-  const homeLabel =
-    actor !== null && landingKind(actor.id) === "assets" ? "Assets" : "Campaign";
+  const homeLabel = "Overview";
 
   return (
     <div className="flex min-h-below-topbar items-center justify-center px-4">

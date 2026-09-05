@@ -175,11 +175,11 @@ describe("ssoErrorFromSearch", () => {
 });
 
 describe("loginDestinationForPersona", () => {
-  it("sends Arjun to assets by default", () => {
-    expect(loginDestinationForPersona("arjun", undefined)).toBe("/assets");
+  it("sends Arjun to Overview by default", () => {
+    expect(loginDestinationForPersona("arjun", undefined)).toBe("/overview");
   });
 
-  it("ignores campaign deep link for Arjun", () => {
+  it("honours campaign deep link for Arjun", () => {
     expect(
       loginDestinationForPersona("arjun", {
         pathname: "/campaign/abc",
@@ -188,7 +188,7 @@ describe("loginDestinationForPersona", () => {
         state: null,
         key: "test",
       }),
-    ).toBe("/assets");
+    ).toBe("/campaign/abc");
   });
 
   it("honours asset deep link for Arjun", () => {
@@ -203,7 +203,7 @@ describe("loginDestinationForPersona", () => {
     ).toBe("/assets/xyz");
   });
 
-  it("resolves campaign for Meera when from is root", () => {
+  it("sends Meera to Overview when from is root", () => {
     expect(
       loginDestinationForPersona("meera", {
         pathname: "/",
@@ -212,6 +212,6 @@ describe("loginDestinationForPersona", () => {
         state: null,
         key: "test",
       }),
-    ).toBe("resolve-campaign");
+    ).toBe("/overview");
   });
 });

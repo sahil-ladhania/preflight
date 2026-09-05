@@ -214,6 +214,8 @@
   /* -- Depth / shadow (08 Phase 0, consumed in Phase 6) -------------------- */
   --shadow-lift: 0 1px 2px rgba(28, 26, 23, 0.06),
     0 8px 24px rgba(28, 26, 23, 0.06);
+  --shadow-region: 0 1px 1px rgba(28, 26, 23, 0.04),
+    0 2px 6px rgba(28, 26, 23, 0.03);
   --shadow-thread-scroll: inset 0 6px 6px -6px rgba(28, 26, 23, 0.05);
 
   /* -- Colour: channel preview (08 §3.6) ------------------------------------
@@ -226,6 +228,13 @@
   --color-preview-ink-muted: #4a5568;
   --color-preview-ink-faint: #64748b;
   --color-preview-on-brand: #ffffff;
+
+  /* -- Colour: Overview chart (08 §13 #26) ---------------------------------- */
+  --color-chart-line: var(--color-fg);
+  --color-chart-axis: var(--color-fg-muted);
+  --color-chart-grid: var(--color-hairline);
+  --color-chart-baseline: var(--color-fg-muted);
+  --color-chart-1: var(--color-fg);
 
   /* -- shadcn compatibility aliases -----------------------------------------
      NOT part of the design vocabulary. The seven vendored components in

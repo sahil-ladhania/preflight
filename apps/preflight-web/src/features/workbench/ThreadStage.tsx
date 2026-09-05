@@ -9,6 +9,7 @@ import type { RuleCatalogRowDTO } from "@preflight/schemas";
 import { BriefReadiness } from "@/features/workbench/BriefReadiness";
 import { Thread } from "@/features/workbench/Thread";
 import type { WorkbenchMessage, WorkbenchProps } from "@/features/workbench/types";
+import { useBriefRailLatch } from "@/features/workbench/useBriefRailLatch";
 import { useThreadScrollFade } from "@/features/workbench/useThreadScrollFade";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +37,11 @@ export function ThreadStage({
   onGoToCampaign,
 }: ThreadStageProps): ReactElement {
   const { scrollRef, showTopFade, onScroll } = useThreadScrollFade(messages.length);
+  const showBriefRail = useBriefRailLatch(
+    messages,
+    briefReadiness?.capturedCount ?? 0,
+    scrollRef,
+  );
 
   const scrollToEnd = useCallback((): void => {
     const el = scrollRef.current;
@@ -46,8 +52,18 @@ export function ThreadStage({
   }, [scrollRef]);
 
   return (
-    <div className="relative z-10 mx-auto flex h-full min-h-0 w-full max-w-7xl gap-8 px-8 pb-6 pt-6">
-      <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
+    <div
+      className={cn(
+        "relative z-10 mx-auto flex h-full min-h-0 w-full px-8 pb-6 pt-6",
+        showBriefRail ? "max-w-7xl gap-8" : "max-w-workbench",
+      )}
+    >
+      <div
+        className={cn(
+          "flex h-full min-h-0 min-w-0 flex-col",
+          showBriefRail ? "w-full max-w-workbench shrink-0" : "flex-1",
+        )}
+      >
         <div className="relative min-h-0 flex-1">
           <div
             className={cn(
@@ -79,22 +95,24 @@ export function ThreadStage({
         </div>
       </div>
 
-      <aside
-        aria-label="Campaign Brief"
-        className="sticky top-0 w-[320px] shrink-0 self-start overflow-y-auto border-l border-hairline pl-8"
-      >
-        <BriefReadiness
-          capturedCount={briefReadiness?.capturedCount ?? 0}
-          missing={briefReadiness?.missing ?? []}
-          complete={briefReadiness?.complete ?? false}
-          captured={briefReadiness?.captured}
-          handoffEnabled={handoffEnabled}
-          handoffInFlight={handoffInFlight}
-          handoffDisabledCaption={handoffDisabledCaption}
-          onStartCampaignFromConversation={onStartCampaign}
-          onGoToCampaign={onGoToCampaign}
-        />
-      </aside>
+      {showBriefRail ? (
+        <aside
+          aria-label="Campaign Brief"
+          className="sticky top-0 w-[320px] shrink-0 self-start overflow-y-auto border-l border-hairline pl-8"
+        >
+          <BriefReadiness
+            capturedCount={briefReadiness?.capturedCount ?? 0}
+            missing={briefReadiness?.missing ?? []}
+            complete={briefReadiness?.complete ?? false}
+            captured={briefReadiness?.captured}
+            handoffEnabled={handoffEnabled}
+            handoffInFlight={handoffInFlight}
+            handoffDisabledCaption={handoffDisabledCaption}
+            onStartCampaignFromConversation={onStartCampaign}
+            onGoToCampaign={onGoToCampaign}
+          />
+        </aside>
+      ) : null}
     </div>
   );
 }

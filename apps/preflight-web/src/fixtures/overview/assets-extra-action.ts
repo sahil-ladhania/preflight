@@ -1,0 +1,96 @@
+/**
+ * assets-extra-action — non-clear Overview assets beyond seed A–H.
+ * Why: exceptions, queue, and blocked rows in one bounded fixture file.
+ */
+
+import type { AssetListItemDTO } from "@preflight/schemas";
+
+import {
+  AXIS,
+  ICICI,
+  KOTAK,
+  NIPPON,
+  overviewAssetRow,
+  SBI,
+} from "@/fixtures/overview/assets-extra-lib";
+
+export const OVERVIEW_ASSETS_EXTRA_ACTION: AssetListItemDTO[] = [
+  overviewAssetRow({
+    id: "ov-exc-001-4111-8111-000000000001",
+    campaignId: NIPPON,
+    campaignName: "Nippon India Small Cap Fund",
+    channel: "linkedin",
+    headline: "Nippon Small Cap — LinkedIn thought leadership post",
+    status: "cleared_with_exception",
+    generationIndex: 1,
+    regeneratedFromId: null,
+    generatedAt: "2026-02-18T10:00:00.000Z",
+    pendingCount: 0,
+    statusDetail: "1 waived exception(s)",
+  }),
+  overviewAssetRow({
+    id: "ov-exc-002-4111-8111-000000000002",
+    campaignId: ICICI,
+    campaignName: "ICICI Prudential Value Discovery Fund",
+    channel: "email",
+    headline: "ICICI Value Discovery — email performance update",
+    status: "cleared_with_exception",
+    generationIndex: 1,
+    regeneratedFromId: null,
+    generatedAt: "2026-01-29T08:30:00.000Z",
+    pendingCount: 0,
+    statusDetail: "1 waived exception(s)",
+  }),
+  overviewAssetRow({
+    id: "ov-exc-003-4111-8111-000000000003",
+    campaignId: KOTAK,
+    campaignName: "Kotak Emerging Equity Fund",
+    channel: "whatsapp",
+    headline: "Kotak Emerging Equity — WhatsApp broadcast",
+    status: "cleared_with_exception",
+    generationIndex: 1,
+    regeneratedFromId: null,
+    generatedAt: "2025-12-06T15:00:00.000Z",
+    pendingCount: 0,
+    statusDetail: "1 waived exception(s)",
+  }),
+  overviewAssetRow({
+    id: "ov-nh-001-4111-8111-000000000001",
+    campaignId: NIPPON,
+    campaignName: "Nippon India Small Cap Fund",
+    channel: "display",
+    headline: "Nippon Small Cap — display retargeting banner",
+    status: "needs_human",
+    generationIndex: 1,
+    regeneratedFromId: null,
+    generatedAt: "2026-03-10T09:00:00.000Z",
+    pendingCount: 0,
+    statusDetail: "Review: SEBI-06",
+  }),
+  overviewAssetRow({
+    id: "ov-block-001-4111-8111-000000000001",
+    campaignId: SBI,
+    campaignName: "SBI Magnum Gilt Fund",
+    channel: "landing",
+    headline: "SBI Magnum Gilt — landing page hero",
+    status: "blocked",
+    generationIndex: 1,
+    regeneratedFromId: null,
+    generatedAt: "2026-03-08T14:00:00.000Z",
+    pendingCount: 0,
+    statusDetail: "Deterministic fail: SEBI-01",
+  }),
+  overviewAssetRow({
+    id: "ov-regen-001-4111-8111-000000000001",
+    campaignId: AXIS,
+    campaignName: "Axis Long Term Equity Fund (ELSS)",
+    channel: "email",
+    headline: "Axis ELSS — tax-saving season email",
+    status: "needs_regen",
+    generationIndex: 1,
+    regeneratedFromId: null,
+    generatedAt: "2026-03-07T11:00:00.000Z",
+    pendingCount: 0,
+    statusDetail: "Confirmed fail: BRAND-03",
+  }),
+];

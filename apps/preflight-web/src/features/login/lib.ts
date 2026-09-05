@@ -186,18 +186,11 @@ function pathFromLocation(from: Location): string {
   return `${from.pathname}${from.search}${from.hash}`;
 }
 
-/** Arjun opens on the register; Meera resolves latest campaign unless deep-linked. */
+/** Both personas open Overview unless deep-linked elsewhere. */
 export function loginDestinationForPersona(
-  personaId: PersonaId,
+  _personaId: PersonaId,
   from: Location | undefined,
-): string | "resolve-campaign" {
-  if (personaId === "arjun") {
-    if (from !== undefined && from.pathname.startsWith("/assets")) {
-      return pathFromLocation(from);
-    }
-    return "/assets";
-  }
-
+): string {
   if (
     from !== undefined &&
     from.pathname !== "/" &&
@@ -206,5 +199,5 @@ export function loginDestinationForPersona(
     return pathFromLocation(from);
   }
 
-  return "resolve-campaign";
+  return "/overview";
 }

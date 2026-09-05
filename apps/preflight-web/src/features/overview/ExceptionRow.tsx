@@ -1,0 +1,34 @@
+/**
+ * ExceptionRow — one standing waiver record for Overview.
+ * Why: record not alarm; serif italic for human words.
+ */
+
+import type { ReactElement } from "react";
+import { Link } from "react-router-dom";
+
+import { formatGeneratedAt } from "@/features/assets/lib";
+import type { OverviewExceptionRow } from "@/features/overview/types";
+
+export function ExceptionRow({
+  row,
+}: {
+  row: OverviewExceptionRow;
+}): ReactElement {
+  return (
+    <Link
+      to={`/assets/${row.assetId}`}
+      className="flex flex-col gap-2 border-b border-hairline px-3 py-4 no-underline hover:bg-hover"
+    >
+      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+        <span className="font-mono text-mono-meta text-fg">{row.ruleId}</span>
+        <span className="font-serif text-serif-row text-fg">{row.headline}</span>
+      </div>
+      <p className="text-caption text-fg-muted">
+        {row.humanActor} · {formatGeneratedAt(row.humanAt)}
+      </p>
+      <p className="font-serif text-copy italic text-fg">
+        &ldquo;{row.humanReason}&rdquo;
+      </p>
+    </Link>
+  );
+}
