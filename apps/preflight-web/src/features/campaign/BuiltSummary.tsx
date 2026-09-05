@@ -3,7 +3,8 @@
  * Why: only screen that answers whether the campaign set is ready to ship.
  */
 
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
+import { ArrowRight, ClipboardList, Layers, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import type { AssetListItemDTO, CompileResponseDTO, StructuredBriefInput } from "@preflight/schemas";
@@ -25,6 +26,23 @@ export interface BuiltSummaryProps {
   assets: AssetListItemDTO[];
   onEditBrief: () => void;
   onViewFreeze: () => void;
+}
+
+function SectionHeading({
+  children,
+  icon,
+}: {
+  children: string;
+  icon: ReactNode;
+}): ReactElement {
+  return (
+    <h2 className="inline-flex items-center gap-2 font-sans text-label-strong uppercase tracking-wider text-fg-muted">
+      <span className="shrink-0 text-fg-muted" aria-hidden>
+        {icon}
+      </span>
+      {children}
+    </h2>
+  );
 }
 
 function TertiaryLink({
@@ -66,9 +84,9 @@ export function BuiltSummary({
       <div className="flex flex-col gap-7">
         <section className="flex flex-col gap-3">
           <div className="flex items-baseline gap-3">
-            <h2 className="font-sans text-label-strong uppercase tracking-wider text-fg-muted">
+            <SectionHeading icon={<ClipboardList className="size-3.5" />}>
               Brief summary
-            </h2>
+            </SectionHeading>
             <TertiaryLink onClick={onEditBrief}>Edit brief</TertiaryLink>
           </div>
           <div className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2 border border-hairline bg-surface p-4">
@@ -114,17 +132,17 @@ export function BuiltSummary({
 
         <section className="flex flex-col gap-2">
           <div className="flex items-baseline gap-3">
-            <h2 className="font-sans text-label-strong uppercase tracking-wider text-fg-muted">
-              Frozen rules ({ruleCount}) · {hash.length > 0 ? shortHash(hash) : "—"}
-            </h2>
+            <SectionHeading icon={<Lock className="size-3.5" />}>
+              {`Frozen rules (${ruleCount}) · ${hash.length > 0 ? shortHash(hash) : "—"}`}
+            </SectionHeading>
             <TertiaryLink onClick={onViewFreeze}>View</TertiaryLink>
           </div>
         </section>
 
         <section className="flex flex-col gap-3">
-          <h2 className="font-sans text-label-strong uppercase tracking-wider text-fg-muted">
+          <SectionHeading icon={<Layers className="size-3.5" />}>
             Assets in this campaign
-          </h2>
+          </SectionHeading>
           <div className="flex h-[220px] flex-col overflow-y-auto border-t border-hairline">
             {assets.map((asset) => (
               <button
@@ -162,12 +180,13 @@ export function BuiltSummary({
             </span>
             <button
               type="button"
-              className="cursor-pointer font-sans text-caption text-fg underline underline-offset-4 hover:text-primary"
+              className="inline-flex cursor-pointer items-center gap-1 font-sans text-caption text-fg underline underline-offset-4 hover:text-primary"
               onClick={() => {
                 void navigate("/assets");
               }}
             >
-              View in Asset Register →
+              View in Asset Register
+              <ArrowRight className="size-3 shrink-0" aria-hidden="true" />
             </button>
           </div>
         ) : progress.length > 0 ? (

@@ -47,7 +47,8 @@ export function BriefReadiness({
   return (
     <div className="flex flex-col gap-5 text-left">
       <div className="flex flex-col gap-1">
-        <span className="text-label-strong uppercase tracking-wider text-fg-muted">
+        <span className="inline-flex items-center gap-1.5 text-label-strong uppercase tracking-wider text-fg-muted">
+          <ClipboardList className="size-3.5 shrink-0" aria-hidden />
           Campaign Brief
         </span>
         <div className="mt-0.5 flex items-baseline gap-1.5">
@@ -64,6 +65,7 @@ export function BriefReadiness({
         {REQUIRED_BRIEF_FIELDS.map(({ key, label }) => (
           <BriefFieldRow
             key={key}
+            fieldKey={key}
             label={label}
             value={formatBriefFieldValue(key, captured)}
             ariaSuffix="not yet captured"
@@ -78,6 +80,7 @@ export function BriefReadiness({
         {OPTIONAL_BRIEF_FIELDS.map(({ key, label }) => (
           <BriefFieldRow
             key={key}
+            fieldKey={key}
             label={label}
             value={formatBriefFieldValue(key, captured)}
             optional

@@ -3,7 +3,7 @@
  * Why: 09 Screen 3 max-w 1024, 32px padding, Built back link.
  */
 
-import { Loader2, Plus } from "lucide-react";
+import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import type { ReactElement, ReactNode } from "react";
 
 import { PageHeader } from "@/components/ui/page-header";
@@ -49,7 +49,7 @@ export function CampaignPageShell({
   const eyebrow = isBuilt ? "CAMPAIGN" : undefined;
 
   return (
-    <div className="flex min-h-below-topbar flex-col bg-ground px-8 pt-8 pb-12">
+    <div className="flex min-h-below-topbar flex-col bg-ground px-8 pt-8 pb-16">
       <div className="mx-auto flex w-full max-w-campaign flex-1 flex-col">
         <PageHeader
           eyebrow={eyebrow}
@@ -80,10 +80,11 @@ export function CampaignPageShell({
         {backToSummary && onBackToSummary !== undefined ? (
           <button
             type="button"
-            className="mt-4 w-fit cursor-pointer text-caption text-fg-muted hover:text-fg"
+            className="mt-4 inline-flex w-fit cursor-pointer items-center gap-1.5 text-caption text-fg-muted hover:text-fg"
             onClick={onBackToSummary}
           >
-            ← Back to summary
+            <ArrowLeft className="size-3.5 shrink-0" aria-hidden="true" />
+            Back to summary
           </button>
         ) : null}
 

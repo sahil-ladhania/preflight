@@ -4,6 +4,7 @@
  */
 
 import type { MouseEvent, ReactElement } from "react";
+import { GitBranch } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
@@ -49,6 +50,9 @@ function VersionCell({
         onOpenLineage && "cursor-pointer hover:text-fg",
       )}
     >
+      {onOpenLineage ? (
+        <GitBranch className="size-3 shrink-0" aria-hidden="true" />
+      ) : null}
       {generationIndex > 1 ? (
         <Badge
           variant="outline"

@@ -4,12 +4,26 @@
  */
 
 import type { ReactElement } from "react";
+import {
+  AlignLeft,
+  MousePointerClick,
+  ShieldCheck,
+  Type,
+  type LucideIcon,
+} from "lucide-react";
 
 import type { FindingDTO } from "@preflight/schemas";
 
 import type { SpanSegment } from "@/features/assets/types";
 import { findingById, isFailFinding } from "@/features/assets/lib";
 import { cn } from "@/lib/utils";
+
+const COPY_FIELD_ICONS: Record<string, LucideIcon> = {
+  Headline: Type,
+  Body: AlignLeft,
+  Disclaimer: ShieldCheck,
+  CTA: MousePointerClick,
+};
 
 function segmentText(segments: SpanSegment[]): string {
   return segments.map((segment) => segment.text).join("");
@@ -42,10 +56,14 @@ export function AssetCopyField({
 }): ReactElement {
   const text = segmentText(segments);
   const isEmpty = text.trim().length === 0;
+  const Icon = COPY_FIELD_ICONS[label];
 
   return (
     <div className="flex flex-col gap-1.5 py-2">
-      <p className="font-sans text-label uppercase tracking-[0.04em] text-fg-muted">
+      <p className="inline-flex items-center gap-1.5 font-sans text-label uppercase tracking-[0.04em] text-fg-muted">
+        {Icon !== undefined ? (
+          <Icon className="size-3.5 shrink-0" aria-hidden />
+        ) : null}
         {label}
       </p>
       {isEmpty ? (

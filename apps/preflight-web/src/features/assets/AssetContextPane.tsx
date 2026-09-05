@@ -3,7 +3,8 @@
  * Why: read-only whole-asset context and proof metadata (09 Screen 1).
  */
 
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
+import { Bot, Flag, Layers, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import type { RerunStripDTO } from "@preflight/schemas";
@@ -15,6 +16,23 @@ import { formatContextSubtitle, shortId } from "@/features/assets/lib";
 import { LineageBanner } from "@/features/assets/LineageBanner";
 import { RerunStrip } from "@/features/assets/RerunStrip";
 import type { AssetDetailFixture } from "@/features/assets/types";
+
+function ContextFieldLabel({
+  label,
+  icon,
+}: {
+  label: string;
+  icon: ReactNode;
+}): ReactElement {
+  return (
+    <span className="inline-flex items-center gap-1.5 font-sans text-label uppercase tracking-[0.04em] text-fg-muted">
+      <span className="shrink-0 text-fg-muted" aria-hidden>
+        {icon}
+      </span>
+      {label}
+    </span>
+  );
+}
 
 export interface AssetContextPaneProps {
   asset: AssetDetailFixture;
@@ -41,7 +59,8 @@ export function AssetContextPane({
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pt-4 pb-5">
         {/* Column 1 Horizon Header */}
         <div className="flex h-7 shrink-0 items-center">
-          <span className="font-sans text-label-strong uppercase tracking-[0.06em] text-fg-muted">
+          <span className="inline-flex items-center gap-1.5 font-sans text-label-strong uppercase tracking-[0.06em] text-fg-muted">
+            <Layers className="size-3.5 shrink-0" aria-hidden />
             Context
           </span>
         </div>
@@ -69,9 +88,10 @@ export function AssetContextPane({
 
           {/* 4. Campaign link - neutral link treatment per C2 */}
           <div className="flex flex-col gap-0.5">
-            <span className="font-sans text-label uppercase tracking-[0.04em] text-fg-muted">
-              Campaign
-            </span>
+            <ContextFieldLabel
+              label="Campaign"
+              icon={<Flag className="size-3.5" />}
+            />
             <Link
               to={`/campaign/${asset.campaignId}`}
               className="font-sans text-caption text-fg-muted underline underline-offset-4 hover:text-fg truncate"
@@ -83,9 +103,10 @@ export function AssetContextPane({
 
           {/* 5. Rules frozen */}
           <div className="flex flex-col gap-0.5">
-            <span className="font-sans text-label uppercase tracking-[0.04em] text-fg-muted">
-              Rules frozen
-            </span>
+            <ContextFieldLabel
+              label="Rules frozen"
+              icon={<Lock className="size-3.5" />}
+            />
             <p className="font-mono text-mono-meta text-fg-muted">
               {asset.findings.length} rules
             </p>
@@ -93,9 +114,10 @@ export function AssetContextPane({
 
           {/* 6. Provenance (A5) */}
           <div className="flex flex-col gap-0.5">
-            <span className="font-sans text-label uppercase tracking-[0.04em] text-fg-muted">
-              Provenance
-            </span>
+            <ContextFieldLabel
+              label="Provenance"
+              icon={<Bot className="size-3.5" />}
+            />
             <AgentRunBadge
               run={asset.generatorRun}
               generatedAt={asset.generatedAt}

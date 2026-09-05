@@ -4,6 +4,7 @@
  */
 
 import { useState, type ReactElement } from "react";
+import { ArrowLeftRight, Cpu, PenLine, Scale } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -84,7 +85,15 @@ export function ReasonModal({
         className={modalShellClass}
       >
         <DialogHeader className="gap-0">
-          <DialogTitle className="font-serif text-sheet-title text-fg">
+          <DialogTitle className="inline-flex items-center gap-2 font-serif text-sheet-title text-fg">
+            {mode === "waive" ? (
+              <Scale className="size-3.5 shrink-0 text-fg-muted" aria-hidden />
+            ) : (
+              <ArrowLeftRight
+                className="size-3.5 shrink-0 text-fg-muted"
+                aria-hidden
+              />
+            )}
             {title}
           </DialogTitle>
         </DialogHeader>
@@ -96,15 +105,19 @@ export function ReasonModal({
             <p className="font-serif text-copy text-fg">{frozenWording}</p>
           ) : null}
           {machineReason !== null && machineReason !== undefined ? (
-            <p className="font-sans text-caption font-normal text-fg-muted">
-              Machine finding: {machineReason}
+            <p className="inline-flex items-start gap-1.5 font-sans text-caption font-normal text-fg-muted">
+              <Cpu className="size-3.5 shrink-0 text-fg-muted" aria-hidden />
+              <span>
+                Machine finding: {machineReason}
+              </span>
             </p>
           ) : null}
           <div className="flex flex-col gap-2">
             <label
               htmlFor="reason"
-              className="font-sans text-label uppercase tracking-[0.04em] text-fg-muted"
+              className="inline-flex items-center gap-1.5 font-sans text-label uppercase tracking-[0.04em] text-fg-muted"
             >
+              <PenLine className="size-3.5 shrink-0" aria-hidden />
               Reason (required)
             </label>
             <Textarea

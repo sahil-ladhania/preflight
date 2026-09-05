@@ -2,9 +2,20 @@
  * JudgementSheet — R3 add/edit form.
  * Why: R4 delete confirm for judgement rules.
  */
+// size: add/edit sheet + impact blocks; extract worse than one local label helper
 
-import type { ReactElement } from "react";
-import { Loader2 } from "lucide-react";
+import type { ReactElement, ReactNode } from "react";
+import {
+  GitCompareArrows,
+  Info,
+  ListFilter,
+  Loader2,
+  PenLine,
+  Pencil,
+  Quote,
+  Scale,
+  Trash2,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -29,6 +40,28 @@ import type { JudgementSheetProps } from "@/features/rulebook/types";
 const ADD_BANNER =
   "Judgement rules are LLM-evaluated and editable here. Deterministic rules are defined in code and read-only in the table.";
 
+function SheetFieldLabel({
+  htmlFor,
+  label,
+  icon,
+}: {
+  htmlFor?: string;
+  label: string;
+  icon: ReactNode;
+}): ReactElement {
+  return (
+    <Label
+      htmlFor={htmlFor}
+      className="inline-flex items-center gap-1.5 font-sans text-[11px] font-normal uppercase tracking-[0.04em] text-fg-muted"
+    >
+      <span className="shrink-0 text-fg-muted" aria-hidden>
+        {icon}
+      </span>
+      {label}
+    </Label>
+  );
+}
+
 export function JudgementSheet({
   mode,
   rule,
@@ -51,7 +84,8 @@ export function JudgementSheet({
             {isAdd ? (
               <>
                 <div className="flex flex-col gap-0.5">
-                  <h2 className="font-serif text-sheet-title font-semibold text-fg">
+                  <h2 className="inline-flex items-center gap-2 font-serif text-sheet-title font-semibold text-fg">
+                    <Scale className="size-3.5 shrink-0 text-fg-muted" aria-hidden />
                     New judgement rule
                   </h2>
                   <span className="font-mono text-[11px] text-fg-muted">
@@ -59,28 +93,34 @@ export function JudgementSheet({
                   </span>
                 </div>
                 <Card className="rounded-none border border-border bg-surface p-3 shadow-none">
-                  <p className="font-sans text-caption leading-relaxed text-fg">
-                    {ADD_BANNER}
-                  </p>
+                  <div className="flex gap-2.5">
+                    <Info
+                      className="size-3.5 shrink-0 text-fg-muted"
+                      aria-hidden
+                    />
+                    <p className="font-sans text-caption leading-relaxed text-fg">
+                      {ADD_BANNER}
+                    </p>
+                  </div>
                 </Card>
               </>
             ) : null}
 
             {!isAdd && rule !== null ? (
               <div className="flex flex-col gap-0.5">
-                <h2 className="font-mono text-mono-meta font-semibold text-fg">
+                <h2 className="inline-flex items-center gap-2 font-mono text-mono-meta font-semibold text-fg">
+                  <Pencil className="size-3 shrink-0 text-fg-muted" aria-hidden />
                   {rule.ruleId}
                 </h2>
               </div>
             ) : null}
 
             <div className="flex flex-col gap-1.5">
-              <Label
+              <SheetFieldLabel
                 htmlFor="wording"
-                className="font-sans text-[11px] font-normal uppercase tracking-[0.04em] text-fg-muted"
-              >
-                Wording
-              </Label>
+                label="Wording"
+                icon={<Quote className="size-3.5" />}
+              />
               <Textarea
                 id="wording"
                 value={form.wording}
@@ -94,9 +134,10 @@ export function JudgementSheet({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label className="font-sans text-[11px] font-normal uppercase tracking-[0.04em] text-fg-muted">
-                Applicability
-              </Label>
+              <SheetFieldLabel
+                label="Applicability"
+                icon={<ListFilter className="size-3.5" />}
+              />
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 <Select
                   value={form.field}
@@ -157,25 +198,39 @@ export function JudgementSheet({
 
             {isAdd ? (
               <Card className="rounded-none border border-dashed border-border bg-surface/40 p-3 shadow-none">
-                <p className="font-sans text-caption leading-relaxed text-fg-muted">
-                  New rule — no assets can cite it until this is saved.
-                </p>
+                <div className="flex gap-2.5">
+                  <Info
+                    className="size-3.5 shrink-0 text-fg-muted"
+                    aria-hidden
+                  />
+                  <p className="font-sans text-caption leading-relaxed text-fg-muted">
+                    New rule — no assets can cite it until this is saved.
+                  </p>
+                </div>
               </Card>
             ) : (
               <Card className="rounded-none border border-border bg-surface/40 p-3 shadow-none">
-                <p className="font-sans text-caption leading-relaxed text-fg">
-                  3 assets currently cite this wording. Editing it does not change their ledgers — they keep the wording frozen at their compile. The difference will show on each asset&apos;s re-run strip as drift.
-                </p>
+                <div className="flex gap-2.5">
+                  <GitCompareArrows
+                    className="size-3.5 shrink-0 text-fg-muted"
+                    aria-hidden
+                  />
+                  <p className="font-sans text-caption leading-relaxed text-fg">
+                    3 assets currently cite this wording. Editing it does not
+                    change their ledgers — they keep the wording frozen at their
+                    compile. The difference will show on each asset&apos;s
+                    re-run strip as drift.
+                  </p>
+                </div>
               </Card>
             )}
 
             <div className="flex flex-col gap-1.5">
-              <Label
+              <SheetFieldLabel
                 htmlFor="change-reason"
-                className="font-sans text-[11px] font-normal uppercase tracking-[0.04em] text-fg-muted"
-              >
-                Change reason
-              </Label>
+                label="Change reason"
+                icon={<PenLine className="size-3.5" />}
+              />
               <Textarea
                 id="change-reason"
                 value={form.changeReason}
@@ -195,10 +250,11 @@ export function JudgementSheet({
             <Button
               type="button"
               variant="destructive"
-              className="h-8 rounded-none border-0 bg-transparent px-2 font-sans text-button text-fail shadow-none hover:bg-fail-wash"
+              className="inline-flex h-8 items-center gap-1.5 rounded-none border-0 bg-transparent px-2 font-sans text-button text-fail shadow-none hover:bg-fail-wash"
               disabled={disabled}
               onClick={onDelete}
             >
+              <Trash2 className="size-3 shrink-0" aria-hidden />
               Delete
             </Button>
           ) : (

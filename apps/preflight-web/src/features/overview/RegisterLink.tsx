@@ -4,6 +4,7 @@
  */
 
 import type { ReactElement } from "react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { cn } from "@/lib/utils";
@@ -17,11 +18,12 @@ export function RegisterLink({
     <Link
       to="/assets"
       className={cn(
-        "font-sans text-micro font-normal normal-case tracking-normal text-fg underline underline-offset-2 hover:text-fg-muted",
+        "inline-flex items-center gap-1 font-sans text-micro font-normal normal-case tracking-normal text-fg underline underline-offset-2 hover:text-fg-muted",
         className,
       )}
     >
-      View all in Asset Register →
+      View all in Asset Register
+      <ArrowRight className="size-3 shrink-0" aria-hidden="true" />
     </Link>
   );
 }

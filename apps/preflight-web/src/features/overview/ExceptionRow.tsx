@@ -4,6 +4,7 @@
  */
 
 import type { ReactElement } from "react";
+import { UserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { formatGeneratedAt } from "@/features/assets/lib";
@@ -23,7 +24,8 @@ export function ExceptionRow({
         <span className="font-mono text-mono-meta text-fg">{row.ruleId}</span>
         <span className="font-serif text-serif-row text-fg">{row.headline}</span>
       </div>
-      <p className="text-caption text-fg-muted">
+      <p className="inline-flex items-center gap-1.5 text-caption text-fg-muted">
+        <UserRound className="size-3 shrink-0" aria-hidden="true" />
         {row.humanActor} · {formatGeneratedAt(row.humanAt)}
       </p>
       <p className="font-serif text-copy italic text-fg">

@@ -3,7 +3,15 @@
  * Why: extracted from FieldReview to maintain <= 200 line limit (size-and-dry.mdc).
  */
 
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
+import {
+  Globe,
+  Landmark,
+  Tags,
+  Target,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import type { BriefField, StructuredBriefInput } from "@preflight/schemas";
 
 import { Input } from "@/components/ui/input";
@@ -21,6 +29,7 @@ interface ScalarFieldConfig {
   id: BriefField;
   label: string;
   placeholder: string;
+  icon: LucideIcon;
   fullWidth?: boolean;
 }
 
@@ -29,29 +38,61 @@ const SCALAR_CONFIGS: ScalarFieldConfig[] = [
     id: "objective",
     label: "Objective",
     placeholder: "e.g. Drive awareness among digital investors",
+    icon: Target,
     fullWidth: true,
   },
   {
     id: "schemeName",
     label: "Scheme name",
     placeholder: "e.g. Bluepeak Flexi Cap Fund",
+    icon: Landmark,
   },
   {
     id: "schemeCategory",
     label: "Scheme category",
     placeholder: "e.g. Flexi Cap",
+    icon: Tags,
   },
   {
     id: "audience",
     label: "Audience",
     placeholder: "e.g. Retail investors in metro India",
+    icon: Users,
   },
   {
     id: "market",
     label: "Market",
     placeholder: "e.g. India",
+    icon: Globe,
   },
 ];
+
+function FieldLabel({
+  htmlFor,
+  label,
+  icon,
+  trailing,
+}: {
+  htmlFor: string;
+  label: string;
+  icon: ReactNode;
+  trailing?: ReactNode;
+}): ReactElement {
+  return (
+    <div className="flex items-center justify-between">
+      <Label
+        htmlFor={htmlFor}
+        className="inline-flex items-center gap-1.5 font-sans text-label font-medium uppercase tracking-wider text-fg-muted"
+      >
+        <span className="shrink-0 text-fg-muted" aria-hidden>
+          {icon}
+        </span>
+        {label}
+      </Label>
+      {trailing}
+    </div>
+  );
+}
 
 export function FieldReviewScalars({
   brief,
@@ -61,7 +102,7 @@ export function FieldReviewScalars({
 }: FieldReviewScalarsProps): ReactElement {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      {SCALAR_CONFIGS.map(({ id, label, placeholder, fullWidth }) => {
+      {SCALAR_CONFIGS.map(({ id, label, placeholder, icon: Icon, fullWidth }) => {
         const isMissing = missingSet.has(id);
         const value = (brief[id] as string) ?? "";
 
@@ -70,19 +111,18 @@ export function FieldReviewScalars({
             key={id}
             className={cn("flex flex-col gap-1.5", fullWidth && "col-span-full")}
           >
-            <div className="flex items-center justify-between">
-              <Label
-                htmlFor={id}
-                className="font-sans text-label font-medium uppercase tracking-wider text-fg-muted"
-              >
-                {label}
-              </Label>
-              {isMissing ? (
-                <span className="font-sans text-[11px] text-fg-muted">
-                  Required
-                </span>
-              ) : null}
-            </div>
+            <FieldLabel
+              htmlFor={id}
+              label={label}
+              icon={<Icon className="size-3.5" />}
+              trailing={
+                isMissing ? (
+                  <span className="font-sans text-[11px] text-fg-muted">
+                    Required
+                  </span>
+                ) : null
+              }
+            />
             <Input
               id={id}
               value={value}

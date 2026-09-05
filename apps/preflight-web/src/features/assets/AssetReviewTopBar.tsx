@@ -3,7 +3,7 @@
  * Why: replaces app sidebar on review route (08 §5.1, 09 R0).
  */
 
-import { Download } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import type { ReactElement } from "react";
 import { Link } from "react-router-dom";
 
@@ -58,7 +58,8 @@ export function AssetReviewTopBar({
           to="/assets"
           className="inline-flex shrink-0 items-center gap-1 font-sans text-caption text-[var(--color-chrome-fg-muted)] hover:text-[var(--color-chrome-fg)] hover:underline"
         >
-          <span aria-hidden="true">&larr;</span> Asset Register
+          <ChevronLeft className="size-3.5 shrink-0" aria-hidden />
+          Asset Register
         </Link>
         <span className="text-white/20 select-none">&middot;</span>
         <StatusChip status={status} surface="chrome" />
@@ -75,22 +76,22 @@ export function AssetReviewTopBar({
       <div className="flex items-center gap-2 font-sans text-caption text-[var(--color-chrome-fg)]">
         <button
           type="button"
-          className="cursor-pointer font-mono text-sm leading-none text-[var(--color-chrome-fg)] disabled:cursor-not-allowed disabled:opacity-30 hover:text-[var(--color-chrome-fg-muted)] p-0 bg-transparent border-0"
+          className="inline-flex cursor-pointer items-center p-0 border-0 bg-transparent text-[var(--color-chrome-fg)] disabled:cursor-not-allowed disabled:opacity-30 hover:text-[var(--color-chrome-fg-muted)]"
           disabled={!hasPrevAsset}
           onClick={onPrevAsset}
           aria-label="Previous asset in queue"
         >
-          &lsaquo;
+          <ChevronLeft className="size-3.5 shrink-0" aria-hidden />
         </button>
         <span className="select-none font-medium">{queueLabel}</span>
         <button
           type="button"
-          className="cursor-pointer font-mono text-sm leading-none text-[var(--color-chrome-fg)] disabled:cursor-not-allowed disabled:opacity-30 hover:text-[var(--color-chrome-fg-muted)] p-0 bg-transparent border-0"
+          className="inline-flex cursor-pointer items-center p-0 border-0 bg-transparent text-[var(--color-chrome-fg)] disabled:cursor-not-allowed disabled:opacity-30 hover:text-[var(--color-chrome-fg-muted)]"
           disabled={!hasNextAsset}
           onClick={onNextAsset}
           aria-label="Next asset in queue"
         >
-          &rsaquo;
+          <ChevronRight className="size-3.5 shrink-0" aria-hidden />
         </button>
       </div>
 

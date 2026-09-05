@@ -1,4 +1,5 @@
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
+import { CircleCheck, Inbox } from "lucide-react";
 
 import {
   Table,
@@ -10,6 +11,7 @@ import {
 import { AssetListRow } from "@/features/assets/AssetListRow";
 import { splitRegisterSections } from "@/features/assets/register-lib";
 import type { AssetsRegisterTableProps } from "@/features/assets/types";
+import { OverviewSectionHeading } from "@/features/overview/OverviewSectionHeading";
 
 function ColumnHeaderRow(): ReactElement {
   return (
@@ -40,12 +42,13 @@ function RegisterSection({
   label,
   count,
   assets,
+  icon,
   onOpenLineage,
 }: {
-  type: "needs_you" | "resolved";
   label: string;
   count: number;
   assets: AssetsRegisterTableProps["assets"];
+  icon: ReactNode;
   onOpenLineage?: (assetId: string) => void;
 }): ReactElement {
   if (assets.length === 0) {
@@ -54,14 +57,7 @@ function RegisterSection({
 
   return (
     <section className="flex flex-col gap-3">
-      <div className="flex items-baseline gap-2.5 pb-1">
-        <h2 className="font-serif text-wordmark font-semibold tracking-tight text-fg">
-          {label}
-        </h2>
-        <span className="font-mono text-xs text-fg-muted">
-          [{count}]
-        </span>
-      </div>
+      <OverviewSectionHeading title={label} count={count} icon={icon} />
       <Table>
         <TableHeader>
           <ColumnHeaderRow />
@@ -98,17 +94,17 @@ export function AssetsRegisterTable({
   return (
     <div className="flex flex-col gap-12">
       <RegisterSection
-        type="needs_you"
         label="Needs you"
         count={needsYou.length}
         assets={needsYou}
+        icon={<Inbox className="size-4" />}
         onOpenLineage={onOpenLineage}
       />
       <RegisterSection
-        type="resolved"
         label="Resolved"
         count={resolved.length}
         assets={resolved}
+        icon={<CircleCheck className="size-4" />}
         onOpenLineage={onOpenLineage}
       />
     </div>

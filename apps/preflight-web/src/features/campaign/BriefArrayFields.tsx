@@ -2,8 +2,10 @@
  * BriefArrayFields — channels, performance figures, claims controls.
  * Why: extracted from BriefForm to stay under file size limit.
  */
+// size: three channel/figure/claim field components share FieldSectionHeader
 
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
+import { Quote, Radio, TrendingUp } from "lucide-react";
 
 import type { Channel } from "@preflight/schemas";
 
@@ -14,6 +16,28 @@ import { ChannelGlyph } from "@/features/assets/ChannelGlyph";
 import { channelLabel } from "@/features/assets/lib";
 import { CHANNEL_OPTIONS, CAMPAIGN_INPUT_CLASS } from "@/features/campaign/lib";
 import { cn } from "@/lib/utils";
+
+function FieldSectionHeader({
+  label,
+  icon,
+  trailing,
+}: {
+  label: string;
+  icon: ReactNode;
+  trailing?: ReactNode;
+}): ReactElement {
+  return (
+    <div className="flex items-center justify-between">
+      <p className="inline-flex items-center gap-1.5 font-sans text-label font-medium uppercase tracking-wider text-fg-muted">
+        <span className="shrink-0 text-fg-muted" aria-hidden>
+          {icon}
+        </span>
+        {label}
+      </p>
+      {trailing}
+    </div>
+  );
+}
 
 export function ChannelsField({
   channels,
@@ -35,14 +59,17 @@ export function ChannelsField({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex items-center justify-between">
-        <p className="font-sans text-label font-medium uppercase tracking-wider text-fg-muted">Channels</p>
-        {missing ? (
-          <span className="font-sans text-[11px] text-fg-muted">Required</span>
-        ) : proposed ? (
-          <span className="text-[11px] text-fg-muted">Proposed by extract</span>
-        ) : null}
-      </div>
+      <FieldSectionHeader
+        label="Channels"
+        icon={<Radio className="size-3.5" />}
+        trailing={
+          missing ? (
+            <span className="font-sans text-[11px] text-fg-muted">Required</span>
+          ) : proposed ? (
+            <span className="text-[11px] text-fg-muted">Proposed by extract</span>
+          ) : null
+        }
+      />
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
         {CHANNEL_OPTIONS.map((channel) => {
           const isChecked = channels.includes(channel);
@@ -109,12 +136,15 @@ export function PerformanceFiguresField({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex items-center justify-between">
-        <p className="font-sans text-label font-medium uppercase tracking-wider text-fg-muted">
-          Performance figures
-        </p>
-        {proposed ? <span className="text-[11px] text-fg-muted">Proposed by extract</span> : null}
-      </div>
+      <FieldSectionHeader
+        label="Performance figures"
+        icon={<TrendingUp className="size-3.5" />}
+        trailing={
+          proposed ? (
+            <span className="text-[11px] text-fg-muted">Proposed by extract</span>
+          ) : null
+        }
+      />
       {figures.length === 0 ? (
         addBtn
       ) : (
@@ -172,10 +202,15 @@ export function ClaimsField({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex items-center justify-between">
-        <p className="font-sans text-label font-medium uppercase tracking-wider text-fg-muted">Claims</p>
-        {proposed ? <span className="text-[11px] text-fg-muted">Proposed by extract</span> : null}
-      </div>
+      <FieldSectionHeader
+        label="Claims"
+        icon={<Quote className="size-3.5" />}
+        trailing={
+          proposed ? (
+            <span className="text-[11px] text-fg-muted">Proposed by extract</span>
+          ) : null
+        }
+      />
       {claims.length === 0 ? (
         addBtn
       ) : (

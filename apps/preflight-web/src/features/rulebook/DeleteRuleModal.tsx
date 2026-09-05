@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
 import { useState } from "react";
+import { PenLine, Trash2 } from "lucide-react";
 
 import { shortId } from "@/features/assets/lib";
 import { Button } from "@/components/ui/button";
@@ -63,8 +64,12 @@ export function DeleteRuleModal({
           <div className="flex flex-col gap-1.5">
             <Label
               htmlFor="delete-reason"
-              className="font-sans text-[11px] uppercase tracking-[0.04em] text-fg-muted"
+              className="inline-flex items-center gap-1.5 font-sans text-[11px] uppercase tracking-[0.04em] text-fg-muted"
             >
+              <PenLine
+                className="size-3.5 shrink-0 text-fg-muted"
+                aria-hidden
+              />
               Change reason
             </Label>
             <Textarea
@@ -88,10 +93,11 @@ export function DeleteRuleModal({
           <Button
             type="button"
             variant="destructive"
-            className="h-8 rounded-none border border-fail bg-fail px-4 font-sans text-button text-surface shadow-none hover:bg-fail/90 disabled:opacity-50"
+            className="inline-flex h-8 items-center gap-1.5 rounded-none border border-fail bg-fail px-4 font-sans text-button text-surface shadow-none hover:bg-fail/90 disabled:opacity-50"
             disabled={!reasonValid}
             onClick={handleConfirm}
           >
+            <Trash2 className="size-3 shrink-0" aria-hidden />
             Delete
           </Button>
         </DialogFooter>

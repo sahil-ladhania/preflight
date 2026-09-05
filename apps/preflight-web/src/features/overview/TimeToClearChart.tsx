@@ -4,6 +4,7 @@
  */
 
 import type { ReactElement } from "react";
+import { TrendingDown } from "lucide-react";
 import {
   CartesianGrid,
   Line,
@@ -53,7 +54,8 @@ export function TimeToClearChart({
 
   return (
     <figure className="flex w-full flex-col gap-3">
-      <figcaption className="font-sans text-label uppercase tracking-wider text-fg-muted">
+      <figcaption className="inline-flex items-center gap-1.5 font-sans text-label uppercase tracking-wider text-fg-muted">
+        <TrendingDown className="size-3.5 shrink-0" aria-hidden="true" />
         Median time to clear — last 12 weeks
       </figcaption>
       <ChartContainer config={chartConfig} className="w-full">

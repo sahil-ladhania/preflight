@@ -4,11 +4,22 @@
  */
 
 import type { ReactElement } from "react";
+import { ClipboardList, Lock, PenLine, type LucideIcon } from "lucide-react";
 
-import { CAMPAIGN_STEPS, stepTitle, type CampaignStepId } from "@/features/campaign/campaign-steps";
+import {
+  CAMPAIGN_STEPS,
+  stepTitle,
+  type CampaignStepId,
+} from "@/features/campaign/campaign-steps";
 import { cn } from "@/lib/utils";
 
 export type { CampaignStepId };
+
+const STEP_ICONS: Record<CampaignStepId, LucideIcon> = {
+  "campaign-brief": ClipboardList,
+  "campaign-constraints": Lock,
+  "campaign-generate": PenLine,
+};
 
 export function CampaignStepRail({
   activeStep,
@@ -28,6 +39,7 @@ export function CampaignStepRail({
     }
     const reachable = isStepReachable(stepId);
     const isActive = activeStep === stepId;
+    const StepIcon = STEP_ICONS[stepId];
 
     return (
       <button
@@ -50,10 +62,11 @@ export function CampaignStepRail({
         ) : null}
         <span
           className={cn(
-            "text-ui tracking-tight",
+            "inline-flex items-center gap-2 text-ui tracking-tight",
             isActive ? "font-semibold text-fg" : "font-normal text-fg-muted",
           )}
         >
+          <StepIcon className="size-3.5 shrink-0 text-fg-muted" aria-hidden="true" />
           {stepTitle(stepId, compiling)}
         </span>
         <span className="text-[11px] font-normal text-fg-muted">{meta.subtitle}</span>

@@ -3,7 +3,8 @@
  * Why: named sections with own column headers per 09 Screen 4.
  */
 
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
+import { Cpu, Scale } from "lucide-react";
 
 import type { RuleCatalogRowDTO } from "@preflight/schemas";
 
@@ -25,24 +26,22 @@ import {
 } from "@/components/ui/table";
 import { RulebookRow } from "@/features/rulebook/RulebookRow";
 import type { RulebookTableProps } from "@/features/rulebook/types";
+import { OverviewSectionHeading } from "@/features/overview/OverviewSectionHeading";
 
 function SectionHeading({
   title,
   count,
   description,
+  icon,
 }: {
   title: string;
   count: number;
   description: string;
+  icon: ReactNode;
 }): ReactElement {
   return (
     <div className="flex flex-col gap-1 pb-1">
-      <div className="flex items-baseline gap-2">
-        <h2 className="font-serif text-wordmark font-semibold tracking-tight text-fg">
-          {title}
-        </h2>
-        <span className="font-mono text-xs text-fg-muted">[{count}]</span>
-      </div>
+      <OverviewSectionHeading title={title} count={count} icon={icon} />
       <p className="font-sans text-xs text-fg-muted">{description}</p>
     </div>
   );
@@ -71,12 +70,14 @@ function TablePagination(): ReactElement {
 function RuleSection({
   title,
   description,
+  icon,
   rules,
   showEditColumn,
   onEdit,
 }: {
   title: string;
   description: string;
+  icon: ReactNode;
   rules: RuleCatalogRowDTO[];
   showEditColumn: boolean;
   onEdit: (ruleId: string) => void;
@@ -84,7 +85,12 @@ function RuleSection({
   if (rules.length === 0) {
     return (
       <section className="flex flex-col gap-2">
-        <SectionHeading title={title} count={0} description={description} />
+        <SectionHeading
+          title={title}
+          count={0}
+          description={description}
+          icon={icon}
+        />
         <p className="py-6 font-sans text-xs text-fg-muted">No matching rules.</p>
       </section>
     );
@@ -92,7 +98,12 @@ function RuleSection({
 
   return (
     <section className="flex flex-col gap-2">
-      <SectionHeading title={title} count={rules.length} description={description} />
+      <SectionHeading
+        title={title}
+        count={rules.length}
+        description={description}
+        icon={icon}
+      />
       <Table className="w-full table-fixed">
         <TableHeader className="[&_tr]:border-b-fg">
           <TableRow className="border-b border-fg hover:bg-transparent">
@@ -147,6 +158,7 @@ export function RulebookTable({
       <RuleSection
         title="Hard rules"
         description="Checked automatically on every asset. These can stop something shipping. Not editable."
+        icon={<Cpu className="size-4" />}
         rules={hard}
         showEditColumn={false}
         onEdit={onEdit}
@@ -154,6 +166,7 @@ export function RulebookTable({
       <RuleSection
         title="Judgement rules"
         description="Reviewed case by case, then a person decides. You can edit these."
+        icon={<Scale className="size-4" />}
         rules={judgement}
         showEditColumn
         onEdit={onEdit}

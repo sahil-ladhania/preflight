@@ -84,6 +84,7 @@ export function AssetsListShell({
   filter,
   onFilterChange,
   showFilter,
+  endLine,
   counts,
 }: AssetsListShellProps): ReactElement {
   const handleNewCampaign = (): void => {
@@ -91,7 +92,7 @@ export function AssetsListShell({
   };
 
   return (
-    <div className="flex min-h-below-topbar flex-col bg-ground px-8 pt-8 pb-12">
+    <div className="flex min-h-below-topbar flex-col bg-ground px-8 pt-8 pb-16">
       <div className="mx-auto flex w-full max-w-register flex-1 flex-col">
         <PageHeader
           eyebrow="ASSET REGISTER"
@@ -117,7 +118,16 @@ export function AssetsListShell({
           />
         ) : null}
 
-        <div className="mt-6 flex flex-1 flex-col">{children}</div>
+        <div className="mt-6 flex flex-1 flex-col">
+          {children}
+          {endLine !== null ? (
+            <footer className="mt-auto border-t border-fg pt-8">
+              <p className="pt-3 font-sans text-label-strong uppercase tracking-[0.06em] text-fg-muted">
+                {endLine}
+              </p>
+            </footer>
+          ) : null}
+        </div>
       </div>
     </div>
   );

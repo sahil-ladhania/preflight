@@ -1,4 +1,4 @@
-import { Loader2 } from "lucide-react";
+import { BookOpen, Hammer, Loader2 } from "lucide-react";
 import type { ReactElement } from "react";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -72,15 +72,19 @@ export function BuildPanel({
               <span>{inFlightButtonLabel(buildPhase)}</span>
             </>
           ) : (
-            "Build it"
+            <>
+              <Hammer className="size-3.5 shrink-0" aria-hidden="true" />
+              <span>Build it</span>
+            </>
           )}
         </button>
         {onTryExample !== undefined && !buildInFlight ? (
           <button
             type="button"
-            className="cursor-pointer text-caption text-fg-muted underline underline-offset-4 hover:text-fg"
+            className="inline-flex cursor-pointer items-center gap-1.5 text-caption text-fg-muted underline underline-offset-4 hover:text-fg"
             onClick={onTryExample}
           >
+            <BookOpen className="size-3.5 shrink-0" aria-hidden="true" />
             Try an example
           </button>
         ) : null}

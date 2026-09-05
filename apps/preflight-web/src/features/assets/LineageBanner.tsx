@@ -4,6 +4,7 @@
  */
 
 import type { ReactElement } from "react";
+import { ArrowRight, GitBranch } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { lineageVersionLabel } from "@/features/assets/ledger-lib";
@@ -39,9 +40,12 @@ export function LineageBanner({
             <button
               type="button"
               onClick={onOpenLineage}
-              className="cursor-pointer font-sans text-caption text-decision underline underline-offset-4 hover:text-fg"
+              className="inline-flex cursor-pointer items-center gap-1 font-sans text-caption text-decision underline underline-offset-4 hover:text-fg"
             >
-              · View lineage →
+              ·
+              <GitBranch className="size-3 shrink-0" aria-hidden />
+              View lineage
+              <ArrowRight className="size-3 shrink-0" aria-hidden />
             </button>
           </>
         ) : null}

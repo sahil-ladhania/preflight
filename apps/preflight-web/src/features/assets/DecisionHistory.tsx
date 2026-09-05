@@ -4,6 +4,7 @@
  */
 
 import { useState, type ReactElement } from "react";
+import { History } from "lucide-react";
 
 import { DecisionHistoryModal } from "@/features/assets/DecisionHistoryModal";
 import { showDecisionHistoryLink } from "@/features/assets/decision-history-lib";
@@ -24,9 +25,10 @@ export function DecisionHistory({ finding }: DecisionHistoryProps): ReactElement
     <>
       <button
         type="button"
-        className="mt-3.5 font-sans text-caption font-normal text-fg-muted underline underline-offset-4"
+        className="mt-3.5 inline-flex cursor-pointer items-center gap-1.5 font-sans text-caption font-normal text-fg-muted underline underline-offset-4"
         onClick={() => setOpen(true)}
       >
+        <History className="size-3.5 shrink-0" aria-hidden />
         Decision history ({finding.decisions.length})
       </button>
       <DecisionHistoryModal

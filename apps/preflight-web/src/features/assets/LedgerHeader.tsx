@@ -3,7 +3,7 @@
  * Why: counts, filter, and stepper stay visible while scrolling findings (09 R4a).
  */
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ListChecks } from "lucide-react";
 import type { ReactElement } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -50,7 +50,8 @@ export function LedgerHeader({
     <div className="flex shrink-0 flex-col bg-surface px-5 pt-4 pb-1.5">
       {/* Column 3 Horizon Header: Label left, stepper right */}
       <div className="flex h-7 shrink-0 items-center justify-between">
-        <p className="font-sans text-label-strong uppercase tracking-[0.06em] text-fg-muted">
+        <p className="inline-flex items-center gap-1.5 font-sans text-label-strong uppercase tracking-[0.06em] text-fg-muted">
+          <ListChecks className="size-3.5 shrink-0" aria-hidden />
           Evidence &amp; decisions
         </p>
         {stepperText ? (

@@ -3,7 +3,8 @@
  * Why: register stat line pattern at whole-operation scale (08 §8.1).
  */
 
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
+import { Layers, Stamp, UserRound } from "lucide-react";
 
 import type { OverviewStateCounts } from "@/features/overview/lib";
 import {
@@ -16,13 +17,18 @@ function StatCount({
   value,
   label,
   href,
+  icon,
 }: {
   value: number;
   label: string;
   href?: string;
+  icon: ReactNode;
 }): ReactElement {
   const inner = (
     <>
+      <span className="shrink-0 text-fg-muted" aria-hidden>
+        {icon}
+      </span>
       <span className="font-serif text-subject-title font-semibold text-fg">
         {value}
       </span>{" "}
@@ -31,13 +37,13 @@ function StatCount({
   );
 
   if (href === undefined) {
-    return <span className="inline-flex items-baseline gap-1.5">{inner}</span>;
+    return <span className="inline-flex items-center gap-1.5">{inner}</span>;
   }
 
   return (
     <a
       href={href}
-      className="inline-flex items-baseline gap-1.5 no-underline hover:opacity-80"
+      className="inline-flex items-center gap-1.5 no-underline hover:opacity-80"
     >
       {inner}
     </a>
@@ -50,22 +56,25 @@ export function StateLine({
   counts: OverviewStateCounts;
 }): ReactElement {
   return (
-    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
       <StatCount
         value={counts.needHuman}
         label={stateLineNeedHuman(counts.needHuman)}
         href="#needs-you"
+        icon={<UserRound className="size-3.5" />}
       />
       <span className="text-xs text-fg-muted">·</span>
       <StatCount
         value={counts.withException}
         label={stateLineShippedException(counts.withException)}
         href="#exceptions"
+        icon={<Stamp className="size-3.5" />}
       />
       <span className="text-xs text-fg-muted">·</span>
       <StatCount
         value={counts.campaignsInProgress}
         label={stateLineCampaignsInProgress(counts.campaignsInProgress)}
+        icon={<Layers className="size-3.5" />}
       />
     </div>
   );

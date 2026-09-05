@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { Lock } from "lucide-react";
+import { Lock, Pencil } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,9 +47,10 @@ export function RulebookRow({ rule, onEdit }: RulebookRowProps): ReactElement {
           <Button
             type="button"
             variant="link"
-            className="h-auto cursor-pointer p-0 font-sans text-caption text-decision underline hover:text-decision/80"
+            className="inline-flex h-auto cursor-pointer items-center gap-1 p-0 font-sans text-caption text-decision underline hover:text-decision/80"
             onClick={() => onEdit(rule.ruleId)}
           >
+            <Pencil className="size-3 shrink-0" aria-hidden="true" />
             Edit
           </Button>
         )}

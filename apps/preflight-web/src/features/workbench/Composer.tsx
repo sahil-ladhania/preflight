@@ -4,7 +4,7 @@
  */
 
 import type { KeyboardEvent, ReactElement } from "react";
-import { Loader2 } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 
 import { CampaignHandoffLink } from "@/features/workbench/CampaignHandoffLink";
 import { WORKBENCH_COMPOSER_PLACEHOLDER } from "@/features/workbench/lib";
@@ -71,7 +71,10 @@ export function Composer({
                   Starting…
                 </span>
               ) : (
-                "Start campaign from this conversation →"
+                <span className="inline-flex items-center gap-1">
+                  Start campaign from this conversation
+                  <ArrowRight className="size-3 shrink-0" aria-hidden />
+                </span>
               )}
             </button>
           ) : null}
@@ -129,7 +132,10 @@ export function Composer({
             {sendInFlight ? (
               <Loader2 className="size-3.5 animate-spin" aria-hidden />
             ) : (
-              "Ask →"
+              <span className="inline-flex items-center gap-1">
+                Ask
+                <ArrowRight className="size-3 shrink-0" aria-hidden />
+              </span>
             )}
           </button>
         </div>

@@ -11,7 +11,7 @@ import {
   MarkerType,
   type Edge,
 } from "@xyflow/react";
-import { X } from "lucide-react";
+import { GitBranch, Info, X } from "lucide-react";
 
 import { RegisterGrid } from "@/features/shell/RegisterGrid";
 import { LineageNode, type LineageNodeType } from "./LineageNode";
@@ -116,7 +116,8 @@ export function LineageDialog({
       >
         {/* Floating Title Hierarchy — canvas top-left, no container */}
         <div className="pointer-events-none absolute top-6 left-7 z-20 flex flex-col gap-1">
-          <span className="font-mono text-[10px] uppercase tracking-wider text-chrome-fg-muted/60">
+          <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-chrome-fg-muted/60">
+            <GitBranch className="size-3.5 shrink-0" aria-hidden />
             Asset Lineage
           </span>
           <h2 className="font-serif text-lg font-semibold leading-tight text-chrome-fg">
@@ -174,7 +175,8 @@ export function LineageDialog({
 
           {/* Audit banner notice */}
           <div className="pointer-events-none absolute bottom-5 left-7 z-20">
-            <span className="border border-[#283848] bg-[#101822]/90 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-chrome-fg-muted">
+            <span className="inline-flex items-center gap-1.5 border border-[#283848] bg-[#101822]/90 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-chrome-fg-muted">
+              <Info className="size-3.5 shrink-0" aria-hidden />
               Read-only audit graph · Click node to view asset
             </span>
           </div>

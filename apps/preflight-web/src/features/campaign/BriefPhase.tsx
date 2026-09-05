@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useState, type ReactElement } from "react";
+import { ClipboardList } from "lucide-react";
 
 import { BuildPanel } from "@/features/campaign/BuildPanel";
 import { FieldReview } from "@/features/campaign/FieldReview";
@@ -12,6 +13,7 @@ import {
   CAMPAIGN_TEXTAREA_CLASS,
 } from "@/features/campaign/lib";
 import type { BriefPhaseProps } from "@/features/campaign/types";
+import { OverviewSectionHeading } from "@/features/overview/OverviewSectionHeading";
 import { EXAMPLE_BRIEF_FREE_TEXT } from "@/fixtures/campaign";
 import { cn } from "@/lib/utils";
 
@@ -53,9 +55,10 @@ export function BriefPhase({
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between">
-          <h2 className="font-serif text-wordmark font-semibold tracking-tight text-fg">
-            Campaign Brief
-          </h2>
+          <OverviewSectionHeading
+            title="Campaign Brief"
+            icon={<ClipboardList className="size-4" />}
+          />
           <span className="font-mono text-mono-faint uppercase text-fg-muted">
             {documentState}
           </span>

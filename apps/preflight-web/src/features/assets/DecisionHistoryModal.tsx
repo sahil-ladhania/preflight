@@ -3,7 +3,8 @@
  * Why: full history at 720px measure; ledger row shows link only (09 R4).
  */
 
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
+import { Cpu, History } from "lucide-react";
 
 import type { FindingDecisionDTO, FindingDTO } from "@preflight/schemas";
 
@@ -37,6 +38,23 @@ const modalOverlayClass = cn(
 const closeLinkClass =
   "shrink-0 cursor-pointer font-sans text-caption font-normal text-fg-muted underline underline-offset-4";
 
+function SectionMicroLabel({
+  label,
+  icon,
+}: {
+  label: string;
+  icon: ReactNode;
+}): ReactElement {
+  return (
+    <p className="inline-flex items-center gap-1.5 text-micro uppercase text-fg-muted">
+      <span className="shrink-0" aria-hidden>
+        {icon}
+      </span>
+      {label}
+    </p>
+  );
+}
+
 function MachineFindingSection({
   finding,
 }: {
@@ -44,7 +62,10 @@ function MachineFindingSection({
 }): ReactElement {
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-micro uppercase text-fg-muted">Machine finding</p>
+      <SectionMicroLabel
+        label="Machine finding"
+        icon={<Cpu className="size-3.5" />}
+      />
       {finding.evaluationStatus === "pending" ? (
         <p className="font-sans text-caption font-normal text-fg-muted">
           Evaluation in progress.
@@ -153,9 +174,10 @@ export function DecisionHistoryModal({
           <div className="flex flex-col gap-5">
             <MachineFindingSection finding={finding} />
             <div className="border-t border-hairline" aria-hidden />
-            <p className="text-micro uppercase text-fg-muted">
-              Decisions ({finding.decisions.length})
-            </p>
+            <SectionMicroLabel
+              label={`Decisions (${finding.decisions.length})`}
+              icon={<History className="size-3.5" />}
+            />
             <div className="flex flex-col gap-4">
               {sorted.map((row, index) => (
                 <DecisionEntry

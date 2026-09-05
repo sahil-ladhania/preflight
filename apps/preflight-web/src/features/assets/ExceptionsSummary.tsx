@@ -4,6 +4,7 @@
  */
 
 import type { ReactElement } from "react";
+import { Scale } from "lucide-react";
 
 import type { ExceptionsSummaryProps } from "@/features/assets/types";
 import { formatGeneratedAt } from "@/features/assets/lib";
@@ -21,7 +22,8 @@ export function ExceptionsSummary({
             key={item.findingId}
             className="flex flex-col gap-2 border border-decision bg-decision-wash px-3.5 py-2.5"
           >
-            <p className="text-micro uppercase text-decision">
+            <p className="inline-flex flex-wrap items-center gap-1.5 text-micro uppercase text-decision">
+              <Scale className="size-3.5 shrink-0" aria-hidden />
               Waived by human decision{" "}
               <span className="font-mono text-mono-meta normal-case tracking-normal whitespace-nowrap inline-block">
                 {item.ruleId}

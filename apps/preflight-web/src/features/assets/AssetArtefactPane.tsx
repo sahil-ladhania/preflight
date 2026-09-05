@@ -4,6 +4,7 @@
  */
 
 import { useState, type ReactElement } from "react";
+import { FileText } from "lucide-react";
 
 import { ButtonGroup } from "@/components/ui/button-group";
 import { AssetCopyField } from "@/features/assets/AssetCopyField";
@@ -32,7 +33,8 @@ export function AssetArtefactPane({
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pt-4 pb-5">
         {/* Column 2 Horizon Header: Label left, toggle right */}
         <div className="flex h-7 shrink-0 items-center justify-between">
-          <span className="font-sans text-label-strong uppercase tracking-[0.06em] text-fg-muted">
+          <span className="inline-flex items-center gap-1.5 font-sans text-label-strong uppercase tracking-[0.06em] text-fg-muted">
+            <FileText className="size-3.5 shrink-0" aria-hidden />
             Artefact
           </span>
           <ButtonGroup className="rounded-none">

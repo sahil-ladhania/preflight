@@ -5,6 +5,7 @@
 
 import type { AssetStatus, ExceptionItemDTO } from "@preflight/schemas";
 import type { ReactElement } from "react";
+import { Scale, ShieldCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -52,7 +53,8 @@ export function ComplianceDeskModal({
         overlayClassName="bg-[rgba(28,26,23,0.5)] backdrop-blur-none duration-0 data-open:animate-none data-closed:animate-none"
       >
         <DialogHeader className="gap-1">
-          <DialogTitle className="font-serif text-sheet-title font-semibold text-fg">
+          <DialogTitle className="inline-flex items-center gap-2 font-serif text-sheet-title font-semibold text-fg">
+            <ShieldCheck className="size-3.5 shrink-0 text-fg-muted" aria-hidden />
             Ready for compliance desk
           </DialogTitle>
         </DialogHeader>
@@ -65,8 +67,9 @@ export function ComplianceDeskModal({
           </p>
           {exceptionsLine !== null ? (
             <div className="border-l-2 border-decision bg-decision-wash px-3 py-2">
-              <p className="font-sans text-caption font-medium text-decision">
-                {exceptionsLine}
+              <p className="inline-flex items-start gap-1.5 font-sans text-caption font-medium text-decision">
+                <Scale className="size-3.5 shrink-0 text-fg-muted" aria-hidden />
+                <span>{exceptionsLine}</span>
               </p>
             </div>
           ) : null}

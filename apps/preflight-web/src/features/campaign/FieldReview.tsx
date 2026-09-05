@@ -3,7 +3,7 @@
  * Why: 09 Screen 3 prototype Label · value disclosure, not a full form grid.
  */
 
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, ListChecks } from "lucide-react";
 import type { ReactElement } from "react";
 
 import type { BriefField, StructuredBriefInput } from "@preflight/schemas";
@@ -54,6 +54,7 @@ export function FieldReview({
         ) : (
           <ChevronRight className="size-3.5 text-fg-muted" />
         )}
+        <ListChecks className="size-3.5 shrink-0 text-fg-muted" aria-hidden="true" />
         <span>Review extracted fields</span>
         <Badge
           variant="outline"

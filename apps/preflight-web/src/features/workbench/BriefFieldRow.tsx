@@ -4,8 +4,31 @@
  */
 
 import type { ReactElement } from "react";
+import {
+  Globe,
+  Landmark,
+  Quote,
+  Radio,
+  Tags,
+  Target,
+  TrendingUp,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
+
+const BRIEF_FIELD_ICONS: Record<string, LucideIcon> = {
+  objective: Target,
+  schemeName: Landmark,
+  schemeCategory: Tags,
+  audience: Users,
+  market: Globe,
+  channels: Radio,
+  performanceFigures: TrendingUp,
+  claims: Quote,
+};
 
 export interface BriefFieldRowProps {
+  fieldKey: string;
   label: string;
   value: string | null;
   optional?: boolean;
@@ -14,6 +37,7 @@ export interface BriefFieldRowProps {
 }
 
 export function BriefFieldRow({
+  fieldKey,
   label,
   value,
   optional = false,
@@ -22,10 +46,14 @@ export function BriefFieldRow({
 }: BriefFieldRowProps): ReactElement {
   const showEmptyOptional =
     optional && requiredComplete && (value === null || value.trim().length === 0);
+  const Icon = BRIEF_FIELD_ICONS[fieldKey];
 
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="font-sans text-label uppercase tracking-[0.04em] text-fg-muted">
+      <span className="inline-flex items-center gap-1.5 font-sans text-label uppercase tracking-[0.04em] text-fg-muted">
+        {Icon !== undefined ? (
+          <Icon className="size-3.5 shrink-0" aria-hidden />
+        ) : null}
         {label}
       </span>
       {value !== null && value.trim().length > 0 ? (

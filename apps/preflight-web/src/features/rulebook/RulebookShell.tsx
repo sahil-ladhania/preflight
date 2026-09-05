@@ -28,7 +28,7 @@ export function RulebookShell({
   onAdd,
 }: RulebookShellProps): ReactElement {
   return (
-    <div className="flex min-h-below-topbar flex-col bg-ground px-8 pt-8 pb-12">
+    <div className="flex min-h-below-topbar flex-col bg-ground px-8 pt-8 pb-16">
       <div className="mx-auto flex w-full max-w-register flex-1 flex-col">
         <PageHeader
           title="What campaigns are checked against"

@@ -4,6 +4,7 @@
  */
 
 import type { ReactElement, ReactNode } from "react";
+import { BookOpen, ClipboardList } from "lucide-react";
 
 import { usePersona } from "@/features/shell/PersonaProvider";
 import {
@@ -15,6 +16,16 @@ export interface EmptyStageProps {
   composer: ReactNode;
   onPromptSelect: (text: string) => void;
   handoffInFlight?: boolean;
+}
+
+function PromptGroupIcon({ label }: { label: string }): ReactElement | null {
+  if (label === "ASK ABOUT THE RULES") {
+    return <BookOpen className="size-3.5 shrink-0" aria-hidden />;
+  }
+  if (label === "START A CAMPAIGN") {
+    return <ClipboardList className="size-3.5 shrink-0" aria-hidden />;
+  }
+  return null;
 }
 
 function PromptPill({
@@ -58,7 +69,8 @@ export function EmptyStage({
         <div className="flex flex-col gap-5">
           {groups.map((group) => (
             <div key={group.label} className="flex flex-col gap-2">
-              <span className="text-label-strong uppercase text-fg-muted">
+              <span className="inline-flex items-center gap-1.5 text-label-strong uppercase text-fg-muted">
+                <PromptGroupIcon label={group.label} />
                 {group.label}
               </span>
               <div className="flex flex-wrap items-start gap-2">

@@ -2,8 +2,10 @@
  * LedgerExpanded — R4c open finding with machine/human blocks.
  * Why: one expanded ledger row at a time (08 §5.7).
  */
+// size: machine/human blocks + consequence copy; extract splits ledger row pairing
 
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
+import { Cpu, PenLine, Stamp } from "lucide-react";
 import type { FindingDTO } from "@preflight/schemas";
 
 import { DecisionButtons } from "@/features/assets/DecisionButtons";
@@ -17,6 +19,30 @@ import { cn } from "@/lib/utils";
 
 const UNAVAILABLE_COPY =
   "Evaluation unavailable — span not found in asset. Deterministic results unaffected.";
+
+function BlockLabel({
+  label,
+  icon,
+  className,
+}: {
+  label: string;
+  icon: ReactNode;
+  className?: string;
+}): ReactElement {
+  return (
+    <p
+      className={cn(
+        "inline-flex items-center gap-1.5 text-micro uppercase tracking-[0.06em] font-semibold",
+        className,
+      )}
+    >
+      <span className="shrink-0" aria-hidden>
+        {icon}
+      </span>
+      {label}
+    </p>
+  );
+}
 
 function MachineSpanQuote({ finding }: { finding: FindingDTO }): ReactElement {
   if (finding.evaluationStatus === "pending") {
@@ -117,9 +143,11 @@ function HumanDecisionBlock({
 
     return (
       <div className="flex flex-col gap-1 border border-decision bg-decision-wash px-3 py-2.5">
-        <p className="text-micro uppercase tracking-[0.06em] text-decision font-semibold">
-          Human decision
-        </p>
+        <BlockLabel
+          label="Human decision"
+          icon={<Stamp className="size-3.5 text-decision" />}
+          className="text-decision"
+        />
         <p className="font-sans text-caption text-fg">{line}</p>
         {finding.humanReason !== null && finding.humanReason.length > 0 ? (
           <p className="font-serif text-copy italic text-fg">
@@ -137,9 +165,11 @@ function HumanDecisionBlock({
   return (
     <div className="flex flex-col gap-2.5 border-2 border-dashed border-decision/60 bg-decision-wash/30 p-3.5">
       <div className="flex items-center justify-between">
-        <p className="text-micro uppercase tracking-[0.06em] text-decision font-semibold">
-          Human decision — required
-        </p>
+        <BlockLabel
+          label="Human decision — required"
+          icon={<PenLine className="size-3.5 text-decision" />}
+          className="text-decision"
+        />
         <span className="font-mono text-[10px] uppercase tracking-wider text-decision font-semibold">
           Action required
         </span>
@@ -164,9 +194,11 @@ export function LedgerExpanded(props: LedgerExpandedProps): ReactElement {
     <div className="flex flex-col gap-3 bg-surface px-3 pb-3 pt-1">
       {/* Machine finding — unboxed and flush on surface */}
       <div className="flex flex-col gap-2">
-        <p className="text-micro uppercase tracking-[0.06em] text-fg-muted font-semibold">
-          Machine finding
-        </p>
+        <BlockLabel
+          label="Machine finding"
+          icon={<Cpu className="size-3.5 text-fg-muted" />}
+          className="text-fg-muted"
+        />
         <MachineSpanQuote finding={finding} />
         {showMachineReason && finding.machineReason !== null ? (
           <p className={cn(reasonClass)}>{finding.machineReason}</p>

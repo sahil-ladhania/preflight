@@ -4,7 +4,7 @@
  */
 
 import { useState, type ReactElement } from "react";
-import { ChevronDown, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Loader2, RefreshCw } from "lucide-react";
 
 import type { RerunStripDTO } from "@preflight/schemas";
 
@@ -116,7 +116,7 @@ export function RerunStrip({
           type="button"
           variant="outline"
           size="sm"
-          className="h-7 cursor-pointer rounded-none border-border bg-surface text-xs text-fg shadow-none hover:bg-hover disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-none border-border bg-surface text-xs text-fg shadow-none hover:bg-hover disabled:cursor-not-allowed disabled:opacity-50"
           disabled={rerunInFlight}
           onClick={onRerun}
         >
@@ -127,9 +127,7 @@ export function RerunStrip({
             </>
           ) : (
             <>
-              <span className="text-xs" aria-hidden="true">
-                ↻
-              </span>
+              <RefreshCw className="size-3.5 shrink-0" aria-hidden />
               Re-check hard rules
             </>
           )}

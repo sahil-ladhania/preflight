@@ -4,6 +4,7 @@
  */
 
 import type { ReactElement } from "react";
+import { CircleStop, RefreshCw } from "lucide-react";
 import { Handle, Position, type NodeProps, type Node } from "@xyflow/react";
 
 import { StatusChip } from "@/features/assets/StatusChip";
@@ -96,7 +97,8 @@ export function LineageNode({
       {/* GROUP 2: What ENDED it (separated by clear spacing and hairline divider) */}
       {causalDecision ? (
         <div className="flex flex-col gap-1.5 border-t border-hairline/60 pt-3">
-          <span className="font-sans text-[10px] font-semibold uppercase tracking-wider text-fg-muted">
+          <span className="inline-flex items-center gap-1 font-sans text-[10px] font-semibold uppercase tracking-wider text-fg-muted">
+            <RefreshCw className="size-3 shrink-0" aria-hidden />
             Triggered Next Regen
           </span>
           <p className="font-mono text-xs font-semibold leading-snug text-decision">
@@ -109,7 +111,8 @@ export function LineageNode({
         </div>
       ) : (
         <div className="flex flex-col gap-1 border-t border-hairline/60 pt-3">
-          <span className="font-sans text-[10px] font-semibold uppercase tracking-wider text-fg-muted">
+          <span className="inline-flex items-center gap-1 font-sans text-[10px] font-semibold uppercase tracking-wider text-fg-muted">
+            <CircleStop className="size-3 shrink-0" aria-hidden />
             Terminal Generation
           </span>
           <p className="font-mono text-xs text-fg-muted">

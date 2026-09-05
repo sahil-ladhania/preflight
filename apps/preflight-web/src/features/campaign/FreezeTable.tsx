@@ -4,6 +4,7 @@
  */
 
 import type { ReactElement } from "react";
+import { Lock } from "lucide-react";
 
 import type { CompileResponseDTO, CompileRuleCardDTO } from "@preflight/schemas";
 
@@ -60,7 +61,8 @@ export function FreezeTable({
       {compileResult !== null ? (
         <>
           <div className="flex items-center justify-between border border-fg px-[18px] py-[14px]">
-            <span className="text-ui-strong text-fg">
+            <span className="inline-flex items-center gap-2 text-ui-strong text-fg">
+              <Lock className="size-3.5 shrink-0 text-fg-muted" aria-hidden="true" />
               Compiled ruleset — {ruleCount} rule{ruleCount === 1 ? "" : "s"} pinned
             </span>
             <span className="font-mono text-mono-meta text-fg-muted">
