@@ -73,7 +73,7 @@ export function FieldReviewScalars({
             <div className="flex items-center justify-between">
               <Label
                 htmlFor={id}
-                className="font-mono text-xs font-medium uppercase tracking-wider text-fg-muted"
+                className="font-sans text-label font-medium uppercase tracking-wider text-fg-muted"
               >
                 {label}
               </Label>

@@ -6,7 +6,8 @@
 import type { AssetListItemDTO, AssetStatus, StructuredBriefInput } from "@preflight/schemas";
 import type { BriefField } from "@preflight/schemas";
 
-import type { CampaignStepId } from "@/features/campaign/CampaignStepRail";
+import { channelLabel } from "@/features/assets/lib";
+import type { CampaignStepId } from "@/features/campaign/campaign-steps";
 import type { BuildPhase } from "@/features/campaign/types";
 
 export type CampaignPane = "brief" | "building" | "freeze" | "built";
@@ -22,6 +23,12 @@ export interface FieldReviewRow {
 
 const NEEDS_HUMAN: AssetStatus[] = ["blocked", "needs_human", "needs_regen"];
 
+export function cleanPlural(text: string): string {
+  return text.replace(/(\d+)\s+rule\(s\)/g, (_match, count) => {
+    return `${count} rule${Number(count) === 1 ? "" : "s"}`;
+  });
+}
+
 export function activeCampaignPane(input: {
   hasAssets: boolean;
   buildInFlight: boolean;
@@ -29,21 +36,11 @@ export function activeCampaignPane(input: {
   paneOverride: PaneOverride;
   railView: CampaignStepId;
 }): CampaignPane {
-  if (input.paneOverride === "freeze") {
-    return "freeze";
-  }
-  if (input.paneOverride === "brief-edit") {
-    return "brief";
-  }
-  if (input.buildInFlight) {
-    return "building";
-  }
-  if (input.buildPhase === "needs_ack") {
-    return "freeze";
-  }
-  if (input.railView === "campaign-constraints") {
-    return "freeze";
-  }
+  if (input.paneOverride === "freeze") return "freeze";
+  if (input.paneOverride === "brief-edit") return "brief";
+  if (input.buildInFlight) return "building";
+  if (input.buildPhase === "needs_ack") return "freeze";
+  if (input.railView === "campaign-constraints") return "freeze";
   if (
     input.hasAssets &&
     input.buildPhase !== "needs_input" &&
@@ -55,20 +52,14 @@ export function activeCampaignPane(input: {
 }
 
 export function railStepForPane(pane: CampaignPane): CampaignStepId {
-  if (pane === "freeze") {
-    return "campaign-constraints";
-  }
-  if (pane === "built") {
-    return "campaign-generate";
-  }
+  if (pane === "freeze") return "campaign-constraints";
+  if (pane === "built") return "campaign-generate";
   return "campaign-brief";
 }
 
 function formatChannels(channels: StructuredBriefInput["channels"]): string {
-  if (channels.length === 0) {
-    return "—";
-  }
-  return channels.join(", ");
+  if (channels.length === 0) return "—";
+  return channels.map((c) => channelLabel(c)).join(", ");
 }
 
 function formatFigures(
@@ -159,20 +150,10 @@ export function campaignProgressLine(assets: AssetListItemDTO[]): string {
   if (pending === 0) {
     return settled;
   }
-  return `${settled} Evaluating ${pending} rules…`;
+  const ruleWord = pending === 1 ? "rule" : "rules";
+  return `${settled} Evaluating ${pending} ${ruleWord}…`;
 }
 
-export function campaignEndLine(assets: AssetListItemDTO[]): string {
-  const total = assets.length;
-  if (total === 0) {
-    return "End of campaign";
-  }
-  const needsHuman = countNeedsHuman(assets);
-  if (needsHuman > 0) {
-    return `End of campaign — ${total} assets · ${needsHuman} still need a human`;
-  }
-  return `End of campaign — all ${total} ready to ship`;
-}
 
 export function buildPhaseLine(
   phase: BuildPhase,

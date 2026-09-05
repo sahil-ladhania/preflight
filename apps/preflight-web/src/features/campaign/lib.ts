@@ -12,7 +12,7 @@ import type {
   StructuredBriefInput,
 } from "@preflight/schemas";
 
-import type { CampaignStepId } from "@/features/campaign/CampaignStepRail";
+import type { CampaignStepId } from "@/features/campaign/campaign-steps";
 
 export const CHANNEL_OPTIONS: Channel[] = [
   "email",

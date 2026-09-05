@@ -85,7 +85,7 @@ export function FieldReview({
                       "border-l-2 border-hairline/80 pl-2.5",
                   )}
                 >
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-fg-muted">
+                  <span className="font-sans text-label uppercase tracking-wider text-fg-muted">
                     {row.label}
                   </span>
                   <span className="font-serif text-sm text-fg">
@@ -95,7 +95,7 @@ export function FieldReview({
               ))}
             </div>
           ) : (
-            <div className="flex flex-col gap-5 max-w-2xl">
+            <div className="flex flex-col gap-5">
               <FieldReviewScalars
                 brief={brief}
                 missingSet={missingSet}

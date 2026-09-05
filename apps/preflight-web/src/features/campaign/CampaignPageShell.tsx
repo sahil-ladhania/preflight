@@ -3,17 +3,15 @@
  * Why: 09 Screen 3 max-w 1024, 32px padding, Built back link.
  */
 
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import type { ReactElement, ReactNode } from "react";
 
 import { PageHeader } from "@/components/ui/page-header";
-import { PrimaryButton } from "@/components/ui/primary-button";
-import {
-  CampaignStepRail,
-  type CampaignStepId,
-} from "@/features/campaign/CampaignStepRail";
+import { CampaignStepRail } from "@/features/campaign/CampaignStepRail";
+import type { CampaignStepId } from "@/features/campaign/campaign-steps";
 import { isStepReachable } from "@/features/campaign/lib";
 import { useCreateCampaign } from "@/features/campaign/useCreateCampaign";
+import { cn } from "@/lib/utils";
 
 export interface CampaignPageShellProps {
   activeStep: CampaignStepId;
@@ -24,7 +22,6 @@ export interface CampaignPageShellProps {
   s2Dimmed: boolean;
   s3Dimmed: boolean;
   backToSummary?: boolean;
-  endLine?: string;
   onBackToSummary?: () => void;
   onRailStepChange: (stepId: CampaignStepId) => void;
   children: ReactNode;
@@ -53,20 +50,30 @@ export function CampaignPageShell({
 
   return (
     <div className="flex min-h-below-topbar flex-col bg-ground px-8 pt-8 pb-12">
-      <div className="mx-auto flex w-full max-w-register flex-1 flex-col">
+      <div className="mx-auto flex w-full max-w-campaign flex-1 flex-col">
         <PageHeader
           eyebrow={eyebrow}
           title={title}
           action={
-            <PrimaryButton
-              loading={createInFlight}
-              icon={<Plus className="size-4 shrink-0" aria-hidden="true" />}
+            <button
+              type="button"
+              disabled={createInFlight}
+              className={cn(
+                "flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-none border border-fg bg-transparent px-4 font-sans text-button font-medium text-fg select-none cursor-pointer shadow-none transition-colors",
+                "hover:bg-fg hover:text-surface",
+                "disabled:border-hairline disabled:bg-transparent disabled:text-fg-faint disabled:cursor-not-allowed",
+              )}
               onClick={() => {
                 void createCampaignAndGo();
               }}
             >
-              New campaign
-            </PrimaryButton>
+              {createInFlight ? (
+                <Loader2 className="size-3.5 shrink-0 animate-spin" aria-hidden="true" />
+              ) : (
+                <Plus className="size-3.5 shrink-0" aria-hidden="true" />
+              )}
+              <span>New campaign</span>
+            </button>
           }
         />
 
@@ -87,8 +94,9 @@ export function CampaignPageShell({
             isStepReachable={(stepId) => isStepReachable(stepId, reachability)}
             onViewStepChange={onRailStepChange}
           />
-          <main className="min-w-0 flex-1">{children}</main>
+          <main className="flex min-w-0 flex-1 flex-col">{children}</main>
         </div>
+
       </div>
     </div>
   );

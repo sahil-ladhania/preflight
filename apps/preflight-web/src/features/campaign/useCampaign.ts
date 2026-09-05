@@ -9,8 +9,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { StructuredBriefInput } from "@preflight/schemas";
 import type { BriefField, InjectionDetection } from "@preflight/schemas";
 
-import { activeCampaignStep } from "@/features/campaign/CampaignStepRail";
-import type { CampaignStepId } from "@/features/campaign/CampaignStepRail";
+import { activeCampaignStep, type CampaignStepId } from "@/features/campaign/campaign-steps";
 import {
   campaignGateState,
   mergeExtractProposal,

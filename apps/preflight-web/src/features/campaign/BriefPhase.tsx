@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 
 export function BriefPhase({
   building,
+  documentState = "Draft",
   buildPhase = "idle",
   buildInFlight = false,
   missingFieldsBuild = [],
@@ -55,10 +56,8 @@ export function BriefPhase({
           <h2 className="font-serif text-wordmark font-semibold tracking-tight text-fg">
             Campaign Brief
           </h2>
-          <span className="font-mono text-[11px] text-fg-muted">
-            {freeText.trim().length > 0
-              ? `${freeText.trim().length} chars`
-              : "Draft"}
+          <span className="font-mono text-mono-faint uppercase text-fg-muted">
+            {documentState}
           </span>
         </div>
         <div className="flex flex-col gap-4">

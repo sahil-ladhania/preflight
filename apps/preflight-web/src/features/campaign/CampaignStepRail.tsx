@@ -5,64 +5,10 @@
 
 import type { ReactElement } from "react";
 
+import { CAMPAIGN_STEPS, stepTitle, type CampaignStepId } from "@/features/campaign/campaign-steps";
 import { cn } from "@/lib/utils";
 
-const STEP_META = [
-  {
-    id: "campaign-brief",
-    label: "1. Brief",
-    subtitle: "What you're campaigning for",
-  },
-  {
-    id: "campaign-constraints",
-    label: "2. Freeze",
-    subtitle: "Rules that will govern this campaign",
-  },
-  {
-    id: "campaign-generate",
-    label: "3. Generate",
-    subtitle: "Channel copy, checked against the freeze",
-  },
-] as const;
-
-export const CAMPAIGN_STEPS = STEP_META.map(({ id, label, subtitle }) => ({
-  id,
-  label,
-  subtitle,
-}));
-
-export type CampaignStepId = (typeof CAMPAIGN_STEPS)[number]["id"];
-
-export function activeCampaignStep(input: {
-  briefSaved: boolean;
-  compileDone: boolean;
-}): CampaignStepId {
-  if (!input.briefSaved) {
-    return "campaign-brief";
-  }
-  if (!input.compileDone) {
-    return "campaign-constraints";
-  }
-  return "campaign-generate";
-}
-
-function stepIndex(stepId: CampaignStepId): number {
-  return STEP_META.findIndex((step) => step.id === stepId);
-}
-
-function stepTitle(
-  stepId: CampaignStepId,
-  compiling: boolean,
-): string {
-  const meta = STEP_META.find((step) => step.id === stepId);
-  if (meta === undefined) {
-    return "";
-  }
-  if (stepId === "campaign-constraints" && compiling) {
-    return "2. Freeze — compiling…";
-  }
-  return meta.label;
-}
+export type { CampaignStepId };
 
 export function CampaignStepRail({
   activeStep,
@@ -76,7 +22,7 @@ export function CampaignStepRail({
   onViewStepChange: (stepId: CampaignStepId) => void;
 }): ReactElement {
   const renderStep = (stepId: CampaignStepId, compact: boolean): ReactElement => {
-    const meta = STEP_META.find((step) => step.id === stepId);
+    const meta = CAMPAIGN_STEPS.find((step) => step.id === stepId);
     if (meta === undefined) {
       return <span key={stepId} />;
     }
@@ -123,7 +69,7 @@ export function CampaignStepRail({
             className="pointer-events-none absolute left-0 top-2 bottom-2 w-px bg-hairline"
             aria-hidden="true"
           />
-          {STEP_META.map((step) => renderStep(step.id, false))}
+          {CAMPAIGN_STEPS.map((step) => renderStep(step.id, false))}
         </nav>
       </aside>
       <div className="md:hidden">
@@ -131,13 +77,9 @@ export function CampaignStepRail({
           aria-label="Campaign steps"
           className="flex gap-2 overflow-x-auto pb-1 border-b border-hairline"
         >
-          {STEP_META.map((step) => renderStep(step.id, true))}
+          {CAMPAIGN_STEPS.map((step) => renderStep(step.id, true))}
         </nav>
       </div>
     </>
   );
-}
-
-export function stepIndexForId(stepId: CampaignStepId): number {
-  return stepIndex(stepId);
 }

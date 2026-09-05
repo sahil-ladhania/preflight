@@ -9,7 +9,6 @@ import type { AssetListItemDTO, StructuredBriefInput } from "@preflight/schemas"
 import {
   activeCampaignPane,
   buildPhaseLine,
-  campaignEndLine,
   campaignProgressLine,
   countNeedsHuman,
   fieldReviewRows,
@@ -144,14 +143,6 @@ describe("campaignProgressLine", () => {
         { ...asset("blocked"), pendingCount: 1 },
       ]),
     ).toBe("1 of 2 still need a human decision. Evaluating 3 rules…");
-  });
-});
-
-describe("campaignEndLine", () => {
-  it("restates asset count and human queue", () => {
-    expect(
-      campaignEndLine([asset("clear"), asset("blocked")]),
-    ).toContain("2 assets · 1 still need a human");
   });
 });
 

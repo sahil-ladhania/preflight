@@ -1,11 +1,25 @@
 import { Loader2 } from "lucide-react";
 import type { ReactElement } from "react";
 
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { buildPhaseLine } from "@/features/campaign/campaign-pane";
 import type { BuildPhase } from "@/features/campaign/types";
 import { cn } from "@/lib/utils";
+
+function inFlightButtonLabel(phase: BuildPhase): string {
+  switch (phase) {
+    case "extract":
+      return "Structuring…";
+    case "save":
+      return "Saving…";
+    case "compile":
+      return "Freezing…";
+    case "generate":
+      return "Writing…";
+    default:
+      return "Building…";
+  }
+}
 
 export function BuildPanel({
   buildPhase,
@@ -25,38 +39,42 @@ export function BuildPanel({
   onTryExample?: () => void;
 }): ReactElement {
   const line = buildPhaseLine(buildPhase, buildInFlight);
-  const buildDisabled =
-    buildInFlight ||
-    !canBuild ||
-    (buildPhase === "needs_ack" && !emptySetAcknowledged);
-  const filled = canBuild && !buildDisabled;
+  const isActionable =
+    canBuild &&
+    !buildInFlight &&
+    !(buildPhase === "needs_ack" && !emptySetAcknowledged);
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-3">
-        <Button
+        <button
           type="button"
-          disabled={buildDisabled}
+          disabled={!isActionable && !buildInFlight}
           className={cn(
-            "h-8 rounded-none px-4 font-sans text-button font-medium shadow-none cursor-pointer transition-colors",
-            filled
-              ? "border border-primary bg-primary text-primary-foreground hover:bg-primary-hover shadow-xs"
-              : "border border-hairline bg-transparent text-fg-faint hover:bg-transparent",
-            buildDisabled && "cursor-not-allowed opacity-50"
+            "flex h-8 shrink-0 items-center justify-center gap-2 rounded-none px-4 font-sans text-button font-medium select-none shadow-none transition-colors",
+            buildInFlight &&
+              "border border-primary bg-primary text-primary-foreground shadow-xs cursor-wait",
+            isActionable &&
+              "border border-primary bg-primary text-primary-foreground hover:bg-primary-hover shadow-xs cursor-pointer",
+            !isActionable &&
+              !buildInFlight &&
+              "border border-primary/30 bg-primary/20 text-fg-muted cursor-not-allowed",
           )}
           onClick={() => {
-            void onRunBuild();
+            if (isActionable) {
+              void onRunBuild();
+            }
           }}
         >
           {buildInFlight ? (
             <>
-              <Loader2 className="size-3.5 animate-spin" aria-hidden />
-              <span>Compiling</span>
+              <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
+              <span>{inFlightButtonLabel(buildPhase)}</span>
             </>
           ) : (
             "Build it"
           )}
-        </Button>
+        </button>
         {onTryExample !== undefined && !buildInFlight ? (
           <button
             type="button"

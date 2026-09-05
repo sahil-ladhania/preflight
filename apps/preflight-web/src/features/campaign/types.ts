@@ -6,7 +6,7 @@
 import type { AssetListItemDTO, CampaignDTO, CompileResponseDTO, StructuredBriefInput } from "@preflight/schemas";
 import type { BriefField } from "@preflight/schemas";
 
-import type { CampaignStepId } from "@/features/campaign/CampaignStepRail";
+import type { CampaignStepId } from "@/features/campaign/campaign-steps";
 
 export type CampaignView = "loaded" | "loading" | "error";
 
@@ -81,4 +81,5 @@ export interface BriefPhaseProps {
   onFreeTextChange: (value: string) => void;
   onBriefChange: (brief: StructuredBriefInput) => void;
   onFieldEdit: (field: BriefField) => void;
+  documentState?: "Draft" | "Saved" | "Compiled";
 }

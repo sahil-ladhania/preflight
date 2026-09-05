@@ -202,7 +202,7 @@
   --color-badge-navy-bg: #2e4a68;
   --color-badge-navy-fg: #ffffff;
   --color-badge-navy-border: #5a7f9e;
-  --color-badge-clear-bg: #226738;
+  --color-badge-clear-bg: #2e5438;
   --color-badge-clear-fg: #ffffff;
 
   /* -- Colour: column header band (Pass 3) -------------------------------- */
@@ -453,30 +453,33 @@
     font-weight: 400;
   }
 
-  /* Status badges on chrome / navy surface (08 §3.3 amendment, Pass 5).
+  /* Status badges — single product-wide status treatment (08 §13 Amendment 22).
      Square filled badges with zero radius and WCAG AA contrast. */
+  .status-badge-blocked,
   .status-chrome-blocked {
     background-color: var(--color-badge-blocked-bg);
     color: var(--color-badge-blocked-fg);
   }
 
+  .status-badge-review,
   .status-chrome-review {
     background-color: var(--color-badge-review-bg);
     color: var(--color-badge-review-fg);
   }
 
+  .status-badge-regen,
   .status-chrome-regen {
     background-color: var(--color-badge-navy-bg);
     color: var(--color-badge-navy-fg);
-    border: 1px solid var(--color-badge-navy-border);
   }
 
+  .status-badge-exception,
   .status-chrome-exception {
     background-color: var(--color-badge-navy-bg);
     color: var(--color-badge-navy-fg);
-    border: 1px solid var(--color-badge-navy-border);
   }
 
+  .status-badge-clear,
   .status-chrome-clear {
     background-color: var(--color-badge-clear-bg);
     color: var(--color-badge-clear-fg);

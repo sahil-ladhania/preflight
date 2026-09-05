@@ -25,16 +25,16 @@ function kindLabel(kind: CompileRuleCardDTO["kind"]): string {
 
 function RuleRow({ rule }: { rule: CompileRuleCardDTO }): ReactElement {
   return (
-    <div className="grid grid-cols-[110px_50px_1fr] gap-3 border-b border-hairline py-3">
+    <div className="grid grid-cols-[90px_36px_minmax(0,1fr)] items-baseline gap-4 border-b border-hairline py-3">
       <span className="font-mono text-mono-meta text-fg">{rule.ruleId}</span>
-      <span className="font-mono text-kind text-fg-muted uppercase">
+      <span className="font-mono text-kind-badge font-normal uppercase text-fg-muted">
         {kindLabel(rule.kind)}
       </span>
-      <div className="flex min-w-0 flex-col gap-1">
+      <div className="flex min-w-0 max-w-2xl flex-col gap-1">
         <p className="font-serif text-serif-row text-fg">{rule.wording}</p>
         {/* The server sends the whole sentence ("Applies because …"); a client
             prefix here would double it. */}
-        <p className="text-[11px] text-fg-muted">{rule.applicabilityReason}</p>
+        <p className="text-caption text-fg-muted">{rule.applicabilityReason}</p>
       </div>
     </div>
   );
@@ -61,7 +61,7 @@ export function FreezeTable({
         <>
           <div className="flex items-center justify-between border border-fg px-[18px] py-[14px]">
             <span className="text-ui-strong text-fg">
-              Compiled ruleset — {ruleCount} rules pinned
+              Compiled ruleset — {ruleCount} rule{ruleCount === 1 ? "" : "s"} pinned
             </span>
             <span className="font-mono text-mono-meta text-fg-muted">
               {shortHash(hash)}

@@ -13,7 +13,7 @@ import type {
 } from "@preflight/schemas";
 import type { BriefField } from "@preflight/schemas";
 
-import type { CampaignStepId } from "@/features/campaign/CampaignStepRail";
+import type { CampaignStepId } from "@/features/campaign/campaign-steps";
 import {
   runCampaignBuildChain,
   runGenerateOnly,
