@@ -214,6 +214,7 @@
   /* -- Depth / shadow (08 Phase 0, consumed in Phase 6) -------------------- */
   --shadow-lift: 0 1px 2px rgba(28, 26, 23, 0.06),
     0 8px 24px rgba(28, 26, 23, 0.06);
+  --shadow-thread-scroll: inset 0 6px 6px -6px rgba(28, 26, 23, 0.05);
 
   /* -- Colour: channel preview (08 §3.6) ------------------------------------
      The one sanctioned foreign palette. Brand-kit values are injected at
@@ -303,6 +304,7 @@
   --grid-register: 110px 1fr 140px minmax(260px, 1.6fr) 64px;
   --grid-rulebook: 100px 60px 1fr 220px 40px;
   --grid-freeze: 110px 50px 1fr;
+  --measure-thread: 65ch;
 }
 
 @layer base {
@@ -409,6 +411,14 @@
 
   .min-h-brief {
     min-height: var(--brief-textarea-min-h);
+  }
+
+  .max-w-measure-thread {
+    max-width: var(--measure-thread);
+  }
+
+  .shadow-thread-scroll {
+    box-shadow: var(--shadow-thread-scroll);
   }
 
   /* -------------------------------------------------------------------------

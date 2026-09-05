@@ -20,6 +20,7 @@ import {
 } from "@/features/workbench/useBriefReadiness";
 import {
   nextMessageId,
+  messageCreatedAt,
   replaceMessageById,
   toChatHistory,
 } from "@/features/workbench/lib";
@@ -126,6 +127,7 @@ export function useWorkbench(): {
       id: nextMessageId(),
       role: "user",
       text,
+      createdAt: messageCreatedAt(),
     };
     const pendingId = nextMessageId();
     const priorMessages = messages;
@@ -156,6 +158,7 @@ export function useWorkbench(): {
           suggestedAction: response.suggestedAction,
           brief: response.brief,
           reveal: true,
+          createdAt: messageCreatedAt(),
         }),
       );
     } catch (error: unknown) {
@@ -170,6 +173,7 @@ export function useWorkbench(): {
           id: nextMessageId(),
           role: "error",
           text: errorText,
+          createdAt: messageCreatedAt(),
         }),
       );
       setShowSearchFallback(true);

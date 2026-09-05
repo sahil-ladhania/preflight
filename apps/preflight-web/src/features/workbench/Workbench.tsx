@@ -113,10 +113,10 @@ export function Workbench({
   );
 
   return (
-    <div className="relative h-full flex-1 w-full bg-ground overflow-hidden flex flex-col">
+    <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-ground w-full">
       <WorkbenchTexture />
       {!isThreadView ? (
-        <div className="relative z-10 h-full w-full">
+        <div className="relative z-10 flex h-full min-h-0 w-full flex-1 flex-col">
           <EmptyStage
             composer={composer}
             handoffInFlight={handoffInFlight}

@@ -11,6 +11,7 @@ import {
   handoffBriefFromMessages,
   handoffEnabled as computeHandoffEnabled,
   nextMessageId,
+  messageCreatedAt,
   replaceMessageById,
   seedProposalFromExplainer,
 } from "@/features/workbench/lib";
@@ -95,6 +96,7 @@ export function useWorkbenchFixture(input: {
       id: nextMessageId(),
       role: "user",
       text,
+      createdAt: messageCreatedAt(),
     };
     const pendingId = nextMessageId();
     const turn = assistantTurns;
@@ -113,6 +115,7 @@ export function useWorkbenchFixture(input: {
             id: nextMessageId(),
             role: "error",
             text: result.error,
+            createdAt: messageCreatedAt(),
           }),
         );
         setShowSearchFallback(true);
@@ -126,6 +129,7 @@ export function useWorkbenchFixture(input: {
             suggestedAction: result.data.suggestedAction,
             brief: result.data.brief,
             reveal: true,
+            createdAt: messageCreatedAt(),
           }),
         );
         setAssistantTurns((count) => count + 1);

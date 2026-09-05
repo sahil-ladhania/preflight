@@ -58,6 +58,9 @@ export function WorkbenchErrorFallbackDemo(): ReactElement {
 }
 
 export function WorkbenchHandoffSuggestedDemo(): ReactElement {
+  const twoMinutesAgo = new Date(Date.now() - 2 * 60_000).toISOString();
+  const oneMinuteAgo = new Date(Date.now() - 60_000).toISOString();
+
   return (
     <Workbench
       rules={RULES_CATALOG}
@@ -66,6 +69,7 @@ export function WorkbenchHandoffSuggestedDemo(): ReactElement {
           id: "demo-user",
           role: "user",
           text: "I want a LinkedIn and email campaign for Bluepeak Flexi Cap.",
+          createdAt: twoMinutesAgo,
         },
         {
           id: "demo-assistant",
@@ -74,6 +78,7 @@ export function WorkbenchHandoffSuggestedDemo(): ReactElement {
           ruleIds: ["SEBI-02", "BRAND-02"],
           suggestedAction: "handoff_campaign",
           brief: WORKBENCH_HANDOFF_BRIEF,
+          createdAt: oneMinuteAgo,
         },
       ]}
     />
@@ -81,6 +86,9 @@ export function WorkbenchHandoffSuggestedDemo(): ReactElement {
 }
 
 function WorkbenchWithErrorFallback(): ReactElement {
+  const threeMinutesAgo = new Date(Date.now() - 3 * 60_000).toISOString();
+  const twoMinutesAgo = new Date(Date.now() - 2 * 60_000).toISOString();
+
   return (
     <Workbench
       rules={RULES_CATALOG}
@@ -89,11 +97,13 @@ function WorkbenchWithErrorFallback(): ReactElement {
           id: "demo-user",
           role: "user",
           text: "What does SEBI-06 check?",
+          createdAt: threeMinutesAgo,
         },
         {
           id: "demo-error",
           role: "error",
           text: "Explainer unavailable — try search below.",
+          createdAt: twoMinutesAgo,
         },
       ]}
       initialShowSearchFallback

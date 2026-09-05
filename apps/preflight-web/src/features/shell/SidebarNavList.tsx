@@ -4,7 +4,7 @@
  */
 
 import type { ReactElement } from "react";
-import { BookOpen, Layers, Sparkles, Target } from "lucide-react";
+import { BookOpen, ClipboardList, Layers, MessageSquare } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import {
@@ -59,8 +59,8 @@ export function SidebarNavList({
           <div className="relative flex items-center justify-center">
             <Layers className="size-4 shrink-0 text-current" />
             {isCollapsed && queueCount !== null && queueCount > 0 ? (
-              <span className="absolute -top-1.5 -right-2 flex size-3.5 items-center justify-center rounded-none border border-[var(--color-chrome-fg)] bg-[var(--color-chrome-fg)] font-mono text-[9px] font-semibold text-[var(--color-chrome-bottom)] shadow-xs">
-                {queueCount}
+              <span className="absolute -top-2 -right-3 font-mono text-mono-faint text-[var(--color-chrome-fg-muted)]">
+                [{queueCount}]
               </span>
             ) : null}
           </div>
@@ -95,7 +95,7 @@ export function SidebarNavList({
             onNavigateCampaign();
           }}
         >
-          <Target className="size-4 shrink-0 text-current" />
+          <ClipboardList className="size-4 shrink-0 text-current" />
           <span>Campaign</span>
         </SidebarMenuButton>
       </SidebarMenuItem>
@@ -133,7 +133,7 @@ export function SidebarNavList({
             void navigate("/workbench");
           }}
         >
-          <Sparkles className="size-4 shrink-0 text-current" />
+          <MessageSquare className="size-4 shrink-0 text-current" />
           <span>Workbench</span>
         </SidebarMenuButton>
       </SidebarMenuItem>

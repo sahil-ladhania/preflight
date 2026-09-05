@@ -1,6 +1,6 @@
 /**
  * SessionStartInterstitial — designed session opening transition for Workbench.
- * Why: 08 §6 motion budget; backdrop blur with centered serif line "Starting your session."
+ * Why: 08 §6 motion budget; backdrop blur with centered serif status line.
  */
 
 import { useEffect, useState, type ReactElement } from "react";

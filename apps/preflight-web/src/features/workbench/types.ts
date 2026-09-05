@@ -13,7 +13,7 @@ import type {
 } from "@preflight/schemas";
 
 export type WorkbenchMessage =
-  | { id: string; role: "user"; text: string }
+  | { id: string; role: "user"; text: string; createdAt?: string }
   | { id: string; role: "pending" }
   | {
       id: string;
@@ -23,8 +23,9 @@ export type WorkbenchMessage =
       suggestedAction?: ExplainerSuggestedAction;
       brief?: Partial<StructuredBriefInput>;
       reveal?: boolean;
+      createdAt?: string;
     }
-  | { id: string; role: "error"; text: string };
+  | { id: string; role: "error"; text: string; createdAt?: string };
 
 export interface WorkbenchProps {
   rules: RuleCatalogRowDTO[];
@@ -75,6 +76,7 @@ export interface ThreadProps {
   showSearchFallback?: boolean;
   searchQuery?: string;
   onSearchQueryChange?: (query: string) => void;
+  onScrollToEnd?: () => void;
 }
 
 export interface ComposerProps {

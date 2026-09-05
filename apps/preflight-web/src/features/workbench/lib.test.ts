@@ -9,6 +9,7 @@ import type { StructuredBriefInput } from "@preflight/schemas";
 
 import {
   buildHandoffFreeText,
+  formatMessageAge,
   handoffBriefFromMessages,
   handoffEnabled,
   promptGroupsForPersona,
@@ -92,6 +93,30 @@ describe("handoffEnabled", () => {
     ];
     expect(handoffEnabled(messages)).toBe(true);
     expect(handoffBriefFromMessages(messages)).toEqual(completeBrief);
+  });
+});
+
+describe("formatMessageAge", () => {
+  const now = new Date("2026-09-05T12:00:00.000Z");
+
+  it("returns just now for sub-second age", () => {
+    expect(formatMessageAge("2026-09-05T11:59:59.500Z", now)).toBe("just now");
+  });
+
+  it("returns seconds ago under one minute", () => {
+    expect(formatMessageAge("2026-09-05T11:59:30.000Z", now)).toBe("30 seconds ago");
+  });
+
+  it("returns minutes ago under one hour", () => {
+    expect(formatMessageAge("2026-09-05T11:58:00.000Z", now)).toBe("2 minutes ago");
+  });
+
+  it("returns hours ago under one day", () => {
+    expect(formatMessageAge("2026-09-05T10:00:00.000Z", now)).toBe("2 hours ago");
+  });
+
+  it("returns days ago beyond one day", () => {
+    expect(formatMessageAge("2026-09-03T12:00:00.000Z", now)).toBe("2 days ago");
   });
 });
 

@@ -18,7 +18,7 @@ export function CommentSheet({
         <span className="font-sans text-caption text-fg-muted mb-1 text-right">
           You
         </span>
-        <div className="bg-hover border border-hairline border-r-2 border-r-decision p-[12px_16px] max-w-[72%] rounded-none text-left text-fg">
+        <div className="bg-hover border border-hairline border-r-2 border-r-decision p-[12px_16px] max-w-measure-thread rounded-none text-left text-fg">
           {children}
         </div>
       </div>
@@ -32,7 +32,7 @@ export function CommentSheet({
       <span className="font-sans text-caption text-fg-muted mb-1 text-left">
         {displayLabel}
       </span>
-      <div className="w-full max-w-[88%] text-fg">
+      <div className="w-full max-w-measure-thread text-fg">
         {children}
       </div>
     </div>

@@ -31,17 +31,9 @@ function PromptPill({
       type="button"
       disabled={disabled}
       onClick={onSelect}
-      className="group flex items-start gap-2.5 cursor-pointer border-0 p-0 bg-transparent text-left text-ui leading-[18px] focus-visible:outline focus-visible:outline-1 focus-visible:outline-decision disabled:pointer-events-none disabled:opacity-50"
+      className="cursor-pointer rounded-none border border-fg bg-ground px-3.5 py-2 text-left font-sans text-ui leading-[18px] text-fg hover:bg-hover focus-visible:outline focus-visible:outline-1 focus-visible:outline-decision disabled:pointer-events-none disabled:opacity-50"
     >
-      <span
-        className="select-none text-fg-muted text-xs leading-[18px] group-hover:text-decision"
-        aria-hidden="true"
-      >
-        •
-      </span>
-      <span className="text-decision underline decoration-dotted underline-offset-4 group-hover:decoration-solid">
-        {text}
-      </span>
+      {text}
     </button>
   );
 }
@@ -69,7 +61,7 @@ export function EmptyStage({
               <span className="text-label-strong uppercase text-fg-muted">
                 {group.label}
               </span>
-              <div className="flex flex-col items-start gap-2">
+              <div className="flex flex-wrap items-start gap-2">
                 {group.chips.map((chip) => (
                   <PromptPill
                     key={chip}

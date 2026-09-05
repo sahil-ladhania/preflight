@@ -9,7 +9,11 @@ import { Loader2 } from "lucide-react";
 import { CampaignHandoffLink } from "@/features/workbench/CampaignHandoffLink";
 import { WORKBENCH_COMPOSER_PLACEHOLDER } from "@/features/workbench/lib";
 import type { ComposerProps } from "@/features/workbench/types";
+import { useAutoResizeTextarea } from "@/features/workbench/useAutoResizeTextarea";
 import { cn } from "@/lib/utils";
+
+const THREAD_TEXTAREA_MAX_PX = 120;
+const EMPTY_TEXTAREA_MAX_PX = 160;
 
 export function Composer({
   value,
@@ -25,6 +29,12 @@ export function Composer({
   onGoToCampaign,
   onStartCampaignFromConversation,
 }: ComposerProps): ReactElement {
+  const isThread = appearance === "thread";
+  const textareaRef = useAutoResizeTextarea(
+    value,
+    isThread ? THREAD_TEXTAREA_MAX_PX : EMPTY_TEXTAREA_MAX_PX,
+  );
+
   const canSend = value.trim().length > 0 && !sendInFlight && !disabled;
   const canHandoff =
     handoffEnabled &&
@@ -80,31 +90,30 @@ export function Composer({
       </div>
     ) : null;
 
-  const isThread = appearance === "thread";
-
   return (
-    <div className="flex flex-col gap-2 w-full">
+    <div className="flex w-full flex-col gap-2">
       <div
         className={cn(
-          "relative flex justify-between rounded-none border border-fg bg-ground focus-within:border-decision",
+          "relative flex rounded-none border border-fg bg-ground focus-within:border-decision",
           isThread
-            ? "min-h-[48px] max-h-[140px] items-center px-3.5 py-2 gap-3"
-            : "min-h-[96px] max-h-[200px] flex-col p-3.5",
+            ? "max-h-[140px] items-end gap-3 px-3.5 py-2"
+            : "max-h-[200px] min-h-[96px] flex-col p-3.5",
         )}
       >
         <textarea
+          ref={textareaRef}
           value={value}
           disabled={inputDisabled}
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={WORKBENCH_COMPOSER_PLACEHOLDER}
-          rows={isThread ? 1 : 2}
+          rows={1}
           className={cn(
-            "w-full flex-1 resize-none border-0 bg-transparent p-0 font-serif text-copy text-fg shadow-none outline-none placeholder:text-fg-faint focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50",
-            isThread ? "min-h-[24px] max-h-[90px] overflow-y-auto py-1" : "overflow-y-auto",
+            "w-full flex-1 resize-none overflow-y-auto border-0 bg-transparent p-0 font-serif text-copy text-fg shadow-none outline-none placeholder:font-sans placeholder:text-fg-faint focus-visible:ring-0 disabled:cursor-not-allowed",
+            isThread ? "min-h-[24px] py-1" : "min-h-[48px]",
           )}
         />
-        <div className={cn("flex justify-end", isThread ? "shrink-0" : "mt-2")}>
+        <div className={cn("flex shrink-0 justify-end", isThread ? "" : "mt-2")}>
           <button
             type="button"
             aria-label="Send message"
