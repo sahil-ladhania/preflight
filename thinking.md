@@ -18,12 +18,6 @@ Their fundamental problem is not content creation. It is that the regulatory bur
 
 Preflight gives this segment a structured way to declare applicable constraints before creation and preserve evidence of compliance after approval.
 
-### Why this answer?
-
-The wedge is attractive because the compliance obligation applies regardless of AMC size, while operational resources and budgets do not. The top 20 AMCs hold 94% of industry AAUM; the remaining 35 hold under 6%. The Advertisement Code applies identically to all of them.
-
-Mutual funds are also a focused starting point because the relevant regulatory material is sufficiently structured and explicit to support deterministic compliance checks alongside human judgment. That makes "provable conformance" a credible product wedge rather than simply another AI content tool.
-
 ---
 
 
@@ -68,10 +62,6 @@ Her key question is:
 
 Rule changes create drift, while historical campaigns remain tied to their original frozen rule snapshot.
 
-### Why this answer?
-
-These are not three personas invented around features. They represent three different responsibilities in the lifecycle of a regulated marketing asset: creating it, deciding whether it can ship, and governing the rules that determine compliance. Their motivations are therefore fundamentally different: Meera is concerned with delay, Arjun with exposure and defensibility, and Priya with policy change and historical integrity.
-
 ---
 
 
@@ -107,10 +97,6 @@ Her journey should change future compliance without rewriting historical records
 
 And critically, the journey does not end at `clear`. It ends when the organization can later produce the evidence behind that decision. Today that final step is a JSON download, which is the weakest point in the product's own thesis.
 
-### Why this answer?
-
-Because Preflight is fundamentally about proving conformance, not simply approving content. If the journey ended at "Clear," Preflight would behave like ordinary approval software. Extending the lifecycle to the eventual audit makes the product thesis visible end-to-end: the system doesn't just produce a decision; it preserves the reasoning and evidence behind it.
-
 ---
 
 
@@ -141,10 +127,6 @@ A compliance finding should show not only what the system concluded, but which r
 The visual character should therefore feel closer to a legal record, financial statement, or court exhibit than a chat application or generic SaaS dashboard.
 
 Preflight should also be willing to expose uncomfortable states — `blocked`, `needs_human`, `unavailable`, `waived` — rather than optimizing the interface to always look successful.
-
-### Why this answer?
-
-The interface itself needs to communicate the product's core promise: *"you can trust and defend this record later."* If the UI feels like an AI content-generation tool, users will naturally treat its outputs as suggestions. If it behaves like a stable record — showing rules, evidence, machine reasoning, human decisions, and history — it reinforces the actual authority model of Preflight: the machine checks, the human decides, and the record preserves what happened.
 
 ---
 
