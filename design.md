@@ -26,18 +26,24 @@ The visual character sits closer to a legal record, a financial statement, or a 
 
 > Preflight should feel less like software that wants to impress you, and more like an instrument you trust when the consequences matter.
 
+
+
 ## Six principles
 
 These are not preferences. They form one coherent design system, and every visual rule in the product implements one of them.
 
-| Principle | What it does | Why it matters |
-|---|---|---|
-| **Clarity over cleverness** | Every state answers *what happened, why, and what can I do now* without interpretation. Literal labels, consistent placement, no emphasis without meaning. | Preflight is used when users are already dealing with regulatory complexity. The interface should reduce cognitive load, not add another layer. |
-| **Stability over motion** | Navigation and information placement are predictable. Nothing silently reorders. The same action produces the same outcome. | The product's core output is a record. Excessive motion communicates that information is transient — the opposite of what a record should feel like. |
-| **Evidence over decoration** | The chain `rule → evidence → finding → human decision → final status` is visible for every finding. Nothing decorative competes with it. | A "Failed" badge alone tells a reviewer nothing. The evidence chain is the product's actual differentiator — it makes the machine's conclusion verifiable. |
-| **Explanation over unexplained verdicts** | Every machine verdict shows the rule, what was found, and the evidence that triggered it. No bare "Failed." | A verdict without reasoning forces the user to trust the system blindly. Reviewers need to evaluate the finding, not merely accept it. |
-| **Human decisions separated from machine findings** | The machine checks. The human decides. The interface never lets those look like the same kind of authority. | If the UI collapses both into one "approved" state, it hides who actually made the decision and why. Overrides become silent corrections instead of meaningful evidence. |
-| **Historical records that stay stable** | Frozen wording, preserved findings, permanent exceptions, drift instead of rewriting. A new rule never silently rewrites an old decision. | A compliance record has value precisely because it can be trusted after the original decision is no longer fresh. |
+
+| Principle                                           | What it does                                                                                                                                               | Why it matters                                                                                                                                                           |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Clarity over cleverness**                         | Every state answers *what happened, why, and what can I do now* without interpretation. Literal labels, consistent placement, no emphasis without meaning. | Preflight is used when users are already dealing with regulatory complexity. The interface should reduce cognitive load, not add another layer.                          |
+| **Stability over motion**                           | Navigation and information placement are predictable. Nothing silently reorders. The same action produces the same outcome.                                | The product's core output is a record. Excessive motion communicates that information is transient — the opposite of what a record should feel like.                     |
+| **Evidence over decoration**                        | The chain `rule → evidence → finding → human decision → final status` is visible for every finding. Nothing decorative competes with it.                   | A "Failed" badge alone tells a reviewer nothing. The evidence chain is the product's actual differentiator — it makes the machine's conclusion verifiable.               |
+| Explanation over unexplained verdicts               | Every machine verdict shows the rule, what was found, and the evidence that triggered it. No bare "Failed."                                                | A verdict without reasoning forces the user to trust the system blindly. Reviewers need to evaluate the finding, not merely accept it.                                   |
+| **Human decisions separated from machine findings** | The machine checks. The human decides. The interface never lets those look like the same kind of authority.                                                | If the UI collapses both into one "approved" state, it hides who actually made the decision and why. Overrides become silent corrections instead of meaningful evidence. |
+| **Historical records that stay stable**             | Frozen wording, preserved findings, permanent exceptions, drift instead of rewriting. A new rule never silently rewrites an old decision.                  | A compliance record has value precisely because it can be trusted after the original decision is no longer fresh.                                                        |
+
+
+
 
 ## Visual identity
 
@@ -49,11 +55,13 @@ There is no `border-radius` in the product — not on buttons, inputs, cards, mo
 
 ### Three typefaces, three attributions
 
-| Face | Carries | Rule |
-|---|---|---|
-| **Serif** (Source Serif 4) | Page titles, asset copy, rule wording, human reasons | The thing being judged, and the words people wrote |
-| **Sans** (Inter) | Navigation, buttons, table cells, labels, helper text | The apparatus talking about itself |
+
+| Face                        | Carries                                                        | Rule                                                                 |
+| --------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **Serif** (Source Serif 4)  | Page titles, asset copy, rule wording, human reasons           | The thing being judged, and the words people wrote                   |
+| **Sans** (Inter)            | Navigation, buttons, table cells, labels, helper text          | The apparatus talking about itself                                   |
 | **Mono** (system monospace) | Rule IDs, hashes, status labels, ages, the quoted failing span | Machine-produced strings, matchable byte-for-byte against the export |
+
 
 This is not decoration. It is attribution. If a string's typeface does not match its origin, the interface is misattributing it. Serif for human content, sans for chrome, mono for machine output — the same convention every printed record uses.
 
@@ -81,11 +89,13 @@ Machine checks  →  Human decides  →  Record preserves
 
 **Human decisions** are one of three actions, each with distinct meaning:
 
-| Action | Meaning | Result |
-|---|---|---|
-| **Confirm** | The machine is right. Do not ship. Fix the copy. | Stays blocked or needs regen |
-| **Override** | The machine misread. This is not a violation. | Clears without exception |
-| **Waive** | The machine is right, but ship anyway. | Clears with permanent exception |
+
+| Action       | Meaning                                          | Result                          |
+| ------------ | ------------------------------------------------ | ------------------------------- |
+| **Confirm**  | The machine is right. Do not ship. Fix the copy. | Stays blocked or needs regen    |
+| **Override** | The machine misread. This is not a violation.    | Clears without exception        |
+| **Waive**    | The machine is right, but ship anyway.           | Clears with permanent exception |
+
 
 Override and waive are not the same button. Override says the machine was wrong. Waive says the machine was right and the organisation chose to ship over a known failure. Both readings stay visible forever. The disagreement itself becomes part of the record.
 
@@ -95,12 +105,14 @@ Override and waive are not the same button. Override says the machine was wrong.
 
 Preflight is willing to show uncomfortable states rather than making everything look successful:
 
-| State | What it means | Why it is shown |
-|---|---|---|
-| `Blocked` | A deterministic rule failed. Cannot ship without waiver or fix. | Consequential — and the interface makes it feel that way. |
-| `Review` | A judgement rule flagged something. A human must decide. | The system explicitly says it cannot resolve this alone. |
-| `Exception` | A human waived a real failure. Shippable, permanently marked. | The waiver is evidence, not a quiet override. It never becomes `Clear`. |
+
+| State         | What it means                                                           | Why it is shown                                                           |
+| ------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `Blocked`     | A deterministic rule failed. Cannot ship without waiver or fix.         | Consequential — and the interface makes it feel that way.                 |
+| `Review`      | A judgement rule flagged something. A human must decide.                | The system explicitly says it cannot resolve this alone.                  |
+| `Exception`   | A human waived a real failure. Shippable, permanently marked.           | The waiver is evidence, not a quiet override. It never becomes `Clear`.   |
 | `Unavailable` | A judgement call failed or timed out. Deterministic results unaffected. | Never a silent pass. The asset cannot resolve until the gap is addressed. |
+
 
 A passing asset does not celebrate. `Clear` is rendered in muted type at normal weight — the quietest status in the system. The interface does not reward success; it draws attention to what needs a decision.
 
@@ -109,3 +121,4 @@ A passing asset does not celebrate. `Clear` is rendered in muted type at normal 
 - [README](README.md) — run locally
 - [Product](product.md) — what the product does and the five key decisions
 - [Walkthrough](https://www.loom.com/share/2e1dccfde6b740f1a604ed5cb3e4b906)
+

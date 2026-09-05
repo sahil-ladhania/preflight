@@ -8,7 +8,7 @@ A checklist before a marketing asset ships — same procedure, a record.
 
 `TypeScript` · `React` · `Vite` · `Express` · `PostgreSQL` · `Prisma` · `GitAgent` · `OpenAI`
 
-[How the product works →](product.md) · [Design philosophy →](design.md)
+[How the product works →](product.md) · [Design philosophy →](design.md) · [Thinking behind it →](thinking.md)
 
 </div>
 
@@ -44,7 +44,7 @@ flowchart LR
 
 Workbench → campaign → generate → ledger. Seeded assets show the review states.
 
-Why this shape, and what we cut: [product.md](product.md).
+Why this shape, and what we cut: [product.md](product.md). Who it is for, and why the journey ends at the audit and not at approval: [thinking.md](thinking.md).
 
 ## Where to look
 

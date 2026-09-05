@@ -2,7 +2,7 @@
 
 Preflight is a checklist before a marketing asset ships — same procedure every time, producing a record.
 
-This note is the product story. Locks live in `[documentation/](documentation/)`. Run steps live in the [README](README.md). Design philosophy lives in [design.md](design.md).
+This note is the product story. Who it is for and what the ideal journey looks like lives in [thinking.md](thinking.md). Locks live in `[documentation/](documentation/)`. Run steps live in the [README](README.md). Design philosophy lives in [design.md](design.md).
 
 ## Opening we took
 
@@ -145,6 +145,7 @@ Two of those are load-bearing:
 
 ## Read next
 
+- [Thinking](thinking.md) — who we build for, who uses it, the ideal journey, the ideal interface
 - [Design philosophy](design.md) — why the product looks and behaves the way it does
 - [README](README.md) — run locally
 - [Walkthrough](https://www.loom.com/share/2e1dccfde6b740f1a604ed5cb3e4b906)
