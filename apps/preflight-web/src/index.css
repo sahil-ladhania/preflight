@@ -587,6 +587,20 @@
   }
 }
 
+@media print {
+  .report-chrome {
+    display: none !important;
+  }
+
+  details.report-metadata-appendix > summary {
+    display: none;
+  }
+
+  details.report-metadata-appendix > :not(summary) {
+    display: block !important;
+  }
+}
+
 @keyframes spin-pending {
   to {
     transform: rotate(360deg);

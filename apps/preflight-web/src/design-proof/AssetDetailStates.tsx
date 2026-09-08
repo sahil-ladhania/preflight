@@ -27,6 +27,12 @@ export function AssetDetailStates(): ReactElement {
       </p>
       <nav className="flex flex-col gap-2">
         <Link
+          to={`/assets/${ASSET_ID_B}/report`}
+          className="text-ui text-primary underline"
+        >
+          Compliance report (asset B)
+        </Link>
+        <Link
           to="/design-proof/assets-detail/loading"
           className="text-ui text-primary underline"
         >

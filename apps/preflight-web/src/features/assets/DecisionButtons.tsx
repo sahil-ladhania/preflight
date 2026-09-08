@@ -6,6 +6,7 @@
 import type { ReactElement } from "react";
 import type { FindingDTO } from "@preflight/schemas";
 
+import { findingOffersHumanActions } from "@/features/assets/ledger-lib";
 import { Button } from "@/components/ui/button";
 
 export interface DecisionButtonsProps {
@@ -23,7 +24,7 @@ export function DecisionButtons({
   onWaive,
   onRetry,
 }: DecisionButtonsProps): ReactElement | null {
-  if (finding.machineVerdict === "pass" || finding.evaluationStatus === "pending") {
+  if (!findingOffersHumanActions(finding)) {
     return null;
   }
 

@@ -126,7 +126,6 @@ export function LedgerRow({
       {isOpen ? (
         <LedgerExpanded
           finding={finding}
-          isPassSelected={isPass}
           onConfirm={() => onConfirm(finding.id)}
           onOverride={() => onOverride(finding.id)}
           onWaive={() => onWaive(finding.id)}

@@ -3,7 +3,7 @@
  * Why: replaces app sidebar on review route (08 §5.1, 09 R0).
  */
 
-import { ChevronLeft, ChevronRight, Download } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileText } from "lucide-react";
 import type { ReactElement } from "react";
 import { Link } from "react-router-dom";
 
@@ -13,6 +13,7 @@ import { StatusChip } from "@/features/assets/StatusChip";
 import { cn } from "@/lib/utils";
 
 export interface AssetReviewTopBarProps {
+  assetId: string;
   headline: string;
   status: AssetStatus;
   queueIndex: number | null;
@@ -21,8 +22,6 @@ export interface AssetReviewTopBarProps {
   hasNextAsset: boolean;
   onPrevAsset?: () => void;
   onNextAsset?: () => void;
-  onExport: () => void;
-  exportInFlight?: boolean;
 }
 
 export function AssetReviewTopBar({
@@ -34,8 +33,7 @@ export function AssetReviewTopBar({
   hasNextAsset,
   onPrevAsset,
   onNextAsset,
-  onExport,
-  exportInFlight = false,
+  assetId,
 }: AssetReviewTopBarProps): ReactElement {
   const queueLabel =
     queueTotal === 0
@@ -95,24 +93,17 @@ export function AssetReviewTopBar({
         </button>
       </div>
 
-      {/* Right Slot: Export report bordered square pill */}
+      {/* Right Slot: View report bordered square pill */}
       <div className="flex items-center">
-        <button
-          type="button"
+        <Link
+          to={`/assets/${assetId}/report`}
           className={cn(
-            "inline-flex cursor-pointer items-center gap-1.5 rounded-none border border-[var(--color-chrome-fg-muted)]/30 bg-transparent px-2.5 py-1 font-sans text-xs text-[var(--color-chrome-fg)] hover:border-[var(--color-chrome-fg-muted)] hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50",
-            exportInFlight && "cursor-wait opacity-70",
+            "inline-flex cursor-pointer items-center gap-1.5 rounded-none border border-[var(--color-chrome-fg-muted)]/30 bg-transparent px-2.5 py-1 font-sans text-xs text-[var(--color-chrome-fg)] hover:border-[var(--color-chrome-fg-muted)] hover:bg-white/5",
           )}
-          disabled={exportInFlight}
-          onClick={onExport}
         >
-          {exportInFlight ? (
-            <span className="pending-ring" aria-hidden="true" />
-          ) : (
-            <Download className="size-3 shrink-0" aria-hidden="true" />
-          )}
-          <span>{exportInFlight ? "Exporting…" : "Export report"}</span>
-        </button>
+          <FileText className="size-3 shrink-0" aria-hidden="true" />
+          <span>View report</span>
+        </Link>
       </div>
     </header>
   );

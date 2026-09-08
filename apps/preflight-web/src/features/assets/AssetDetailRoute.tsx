@@ -53,8 +53,6 @@ export function AssetDetailRoute(): ReactElement {
     rerun,
     regenerate,
     accept,
-    exportReport,
-    exportInFlight,
     complianceDeskOpen,
     closeComplianceDesk,
     confirmComplianceDesk,
@@ -133,8 +131,6 @@ export function AssetDetailRoute(): ReactElement {
         }}
         onRegenerate={regenerate}
         onAccept={accept}
-        onExport={exportReport}
-        exportInFlight={exportInFlight}
         regenerateInFlight={regenerateInFlight}
         rerunInFlight={rerunInFlight}
         onCloseReasonModal={closeReasonModal}

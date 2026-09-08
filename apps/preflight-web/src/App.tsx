@@ -14,6 +14,7 @@ import { AssetDetailStates } from "@/design-proof/AssetDetailStates";
 import { AssetsListStates } from "@/design-proof/AssetsListStates";
 import { AssetDetail, AssetDetailRoute } from "@/features/assets/AssetDetail";
 import { AssetsList, AssetsListRoute } from "@/features/assets/AssetsList";
+import { ComplianceReportRoute } from "@/features/assets/report/ComplianceReportRoute";
 import {
   RERUN_STRIP_ENGINE_MISMATCH,
 } from "@/fixtures/assets-detail";
@@ -39,6 +40,13 @@ import {
   WorkbenchPrefetchErrorDemo,
   WorkbenchStates,
 } from "@/design-proof/WorkbenchStates";
+import {
+  ComplianceReportErrorDemo,
+  ComplianceReportLoadedDemo,
+  ComplianceReportLoadingDemo,
+  ComplianceReportNotFoundDemo,
+  ComplianceReportStates,
+} from "@/design-proof/ComplianceReportStates";
 import { OverviewEmptyQueueDemo } from "@/design-proof/OverviewStates";
 import { WorkbenchRoute } from "@/features/workbench/Workbench";
 import { OverviewRoute } from "@/features/overview/Overview";
@@ -90,6 +98,14 @@ export default function App(): ReactElement {
             <Route path="login" element={<LoginRoute />} />
             <Route element={<RequireAuth />}>
               <Route
+                path="assets/:id/report"
+                element={
+                  <ErrorBoundary>
+                    <ComplianceReportRoute />
+                  </ErrorBoundary>
+                }
+              />
+              <Route
                 path="assets/:id"
                 element={
                   <ErrorBoundary>
@@ -119,6 +135,26 @@ export default function App(): ReactElement {
                 element={<AssetsList assets={[]} view="error" />}
               />
               <Route path="design-proof/assets-detail" element={<AssetDetailStates />} />
+              <Route
+                path="design-proof/compliance-report"
+                element={<ComplianceReportStates />}
+              />
+              <Route
+                path="design-proof/compliance-report/loaded"
+                element={<ComplianceReportLoadedDemo />}
+              />
+              <Route
+                path="design-proof/compliance-report/loading"
+                element={<ComplianceReportLoadingDemo />}
+              />
+              <Route
+                path="design-proof/compliance-report/error"
+                element={<ComplianceReportErrorDemo />}
+              />
+              <Route
+                path="design-proof/compliance-report/not-found"
+                element={<ComplianceReportNotFoundDemo />}
+              />
               <Route
                 path="design-proof/assets-detail/loading"
                 element={<AssetDetail asset={ASSET_A} view="loading" />}

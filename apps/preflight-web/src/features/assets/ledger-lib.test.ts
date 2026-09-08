@@ -8,6 +8,7 @@ import type { FindingDTO } from "@preflight/schemas";
 
 import {
   adjacentOpenId,
+  findingOffersHumanActions,
   firstOpenFindingId,
   initialLedgerFilter,
   isOpenFinding,
@@ -85,6 +86,58 @@ describe("isOpenFinding", () => {
           humanVerdict: "waived",
         }),
       ),
+    ).toBe(false);
+  });
+});
+
+describe("findingOffersHumanActions", () => {
+  it("returns false for pass", () => {
+    expect(
+      findingOffersHumanActions(finding({ machineVerdict: "pass" })),
+    ).toBe(false);
+  });
+
+  it("returns false for pending", () => {
+    expect(
+      findingOffersHumanActions(
+        finding({
+          evaluationStatus: "pending",
+          machineVerdict: null,
+        }),
+      ),
+    ).toBe(false);
+  });
+
+  it("returns true for unavailable", () => {
+    expect(
+      findingOffersHumanActions(
+        finding({
+          evaluationStatus: "unavailable",
+          machineVerdict: null,
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("returns true for undecided deterministic fail", () => {
+    expect(
+      findingOffersHumanActions(
+        finding({ kind: "deterministic", machineVerdict: "fail" }),
+      ),
+    ).toBe(true);
+  });
+
+  it("returns true for undecided judgement fail", () => {
+    expect(
+      findingOffersHumanActions(
+        finding({ kind: "judgement", machineVerdict: "fail" }),
+      ),
+    ).toBe(true);
+  });
+
+  it("returns false when human verdict is set", () => {
+    expect(
+      findingOffersHumanActions(finding({ humanVerdict: "waived" })),
     ).toBe(false);
   });
 });

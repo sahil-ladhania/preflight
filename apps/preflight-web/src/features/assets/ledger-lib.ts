@@ -24,6 +24,22 @@ export function isOpenFinding(finding: FindingDTO): boolean {
   );
 }
 
+export function findingOffersHumanActions(finding: FindingDTO): boolean {
+  if (finding.humanVerdict !== null) {
+    return false;
+  }
+  if (
+    finding.machineVerdict === "pass" ||
+    finding.evaluationStatus === "pending"
+  ) {
+    return false;
+  }
+  if (finding.evaluationStatus === "unavailable") {
+    return true;
+  }
+  return finding.machineVerdict === "fail";
+}
+
 export function openFindings(findings: FindingDTO[]): FindingDTO[] {
   return findings.filter(isOpenFinding);
 }

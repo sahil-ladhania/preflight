@@ -14,6 +14,7 @@ import {
   formatGeneratedAt,
   humanVerdictLabel,
 } from "@/features/assets/lib";
+import { findingOffersHumanActions } from "@/features/assets/ledger-lib";
 import type { LedgerExpandedProps } from "@/features/assets/types";
 import { cn } from "@/lib/utils";
 
@@ -128,10 +129,10 @@ function ConsequenceExplanation({ finding }: { finding: FindingDTO }): ReactElem
 
 function HumanDecisionBlock({
   finding,
-  actions,
+  buttonProps,
 }: {
   finding: FindingDTO;
-  actions: ReactElement | null;
+  buttonProps: LedgerExpandedProps;
 }): ReactElement | null {
   if (finding.humanVerdict !== null) {
     const actorName = finding.humanActor?.trim() || "Unrecorded actor";
@@ -158,7 +159,7 @@ function HumanDecisionBlock({
     );
   }
 
-  if (actions === null) {
+  if (!findingOffersHumanActions(finding)) {
     return null;
   }
 
@@ -175,7 +176,9 @@ function HumanDecisionBlock({
         </span>
       </div>
       <ConsequenceExplanation finding={finding} />
-      <div className="pt-1">{actions}</div>
+      <div className="pt-1">
+        <DecisionButtons {...buttonProps} />
+      </div>
     </div>
   );
 }
@@ -188,7 +191,6 @@ export function LedgerExpanded(props: LedgerExpandedProps): ReactElement {
     finding.evaluationStatus === "unavailable"
       ? "font-sans text-caption text-attention"
       : "font-sans text-caption text-fg";
-  const actions = <DecisionButtons {...props} />;
 
   return (
     <div className="flex flex-col gap-3 bg-surface px-3 pb-3 pt-1">
@@ -206,7 +208,7 @@ export function LedgerExpanded(props: LedgerExpandedProps): ReactElement {
       </div>
 
       {/* Human decision — boxed */}
-      <HumanDecisionBlock finding={finding} actions={actions} />
+      <HumanDecisionBlock finding={finding} buttonProps={props} />
       <DecisionHistory finding={finding} />
     </div>
   );

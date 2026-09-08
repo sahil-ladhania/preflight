@@ -121,8 +121,6 @@ export interface AssetDetailProps {
   onRerun?: () => void;
   onRegenerate?: () => void;
   onAccept?: () => void;
-  onExport?: () => void;
-  exportInFlight?: boolean;
   regenerateInFlight?: boolean;
   rerunInFlight?: boolean;
   onCloseReasonModal?: () => void;
@@ -155,7 +153,6 @@ export interface ExceptionsSummaryProps {
 
 export interface LedgerExpandedProps {
   finding: FindingDTO;
-  isPassSelected: boolean;
   onConfirm: () => void;
   onOverride: () => void;
   onWaive: () => void;

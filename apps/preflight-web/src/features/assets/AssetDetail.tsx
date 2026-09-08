@@ -37,8 +37,6 @@ export function AssetDetail({
   onRerun,
   onRegenerate,
   onAccept,
-  onExport,
-  exportInFlight = false,
   regenerateInFlight = false,
   rerunInFlight = false,
   onCloseReasonModal,
@@ -95,6 +93,7 @@ export function AssetDetail({
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-ground">
       <AssetReviewTopBar
+        assetId={asset.id}
         headline={asset.headline}
         status={asset.status}
         queueIndex={queueIndex}
@@ -103,12 +102,6 @@ export function AssetDetail({
         hasNextAsset={hasNextAsset}
         onPrevAsset={onPrevAsset}
         onNextAsset={onNextAsset}
-        onExport={() => {
-          if (onExport !== undefined) {
-            void onExport();
-          }
-        }}
-        exportInFlight={exportInFlight}
       />
 
       <div className="flex min-h-0 flex-1 overflow-hidden">
